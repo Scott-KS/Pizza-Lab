@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PizzaPro — Perfect Pizza Recipe Calculator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <span class="logo-icon">🍕</span>
+      <h1>PizzaPro</h1>
+    </div>
+    <p class="tagline">Professional pizza recipes, precisely calculated for your oven.</p>
+  </header>
+
+  <main>
+    <section class="calculator-card">
+      <h2>Build Your Recipe</h2>
+
+      <form id="pizza-form">
+        <div class="form-group">
+          <label for="pizza-type">Pizza Style</label>
+          <select id="pizza-type" required>
+            <option value="" disabled selected>Select a style…</option>
+            <option value="neapolitan">Neapolitan</option>
+            <option value="new-york">New York</option>
+            <option value="detroit">Detroit Deep Dish</option>
+            <option value="sicilian">Sicilian</option>
+            <option value="thin-crust">Thin &amp; Crispy</option>
+            <option value="pan">Pan Pizza</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="num-pizzas">Number of Pizzas</label>
+          <input type="number" id="num-pizzas" min="1" max="50" value="2" required />
+        </div>
+
+        <div class="form-group">
+          <label for="oven-temp">Max Oven Temperature</label>
+          <div class="temp-input-row">
+            <input type="number" id="oven-temp" min="300" max="1000" value="500" required />
+            <div class="unit-toggle">
+              <button type="button" class="unit-btn active" data-unit="F">°F</button>
+              <button type="button" class="unit-btn" data-unit="C">°C</button>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-calculate">Calculate Recipe</button>
+      </form>
+    </section>
+
+    <section id="results" class="results-card hidden">
+      <div class="results-header">
+        <h2 id="result-title"></h2>
+        <span class="badge" id="result-badge"></span>
+      </div>
+
+      <div class="results-grid">
+        <div class="result-section">
+          <h3>Dough</h3>
+          <table id="dough-table">
+            <thead>
+              <tr><th>Ingredient</th><th>Amount</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="result-section">
+          <h3>Sauce</h3>
+          <table id="sauce-table">
+            <thead>
+              <tr><th>Ingredient</th><th>Amount</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="result-section">
+          <h3>Toppings (per pizza)</h3>
+          <table id="toppings-table">
+            <thead>
+              <tr><th>Ingredient</th><th>Amount</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="instructions-section">
+        <h3>Baking Instructions</h3>
+        <div id="baking-instructions"></div>
+      </div>
+
+      <div class="tips-section">
+        <h3>Pro Tips</h3>
+        <ul id="pro-tips"></ul>
+      </div>
+
+      <div class="results-actions">
+        <button class="btn-print" onclick="window.print()">Print Recipe</button>
+        <button class="btn-reset" onclick="document.getElementById('results').classList.add('hidden'); window.scrollTo({top:0,behavior:'smooth'});">New Recipe</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 PizzaPro. All rights reserved.</p>
+  </footer>
+
+  <script src="recipes.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
