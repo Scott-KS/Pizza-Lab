@@ -1,3 +1,36 @@
+// ── Carousel ────────────────────────────────────────
+(function() {
+  const slides = document.querySelectorAll('.carousel-slide');
+  const dots   = document.querySelectorAll('.dot');
+  let current  = 0;
+  let timer;
+  function goTo(index) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = (index + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+  function startAuto() {
+    timer = setInterval(next, 5000);
+  }
+  function resetAuto() {
+    clearInterval(timer);
+    startAuto();
+  }
+  document.querySelector('.carousel-arrow.next').addEventListener('click', () => { next(); resetAuto(); });
+  document.querySelector('.carousel-arrow.prev').addEventListener('click', () => { prev(); resetAuto(); });
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      goTo(parseInt(dot.dataset.index));
+      resetAuto();
+    });
+  });
+  startAuto();
+})();
+
 // ── Unit Toggle ──────────────────────────────────────
 const unitBtns = document.querySelectorAll(".unit-btn");
 let currentUnit = "F";

@@ -3,17 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PizzaPro — Perfect Pizza Recipe Calculator</title>
+  <title>The Pie Lab — Perfect Pizza Recipe Calculator</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <div class="logo">
-      <span class="logo-icon">🍕</span>
-      <h1>PizzaPro</h1>
+  <!-- Pizza Carousel Hero -->
+  <section class="pizza-hero">
+    <div class="carousel-track">
+      <div class="carousel-slide active" style="background-image: url('https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=1600&q=80')">
+        <span class="slide-label">Neapolitan</span>
+      </div>
+      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1600&q=80')">
+        <span class="slide-label">New York</span>
+      </div>
+      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1628840042765-356cda07504e?w=1600&q=80')">
+        <span class="slide-label">Grandma</span>
+      </div>
+      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1600&q=80')">
+        <span class="slide-label">Chicago Tavern</span>
+      </div>
+      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?w=1600&q=80')">
+        <span class="slide-label">Sicilian</span>
+      </div>
     </div>
-    <p class="tagline">Professional pizza recipes, precisely calculated for your oven.</p>
-  </header>
+    <div class="carousel-overlay"></div>
+    <div class="carousel-content">
+      <h1 class="hero-title">The Pie Lab</h1>
+      <p class="hero-subtitle">Every style. Every crust. Every craving.</p>
+    </div>
+    <div class="carousel-dots">
+      <button class="dot active" data-index="0"></button>
+      <button class="dot" data-index="1"></button>
+      <button class="dot" data-index="2"></button>
+      <button class="dot" data-index="3"></button>
+      <button class="dot" data-index="4"></button>
+    </div>
+    <button class="carousel-arrow prev" aria-label="Previous">&#8592;</button>
+    <button class="carousel-arrow next" aria-label="Next">&#8594;</button>
+  </section>
 
   <main>
     <section class="calculator-card">
@@ -118,7 +145,7 @@
   </main>
 
   <footer>
-    <p>&copy; 2026 PizzaPro. All rights reserved.</p>
+    <p>&copy; 2026 The Pie Lab. All rights reserved.</p>
   </footer>
 
   <script src="recipes.js"></script>
