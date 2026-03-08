@@ -26,44 +26,75 @@ unitBtns.forEach((btn) => {
   });
 });
 
+// ── Dynamic Size Selector ────────────────────────────
+const typeSelect = document.getElementById("pizza-type");
+const sizeSelect = document.getElementById("pizza-size");
+
+typeSelect.addEventListener("change", () => {
+  const recipe = PIZZA_RECIPES[typeSelect.value];
+  if (!recipe) return;
+
+  sizeSelect.innerHTML = "";
+  for (const [key, info] of Object.entries(recipe.sizes)) {
+    const opt = document.createElement("option");
+    opt.value = key;
+    opt.textContent = info.label;
+    sizeSelect.appendChild(opt);
+  }
+
+  // Default to middle option for round (12″), or half for sheet
+  const keys = Object.keys(recipe.sizes);
+  if (recipe.isSheet) {
+    sizeSelect.value = keys.includes("half") ? "half" : keys[0];
+  } else {
+    sizeSelect.value = keys.includes("12") ? "12" : keys[0];
+  }
+});
+
 // ── Form Submit ──────────────────────────────────────
 document.getElementById("pizza-form").addEventListener("submit", (e) => {
   e.preventDefault();
 
   const type = document.getElementById("pizza-type").value;
+  const sizeKey = sizeSelect.value;
   const numPizzas = parseInt(document.getElementById("num-pizzas").value, 10);
   let ovenTemp = parseInt(document.getElementById("oven-temp").value, 10);
 
-  if (!type || !numPizzas || !ovenTemp) return;
+  if (!type || !sizeKey || !numPizzas || !ovenTemp) return;
 
-  // Convert to °F internally
   const ovenTempF = currentUnit === "C" ? cToF(ovenTemp) : ovenTemp;
 
   const recipe = PIZZA_RECIPES[type];
   if (!recipe) return;
 
   // ── Calculate ──
-  const dough = calculateDough(recipe, numPizzas);
-  const sauce = calculateSauce(recipe, numPizzas);
+  const dough = calculateDough(recipe, numPizzas, sizeKey);
+  const sauce = calculateSauce(recipe, numPizzas, sizeKey);
+  const toppings = calculateToppings(recipe, numPizzas, sizeKey);
   const bakingInfo = getBakingInfo(recipe, ovenTempF);
 
-  // ── Render ──
+  // ── Render title ──
+  const sizeLabel = recipe.sizes[sizeKey].label;
+  const unitLabel = recipe.isSheet ? "pan" : "pizza";
+  const countLabel = numPizzas === 1 ? `1 ${unitLabel}` : `${numPizzas} ${unitLabel}s`;
   document.getElementById("result-title").textContent =
-    `${recipe.name} — ${numPizzas} Pizza${numPizzas > 1 ? "s" : ""}`;
+    `${recipe.name} — ${countLabel}`;
 
-  const badgeEl = document.getElementById("result-badge");
-  badgeEl.textContent = recipe.diameter;
+  document.getElementById("result-badge").textContent = sizeLabel;
 
-  // Dough table
-  fillTable("dough-table", dough.map((d) => [d.ingredient, `${d.amount} ${d.unit}`]));
+  // Dough table — 3 columns: Ingredient | Grams | % of Flour
+  fillTable("dough-table",
+    dough.map((d) => [d.ingredient, `${d.amount} g`, `${d.pct}%`])
+  );
 
-  // Sauce table
-  fillTable("sauce-table", sauce.map((s) => [s.ingredient, `${s.amount} ${s.unit}`]));
+  // Sauce table — all grams
+  fillTable("sauce-table",
+    sauce.map((s) => [s.ingredient, `${s.amount} g`])
+  );
 
-  // Toppings table
-  fillTable(
-    "toppings-table",
-    recipe.toppings.map((t) => [t.ingredient, t.amount])
+  // Toppings table — all grams
+  fillTable("toppings-table",
+    toppings.map((t) => [t.ingredient, `${t.amount} g`])
   );
 
   // Baking instructions
@@ -106,9 +137,9 @@ document.getElementById("pizza-form").addEventListener("submit", (e) => {
 function fillTable(tableId, rows) {
   const tbody = document.querySelector(`#${tableId} tbody`);
   tbody.innerHTML = "";
-  rows.forEach(([col1, col2]) => {
+  rows.forEach((cols) => {
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${col1}</td><td>${col2}</td>`;
+    tr.innerHTML = cols.map((c) => `<td>${c}</td>`).join("");
     tbody.appendChild(tr);
   });
 }

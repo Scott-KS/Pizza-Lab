@@ -26,10 +26,19 @@
             <option value="" disabled selected>Select a style…</option>
             <option value="neapolitan">Neapolitan</option>
             <option value="new-york">New York</option>
+            <option value="chicago-tavern">Chicago Tavern</option>
             <option value="detroit">Detroit Deep Dish</option>
             <option value="sicilian">Sicilian</option>
+            <option value="grandma">Grandma</option>
             <option value="thin-crust">Thin &amp; Crispy</option>
             <option value="pan">Pan Pizza</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="pizza-size">Pizza Size</label>
+          <select id="pizza-size" required>
+            <option value="" disabled selected>Select a style first</option>
           </select>
         </div>
 
@@ -62,9 +71,9 @@
       <div class="results-grid">
         <div class="result-section">
           <h3>Dough</h3>
-          <table id="dough-table">
+          <table id="dough-table" class="three-col">
             <thead>
-              <tr><th>Ingredient</th><th>Amount</th></tr>
+              <tr><th>Ingredient</th><th>Grams</th><th>% of Flour</th></tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -74,17 +83,17 @@
           <h3>Sauce</h3>
           <table id="sauce-table">
             <thead>
-              <tr><th>Ingredient</th><th>Amount</th></tr>
+              <tr><th>Ingredient</th><th>Grams</th></tr>
             </thead>
             <tbody></tbody>
           </table>
         </div>
 
         <div class="result-section">
-          <h3>Toppings (per pizza)</h3>
+          <h3>Toppings</h3>
           <table id="toppings-table">
             <thead>
-              <tr><th>Ingredient</th><th>Amount</th></tr>
+              <tr><th>Ingredient</th><th>Grams</th></tr>
             </thead>
             <tbody></tbody>
           </table>
