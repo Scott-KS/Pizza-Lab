@@ -69,7 +69,7 @@ const PIZZA_RECIPES = {
     toppings: [
       { ingredient: "Low-Moisture Mozzarella (shredded)", base: 150 },
       { ingredient: "Grated Parmesan", base: 15 },
-      { ingredient: "Pepperoni","Sausage","Mushroom","Etc.", base: 15 },
+      { ingredient: "Pepperoni / Sausage / Mushroom / Etc.", base: 15 },
     ],
     idealTemp: { min: 500, max: 550 },
     bakeTime: { hot: "8–10 minutes", medium: "12–15 minutes", low: "16–20 minutes" },
@@ -114,7 +114,7 @@ const PIZZA_RECIPES = {
     bakeTime: { hot: "8–10 minutes", medium: "12–15 minutes", low: "16–20 minutes" },
     tips: [
       "Proof for 2 hours",
-      "Roll the dough 1/4" thin",
+      "Roll the dough 1/4\" thin",
       "Place dough on parchment paper lined coockie sheet with a parchment paper cover and put in refrigerator for 2-4 days to cure.",
       "Bring dough out of the refrigerator 1 hour before cooking. Turn over and dress to the edge.",
       "Cut in squares (tavern cut / party cut), not wedges.",
@@ -221,14 +221,15 @@ const PIZZA_RECIPES = {
       { ingredient: "Olive Oil", base: { quarter: 10, half: 18 } },
     ],
     toppings: [
-      { ingredient: "Low-Moisture Mozzarella (shredded)", base: { quarter: 170, half: 320 } },
+      { ingredient: "Sharp Provolone (deli-sliced rounds)", base: { quarter: 170, half: 320 } },
       { ingredient: "Pecorino Romano (grated)", base: { quarter: 20, half: 35 } },
     ],
     idealTemp: { min: 450, max: 500 },
     bakeTime: { hot: "14–18 minutes", medium: "20–25 minutes", low: "28–35 minutes" },
     tips: [
       "The dough is thinner than Sicilian — press it out to fill the pan.",
-      "Sauce goes on TOP of the cheese, spread in dollops or stripes.",
+      "Layer sliced provolone rounds across the dough first, then spread sauce on top in dollops or stripes.",
+      "Sprinkle Pecorino Romano over the sauce before baking.",
       "Oil the pan very generously — the bottom should fry golden.",
       "No long rise needed — Grandma pizza is meant to be quick and simple.",
       "Use garlic-heavy sauce — it's the heart of this style.",
@@ -436,3 +437,78 @@ function fToC(f) {
 function cToF(c) {
   return Math.round((c * 9) / 5 + 32);
 }
+
+/**
+ * Hydration guide data keyed by flour label.
+ * Explains how elevation, humidity, and flour brand affect water absorption.
+ */
+const HYDRATION_GUIDE = {
+  "Tipo 00 Flour": {
+    absorption: "Low to moderate",
+    elevationNote:
+      "Above 3,000 ft, flour dries out faster. Add 2–3% extra hydration. Above 5,000 ft, add 4–5% and expect faster fermentation — shorten your proof time.",
+    humidityNote:
+      "In humid climates (60%+ RH), reduce hydration by 1–2%. In dry climates (below 30% RH), increase by 2–3%. Flour absorbs ambient moisture, so adjust by feel.",
+    brandNotes: [
+      { brand: "Caputo Pizzeria (Blue)", note: "Moderate absorption; the benchmark for Neapolitan. 65% hydration works well." },
+      { brand: "Caputo Nuvola (Sky Blue)", note: "Higher absorption and stronger gluten — can handle 70–75% hydration for a lighter crumb." },
+      { brand: "Le 5 Stagioni", note: "Slightly lower absorption than Caputo. Start at 62–63% and adjust up." },
+      { brand: "Antimo Caputo Chef's Flour (Red)", note: "Finer grind, lower absorption. Best at 60–63% hydration." },
+    ],
+  },
+
+  "High-Gluten Bread Flour": {
+    absorption: "High",
+    elevationNote:
+      "Above 3,000 ft, add 2–4% hydration. High-gluten flour already absorbs more water, so altitude dryness compounds. Reduce yeast slightly to control over-proofing.",
+    humidityNote:
+      "In humid conditions, this flour can feel sticky at its normal hydration — reduce by 1–2%. In dry climates, push hydration up 2–3% for workable dough.",
+    brandNotes: [
+      { brand: "King Arthur Sir Lancelot", note: "14.2% protein — very high absorption. Can handle 65–68% hydration easily." },
+      { brand: "General Mills All Trumps", note: "14.2% protein, industry standard for NY pizza. Excellent gluten development at 63%." },
+      { brand: "Full Court Press", note: "Similar to All Trumps. Performs best at 62–65% hydration." },
+      { brand: "King Arthur Bread Flour", note: "12.7% protein — moderate absorption. Start at 63% and don't exceed 66%." },
+    ],
+  },
+
+  "All-Purpose Flour": {
+    absorption: "Moderate",
+    elevationNote:
+      "Above 3,000 ft, add 1–3% hydration. AP flour has less gluten to hold structure, so don't over-hydrate. Reduce yeast by 10–15% at altitude to prevent over-proofing.",
+    humidityNote:
+      "AP flour is sensitive to humidity. On rainy or very humid days (65%+ RH), reduce hydration by 2–3%. In dry winter conditions, add 1–2%.",
+    brandNotes: [
+      { brand: "King Arthur AP", note: "11.7% protein — higher than most AP flours. Absorbs a bit more water; can handle 2% extra hydration." },
+      { brand: "Gold Medal AP", note: "10.5% protein — standard absorption. Stick close to the recipe hydration." },
+      { brand: "Bob's Red Mill AP", note: "About 11% protein. Moderate absorption; performs predictably at listed hydration." },
+      { brand: "Heckers / Ceresota", note: "Northeast favorite, ~11.5% protein. Slightly higher absorption; great for tavern-style." },
+    ],
+  },
+
+  "Bread Flour": {
+    absorption: "Moderate to high",
+    elevationNote:
+      "Above 3,000 ft, increase hydration by 2–3%. The strong gluten network handles extra water well. At 5,000 ft+, add 3–5% and reduce yeast by 15–20%.",
+    humidityNote:
+      "In humid conditions (60%+ RH), pull back hydration by 1–2%. In very dry climates, you may need 3–4% more water than listed — dough should feel tacky but not sticky.",
+    brandNotes: [
+      { brand: "King Arthur Bread Flour", note: "12.7% protein — the gold standard. Reliable at listed hydration; strong gluten development." },
+      { brand: "Gold Medal Better for Bread", note: "12.5% protein. Slightly lower absorption than KA. Reduce hydration by 1% if dough feels loose." },
+      { brand: "Bob's Red Mill Artisan Bread", note: "12.5% protein. Good absorption; performs well at 70–72% for pan styles." },
+      { brand: "Central Milling Organic Bread", note: "High-quality, consistent absorption. Works beautifully at listed hydration." },
+    ],
+  },
+
+  "Bread Flour (or Bread + Semolina blend)": {
+    absorption: "High (semolina increases absorption)",
+    elevationNote:
+      "Above 3,000 ft, add 2–3% hydration. If using a semolina blend, semolina absorbs more slowly — let the dough rest 20 min before judging hydration.",
+    humidityNote:
+      "Semolina is less affected by humidity than wheat flour, but the bread flour portion still reacts. Adjust the bread flour's water by 1–2% based on conditions.",
+    brandNotes: [
+      { brand: "King Arthur Bread + Semolina", note: "A 70/30 bread-to-semolina ratio works well. Expect slightly gritty texture and golden color." },
+      { brand: "Caputo Semola Rimacinata", note: "Fine re-milled semolina. High absorption — start with a 75/25 blend and adjust." },
+      { brand: "Bob's Red Mill Semolina", note: "Coarser grind, moderate absorption. Use a 70/30 or 80/20 blend for Sicilian." },
+    ],
+  },
+};

@@ -117,8 +117,16 @@ document.getElementById("pizza-form").addEventListener("submit", (e) => {
 
   // Dough table — 3 columns: Ingredient | Grams | % of Flour
   fillTable("dough-table",
-    dough.map((d) => [d.ingredient, `${d.amount} g`, `${d.pct}%`])
+    dough.map((d) => {
+      const pctCell = d.ingredient === "Water"
+        ? `${d.pct}% <button class="hydration-info-btn" type="button" aria-label="Hydration guide">\u24D8</button>`
+        : `${d.pct}%`;
+      return [d.ingredient, `${d.amount} g`, pctCell];
+    })
   );
+
+  // ── Hydration Guide Popover ──
+  attachHydrationPopover(recipe);
 
   // Sauce table — all grams
   fillTable("sauce-table",
@@ -160,6 +168,26 @@ document.getElementById("pizza-form").addEventListener("submit", (e) => {
     tipsList.appendChild(li);
   });
 
+  // ── Contextual "Learn More" link ──
+  const learnMoreEl = document.getElementById("results-learn-more");
+  if (STYLE_LIBRARY[type]) {
+    const styleName = STYLE_LIBRARY[type].name;
+    learnMoreEl.innerHTML = `<a href="#styles" class="learn-more-link" data-style-key="${type}">Learn more about ${styleName} \u2192</a>`;
+    learnMoreEl.querySelector(".learn-more-link").addEventListener("click", (ev) => {
+      ev.preventDefault();
+      activateTab("styles");
+      setTimeout(() => {
+        const accordion = document.querySelector(`.accordion-item[data-style-key="${type}"]`);
+        if (accordion) {
+          openAccordion(accordion);
+          accordion.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100);
+    });
+  } else {
+    learnMoreEl.innerHTML = "";
+  }
+
   // Show results
   const resultsEl = document.getElementById("results");
   resultsEl.classList.remove("hidden");
@@ -175,4 +203,903 @@ function fillTable(tableId, rows) {
     tr.innerHTML = cols.map((c) => `<td>${c}</td>`).join("");
     tbody.appendChild(tr);
   });
+}
+
+// ── Hydration Guide Popover ─────────────────────────
+function attachHydrationPopover(recipe) {
+  const btn = document.querySelector(".hydration-info-btn");
+  if (!btn) return;
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    // Close any existing popover
+    const existing = document.querySelector(".hydration-popover");
+    if (existing) {
+      existing.remove();
+      return;
+    }
+
+    const guide = HYDRATION_GUIDE[recipe.flour];
+    if (!guide) return;
+
+    const popover = document.createElement("div");
+    popover.className = "hydration-popover";
+
+    let brandsHtml = guide.brandNotes
+      .map((b) => `<li><strong>${b.brand}:</strong> ${b.note}</li>`)
+      .join("");
+
+    popover.innerHTML = `
+      <div class="popover-header">
+        <span class="popover-title">Hydration Guide — ${recipe.flour}</span>
+        <button class="popover-close" type="button" aria-label="Close">&times;</button>
+      </div>
+      <div class="popover-body">
+        <p class="popover-absorption"><strong>Absorption:</strong> ${guide.absorption}</p>
+        <div class="popover-section">
+          <h4>Elevation</h4>
+          <p>${guide.elevationNote}</p>
+        </div>
+        <div class="popover-section">
+          <h4>Humidity</h4>
+          <p>${guide.humidityNote}</p>
+        </div>
+        <div class="popover-section">
+          <h4>Brand Differences</h4>
+          <ul>${brandsHtml}</ul>
+        </div>
+      </div>
+    `;
+
+    // Position relative to the Water row's cell
+    const cell = btn.closest("td");
+    cell.style.position = "relative";
+    cell.appendChild(popover);
+
+    // Close handlers
+    popover.querySelector(".popover-close").addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      popover.remove();
+    });
+
+    document.addEventListener("click", function closeOnOutside(ev) {
+      if (!popover.contains(ev.target) && ev.target !== btn) {
+        popover.remove();
+        document.removeEventListener("click", closeOnOutside);
+      }
+    });
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// ── Knowledge Hub ────────────────────────────────────
+// ══════════════════════════════════════════════════════
+
+// ── Tab Navigation ───────────────────────────────────
+function activateTab(tabId) {
+  document.querySelectorAll(".hub-tab").forEach((t) => {
+    const isTarget = t.dataset.tab === tabId;
+    t.classList.toggle("active", isTarget);
+    t.setAttribute("aria-selected", isTarget);
+  });
+  document.querySelectorAll(".hub-panel").forEach((p) => {
+    p.classList.toggle("active", p.id === `panel-${tabId}`);
+  });
+  history.replaceState(null, "", `#${tabId}`);
+}
+
+(function initKnowledgeHub() {
+  // Tab click handlers
+  document.querySelectorAll(".hub-tab").forEach((tab) => {
+    tab.addEventListener("click", () => activateTab(tab.dataset.tab));
+  });
+
+  // Hash-based routing on load
+  const hash = location.hash.replace("#", "");
+  if (["styles", "toppings", "flour", "cheese"].includes(hash)) {
+    activateTab(hash);
+  }
+  window.addEventListener("hashchange", () => {
+    const h = location.hash.replace("#", "");
+    if (["styles", "toppings", "flour", "cheese"].includes(h)) {
+      activateTab(h);
+    }
+  });
+
+  // Populate all panels
+  populateStyleLibrary();
+  populateToppingCombos();
+  populateFlourGuide();
+  populateCheeseSauceGuide();
+})();
+
+// ── Accordion Factory ────────────────────────────────
+function createAccordion(parentEl, items, renderContent) {
+  items.forEach((item) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "accordion-item";
+    if (item.key) wrapper.dataset.styleKey = item.key;
+
+    const header = document.createElement("button");
+    header.className = "accordion-header";
+    header.type = "button";
+    header.innerHTML = `<span class="accordion-title">${item.title}</span><span class="accordion-arrow">\u25BC</span>`;
+
+    const body = document.createElement("div");
+    body.className = "accordion-body";
+
+    const inner = document.createElement("div");
+    inner.className = "accordion-inner";
+    inner.innerHTML = renderContent(item.data);
+    body.appendChild(inner);
+
+    header.addEventListener("click", () => {
+      const isOpen = wrapper.classList.contains("open");
+      // Close all siblings
+      parentEl.querySelectorAll(".accordion-item.open").forEach((a) => {
+        a.classList.remove("open");
+        a.querySelector(".accordion-body").style.maxHeight = null;
+      });
+      if (!isOpen) {
+        openAccordion(wrapper);
+      }
+    });
+
+    wrapper.appendChild(header);
+    wrapper.appendChild(body);
+    parentEl.appendChild(wrapper);
+  });
+}
+
+function openAccordion(wrapper) {
+  // Close siblings first
+  const parent = wrapper.parentElement;
+  if (parent) {
+    parent.querySelectorAll(".accordion-item.open").forEach((a) => {
+      a.classList.remove("open");
+      a.querySelector(".accordion-body").style.maxHeight = null;
+    });
+  }
+  wrapper.classList.add("open");
+  const body = wrapper.querySelector(".accordion-body");
+  body.style.maxHeight = body.scrollHeight + "px";
+}
+
+// ── Style Library ────────────────────────────────────
+function populateStyleLibrary() {
+  const panel = document.getElementById("panel-styles");
+  const items = Object.entries(STYLE_LIBRARY).map(([key, style]) => ({
+    key,
+    title: style.name,
+    data: style,
+  }));
+
+  createAccordion(panel, items, (style) => {
+    const factsHtml = style.keyFacts
+      .map((f) => `<span class="key-fact"><strong>${f.label}:</strong> ${f.value}</span>`)
+      .join("");
+
+    return `
+      <span class="origin-badge">${style.origin}</span>
+      <div class="style-prose">
+        <h4>The Story</h4>
+        <p>${style.story}</p>
+        <h4>What Makes It Authentic</h4>
+        <p>${style.authenticity}</p>
+        <h4>The Debates</h4>
+        <p>${style.debates}</p>
+      </div>
+      <div class="key-facts">${factsHtml}</div>
+    `;
+  });
+}
+
+// ── Topping Combinations ─────────────────────────────
+function populateToppingCombos() {
+  const panel = document.getElementById("panel-toppings");
+  const items = Object.entries(TOPPING_COMBOS).map(([key, data]) => ({
+    key,
+    title: data.name,
+    data: data,
+  }));
+
+  createAccordion(panel, items, (data) => {
+    const combosHtml = data.combos
+      .map((combo) => {
+        const tierClass = combo.tier.toLowerCase();
+        return `
+          <div class="combo-card">
+            <div class="combo-header">
+              <span class="tier-badge tier-${tierClass}">${combo.tier}</span>
+              <strong class="combo-name">${combo.name}</strong>
+            </div>
+            <ul class="combo-ingredients">
+              ${combo.ingredients.map((i) => `<li>${i}</li>`).join("")}
+            </ul>
+            <p class="combo-why">${combo.why}</p>
+          </div>
+        `;
+      })
+      .join("");
+
+    return `<div class="combos-grid">${combosHtml}</div>`;
+  });
+}
+
+// ── Flour Guide ──────────────────────────────────────
+function populateFlourGuide() {
+  const panel = document.getElementById("panel-flour");
+  const items = Object.entries(FLOUR_GUIDE).map(([key, flour]) => ({
+    key,
+    title: flour.name,
+    data: flour,
+  }));
+
+  createAccordion(panel, items, (flour) => {
+    const usesHtml = flour.bestUses
+      .map((u) => `<span class="use-tag">${u}</span>`)
+      .join("");
+
+    const linksHtml = flour.buyLinks
+      .map(
+        (link) =>
+          `<a href="${link.url}" class="buy-link" target="_blank" rel="noopener">
+            <strong>${link.brand}</strong>
+            <span class="buy-note">${link.note}</span>
+            <span class="buy-arrow">\u2192</span>
+          </a>`
+      )
+      .join("");
+
+    return `
+      <span class="protein-badge">${flour.proteinContent} protein</span>
+      <p class="flour-desc">${flour.description}</p>
+      <h4>Effect on Dough</h4>
+      <p class="flour-effect">${flour.doughEffect}</p>
+      <div class="flour-uses">
+        <h4>Best For</h4>
+        <div class="use-tags">${usesHtml}</div>
+      </div>
+      <div class="flour-buy">
+        <h4>Where to Buy</h4>
+        ${linksHtml}
+      </div>
+    `;
+  });
+}
+
+// ── Cheese & Sauce Guide ─────────────────────────────
+function populateCheeseSauceGuide() {
+  const panel = document.getElementById("panel-cheese");
+
+  // Cheese accordion
+  const cheeseHeader = document.createElement("h3");
+  cheeseHeader.className = "panel-subheader";
+  cheeseHeader.textContent = "Cheeses";
+  panel.appendChild(cheeseHeader);
+
+  const cheeseContainer = document.createElement("div");
+  cheeseContainer.className = "cheese-accordions";
+  panel.appendChild(cheeseContainer);
+
+  createAccordion(
+    cheeseContainer,
+    CHEESE_SAUCE_GUIDE.cheeses.map((c) => ({
+      title: c.name,
+      data: c,
+    })),
+    (cheese) => {
+      const stylesHtml = cheese.bestStyles
+        .map((s) => {
+          const recipe = PIZZA_RECIPES[s];
+          return recipe ? `<span class="use-tag">${recipe.name}</span>` : "";
+        })
+        .join("");
+
+      return `
+        <p>${cheese.description}</p>
+        <h4>Tips</h4>
+        <p class="cheese-tips">${cheese.tips}</p>
+        <div class="cheese-styles">
+          <h4>Best For</h4>
+          <div class="use-tags">${stylesHtml}</div>
+        </div>
+      `;
+    }
+  );
+
+  // Sauce accordion
+  const sauceHeader = document.createElement("h3");
+  sauceHeader.className = "panel-subheader";
+  sauceHeader.textContent = "Sauces";
+  panel.appendChild(sauceHeader);
+
+  const sauceContainer = document.createElement("div");
+  sauceContainer.className = "sauce-accordions";
+  panel.appendChild(sauceContainer);
+
+  createAccordion(
+    sauceContainer,
+    CHEESE_SAUCE_GUIDE.sauces.map((s) => ({
+      title: s.name,
+      data: s,
+    })),
+    (sauce) => {
+      const stylesHtml = sauce.bestStyles
+        .map((s) => {
+          const recipe = PIZZA_RECIPES[s];
+          return recipe ? `<span class="use-tag">${recipe.name}</span>` : "";
+        })
+        .join("");
+
+      return `
+        <p>${sauce.description}</p>
+        <h4>Tips</h4>
+        <p class="sauce-tips">${sauce.tips}</p>
+        <div class="sauce-styles">
+          <h4>Best For</h4>
+          <div class="use-tags">${stylesHtml}</div>
+        </div>
+      `;
+    }
+  );
+
+  // Pairing Matrix
+  const matrixHeader = document.createElement("h3");
+  matrixHeader.className = "panel-subheader";
+  matrixHeader.textContent = "Pairing Matrix";
+  panel.appendChild(matrixHeader);
+
+  const matrixWrapper = document.createElement("div");
+  matrixWrapper.className = "matrix-wrapper";
+  matrixWrapper.innerHTML = buildPairingMatrixHTML();
+  panel.appendChild(matrixWrapper);
+}
+
+// ══════════════════════════════════════════════════════
+// ── Pizza Toolkit ───────────────────────────────────
+// ══════════════════════════════════════════════════════
+
+function activateToolTab(toolId) {
+  document.querySelectorAll(".toolkit-tab").forEach((t) => {
+    const isTarget = t.dataset.tool === toolId;
+    t.classList.toggle("active", isTarget);
+    t.setAttribute("aria-selected", isTarget);
+  });
+  document.querySelectorAll(".toolkit-panel").forEach((p) => {
+    p.classList.toggle("active", p.id === `tool-${toolId}`);
+  });
+}
+
+(function initPizzaToolkit() {
+  document.querySelectorAll(".toolkit-tab").forEach((tab) => {
+    tab.addEventListener("click", () => activateToolTab(tab.dataset.tool));
+  });
+
+  populateFermentationTimer();
+  populateHydrationGuide();
+  populateOvenGuide();
+  populateTroubleshooting();
+})();
+
+// ── 1. Fermentation Timer ───────────────────────────
+
+function populateFermentationTimer() {
+  const panel = document.getElementById("tool-ferment");
+
+  panel.innerHTML = `
+    <div class="ferment-controls">
+      <div class="ferment-field">
+        <label for="ferment-style">Pizza Style</label>
+        <select id="ferment-style">
+          <option value="" disabled selected>Select a style…</option>
+          ${Object.entries(FERMENTATION_SCHEDULES)
+            .map(([key, s]) => `<option value="${key}">${s.name}</option>`)
+            .join("")}
+        </select>
+      </div>
+      <div class="ferment-field">
+        <label for="ferment-start">When are you starting?</label>
+        <input type="datetime-local" id="ferment-start" />
+      </div>
+      <button type="button" class="btn-start-timer" id="btn-start-timer" disabled>Start Timer</button>
+    </div>
+    <div id="ferment-timeline" class="ferment-timeline hidden"></div>
+  `;
+
+  const styleSelect = panel.querySelector("#ferment-style");
+  const startInput = panel.querySelector("#ferment-start");
+  const startBtn = panel.querySelector("#btn-start-timer");
+  const timelineEl = panel.querySelector("#ferment-timeline");
+
+  // Default to now
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  startInput.value = now.toISOString().slice(0, 16);
+
+  function checkReady() {
+    startBtn.disabled = !styleSelect.value || !startInput.value;
+  }
+  styleSelect.addEventListener("change", checkReady);
+  startInput.addEventListener("input", checkReady);
+
+  startBtn.addEventListener("click", () => {
+    const schedule = FERMENTATION_SCHEDULES[styleSelect.value];
+    if (!schedule) return;
+
+    const startTime = new Date(startInput.value);
+    if (isNaN(startTime)) return;
+
+    renderTimeline(schedule, startTime, timelineEl);
+    timelineEl.classList.remove("hidden");
+
+    // Request notification permission
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  });
+}
+
+function renderTimeline(schedule, startTime, container) {
+  const steps = schedule.steps;
+  const now = new Date();
+
+  let html = `
+    <div class="timeline-header">
+      <h3>${schedule.name} — ${schedule.method}</h3>
+      <span class="timeline-total">Total: ${schedule.totalTime}</span>
+    </div>
+    <div class="timeline-steps">
+  `;
+
+  steps.forEach((step, i) => {
+    const stepTime = new Date(startTime.getTime() + step.offsetMin * 60000);
+    const isPast = now >= stepTime;
+    const isNext = !isPast && (i === 0 || now >= new Date(startTime.getTime() + steps[Math.max(0, i - 1)].offsetMin * 60000));
+    const statusClass = isPast ? "step-done" : isNext ? "step-next" : "step-upcoming";
+
+    html += `
+      <div class="timeline-step ${statusClass}">
+        <div class="step-marker">
+          <span class="step-dot">${isPast ? "✓" : (i + 1)}</span>
+          ${i < steps.length - 1 ? '<span class="step-line"></span>' : ""}
+        </div>
+        <div class="step-content">
+          <div class="step-time">${formatTime(stepTime)}</div>
+          <div class="step-label">${step.label}</div>
+          <div class="step-desc">${step.desc}</div>
+          ${isNext ? `<div class="step-countdown" data-target="${stepTime.toISOString()}"></div>` : ""}
+        </div>
+      </div>
+    `;
+  });
+
+  html += "</div>";
+  container.innerHTML = html;
+
+  // Start countdown for "next" step
+  const countdownEl = container.querySelector(".step-countdown");
+  if (countdownEl) {
+    updateCountdown(countdownEl);
+    const interval = setInterval(() => {
+      if (!document.body.contains(countdownEl)) {
+        clearInterval(interval);
+        return;
+      }
+      updateCountdown(countdownEl);
+    }, 1000);
+  }
+}
+
+function updateCountdown(el) {
+  const target = new Date(el.dataset.target);
+  const now = new Date();
+  const diff = target - now;
+
+  if (diff <= 0) {
+    el.textContent = "⏰ Now!";
+    el.classList.add("countdown-now");
+    // Send notification
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification("The Pie Lab — Time's Up!", {
+        body: `It's time for the next step in your pizza dough!`,
+        icon: "Images/Neapolitan.jpg",
+      });
+    }
+    return;
+  }
+
+  const hours = Math.floor(diff / 3600000);
+  const minutes = Math.floor((diff % 3600000) / 60000);
+  const seconds = Math.floor((diff % 60000) / 1000);
+
+  if (hours > 0) {
+    el.textContent = `⏳ ${hours}h ${minutes}m ${seconds}s`;
+  } else if (minutes > 0) {
+    el.textContent = `⏳ ${minutes}m ${seconds}s`;
+  } else {
+    el.textContent = `⏳ ${seconds}s`;
+  }
+}
+
+function formatTime(date) {
+  return date.toLocaleString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+// ── 2. Hydration Guide ──────────────────────────────
+
+function populateHydrationGuide() {
+  const panel = document.getElementById("tool-hydration");
+
+  const styleOptions = Object.entries(HYDRATION_RANGES)
+    .map(([key, h]) => `<option value="${key}">${h.name}</option>`)
+    .join("");
+
+  panel.innerHTML = `
+    <div class="hydration-tool-controls">
+      <div class="ferment-field">
+        <label for="hydration-style">Pizza Style</label>
+        <select id="hydration-style">
+          <option value="" disabled selected>Select a style…</option>
+          ${styleOptions}
+        </select>
+      </div>
+    </div>
+    <div id="hydration-tool-content" class="hydration-tool-content hidden"></div>
+  `;
+
+  const select = panel.querySelector("#hydration-style");
+  const content = panel.querySelector("#hydration-tool-content");
+
+  select.addEventListener("change", () => {
+    const range = HYDRATION_RANGES[select.value];
+    if (!range) return;
+    renderHydrationGuide(range, select.value, content);
+    content.classList.remove("hidden");
+  });
+}
+
+function renderHydrationGuide(range, styleKey, container) {
+  const recipe = PIZZA_RECIPES[styleKey];
+  const currentHydration = range.default;
+
+  container.innerHTML = `
+    <div class="hydration-range-header">
+      <h3>${range.name} Hydration</h3>
+      <span class="hydration-range-badge">${range.min}%–${range.max}%</span>
+    </div>
+
+    <div class="hydration-slider-row">
+      <span class="hydration-label-min">${range.min}%</span>
+      <div class="hydration-slider-wrapper">
+        <div class="hydration-sweet-spot" style="left: ${((range.sweet.low - range.min) / (range.max - range.min)) * 100}%; width: ${((range.sweet.high - range.sweet.low) / (range.max - range.min)) * 100}%"></div>
+        <input type="range" class="hydration-slider" id="hydration-slider"
+          min="${range.min}" max="${range.max}" value="${currentHydration}" step="1" />
+      </div>
+      <span class="hydration-label-max">${range.max}%</span>
+    </div>
+
+    <div class="hydration-value-display">
+      <span class="hydration-current-value" id="hydration-value">${currentHydration}%</span>
+      <span class="hydration-sweet-label">Sweet spot: ${range.sweet.low}–${range.sweet.high}%</span>
+    </div>
+
+    <div class="hydration-effect" id="hydration-effect">
+      <h4>What to Expect</h4>
+      <p>${range.effects.mid}</p>
+    </div>
+
+    <div class="hydration-recipe-preview" id="hydration-preview"></div>
+
+    <div class="hydration-notes">
+      <h4>Notes</h4>
+      <p>${range.notes}</p>
+    </div>
+  `;
+
+  const slider = container.querySelector("#hydration-slider");
+  const valueDisplay = container.querySelector("#hydration-value");
+  const effectDisplay = container.querySelector("#hydration-effect");
+  const previewDisplay = container.querySelector("#hydration-preview");
+
+  function updateHydration() {
+    const val = parseInt(slider.value);
+    valueDisplay.textContent = `${val}%`;
+
+    // Color coding
+    const isSweet = val >= range.sweet.low && val <= range.sweet.high;
+    const isLow = val < range.sweet.low;
+    valueDisplay.className = "hydration-current-value " +
+      (isSweet ? "hydration-sweet" : isLow ? "hydration-low" : "hydration-high");
+
+    // Effect text
+    let effectText;
+    if (val < range.sweet.low) {
+      effectText = range.effects.low;
+    } else if (val > range.sweet.high) {
+      effectText = range.effects.high;
+    } else {
+      effectText = range.effects.mid;
+    }
+    effectDisplay.innerHTML = `<h4>What to Expect</h4><p>${effectText}</p>`;
+
+    // Recipe preview — recalculate with new hydration
+    if (recipe) {
+      const sizeKey = Object.keys(recipe.sizes)[1] || Object.keys(recipe.sizes)[0];
+      const doughWeight = recipe.sizes[sizeKey].doughWeight;
+      const hydration = val / 100;
+      const totalPct = 1 + hydration + recipe.saltPct + recipe.oilPct + recipe.sugarPct + recipe.yeastPct;
+      const flour = doughWeight / totalPct;
+      const water = flour * hydration;
+      const diff = Math.round(water) - Math.round(flour * (range.default / 100) / (1 + (range.default / 100) + recipe.saltPct + recipe.oilPct + recipe.sugarPct + recipe.yeastPct) * (1 + (range.default / 100) + recipe.saltPct + recipe.oilPct + recipe.sugarPct + recipe.yeastPct));
+
+      // Simpler calculation — just show flour and water for 1 pizza
+      const defaultTotalPct = 1 + (range.default / 100) + recipe.saltPct + recipe.oilPct + recipe.sugarPct + recipe.yeastPct;
+      const defaultFlour = doughWeight / defaultTotalPct;
+      const defaultWater = defaultFlour * (range.default / 100);
+
+      const waterDiff = Math.round(water) - Math.round(defaultWater);
+      const diffLabel = waterDiff > 0 ? `+${waterDiff}g` : waterDiff < 0 ? `${waterDiff}g` : "—";
+
+      previewDisplay.innerHTML = `
+        <h4>Recipe Preview <span class="preview-note">(1 ${recipe.isSheet ? "pan" : "pizza"}, ${recipe.sizes[sizeKey].label})</span></h4>
+        <div class="preview-grid">
+          <div class="preview-item">
+            <span class="preview-label">Flour</span>
+            <span class="preview-amount">${Math.round(flour)}g</span>
+          </div>
+          <div class="preview-item ${waterDiff !== 0 ? "preview-changed" : ""}">
+            <span class="preview-label">Water</span>
+            <span class="preview-amount">${Math.round(water)}g</span>
+            ${waterDiff !== 0 ? `<span class="preview-diff">${diffLabel} vs default</span>` : ""}
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  slider.addEventListener("input", updateHydration);
+  updateHydration();
+}
+
+// ── 3. Oven Temperature Guide ───────────────────────
+
+function populateOvenGuide() {
+  const panel = document.getElementById("tool-oven");
+
+  // Style filter
+  const styleOptions = Object.entries(PIZZA_RECIPES)
+    .map(([key, r]) => `<option value="${key}">${r.name}</option>`)
+    .join("");
+
+  panel.innerHTML = `
+    <div class="oven-controls">
+      <div class="ferment-field">
+        <label for="oven-style-filter">Filter by Pizza Style</label>
+        <select id="oven-style-filter">
+          <option value="all">All Styles</option>
+          ${styleOptions}
+        </select>
+      </div>
+    </div>
+    <div class="oven-cards" id="oven-cards"></div>
+  `;
+
+  const styleFilter = panel.querySelector("#oven-style-filter");
+  const cardsContainer = panel.querySelector("#oven-cards");
+
+  function renderOvenCards(filterStyle) {
+    cardsContainer.innerHTML = OVEN_SETUPS.map((setup) => {
+      const isRecommended = filterStyle !== "all" && setup.bestStyles.includes(filterStyle);
+
+      // Build bake time rows
+      let bakeRows;
+      if (filterStyle === "all") {
+        // Show best styles only
+        bakeRows = setup.bestStyles.map((key) => {
+          const bt = setup.styleBakeTimes[key];
+          const name = PIZZA_RECIPES[key] ? PIZZA_RECIPES[key].name : key;
+          return `<tr><td>${name}</td><td>${bt.time}</td><td class="bake-note">${bt.note}</td></tr>`;
+        }).join("");
+      } else {
+        // Show just the selected style
+        const bt = setup.styleBakeTimes[filterStyle];
+        const name = PIZZA_RECIPES[filterStyle] ? PIZZA_RECIPES[filterStyle].name : filterStyle;
+        if (bt) {
+          bakeRows = `<tr><td>${name}</td><td>${bt.time}</td><td class="bake-note">${bt.note}</td></tr>`;
+        } else {
+          bakeRows = `<tr><td colspan="3">No data for this style</td></tr>`;
+        }
+      }
+
+      const tipsHtml = setup.tips.map((t) => `<li>${t}</li>`).join("");
+
+      return `
+        <div class="oven-card ${isRecommended ? "oven-recommended" : ""}">
+          ${isRecommended ? '<span class="oven-rec-badge">★ Recommended</span>' : ""}
+          <div class="oven-card-header">
+            <span class="oven-icon">${setup.icon}</span>
+            <div>
+              <h3>${setup.name}</h3>
+              <span class="oven-temp-range">${setup.tempRange}</span>
+            </div>
+          </div>
+          <div class="oven-card-body">
+            <div class="oven-stat">
+              <span class="oven-stat-label">Preheat</span>
+              <span class="oven-stat-value">${setup.preheatTime}</span>
+            </div>
+            <div class="oven-stat">
+              <span class="oven-stat-label">Heat Transfer</span>
+              <span class="oven-stat-value">${setup.heatTransfer}</span>
+            </div>
+            <div class="oven-stat">
+              <span class="oven-stat-label">Limitations</span>
+              <span class="oven-stat-value">${setup.limitations}</span>
+            </div>
+
+            <h4>Bake Times</h4>
+            <div class="oven-bake-table-wrapper">
+              <table class="oven-bake-table">
+                <thead><tr><th>Style</th><th>Time</th><th>Notes</th></tr></thead>
+                <tbody>${bakeRows}</tbody>
+              </table>
+            </div>
+
+            <h4>Tips</h4>
+            <ul class="oven-tips">${tipsHtml}</ul>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  styleFilter.addEventListener("change", () => renderOvenCards(styleFilter.value));
+  renderOvenCards("all");
+}
+
+// ── 4. Dough Troubleshooting ────────────────────────
+
+function populateTroubleshooting() {
+  const panel = document.getElementById("tool-troubleshoot");
+
+  const symptomsHtml = Object.entries(TROUBLESHOOTING_TREE)
+    .map(([key, problem]) => `
+      <button class="symptom-btn" data-problem="${key}">
+        <span class="symptom-icon">${problem.icon}</span>
+        <span class="symptom-label">${problem.symptom}</span>
+      </button>
+    `)
+    .join("");
+
+  panel.innerHTML = `
+    <div class="troubleshoot-intro">
+      <p>What's going wrong with your dough? Select a symptom and we'll walk you to the fix.</p>
+    </div>
+    <div class="symptom-grid">${symptomsHtml}</div>
+    <div id="troubleshoot-flow" class="troubleshoot-flow hidden"></div>
+  `;
+
+  const flowEl = panel.querySelector("#troubleshoot-flow");
+
+  panel.querySelectorAll(".symptom-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      // Highlight selected
+      panel.querySelectorAll(".symptom-btn").forEach((b) => b.classList.remove("selected"));
+      btn.classList.add("selected");
+
+      const problem = TROUBLESHOOTING_TREE[btn.dataset.problem];
+      if (problem) {
+        renderDiagnosticStep(problem, problem.initial, flowEl);
+        flowEl.classList.remove("hidden");
+        flowEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
+}
+
+function renderDiagnosticStep(problem, stepId, container) {
+  // Check if it's a question or a fix
+  if (problem.questions[stepId]) {
+    const q = problem.questions[stepId];
+    const optionsHtml = q.options
+      .map((opt) => `<button class="diag-option" data-next="${opt.next}">${opt.label}</button>`)
+      .join("");
+
+    container.innerHTML = `
+      <div class="diag-card">
+        <div class="diag-breadcrumb">
+          <span class="diag-symptom">${problem.icon} ${problem.symptom}</span>
+        </div>
+        <h3 class="diag-question">${q.text}</h3>
+        <div class="diag-options">${optionsHtml}</div>
+        <button class="diag-restart" data-initial="${problem.initial}">← Start Over</button>
+      </div>
+    `;
+
+    container.querySelectorAll(".diag-option").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        renderDiagnosticStep(problem, btn.dataset.next, container);
+        container.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+
+    container.querySelector(".diag-restart").addEventListener("click", () => {
+      renderDiagnosticStep(problem, problem.initial, container);
+    });
+
+  } else if (problem.fixes[stepId]) {
+    const fix = problem.fixes[stepId];
+    const stepsHtml = fix.steps
+      .map((s, i) => `<li><span class="fix-num">${i + 1}</span> ${s}</li>`)
+      .join("");
+
+    container.innerHTML = `
+      <div class="diag-card diag-fix">
+        <div class="diag-breadcrumb">
+          <span class="diag-symptom">${problem.icon} ${problem.symptom}</span>
+          <span class="diag-arrow">→</span>
+          <span class="diag-fix-badge">Fix Found</span>
+        </div>
+        <h3 class="fix-title">✅ ${fix.title}</h3>
+        <ol class="fix-steps">${stepsHtml}</ol>
+        <button class="diag-restart" data-initial="${problem.initial}">← Try Again</button>
+      </div>
+    `;
+
+    container.querySelector(".diag-restart").addEventListener("click", () => {
+      renderDiagnosticStep(problem, problem.initial, container);
+    });
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// ── Knowledge Hub (original code below) ─────────────
+// ══════════════════════════════════════════════════════
+
+function buildPairingMatrixHTML() {
+  const cheeses = CHEESE_SAUCE_GUIDE.cheeses;
+  const sauces = CHEESE_SAUCE_GUIDE.sauces;
+  const pairings = CHEESE_SAUCE_GUIDE.pairings;
+
+  let headerCells = sauces
+    .map((s) => `<th>${s.name}</th>`)
+    .join("");
+
+  let rows = cheeses
+    .map((cheese) => {
+      const cells = sauces
+        .map((sauce) => {
+          const pairing = pairings[cheese.id] && pairings[cheese.id][sauce.id];
+          if (!pairing) return `<td class="rating-none">—</td>`;
+          const ratingClass = `rating-${pairing.rating}`;
+          const label =
+            pairing.rating === "excellent" ? "\u2605" :
+            pairing.rating === "good" ? "\u25CB" : "\u2716";
+          return `<td class="${ratingClass}" title="${pairing.note}">${label}<span class="matrix-note">${pairing.note}</span></td>`;
+        })
+        .join("");
+      return `<tr><th>${cheese.name}</th>${cells}</tr>`;
+    })
+    .join("");
+
+  return `
+    <table class="pairing-matrix">
+      <thead><tr><th></th>${headerCells}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="matrix-legend">
+      <span class="legend-item"><span class="rating-excellent">\u2605</span> Excellent</span>
+      <span class="legend-item"><span class="rating-good">\u25CB</span> Good</span>
+      <span class="legend-item"><span class="rating-avoid">\u2716</span> Avoid</span>
+    </div>
+  `;
 }
