@@ -15,6 +15,8 @@ const PIZZA_RECIPES = {
       '12': { label: '12″ round', doughWeight: 250 },
       '14': { label: '14″ round', doughWeight: 310 },
     },
+    flour: "Tipo 00 Flour",
+    yeast: "Fresh Yeast (or Active Dry)",
     hydration: 0.65,
     saltPct: 0.03,
     oilPct: 0,
@@ -49,6 +51,8 @@ const PIZZA_RECIPES = {
       '12': { label: '12″ round', doughWeight: 290 },
       '14': { label: '14″ round', doughWeight: 370 },
     },
+    flour: "High-Gluten Bread Flour",
+    yeast: "Instant Dry Yeast",
     hydration: 0.63,
     saltPct: 0.025,
     oilPct: 0.03,
@@ -84,6 +88,8 @@ const PIZZA_RECIPES = {
       '12': { label: '12″ round', doughWeight: 250 },
       '14': { label: '14″ round', doughWeight: 320 },
     },
+    flour: "All-Purpose Flour",
+    yeast: "Instant Dry Yeast",
     hydration: 0.55,
     saltPct: 0.025,
     oilPct: 0.03,
@@ -121,6 +127,8 @@ const PIZZA_RECIPES = {
       '12': { label: '12″ round pan', doughWeight: 420 },
       '14': { label: '10×14″ Detroit pan', doughWeight: 500 },
     },
+    flour: "Bread Flour",
+    yeast: "Instant Dry Yeast",
     hydration: 0.72,
     saltPct: 0.025,
     oilPct: 0.04,
@@ -156,6 +164,8 @@ const PIZZA_RECIPES = {
       'quarter': { label: '9.5×13″ (quarter sheet)', doughWeight: 500 },
       'half':    { label: '13×18″ (half sheet)', doughWeight: 950 },
     },
+    flour: "Bread Flour (or Bread + Semolina blend)",
+    yeast: "Instant Dry Yeast",
     hydration: 0.68,
     saltPct: 0.025,
     oilPct: 0.05,
@@ -191,6 +201,8 @@ const PIZZA_RECIPES = {
       'quarter': { label: '9.5×13″ (quarter sheet)', doughWeight: 420 },
       'half':    { label: '13×18″ (half sheet)', doughWeight: 800 },
     },
+    flour: "All-Purpose Flour",
+    yeast: "Instant Dry Yeast",
     hydration: 0.65,
     saltPct: 0.025,
     oilPct: 0.06,
@@ -227,6 +239,8 @@ const PIZZA_RECIPES = {
       '12': { label: '12″ round', doughWeight: 200 },
       '14': { label: '14″ round', doughWeight: 260 },
     },
+    flour: "All-Purpose Flour",
+    yeast: "Instant Dry Yeast",
     hydration: 0.55,
     saltPct: 0.025,
     oilPct: 0.04,
@@ -261,6 +275,8 @@ const PIZZA_RECIPES = {
       '12': { label: '12″ cast iron / cake pan', doughWeight: 380 },
       '14': { label: '14″ cast iron / cake pan', doughWeight: 490 },
     },
+    flour: "Bread Flour",
+    yeast: "Instant Dry Yeast",
     hydration: 0.70,
     saltPct: 0.025,
     oilPct: 0.05,
@@ -306,15 +322,18 @@ function calculateDough(recipe, numPizzas, sizeKey) {
   const sugar = flour * recipe.sugarPct;
   const yeast = flour * recipe.yeastPct;
 
+  const flourLabel = recipe.flour || "Flour";
+  const yeastLabel = recipe.yeast || "Instant Dry Yeast";
+
   const ingredients = [
-    { ingredient: "Flour", amount: Math.round(flour), pct: 100 },
+    { ingredient: flourLabel, amount: Math.round(flour), pct: 100 },
     { ingredient: "Water", amount: Math.round(water), pct: round1(recipe.hydration * 100) },
     { ingredient: "Salt", amount: round1(salt), pct: round1(recipe.saltPct * 100) },
   ];
 
   if (yeast > 0) {
     ingredients.push({
-      ingredient: "Instant Dry Yeast",
+      ingredient: yeastLabel,
       amount: round1(yeast),
       pct: round1(recipe.yeastPct * 100),
     });
