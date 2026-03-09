@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Pie Lab — My Kitchen</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logos/favicon-32.svg">
+  <link rel="apple-touch-icon" href="assets/logos/logo-monogram-512.svg">
+  <meta property="og:image" content="assets/logos/logo-stacked.svg">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="kitchen">
+
+  <!-- Shared Navigation -->
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" />
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link" data-page="calculator">Calculator</a>
+        <a href="schedule.html" class="nav-link" data-page="schedule">
+          Schedule
+          <span class="schedule-badge hidden"></span>
+        </a>
+        <a href="journal.html" class="nav-link" data-page="journal">Journal</a>
+        <a href="learn.html" class="nav-link" data-page="learn">Learn</a>
+        <a href="kitchen.html" class="nav-link" data-page="kitchen">My Kitchen</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="kitchen-card">
+      <h2>My Kitchen</h2>
+      <p class="kitchen-subtitle">Tell us about your setup. We'll use this to personalize recipes, adjust for altitude, and pre-fill your journal.</p>
+
+      <!-- Section 1 — About You -->
+      <fieldset class="kitchen-fieldset">
+        <legend>About You</legend>
+
+        <div class="form-group">
+          <label for="k-display-name">Display Name</label>
+          <input type="text" id="k-display-name" placeholder="e.g. Scott" />
+        </div>
+
+        <div class="form-group">
+          <label for="k-city">City</label>
+          <input type="text" id="k-city" placeholder="e.g. Solvang, CA" />
+          <div id="k-city-status" class="city-status"></div>
+        </div>
+      </fieldset>
+
+      <!-- Section 2 — Your Setup -->
+      <fieldset class="kitchen-fieldset">
+        <legend>Your Setup</legend>
+
+        <div class="form-group">
+          <label for="k-oven">Preferred Oven</label>
+          <select id="k-oven" required></select>
+        </div>
+
+        <div class="form-group">
+          <label>Humidity</label>
+          <div class="toggle-group" id="k-humidity">
+            <button type="button" class="toggle-btn" data-value="dry">Dry</button>
+            <button type="button" class="toggle-btn selected" data-value="normal">Normal</button>
+            <button type="button" class="toggle-btn" data-value="humid">Humid</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="k-style">Favorite Style</label>
+          <select id="k-style"></select>
+        </div>
+      </fieldset>
+
+      <button id="k-save" class="btn-save-kitchen">Save My Kitchen</button>
+      <p id="k-save-confirm" class="save-confirm hidden">Settings saved.</p>
+    </section>
+  </main>
+
+  <nav class="mobile-tab-bar">
+    <a href="index.html" class="tab-item" data-page="calculator">
+      <span class="tab-icon">&#127829;</span>
+      <span class="tab-label">Calculator</span>
+    </a>
+    <a href="schedule.html" class="tab-item" data-page="schedule">
+      <span class="tab-icon">&#128197;</span>
+      <span class="tab-label">Schedule</span>
+      <span class="schedule-badge hidden"></span>
+    </a>
+    <a href="journal.html" class="tab-item" data-page="journal">
+      <span class="tab-icon">&#128211;</span>
+      <span class="tab-label">Journal</span>
+    </a>
+    <a href="learn.html" class="tab-item" data-page="learn">
+      <span class="tab-icon">&#128214;</span>
+      <span class="tab-label">Learn</span>
+    </a>
+    <a href="kitchen.html" class="tab-item" data-page="kitchen">
+      <span class="tab-icon">&#9881;&#65039;</span>
+      <span class="tab-label">My Kitchen</span>
+    </a>
+  </nav>
+
+  <footer>
+    <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" class="footer-logo" />
+    <p>&copy; 2026 The Pie Lab. All rights reserved.</p>
+  </footer>
+
+  <!-- Scripts: Capacitor init first, then data files, then shared, then page feature -->
+  <script src="js/capacitor-init.js"></script>
+  <script src="recipes.js"></script>
+  <script src="scheduler-data.js"></script>
+  <script src="knowledge-data.js"></script>
+  <script src="journal.js"></script>
+  <script src="js/user-profile.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/kitchen.js"></script>
+</body>
+</html>
