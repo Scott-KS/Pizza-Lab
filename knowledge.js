@@ -177,9 +177,9 @@ const STYLE_LIBRARY = {
 
   "ohio-valley": {
     name: "Ohio Valley",
-    origin: "Wheeling, West Virginia / Ohio Valley — 1950s",
+    origin: "Steubenville, Ohio / Ohio Valley — 1945",
     story:
-      "Ohio Valley-style pizza originated at DiCarlo's Pizza in Wheeling, West Virginia, though it spread across the upper Ohio River Valley into eastern Ohio and western Pennsylvania. The defining feature is cold cheese: after the pizza comes out of the oven with sauce and toppings already baked, shredded provolone is piled on top and served immediately. The cheese partially melts from the residual heat but stays mostly unmelted — a texture that's unlike any other pizza style.",
+      "Ohio Valley-style pizza originated at DiCarlo's Pizza in Steubenville, Ohio in 1945, where Primo DiCarlo used his family bakery's equipment to create something entirely new: a pizza topped with cold cheese after baking. The style spread across the upper Ohio River Valley into eastern Ohio, West Virginia, and western Pennsylvania. The defining feature is cold cheese — after the pizza comes out of the oven with sauce and toppings already baked, shredded provolone is piled on top and served immediately. The cheese partially melts from the residual heat but stays mostly unmelted, a texture unlike any other pizza style.",
     authenticity:
       "Authentic Ohio Valley pizza has cold shredded provolone applied after baking — this is non-negotiable. The crust is a medium-thickness, slightly bready rectangle. Pepperoni is baked on, but the cheese is always cold. The pizza is typically sold by the slice from a counter window and eaten immediately while the contrast between hot crust and cold cheese is at its peak.",
     debates:
