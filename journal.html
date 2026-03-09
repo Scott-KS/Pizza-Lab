@@ -23,8 +23,9 @@
           Schedule
           <span class="schedule-badge hidden"></span>
         </a>
-        <a href="learn.html" class="nav-link" data-page="learn">Learn</a>
         <a href="journal.html" class="nav-link" data-page="journal">Journal</a>
+        <a href="learn.html" class="nav-link" data-page="learn">Learn</a>
+        <a href="kitchen.html" class="nav-link" data-page="kitchen">My Kitchen</a>
       </div>
     </nav>
   </header>
@@ -42,6 +43,7 @@
           </select>
         </div>
         <button class="btn-compare" id="btn-compare" disabled>Compare</button>
+        <p class="compare-hint" id="compare-hint"></p>
       </div>
 
       <div class="journal-form-wrapper hidden" id="journal-form-wrapper">
@@ -153,13 +155,17 @@
       <span class="tab-label">Schedule</span>
       <span class="schedule-badge hidden"></span>
     </a>
+    <a href="journal.html" class="tab-item" data-page="journal">
+      <span class="tab-icon">&#128211;</span>
+      <span class="tab-label">Journal</span>
+    </a>
     <a href="learn.html" class="tab-item" data-page="learn">
       <span class="tab-icon">&#128214;</span>
       <span class="tab-label">Learn</span>
     </a>
-    <a href="journal.html" class="tab-item" data-page="journal">
-      <span class="tab-icon">&#128211;</span>
-      <span class="tab-label">Journal</span>
+    <a href="kitchen.html" class="tab-item" data-page="kitchen">
+      <span class="tab-icon">&#9881;&#65039;</span>
+      <span class="tab-label">My Kitchen</span>
     </a>
   </nav>
 
@@ -168,10 +174,12 @@
     <p>&copy; 2026 The Pie Lab. All rights reserved.</p>
   </footer>
 
-  <!-- Scripts: data files first, then shared nav, then page features -->
+  <!-- Scripts: Capacitor init first, then data files, then shared nav, then page features -->
+  <script src="js/capacitor-init.js"></script>
   <script src="recipes.js"></script>
   <script src="journal.js"></script>
   <script src="js/nav.js"></script>
+  <script src="js/user-profile.js"></script>
   <script src="js/journal-ui.js"></script>
 </body>
 </html>

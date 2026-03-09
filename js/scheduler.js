@@ -11,6 +11,7 @@
   const countInput = document.getElementById("sched-count");
   const datetimeInput = document.getElementById("sched-datetime");
   const ovenSelect = document.getElementById("sched-oven");
+  const reminderSelect = document.getElementById("sched-reminder");
   const progressEl = document.getElementById("scheduler-progress");
   const methodCard = document.getElementById("sched-method-card");
   const validationEl = document.getElementById("sched-validation");
@@ -37,6 +38,7 @@
   // State
   let currentStep = 1;
   let selectedMethod = null;
+  let methodDisplayLabel = "";
   let computedSchedule = null;
   let countdownInterval = null;
   let stepTimeouts = [];
@@ -45,6 +47,13 @@
   // ── Populate dropdowns using shared utilities ──
   populateStyleSelect(styleSelect);
   populateOvenSelect(ovenSelect);
+
+  // Default to user's preferred oven from My Kitchen profile
+  const kitchenProfile = PieLabProfile.getProfile();
+  if (kitchenProfile.preferredOven &&
+      ovenSelect.querySelector(`option[value="${kitchenProfile.preferredOven}"]`)) {
+    ovenSelect.value = kitchenProfile.preferredOven;
+  }
 
   // ── Default datetime to tomorrow 6 PM ──
   const tomorrow = new Date();
@@ -93,31 +102,17 @@
   countInput.addEventListener("input", checkStep1Ready);
   datetimeInput.addEventListener("input", checkStep1Ready);
 
-  // ── Step 1 → Step 2 ──
-  btnNext1.addEventListener("click", () => {
-    if (!validateStep1()) return;
+  // Flavor tradeoff notes for method selection cards
+  const FLAVOR_NOTES = {
+    "cold-72": "Maximum flavor complexity",
+    "cold-48": "Great balance of flavor & convenience",
+    "cold-24": "Good flavor, practical timeline",
+    "same-day": "Convenient, lighter flavor",
+  };
 
+  // Pre-validate schedule with the currently selected method
+  function preValidateSchedule() {
     const eatTime = new Date(datetimeInput.value);
-    const now = new Date();
-    const availableHours = (eatTime - now) / 3600000;
-
-    if (availableHours <= 0) {
-      alert("Please select a time in the future.");
-      return;
-    }
-
-    selectedMethod = selectFermentMethod(availableHours);
-
-    // Render method card
-    const availHoursRounded = Math.round(availableHours);
-    methodCard.innerHTML = `
-      <div class="method-badge">${selectedMethod.label}</div>
-      <p class="method-description">${selectedMethod.description}</p>
-      <p class="method-reason">${selectedMethod.reason}</p>
-      <span class="method-time-badge">~${availHoursRounded} hours available</span>
-    `;
-
-    // Pre-validate: check if schedule would work
     const styleKey = styleSelect.value;
     const recipe = PIZZA_RECIPES[styleKey];
     const sizeKeys = Object.keys(recipe.sizes);
@@ -138,7 +133,94 @@
       validationEl.classList.add("hidden");
       btnNext2.disabled = false;
     }
+  }
 
+  // ── Step 1 → Step 2 ──
+  btnNext1.addEventListener("click", () => {
+    if (!validateStep1()) return;
+
+    const eatTime = new Date(datetimeInput.value);
+    const now = new Date();
+    const availableHours = (eatTime - now) / 3600000;
+    const styleKey = styleSelect.value;
+
+    if (availableHours <= 0) {
+      alert("Please select a time in the future.");
+      return;
+    }
+
+    // ── Style-specific fixed method cards ──
+    if (styleKey === "school-night") {
+      selectedMethod = FERMENT_METHODS["same-day"];
+      methodCard.innerHTML = `
+        <div class="method-card-fixed">
+          <span class="method-req-badge">Style Requirement</span>
+          <div class="method-badge">${selectedMethod.label}</div>
+          <p class="method-description">This is a no-rise dough built for weeknight speed. Mix to table in under an hour \u2014 no fermentation, no cold rest. Just mix, rest 20 minutes, and bake.</p>
+        </div>
+      `;
+      preValidateSchedule();
+      goToStep(2);
+      return;
+    }
+
+    if (styleKey === "chicago-tavern") {
+      selectedMethod = FERMENT_METHODS["cold-24"];
+      methodCard.innerHTML = `
+        <div class="method-card-fixed">
+          <span class="method-req-badge">Style Requirement</span>
+          <div class="method-badge">${selectedMethod.label}</div>
+          <p class="method-description">Chicago Tavern dough requires a 24-hour cure \u2014 this is what creates the cracker-thin, crispy texture. There\u2019s no shortcut. You\u2019ll need to start at least 26 hours before dinner.</p>
+        </div>
+      `;
+      preValidateSchedule();
+      goToStep(2);
+      return;
+    }
+
+    // Get viable methods for this style and time window
+    const availableMethods = getAvailableFermentMethods(availableHours, styleKey);
+    selectedMethod = availableMethods[0]; // Default to best option
+
+    const availHoursRounded = Math.round(availableHours);
+
+    if (availableMethods.length === 1) {
+      // Single method — non-interactive summary card
+      methodCard.innerHTML = `
+        <div class="method-badge">${selectedMethod.label}</div>
+        <p class="method-description">${selectedMethod.description}</p>
+        <p class="method-reason">${selectedMethod.reason}</p>
+        <span class="method-time-badge">~${availHoursRounded} hours available</span>
+      `;
+    } else {
+      // Multiple methods — render selectable cards
+      let cardsHtml = '<div class="method-options">';
+      availableMethods.forEach((m, i) => {
+        const isSelected = i === 0;
+        cardsHtml += `
+          <button type="button" class="method-option-card${isSelected ? " selected" : ""}" data-method-id="${m.id}">
+            <div class="method-option-label">${m.label}</div>
+            <p class="method-option-desc">${m.description}</p>
+            <span class="method-option-note">${FLAVOR_NOTES[m.id] || ""}</span>
+          </button>
+        `;
+      });
+      cardsHtml += '</div>';
+      cardsHtml += `<span class="method-time-badge">\u2248 ${availHoursRounded} hours available</span>`;
+      methodCard.innerHTML = cardsHtml;
+
+      // Attach click handlers for method selection
+      methodCard.querySelectorAll(".method-option-card").forEach((card) => {
+        card.addEventListener("click", () => {
+          methodCard.querySelectorAll(".method-option-card").forEach((c) => c.classList.remove("selected"));
+          card.classList.add("selected");
+          selectedMethod = FERMENT_METHODS[card.dataset.methodId];
+          preValidateSchedule();
+        });
+      });
+    }
+
+    preValidateSchedule();
     goToStep(2);
   });
 
@@ -168,10 +250,14 @@
 
     computedSchedule = result.steps;
 
-    // Request notification permission
-    if ("Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
+    // Compute a human-friendly label for the method pill
+    methodDisplayLabel =
+      styleKey === "chicago-tavern" ? "Chicago Tavern \u2014 Cured Dough"
+      : styleKey === "school-night" ? "No Rise"
+      : selectedMethod.label;
+
+    // Request notification permission (native or browser)
+    PieNotifications.requestPermission();
 
     // Save to localStorage
     saveActiveSchedule({
@@ -182,6 +268,8 @@
       ovenType: ovenSelect.value,
       methodId: selectedMethod.id,
       methodLabel: selectedMethod.label,
+      methodDisplayLabel,
+      reminderMinutes: parseInt(reminderSelect.value, 10) || 0,
       eatTime: eatTime.toISOString(),
       doughBallWeight,
       steps: computedSchedule.map((s) => ({
@@ -218,6 +306,7 @@
     clearActiveSchedule();
     computedSchedule = null;
     selectedMethod = null;
+    methodDisplayLabel = "";
     bannerEl.classList.add("hidden");
     updateScheduleBadge();
     goToStep(1);
@@ -246,7 +335,7 @@
     let html = `
       <div class="schedule-header">
         <h4>${styleName} Schedule</h4>
-        <span class="schedule-method-pill">${selectedMethod ? selectedMethod.label : ""}</span>
+        <span class="schedule-method-pill">${methodDisplayLabel || (selectedMethod ? selectedMethod.label : "")}</span>
       </div>
       <div class="schedule-steps">
     `;
@@ -391,27 +480,39 @@
   function scheduleAllNotifications() {
     clearAllStepTimeouts();
     if (!computedSchedule) return;
-    const now = Date.now();
 
-    computedSchedule.forEach((step) => {
+    const now = Date.now();
+    const saved = loadActiveSchedule();
+    const reminderMs = ((saved && saved.reminderMinutes) || 0) * 60000;
+
+    computedSchedule.forEach((step, idx) => {
       const key = step.id + "_" + step.dateTime.getTime();
       if (step.checked || notifiedSteps.has(key)) return;
-      const delay = step.dateTime.getTime() - now;
+
+      // Notification fires (reminderMinutes) before the actual step time
+      const fireAt = step.dateTime.getTime() - reminderMs;
+      const delay = fireAt - now;
       if (delay <= 0) return;
 
+      // Use PieNotifications abstraction (native or browser fallback)
+      const notifTitle = reminderMs > 0
+        ? `The Pie Lab \u2014 In ${Math.round(reminderMs / 60000)} min:`
+        : "The Pie Lab \u2014 Time\u2019s Up!";
+      const notifBody = reminderMs > 0
+        ? `Get ready to: ${step.label}`
+        : `It\u2019s time to: ${step.label}`;
+
+      PieNotifications.schedule({
+        id: idx + 1,
+        title: notifTitle,
+        body: notifBody,
+        at: new Date(fireAt),
+      });
+
+      // Also keep a browser-side timeout for re-rendering the timeline
       const tid = setTimeout(() => {
         if (notifiedSteps.has(key)) return;
         notifiedSteps.add(key);
-
-        // Browser notification
-        if ("Notification" in window && Notification.permission === "granted") {
-          new Notification("The Pie Lab \u2014 Time\u2019s Up!", {
-            body: `It\u2019s time to: ${step.label}`,
-            icon: "assets/logos/logo-monogram-512.svg",
-          });
-        }
-
-        // Re-render timeline to advance the visual countdown
         if (computedSchedule) renderScheduleTimeline(computedSchedule);
       }, delay);
 
@@ -422,6 +523,7 @@
   function clearAllStepTimeouts() {
     stepTimeouts.forEach((tid) => clearTimeout(tid));
     stepTimeouts = [];
+    PieNotifications.cancelAll();
   }
 
   // ── localStorage Persistence ──
@@ -480,7 +582,12 @@
     const bannerStyleName = document.getElementById("banner-style-name");
     const bannerNextStep = document.getElementById("banner-next-step");
 
-    bannerStyleName.textContent = `${data.styleName} \u2014 ${data.methodLabel}`;
+    // If the display label is a style-specific override (differs from the raw
+    // method label), show it standalone — it already carries context.  Otherwise
+    // use the classic "Style Name — Method Label" format.
+    const mLabel = data.methodDisplayLabel || data.methodLabel;
+    const isOverride = data.methodDisplayLabel && data.methodDisplayLabel !== data.methodLabel;
+    bannerStyleName.textContent = isOverride ? mLabel : `${data.styleName} \u2014 ${mLabel}`;
 
     // Find next unchecked step
     const now = new Date();
@@ -516,6 +623,7 @@
     clearActiveSchedule();
     computedSchedule = null;
     selectedMethod = null;
+    methodDisplayLabel = "";
     bannerEl.classList.add("hidden");
     updateScheduleBadge();
     goToStep(1);
@@ -533,8 +641,14 @@
     const off = eatDate.getTimezoneOffset() * 60000;
     datetimeInput.value = new Date(eatDate.getTime() - off).toISOString().slice(0, 16);
 
+    // Restore reminder preference
+    if (data.reminderMinutes != null) {
+      reminderSelect.value = String(data.reminderMinutes);
+    }
+
     // Set method
     selectedMethod = FERMENT_METHODS[data.methodId] || FERMENT_METHODS["same-day"];
+    methodDisplayLabel = data.methodDisplayLabel || selectedMethod.label;
 
     // Restore steps with Date objects
     computedSchedule = data.steps.map((s) => ({

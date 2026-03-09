@@ -62,8 +62,9 @@
           Schedule
           <span class="schedule-badge hidden"></span>
         </a>
-        <a href="learn.html" class="nav-link" data-page="learn">Learn</a>
         <a href="journal.html" class="nav-link" data-page="journal">Journal</a>
+        <a href="learn.html" class="nav-link" data-page="learn">Learn</a>
+        <a href="kitchen.html" class="nav-link" data-page="kitchen">My Kitchen</a>
       </div>
     </nav>
   </header>
@@ -112,6 +113,11 @@
         <div class="form-group">
           <label for="num-pizzas">Number of Pizzas</label>
           <input type="number" id="num-pizzas" min="1" max="50" value="1" required />
+        </div>
+
+        <div class="form-group">
+          <label for="calc-oven-type">Oven Type</label>
+          <select id="calc-oven-type" required></select>
         </div>
 
         <button type="submit" class="btn-calculate">Calculate Recipe</button>
@@ -201,6 +207,13 @@
 
       <div class="results-learn-more" id="results-learn-more"></div>
 
+      <div id="flour-sub-row" class="flour-sub-row hidden">
+        <label for="flour-sub-select">Substitute Flour</label>
+        <select id="flour-sub-select">
+          <option value="">— Use recommended flour —</option>
+        </select>
+      </div>
+
       <div class="results-actions">
         <button class="btn-print" onclick="window.print()">Print Recipe</button>
         <button class="btn-log-bake" id="btn-log-bake">Log This Bake</button>
@@ -220,13 +233,17 @@
       <span class="tab-label">Schedule</span>
       <span class="schedule-badge hidden"></span>
     </a>
+    <a href="journal.html" class="tab-item" data-page="journal">
+      <span class="tab-icon">&#128211;</span>
+      <span class="tab-label">Journal</span>
+    </a>
     <a href="learn.html" class="tab-item" data-page="learn">
       <span class="tab-icon">&#128214;</span>
       <span class="tab-label">Learn</span>
     </a>
-    <a href="journal.html" class="tab-item" data-page="journal">
-      <span class="tab-icon">&#128211;</span>
-      <span class="tab-label">Journal</span>
+    <a href="kitchen.html" class="tab-item" data-page="kitchen">
+      <span class="tab-icon">&#9881;&#65039;</span>
+      <span class="tab-label">My Kitchen</span>
     </a>
   </nav>
 
@@ -235,11 +252,14 @@
     <p>&copy; 2026 The Pie Lab. All rights reserved.</p>
   </footer>
 
-  <!-- Scripts: data files first, then shared nav, then page features -->
+  <!-- Scripts: Capacitor init first, then data files, then shared nav, then page features -->
+  <script src="js/capacitor-init.js"></script>
   <script src="recipes.js"></script>
   <script src="knowledge-data.js"></script>
   <script src="journal.js"></script>
   <script src="js/nav.js"></script>
+  <script src="js/user-profile.js"></script>
+  <script src="scheduler-data.js"></script>
   <script src="js/carousel.js"></script>
   <script src="js/calculator.js"></script>
 </body>

@@ -1,0 +1,10 @@
+node_modules/
+www/
+android/
+ios/
+.DS_Store
+*.log
+Thumbs.db
+.claude/
+plan_raw.txt
+Logos/
