@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 120" width="800" height="120">
+  <rect width="800" height="120" fill="#3a3a3a"/>
+  
+  <!-- THE small -->
+  <text x="60" y="72" 
+        font-family="Georgia, 'Times New Roman', serif" 
+        font-size="22" 
+        font-weight="normal"
+        letter-spacing="8"
+        fill="white" 
+        text-anchor="middle">THE</text>
+
+  <!-- Vertical divider -->
+  <line x1="100" y1="30" x2="100" y2="90" stroke="white" stroke-width="0.75" opacity="0.5"/>
+
+  <!-- PIE LAB -->
+  <text x="460" y="78" 
+        font-family="Georgia, 'Times New Roman', serif" 
+        font-size="72" 
+        font-weight="bold"
+        letter-spacing="6"
+        fill="white" 
+        text-anchor="middle">PIE LAB</text>
+</svg>

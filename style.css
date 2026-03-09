@@ -20,6 +20,8 @@
   --radius: 12px;
   --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.12);
+  --brand-charcoal: #3a3a3a;
+  --brand-white: #ffffff;
 }
 
 body {
@@ -96,14 +98,10 @@ body {
   padding: 20px;
 }
 
-.hero-title {
-  font-size: clamp(64px, 12vw, 140px);
-  font-weight: 400;
-  color: #fff;
-  margin: 0;
-  letter-spacing: -2px;
-  line-height: 1;
-  text-shadow: 0 4px 40px rgba(0,0,0,0.4);
+.hero-logo {
+  width: clamp(280px, 50vw, 600px);
+  height: auto;
+  filter: drop-shadow(0 4px 40px rgba(0,0,0,0.4));
 }
 
 .hero-subtitle {
@@ -2858,6 +2856,14 @@ footer {
   padding: 2rem 1rem;
   color: var(--clr-text-light);
   font-size: 0.85rem;
+}
+
+.footer-logo {
+  display: block;
+  width: 180px;
+  height: auto;
+  margin: 0 auto 0.75rem;
+  border-radius: 6px;
 }
 
 /* ── Print Styles ────────────────────────────────── */
