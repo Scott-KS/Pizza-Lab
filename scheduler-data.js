@@ -74,6 +74,9 @@ const FERMENT_METHODS = {
 // Styles that skip autolyse and stretch-and-fold (no-rise / quick styles)
 const NO_RISE_STYLES = ["st-louis", "school-night"];
 
+// Styles that use a curing stage instead of standard cold ferment
+const CURING_STYLES = ["chicago-tavern"];
+
 
 // ══════════════════════════════════════════════════════
 // 3. SCHEDULE STEP TEMPLATES
@@ -153,6 +156,21 @@ const SCHEDULE_STEP_TEMPLATES = {
     why: "This is your target time — everything was calculated backward from this moment. You did the work. Now enjoy every bite.",
     duration: null,
   },
+  "rest-no-rise": {
+    id: "rest-no-rise",
+    label: "Rest the Dough",
+    instruction: "Cover the dough loosely and let it rest at room temperature for 20–30 minutes. Do not try to stretch it right away — the gluten needs to relax.",
+    why: "Even no-rise dough needs a short rest after mixing. The gluten is tight right out of the bowl and will spring back if you try to stretch it immediately. A 20-minute rest makes it pliable and workable.",
+    duration: "~20–30 min",
+  },
+  "curing": {
+    id: "curing",
+    label: "Cure the Dough",
+    instruction: "Divide dough into individual balls, wrap each tightly in plastic wrap, and refrigerate for at least 24 hours. The dough should feel slightly stiff when you unwrap it — that's correct.",
+    why: "Chicago Tavern dough requires curing — a cold rest under pressure that relaxes the gluten and produces the distinctive tight, crackery texture. Without this step you'll get a chewy crust, not the thin, crispy snap that defines the style.",
+    duration: "24 hours minimum",
+    coldFermentOnly: false,
+  },
 };
 
 
@@ -161,8 +179,33 @@ const SCHEDULE_STEP_TEMPLATES = {
 // ══════════════════════════════════════════════════════
 
 /**
- * Selects the best fermentation method based on available time.
+ * Returns available fermentation methods for a given time window.
+ * Methods are ordered best-first. The UI uses this to let the user choose.
  * @param {number} availableHours — hours between now and target eat time
+ * @param {string} styleKey — recipe key (school-night and chicago-tavern have fixed paths)
+ * @returns {object[]} array of available FERMENT_METHODS entries, best first
+ */
+function getAvailableFermentMethods(availableHours, styleKey) {
+  // School Night is always same-day — no choice to offer
+  if (NO_RISE_STYLES.includes(styleKey)) {
+    return [FERMENT_METHODS["same-day"]];
+  }
+  // Chicago Tavern always cures — minimum 28 hours needed (24h cure + other steps)
+  if (CURING_STYLES.includes(styleKey)) {
+    return [FERMENT_METHODS["cold-24"]]; // curing logic handled in buildScheduleBackward
+  }
+
+  const available = [];
+  if (availableHours >= FERMENT_METHODS["cold-72"].minHoursNeeded) available.push(FERMENT_METHODS["cold-72"]);
+  if (availableHours >= FERMENT_METHODS["cold-48"].minHoursNeeded) available.push(FERMENT_METHODS["cold-48"]);
+  if (availableHours >= FERMENT_METHODS["cold-24"].minHoursNeeded) available.push(FERMENT_METHODS["cold-24"]);
+  available.push(FERMENT_METHODS["same-day"]); // always available as fallback
+  return available;
+}
+
+/**
+ * Auto-selects the best fermentation method (used as default when only one option or for fallback).
+ * @param {number} availableHours
  * @returns {object} the selected FERMENT_METHODS entry
  */
 function selectFermentMethod(availableHours) {
@@ -190,9 +233,145 @@ function buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWe
   const preheatMinutes = OVEN_PREHEAT_MINUTES[ovenType] || 60;
   const ovenLabel = OVEN_TYPES[ovenType] || ovenType;
   const isNoRise = NO_RISE_STYLES.includes(styleKey);
+  const isCuring = CURING_STYLES.includes(styleKey);
 
-  // ── Compute step times backward from eat ──
+  const steps = [];
 
+  // ══════════════════════════════════════════════════════
+  // SCHOOL NIGHT — short path: mix → rest → shape → preheat → bake
+  // ══════════════════════════════════════════════════════
+  if (isNoRise) {
+    const eatT = eatMs;
+    const stretchTopT = eatMs - min(15);
+    const preheatT = stretchTopT - min(preheatMinutes);
+    const shapeT = preheatT - min(5);  // shape right as oven starts preheating
+    const restT = shapeT - min(25);    // 25 min rest before shaping
+    const mixT = restT - min(10);      // mix takes ~10 min
+
+    steps.push({
+      ...SCHEDULE_STEP_TEMPLATES.mix,
+      dateTime: new Date(mixT),
+      instruction: "Combine flour, water, salt, oil, and yeast. Mix until smooth — about 3–5 minutes. This is a no-rise dough, so just get it to a uniform, slightly tacky consistency.",
+    });
+    steps.push({
+      ...SCHEDULE_STEP_TEMPLATES["rest-no-rise"],
+      dateTime: new Date(restT),
+    });
+    steps.push({
+      ...SCHEDULE_STEP_TEMPLATES.preheat,
+      dateTime: new Date(preheatT),
+      duration: `${preheatMinutes} min`,
+      instruction: `Preheat your ${ovenLabel} for at least ${preheatMinutes} minutes. You can start shaping while the oven heats up.`,
+    });
+    steps.push({
+      ...SCHEDULE_STEP_TEMPLATES["stretch-and-top"],
+      dateTime: new Date(stretchTopT),
+      instruction: "Roll or press the rested dough to your target size — this dough responds well to a rolling pin. Keep it thin. Add sauce, cheese, and toppings and bake immediately.",
+    });
+    steps.push({
+      ...SCHEDULE_STEP_TEMPLATES.eat,
+      dateTime: new Date(eatT),
+    });
+
+    steps.sort((a, b) => a.dateTime.getTime() - b.dateTime.getTime());
+    steps.forEach((s) => { s.checked = false; });
+
+    const earliestStep = steps[0];
+    const now = new Date();
+    const isValid = earliestStep.dateTime > now;
+    let validationMsg = "";
+    if (!isValid) {
+      const earlyTime = earliestStep.dateTime.toLocaleString(undefined, {
+        weekday: "short", month: "short", day: "numeric",
+        hour: "numeric", minute: "2-digit",
+      });
+      validationMsg = `Not enough time! Mix would need to start at ${earlyTime}, which has already passed. Push your dinner time later.`;
+    }
+    return { steps, mixTime: earliestStep.dateTime, isValid, validationMsg };
+  }
+
+  // ══════════════════════════════════════════════════════
+  // CHICAGO TAVERN — curing path: mix → bulk → ball → cure 24h → pull → preheat → bake
+  // ══════════════════════════════════════════════════════
+  if (isCuring) {
+    const eatT = eatMs;
+    const stretchTopT = eatMs - min(15);
+    const preheatT = stretchTopT - min(preheatMinutes);
+    const pullT = preheatT - min(30);          // pull from fridge 30 min before preheat
+    const cureEndT = pullT;
+    const cureStartT = cureEndT - min(24 * 60); // 24h minimum cure
+    const ballT = cureStartT;
+    const bulkStartT = ballT - min(60);         // 1hr bulk ferment (short — low hydration dough)
+    const mixT = bulkStartT;
+    const autolyseT = mixT - min(20);
+
+    steps.push({
+      ...SCHEDULE_STEP_TEMPLATES.autolyse,
+      dateTime: new Date(autolyseT),
+    });
+    steps.push({
+      ...SCHEDULE_STEP_TEMPLATES.mix,
+      dateTime: new Date(mixT),
+      instruction: "Combine flour, water, salt, oil, sugar, and yeast. Mix until smooth — this is a stiff, low-hydration dough (50%). It should feel firm and not sticky.",
+    });
+    steps.push({
+      ...SCHEDULE_STEP_TEMPLATES["bulk-ferment"],
+      dateTime: new Date(bulkStartT),
+      duration: "~1 hour",
+      instruction: "Cover the dough and let it rest at room temperature for about 1 hour. It won't double — just needs to relax slightly before balling.",
+    });
+    steps.push({
+      ...SCHEDULE_STEP_TEMPLATES.ball,
+      dateTime: new Date(ballT),
+      instruction: `Divide dough into ${numPizzas} equal piece${numPizzas > 1 ? "s" : ""} of ~${doughBallWeight}g each. Shape into tight, smooth balls.`,
+    });
+    steps.push({
+      ...SCHEDULE_STEP_TEMPLATES["curing"],
+      dateTime: new Date(cureStartT),
+      duration: "24 hours",
+    });
+    steps.push({
+      ...SCHEDULE_STEP_TEMPLATES["pull-from-fridge"],
+      dateTime: new Date(pullT),
+      instruction: "Pull the cured dough balls from the fridge. They should feel stiff — that's expected. Let them sit at room temperature for 30 minutes before rolling.",
+      duration: "~30 min",
+    });
+    steps.push({
+      ...SCHEDULE_STEP_TEMPLATES.preheat,
+      dateTime: new Date(preheatT),
+      duration: `${preheatMinutes} min`,
+      instruction: `Preheat your ${ovenLabel} for at least ${preheatMinutes} minutes.`,
+    });
+    steps.push({
+      ...SCHEDULE_STEP_TEMPLATES["stretch-and-top"],
+      dateTime: new Date(stretchTopT),
+      instruction: "Use a rolling pin to roll each cured dough ball into a thin round — this dough is meant to be rolled, not hand-stretched. Dock thoroughly with a fork to prevent bubbles. Add sauce and toppings and bake.",
+    });
+    steps.push({
+      ...SCHEDULE_STEP_TEMPLATES.eat,
+      dateTime: new Date(eatT),
+    });
+
+    steps.sort((a, b) => a.dateTime.getTime() - b.dateTime.getTime());
+    steps.forEach((s) => { s.checked = false; });
+
+    const earliestStep = steps[0];
+    const now = new Date();
+    const isValid = earliestStep.dateTime > now;
+    let validationMsg = "";
+    if (!isValid) {
+      const earlyTime = earliestStep.dateTime.toLocaleString(undefined, {
+        weekday: "short", month: "short", day: "numeric",
+        hour: "numeric", minute: "2-digit",
+      });
+      validationMsg = `Not enough time! Chicago Tavern dough requires at least 26 hours. The first step would need to start at ${earlyTime}. Push your dinner time to tomorrow at the earliest.`;
+    }
+    return { steps, mixTime: earliestStep.dateTime, isValid, validationMsg };
+  }
+
+  // ══════════════════════════════════════════════════════
+  // STANDARD PATH — all other styles
+  // ══════════════════════════════════════════════════════
   const eatT = eatMs;
   const stretchTopT = eatMs - min(15);
   const preheatT = stretchTopT - min(preheatMinutes);
@@ -202,46 +381,34 @@ function buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWe
   if (method.isColdFerment) {
     pullT = preheatT - min(method.pullBeforePreheatMinutes);
     fridgeT = pullT - min(method.coldFermentHours * 60);
-    ballT = fridgeT; // ball right before going into fridge
+    ballT = fridgeT;
     bulkStartT = ballT - min(method.bulkFermentMinutes);
   } else {
     pullT = null;
     fridgeT = null;
-    ballT = preheatT - min(30); // 30 min before preheat for same-day
+    ballT = preheatT - min(30);
     bulkStartT = ballT - min(method.bulkFermentMinutes);
   }
 
   mixT = bulkStartT;
-  stretchFoldT = bulkStartT + min(30); // 30 min after mix
+  stretchFoldT = bulkStartT + min(30);
   autolyseT = mixT - min(25);
 
-  // ── Build steps array ──
+  steps.push({
+    ...SCHEDULE_STEP_TEMPLATES.autolyse,
+    dateTime: new Date(autolyseT),
+  });
 
-  const steps = [];
-
-  // Autolyse (optional, skip for no-rise styles)
-  if (!isNoRise) {
-    steps.push({
-      ...SCHEDULE_STEP_TEMPLATES.autolyse,
-      dateTime: new Date(autolyseT),
-    });
-  }
-
-  // Mix
   steps.push({
     ...SCHEDULE_STEP_TEMPLATES.mix,
     dateTime: new Date(mixT),
   });
 
-  // Stretch & Fold (skip for no-rise styles)
-  if (!isNoRise) {
-    steps.push({
-      ...SCHEDULE_STEP_TEMPLATES["stretch-fold"],
-      dateTime: new Date(stretchFoldT),
-    });
-  }
+  steps.push({
+    ...SCHEDULE_STEP_TEMPLATES["stretch-fold"],
+    dateTime: new Date(stretchFoldT),
+  });
 
-  // Bulk Fermentation
   const bulkDurLabel = method.isColdFerment ? "~1.5 hours" : "~6 hours";
   steps.push({
     ...SCHEDULE_STEP_TEMPLATES["bulk-ferment"],
@@ -252,31 +419,24 @@ function buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWe
       : "Cover the dough and let it rest at room temperature for about 6 hours until roughly doubled in size.",
   });
 
-  // Ball
   steps.push({
     ...SCHEDULE_STEP_TEMPLATES.ball,
     dateTime: new Date(ballT),
     instruction: `Divide dough into ${numPizzas} equal piece${numPizzas > 1 ? "s" : ""} of ~${doughBallWeight}g each. Shape into tight, smooth balls by tucking the edges underneath.`,
   });
 
-  // Into the Fridge (cold ferment only)
   if (method.isColdFerment) {
     steps.push({
       ...SCHEDULE_STEP_TEMPLATES["into-fridge"],
       dateTime: new Date(fridgeT),
       duration: `${method.coldFermentHours} hours`,
     });
-  }
-
-  // Pull from Fridge (cold ferment only)
-  if (method.isColdFerment) {
     steps.push({
       ...SCHEDULE_STEP_TEMPLATES["pull-from-fridge"],
       dateTime: new Date(pullT),
     });
   }
 
-  // Preheat
   steps.push({
     ...SCHEDULE_STEP_TEMPLATES.preheat,
     dateTime: new Date(preheatT),
@@ -284,25 +444,19 @@ function buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWe
     instruction: `Preheat your ${ovenLabel} for at least ${preheatMinutes} minutes. Make sure your stone or steel is in the oven before you turn it on.`,
   });
 
-  // Stretch & Top
   steps.push({
     ...SCHEDULE_STEP_TEMPLATES["stretch-and-top"],
     dateTime: new Date(stretchTopT),
   });
 
-  // Eat
   steps.push({
     ...SCHEDULE_STEP_TEMPLATES.eat,
     dateTime: new Date(eatT),
   });
 
-  // ── Sort chronologically ──
   steps.sort((a, b) => a.dateTime.getTime() - b.dateTime.getTime());
-
-  // ── Add checked state ──
   steps.forEach((s) => { s.checked = false; });
 
-  // ── Validate: is the earliest step in the past? ──
   const earliestStep = steps[0];
   const now = new Date();
   const isValid = earliestStep.dateTime > now;

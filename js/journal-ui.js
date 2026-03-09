@@ -258,14 +258,25 @@
     comparisonEl.classList.add("hidden");
   });
 
+  const compareHint = document.getElementById("compare-hint");
+
   function updateCompareButton() {
     const filter = filterSelect.value;
     if (filter === "all") {
       btnCompare.disabled = true;
+      compareHint.textContent = "Filter by a specific style to compare bakes.";
+      compareHint.classList.remove("hidden");
       return;
     }
     const entries = PieLabJournal.getEntriesByStyle(filter);
-    btnCompare.disabled = entries.length < 2;
+    if (entries.length < 2) {
+      btnCompare.disabled = true;
+      compareHint.textContent = "Log at least 2 bakes of this style to compare.";
+      compareHint.classList.remove("hidden");
+    } else {
+      btnCompare.disabled = false;
+      compareHint.classList.add("hidden");
+    }
   }
 
   // Detail Modal
