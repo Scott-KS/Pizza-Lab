@@ -48,10 +48,24 @@
     populateOvenSelect(ovenSelect);
   }
 
-  // Star rating
+  // Star rating — click to set, hover to preview
   stars.forEach((star) => {
     star.addEventListener("click", () => {
-      currentRating = parseInt(star.dataset.value);
+      const clicked = parseInt(star.dataset.value);
+      currentRating = clicked === currentRating ? 0 : clicked;
+      updateStars();
+    });
+
+    star.addEventListener("mouseenter", () => {
+      const hoverVal = parseInt(star.dataset.value);
+      stars.forEach((s) => {
+        s.classList.toggle("hovered", parseInt(s.dataset.value) <= hoverVal);
+        s.classList.remove("active");
+      });
+    });
+
+    star.addEventListener("mouseleave", () => {
+      stars.forEach((s) => s.classList.remove("hovered"));
       updateStars();
     });
   });
