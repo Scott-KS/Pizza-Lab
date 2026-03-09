@@ -1597,3 +1597,554 @@ function buildPairingMatrixHTML() {
   renderEntries();
   updateCompareButton();
 })();
+
+
+// ═══════════════════════════════════════════════════════
+// DOUGH SCHEDULER
+// ═══════════════════════════════════════════════════════
+
+(function initDoughScheduler() {
+  const STORAGE_KEY = "pielab-active-schedule";
+
+  // ── DOM Refs ──
+  const styleSelect = document.getElementById("sched-style");
+  const countInput = document.getElementById("sched-count");
+  const datetimeInput = document.getElementById("sched-datetime");
+  const ovenSelect = document.getElementById("sched-oven");
+  const progressEl = document.getElementById("scheduler-progress");
+  const methodCard = document.getElementById("sched-method-card");
+  const validationEl = document.getElementById("sched-validation");
+  const timelineEl = document.getElementById("sched-timeline");
+  const bannerEl = document.getElementById("active-schedule-banner");
+
+  // Wizard step panels
+  const stepPanels = [
+    document.getElementById("sched-step-1"),
+    document.getElementById("sched-step-2"),
+    document.getElementById("sched-step-3"),
+  ];
+
+  // Buttons
+  const btnNext1 = document.getElementById("btn-sched-next-1");
+  const btnBack2 = document.getElementById("btn-sched-back-2");
+  const btnNext2 = document.getElementById("btn-sched-next-2");
+  const btnBack3 = document.getElementById("btn-sched-back-3");
+  const btnSaveImg = document.getElementById("btn-sched-save-img");
+  const btnStartOver = document.getElementById("btn-sched-start-over");
+  const btnBannerView = document.getElementById("btn-banner-view");
+  const btnBannerClear = document.getElementById("btn-banner-clear");
+
+  // State
+  let currentStep = 1;
+  let selectedMethod = null;
+  let computedSchedule = null;
+  let countdownInterval = null;
+
+  // ── Populate style dropdown ──
+  for (const [key, recipe] of Object.entries(PIZZA_RECIPES)) {
+    const opt = document.createElement("option");
+    opt.value = key;
+    opt.textContent = recipe.name;
+    styleSelect.appendChild(opt);
+  }
+
+  // ── Default datetime to tomorrow 6 PM ──
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(18, 0, 0, 0);
+  const tzOffset = tomorrow.getTimezoneOffset() * 60000;
+  datetimeInput.value = new Date(tomorrow.getTime() - tzOffset)
+    .toISOString()
+    .slice(0, 16);
+
+  // ── Wizard Navigation ──
+
+  function goToStep(step) {
+    currentStep = step;
+    stepPanels.forEach((p, i) => {
+      p.classList.toggle("active", i === step - 1);
+    });
+
+    // Update progress dots
+    const dots = progressEl.querySelectorAll(".progress-step");
+    const lines = progressEl.querySelectorAll(".progress-line");
+    dots.forEach((dot, i) => {
+      const stepNum = i + 1;
+      dot.classList.remove("active", "completed");
+      if (stepNum === step) dot.classList.add("active");
+      else if (stepNum < step) dot.classList.add("completed");
+      // Update dot text
+      const dotEl = dot.querySelector(".progress-dot");
+      if (stepNum < step) dotEl.textContent = "\u2713";
+      else dotEl.textContent = stepNum;
+    });
+    lines.forEach((line, i) => {
+      line.classList.toggle("completed", i < step - 1);
+    });
+  }
+
+  function validateStep1() {
+    return styleSelect.value && countInput.value > 0 && datetimeInput.value;
+  }
+
+  // Enable/disable Next button
+  function checkStep1Ready() {
+    btnNext1.disabled = !validateStep1();
+  }
+  styleSelect.addEventListener("change", checkStep1Ready);
+  countInput.addEventListener("input", checkStep1Ready);
+  datetimeInput.addEventListener("input", checkStep1Ready);
+
+  // ── Step 1 → Step 2 ──
+  btnNext1.addEventListener("click", () => {
+    if (!validateStep1()) return;
+
+    const eatTime = new Date(datetimeInput.value);
+    const now = new Date();
+    const availableHours = (eatTime - now) / 3600000;
+
+    if (availableHours <= 0) {
+      alert("Please select a time in the future.");
+      return;
+    }
+
+    selectedMethod = selectFermentMethod(availableHours);
+
+    // Render method card
+    const availHoursRounded = Math.round(availableHours);
+    methodCard.innerHTML = `
+      <div class="method-badge">${selectedMethod.label}</div>
+      <p class="method-description">${selectedMethod.description}</p>
+      <p class="method-reason">${selectedMethod.reason}</p>
+      <span class="method-time-badge">~${availHoursRounded} hours available</span>
+    `;
+
+    // Pre-validate: check if schedule would work
+    const styleKey = styleSelect.value;
+    const recipe = PIZZA_RECIPES[styleKey];
+    const sizeKeys = Object.keys(recipe.sizes);
+    const defaultSize = sizeKeys.includes("12") ? "12" : sizeKeys[0];
+    const doughBallWeight = recipe.sizes[defaultSize].doughWeight;
+    const numPizzas = parseInt(countInput.value, 10);
+
+    const result = buildScheduleBackward(
+      eatTime, ovenSelect.value, selectedMethod,
+      numPizzas, doughBallWeight, styleKey
+    );
+
+    if (!result.isValid) {
+      validationEl.textContent = result.validationMsg;
+      validationEl.classList.remove("hidden");
+      btnNext2.disabled = true;
+    } else {
+      validationEl.classList.add("hidden");
+      btnNext2.disabled = false;
+    }
+
+    goToStep(2);
+  });
+
+  // ── Step 2 → Back to Step 1 ──
+  btnBack2.addEventListener("click", () => goToStep(1));
+
+  // ── Step 2 → Step 3 ──
+  btnNext2.addEventListener("click", () => {
+    const eatTime = new Date(datetimeInput.value);
+    const styleKey = styleSelect.value;
+    const recipe = PIZZA_RECIPES[styleKey];
+    const sizeKeys = Object.keys(recipe.sizes);
+    const defaultSize = sizeKeys.includes("12") ? "12" : sizeKeys[0];
+    const doughBallWeight = recipe.sizes[defaultSize].doughWeight;
+    const numPizzas = parseInt(countInput.value, 10);
+
+    const result = buildScheduleBackward(
+      eatTime, ovenSelect.value, selectedMethod,
+      numPizzas, doughBallWeight, styleKey
+    );
+
+    if (!result.isValid) {
+      validationEl.textContent = result.validationMsg;
+      validationEl.classList.remove("hidden");
+      return;
+    }
+
+    computedSchedule = result.steps;
+
+    // Request notification permission
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+
+    // Save to localStorage
+    saveActiveSchedule({
+      createdAt: new Date().toISOString(),
+      styleKey,
+      styleName: recipe.name,
+      numPizzas,
+      ovenType: ovenSelect.value,
+      methodId: selectedMethod.id,
+      methodLabel: selectedMethod.label,
+      eatTime: eatTime.toISOString(),
+      doughBallWeight,
+      steps: computedSchedule.map((s) => ({
+        id: s.id,
+        label: s.label,
+        dateTime: s.dateTime.toISOString(),
+        instruction: s.instruction,
+        why: s.why,
+        duration: s.duration || null,
+        checked: s.checked || false,
+      })),
+    });
+
+    renderScheduleTimeline(computedSchedule);
+    goToStep(3);
+
+    // Hide banner when viewing full schedule
+    bannerEl.classList.add("hidden");
+  });
+
+  // ── Step 3 → Back to Step 2 ──
+  btnBack3.addEventListener("click", () => {
+    stopCountdown();
+    goToStep(2);
+  });
+
+  // ── Start Over ──
+  btnStartOver.addEventListener("click", () => {
+    stopCountdown();
+    clearActiveSchedule();
+    computedSchedule = null;
+    selectedMethod = null;
+    bannerEl.classList.add("hidden");
+    goToStep(1);
+  });
+
+  // ── Timeline Rendering ──
+
+  function renderScheduleTimeline(steps) {
+    const now = new Date();
+
+    // Find the "next" step: first unchecked step whose time is in the future (or nearest past unchecked)
+    let nextIdx = -1;
+    for (let i = 0; i < steps.length; i++) {
+      if (!steps[i].checked && steps[i].dateTime > now) {
+        nextIdx = i;
+        break;
+      }
+    }
+    // If all future steps are checked, find the first unchecked step
+    if (nextIdx === -1) {
+      nextIdx = steps.findIndex((s) => !s.checked);
+    }
+
+    const styleName = PIZZA_RECIPES[styleSelect.value]?.name || "";
+
+    let html = `
+      <div class="schedule-header">
+        <h4>${styleName} Schedule</h4>
+        <span class="schedule-method-pill">${selectedMethod ? selectedMethod.label : ""}</span>
+      </div>
+      <div class="schedule-steps">
+    `;
+
+    steps.forEach((step, i) => {
+      const isPast = now >= step.dateTime;
+      const isNext = i === nextIdx && !step.checked;
+      let statusClass;
+      if (step.checked) statusClass = "step-checked";
+      else if (isNext) statusClass = "step-next";
+      else if (isPast) statusClass = "step-done";
+      else statusClass = "step-upcoming";
+
+      html += `
+        <div class="sched-timeline-step ${statusClass}" data-step-idx="${i}">
+          <div class="sched-step-marker">
+            <button class="sched-step-dot" data-idx="${i}"
+              aria-label="${step.checked ? "Unmark" : "Mark"} ${step.label} as done"
+              title="Click to ${step.checked ? "unmark" : "mark as done"}">
+              ${step.checked ? "\u2713" : (i + 1)}
+            </button>
+            ${i < steps.length - 1 ? '<span class="sched-step-line"></span>' : ""}
+          </div>
+          <div class="sched-step-content">
+            <div class="sched-step-time">${formatScheduleTime(step.dateTime)}</div>
+            <div class="sched-step-label">
+              ${step.label}
+              ${step.duration ? `<span class="step-duration-badge">${step.duration}</span>` : ""}
+            </div>
+            <div class="sched-step-instruction">${step.instruction}</div>
+            <button class="step-why-toggle" type="button">Why it matters</button>
+            <div class="step-why-content">${step.why}</div>
+            ${isNext ? `<div class="sched-step-countdown" data-target="${step.dateTime.toISOString()}"></div>` : ""}
+          </div>
+        </div>
+      `;
+    });
+
+    html += "</div>";
+    timelineEl.innerHTML = html;
+
+    // ── Attach event listeners ──
+
+    // Checkoff buttons
+    timelineEl.querySelectorAll(".sched-step-dot").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const idx = parseInt(btn.dataset.idx, 10);
+        if (isNaN(idx) || !computedSchedule) return;
+        computedSchedule[idx].checked = !computedSchedule[idx].checked;
+        updateStoredChecks();
+        renderScheduleTimeline(computedSchedule);
+      });
+    });
+
+    // "Why it matters" toggles
+    timelineEl.querySelectorAll(".step-why-toggle").forEach((toggle) => {
+      toggle.addEventListener("click", () => {
+        toggle.classList.toggle("open");
+        const content = toggle.nextElementSibling;
+        if (content) content.classList.toggle("open");
+      });
+    });
+
+    // Start countdown
+    startCountdown();
+  }
+
+  function formatScheduleTime(date) {
+    const weekday = date.toLocaleDateString(undefined, { weekday: "long" });
+    const monthDay = date.toLocaleDateString(undefined, { month: "long", day: "numeric" });
+    const time = date.toLocaleTimeString(undefined, {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+    return `${weekday} \u2014 ${monthDay} \u2014 ${time}`;
+  }
+
+  // ── Countdown Timer ──
+
+  function startCountdown() {
+    stopCountdown();
+    countdownInterval = setInterval(() => {
+      const el = timelineEl.querySelector(".sched-step-countdown");
+      if (!el) {
+        stopCountdown();
+        return;
+      }
+      updateSchedCountdown(el);
+    }, 1000);
+    // Immediate update
+    const el = timelineEl.querySelector(".sched-step-countdown");
+    if (el) updateSchedCountdown(el);
+  }
+
+  function stopCountdown() {
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+    }
+  }
+
+  function updateSchedCountdown(el) {
+    const target = new Date(el.dataset.target);
+    const now = new Date();
+    const diff = target - now;
+
+    if (diff <= 0) {
+      el.textContent = "\u23F0 Now!";
+      el.classList.add("countdown-now");
+      // Send notification
+      if ("Notification" in window && Notification.permission === "granted") {
+        // Avoid repeat notifications — check flag
+        if (!el.dataset.notified) {
+          el.dataset.notified = "1";
+          const stepEl = el.closest(".sched-timeline-step");
+          const label = stepEl
+            ? stepEl.querySelector(".sched-step-label")?.textContent?.trim()
+            : "next step";
+          new Notification("The Pie Lab \u2014 Time's Up!", {
+            body: `It's time to: ${label}`,
+            icon: "assets/logos/logo-monogram-512.svg",
+          });
+        }
+      }
+      return;
+    }
+
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+
+    let text = "\u23F3 ";
+    if (days > 0) text += `${days}d ${hours}h ${minutes}m`;
+    else if (hours > 0) text += `${hours}h ${minutes}m ${seconds}s`;
+    else if (minutes > 0) text += `${minutes}m ${seconds}s`;
+    else text += `${seconds}s`;
+
+    el.textContent = text;
+  }
+
+  // ── localStorage Persistence ──
+
+  function saveActiveSchedule(data) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      if (e.name === "QuotaExceededError") {
+        alert("Storage is full. Your schedule may not persist across page reloads.");
+      }
+    }
+  }
+
+  function loadActiveSchedule() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const data = JSON.parse(raw);
+      // Parse ISO date strings back to Date objects in steps
+      if (data.steps) {
+        data.steps.forEach((s) => {
+          s.dateTime = new Date(s.dateTime);
+        });
+      }
+      data.eatTime = new Date(data.eatTime);
+      return data;
+    } catch {
+      return null;
+    }
+  }
+
+  function clearActiveSchedule() {
+    localStorage.removeItem(STORAGE_KEY);
+  }
+
+  function updateStoredChecks() {
+    const stored = loadActiveSchedule();
+    if (!stored || !computedSchedule) return;
+    stored.steps.forEach((s, i) => {
+      if (computedSchedule[i]) {
+        s.checked = computedSchedule[i].checked;
+      }
+    });
+    // Re-serialize dates
+    stored.steps.forEach((s) => {
+      if (s.dateTime instanceof Date) s.dateTime = s.dateTime.toISOString();
+    });
+    if (stored.eatTime instanceof Date) stored.eatTime = stored.eatTime.toISOString();
+    saveActiveSchedule(stored);
+  }
+
+  // ── Active Schedule Banner ──
+
+  function showBanner(data) {
+    const bannerStyleName = document.getElementById("banner-style-name");
+    const bannerNextStep = document.getElementById("banner-next-step");
+
+    bannerStyleName.textContent = `${data.styleName} \u2014 ${data.methodLabel}`;
+
+    // Find next unchecked step
+    const now = new Date();
+    const nextStep = data.steps.find((s) => !s.checked && s.dateTime > now);
+    if (nextStep) {
+      const time = nextStep.dateTime.toLocaleTimeString(undefined, {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+      bannerNextStep.textContent = `Next: ${nextStep.label} at ${time}`;
+    } else {
+      const unchecked = data.steps.find((s) => !s.checked);
+      if (unchecked) {
+        bannerNextStep.textContent = `Next: ${unchecked.label}`;
+      } else {
+        bannerNextStep.textContent = "All steps complete!";
+      }
+    }
+
+    bannerEl.classList.remove("hidden");
+  }
+
+  btnBannerView.addEventListener("click", () => {
+    const data = loadActiveSchedule();
+    if (!data) return;
+    restoreSchedule(data);
+  });
+
+  btnBannerClear.addEventListener("click", () => {
+    stopCountdown();
+    clearActiveSchedule();
+    computedSchedule = null;
+    selectedMethod = null;
+    bannerEl.classList.add("hidden");
+    goToStep(1);
+  });
+
+  // ── Restore Schedule from Storage ──
+
+  function restoreSchedule(data) {
+    // Set form values
+    styleSelect.value = data.styleKey;
+    countInput.value = data.numPizzas;
+    ovenSelect.value = data.ovenType;
+    // Set datetime
+    const eatDate = data.eatTime instanceof Date ? data.eatTime : new Date(data.eatTime);
+    const off = eatDate.getTimezoneOffset() * 60000;
+    datetimeInput.value = new Date(eatDate.getTime() - off).toISOString().slice(0, 16);
+
+    // Set method
+    selectedMethod = FERMENT_METHODS[data.methodId] || FERMENT_METHODS["same-day"];
+
+    // Restore steps with Date objects
+    computedSchedule = data.steps.map((s) => ({
+      ...s,
+      dateTime: s.dateTime instanceof Date ? s.dateTime : new Date(s.dateTime),
+    }));
+
+    bannerEl.classList.add("hidden");
+    renderScheduleTimeline(computedSchedule);
+    goToStep(3);
+  }
+
+  // ── Save as Image ──
+
+  btnSaveImg.addEventListener("click", () => {
+    if (typeof html2canvas === "undefined") {
+      alert("Image export is loading. Please try again in a moment.");
+      return;
+    }
+    const target = timelineEl;
+    // Temporarily add a background for the capture
+    const origBg = target.style.background;
+    target.style.background = "#faf6f1";
+    target.style.padding = "1.5rem";
+
+    html2canvas(target, {
+      backgroundColor: "#faf6f1",
+      scale: 2,
+      useCORS: true,
+      logging: false,
+    }).then((canvas) => {
+      target.style.background = origBg;
+      target.style.padding = "";
+      const link = document.createElement("a");
+      link.download = `pie-lab-schedule-${Date.now()}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }).catch((err) => {
+      target.style.background = origBg;
+      target.style.padding = "";
+      console.error("Screenshot failed:", err);
+      alert("Could not generate image. Try again.");
+    });
+  });
+
+  // ── On-Load: Check for Active Schedule ──
+
+  const saved = loadActiveSchedule();
+  if (saved && saved.steps && saved.steps.length > 0) {
+    showBanner(saved);
+  }
+
+})();

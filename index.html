@@ -189,6 +189,100 @@
       </div>
     </section>
 
+    <!-- Dough Scheduler -->
+    <section class="dough-scheduler" id="dough-scheduler">
+      <h2>Dough Scheduler</h2>
+      <p class="scheduler-subtitle">Plan backward from dinner time. We'll tell you exactly when to start each step.</p>
+
+      <!-- Active Schedule Banner (shown when a saved schedule exists) -->
+      <div class="active-schedule-banner hidden" id="active-schedule-banner">
+        <div class="banner-info">
+          <span class="banner-icon">&#128339;</span>
+          <div>
+            <strong id="banner-style-name"></strong>
+            <span id="banner-next-step"></span>
+          </div>
+        </div>
+        <div class="banner-actions">
+          <button type="button" class="btn-banner-view" id="btn-banner-view">View Schedule</button>
+          <button type="button" class="btn-banner-clear" id="btn-banner-clear">Clear</button>
+        </div>
+      </div>
+
+      <!-- Wizard Progress Bar -->
+      <div class="scheduler-progress" id="scheduler-progress">
+        <div class="progress-step active" data-step="1">
+          <span class="progress-dot">1</span>
+          <span class="progress-label">The Basics</span>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="2">
+          <span class="progress-dot">2</span>
+          <span class="progress-label">Method</span>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="3">
+          <span class="progress-dot">3</span>
+          <span class="progress-label">Schedule</span>
+        </div>
+      </div>
+
+      <!-- Step 1: The Basics -->
+      <div class="scheduler-step active" id="sched-step-1">
+        <h3>The Basics</h3>
+        <div class="scheduler-form">
+          <div class="sched-field">
+            <label for="sched-style">Pizza Style</label>
+            <select id="sched-style" required>
+              <option value="" disabled selected>Select a style&hellip;</option>
+            </select>
+          </div>
+          <div class="sched-field">
+            <label for="sched-count">Number of Pizzas</label>
+            <input type="number" id="sched-count" min="1" max="50" value="2" />
+          </div>
+          <div class="sched-field">
+            <label for="sched-datetime">When do you want to eat?</label>
+            <input type="datetime-local" id="sched-datetime" />
+          </div>
+          <div class="sched-field">
+            <label for="sched-oven">Oven Type</label>
+            <select id="sched-oven">
+              <option value="stone">Home Oven + Stone</option>
+              <option value="steel">Home Oven + Steel</option>
+              <option value="ooni">Ooni / Portable</option>
+              <option value="wood-fired">Wood-Fired</option>
+            </select>
+          </div>
+        </div>
+        <div class="scheduler-actions">
+          <button type="button" class="btn-sched-next" id="btn-sched-next-1" disabled>Next &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Method Selection -->
+      <div class="scheduler-step" id="sched-step-2">
+        <h3>Your Fermentation Method</h3>
+        <div class="method-card" id="sched-method-card"></div>
+        <div class="sched-validation hidden" id="sched-validation"></div>
+        <div class="scheduler-actions">
+          <button type="button" class="btn-sched-back" id="btn-sched-back-2">&larr; Back</button>
+          <button type="button" class="btn-sched-next" id="btn-sched-next-2">Build My Schedule &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Full Schedule Timeline -->
+      <div class="scheduler-step" id="sched-step-3">
+        <h3>Your Dough Schedule</h3>
+        <div class="schedule-timeline" id="sched-timeline"></div>
+        <div class="scheduler-actions">
+          <button type="button" class="btn-sched-back" id="btn-sched-back-3">&larr; Back</button>
+          <button type="button" class="btn-sched-save-img" id="btn-sched-save-img">Save as Image</button>
+          <button type="button" class="btn-sched-start-over" id="btn-sched-start-over">Start Over</button>
+        </div>
+      </div>
+    </section>
+
     <!-- Knowledge Hub -->
     <section class="knowledge-hub">
       <h2>The Pizza Knowledge Hub</h2>
@@ -345,7 +439,9 @@
   <script src="recipes.js"></script>
   <script src="knowledge.js"></script>
   <script src="tools-data.js"></script>
+  <script src="scheduler-data.js"></script>
   <script src="journal.js"></script>
   <script src="app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 </body>
 </html>

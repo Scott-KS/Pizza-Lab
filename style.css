@@ -2866,6 +2866,629 @@ footer {
   border-radius: 6px;
 }
 
+/* ══════════════════════════════════════════════════════
+   DOUGH SCHEDULER
+   ══════════════════════════════════════════════════════ */
+
+.dough-scheduler {
+  background: var(--clr-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.dough-scheduler h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+  color: var(--clr-primary);
+}
+
+.scheduler-subtitle {
+  color: var(--clr-text-light);
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+/* ── Progress Bar ────────────────────────────────── */
+
+.scheduler-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 2rem;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  position: relative;
+}
+
+.progress-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--clr-border);
+  color: var(--clr-text-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: background 0.3s, color 0.3s;
+}
+
+.progress-step.active .progress-dot {
+  background: var(--clr-primary);
+  color: #fff;
+}
+
+.progress-step.completed .progress-dot {
+  background: #2e7d32;
+  color: #fff;
+}
+
+.progress-label {
+  font-size: 0.75rem;
+  color: var(--clr-text-light);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progress-step.active .progress-label {
+  color: var(--clr-primary);
+  font-weight: 700;
+}
+
+.progress-step.completed .progress-label {
+  color: #2e7d32;
+}
+
+.progress-line {
+  width: 60px;
+  height: 2px;
+  background: var(--clr-border);
+  margin: 0 0.5rem;
+  margin-bottom: 1.5rem;
+  transition: background 0.3s;
+}
+
+.progress-line.completed {
+  background: #2e7d32;
+}
+
+/* ── Wizard Steps ────────────────────────────────── */
+
+.scheduler-step {
+  display: none;
+}
+
+.scheduler-step.active {
+  display: block;
+  animation: fadePanel 0.3s ease;
+}
+
+.scheduler-step h3 {
+  font-size: 1.15rem;
+  margin-bottom: 1.25rem;
+  color: var(--clr-text);
+}
+
+.scheduler-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.sched-field {
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.sched-field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--clr-text);
+}
+
+.sched-field select,
+.sched-field input {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: var(--clr-card);
+  color: var(--clr-text);
+  transition: border-color 0.2s;
+}
+
+.sched-field select:focus,
+.sched-field input:focus {
+  border-color: var(--clr-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(140, 53, 36, 0.1);
+}
+
+.scheduler-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.btn-sched-next {
+  padding: 0.65rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--clr-primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-sched-next:hover:not(:disabled) {
+  background: var(--clr-primary-dark);
+  transform: translateY(-1px);
+}
+
+.btn-sched-next:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-sched-back {
+  padding: 0.65rem 1.25rem;
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--clr-text);
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-sched-back:hover {
+  background: var(--clr-section-bg);
+}
+
+.btn-sched-save-img {
+  padding: 0.65rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--clr-accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-sched-save-img:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.btn-sched-start-over {
+  padding: 0.65rem 1.25rem;
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--clr-text-light);
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-sched-start-over:hover {
+  background: #fce4ec;
+  color: #c62828;
+  border-color: #ef9a9a;
+}
+
+/* ── Method Card (Step 2) ────────────────────────── */
+
+.method-card {
+  background: var(--clr-section-bg);
+  border: 2px solid var(--clr-primary);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  text-align: center;
+}
+
+.method-badge {
+  display: inline-block;
+  background: var(--clr-primary);
+  color: #fff;
+  padding: 0.35rem 1rem;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.method-description {
+  font-size: 0.95rem;
+  color: var(--clr-text);
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.method-reason {
+  font-size: 0.85rem;
+  color: var(--clr-text-light);
+  font-style: italic;
+}
+
+.method-time-badge {
+  display: inline-block;
+  background: var(--clr-card);
+  border: 1px solid var(--clr-border);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: var(--clr-text-light);
+  margin-top: 0.75rem;
+}
+
+.sched-validation {
+  background: #fff3e0;
+  border: 1px solid #ffcc02;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  color: #e65100;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* ── Schedule Timeline (Step 3) ──────────────────── */
+
+.schedule-timeline {
+  margin-bottom: 1rem;
+}
+
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.schedule-header h4 {
+  font-size: 1.05rem;
+  color: var(--clr-text);
+  margin: 0;
+}
+
+.schedule-method-pill {
+  background: var(--clr-primary);
+  color: #fff;
+  padding: 0.2rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.schedule-steps {
+  position: relative;
+}
+
+.sched-timeline-step {
+  display: flex;
+  gap: 1rem;
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+.sched-timeline-step:last-child {
+  padding-bottom: 0;
+}
+
+.sched-step-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 40px;
+}
+
+.sched-step-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid var(--clr-border);
+  background: var(--clr-card);
+  color: var(--clr-text-light);
+  flex-shrink: 0;
+}
+
+.sched-step-dot:hover {
+  border-color: var(--clr-primary);
+  transform: scale(1.1);
+}
+
+.sched-timeline-step.step-next .sched-step-dot {
+  border-color: var(--clr-primary);
+  background: var(--clr-primary);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(140, 53, 36, 0.15);
+}
+
+.sched-timeline-step.step-done .sched-step-dot {
+  border-color: var(--clr-text-light);
+  background: var(--clr-section-bg);
+  color: var(--clr-text-light);
+}
+
+.sched-timeline-step.step-checked .sched-step-dot {
+  border-color: #2e7d32;
+  background: #2e7d32;
+  color: #fff;
+}
+
+.sched-step-line {
+  width: 2px;
+  flex: 1;
+  background: var(--clr-border);
+  margin-top: 4px;
+  min-height: 20px;
+}
+
+.sched-timeline-step.step-checked .sched-step-line {
+  background: #2e7d32;
+}
+
+.sched-step-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.sched-step-time {
+  font-size: 0.8rem;
+  color: var(--clr-text-light);
+  font-weight: 500;
+  margin-bottom: 0.2rem;
+}
+
+.sched-step-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--clr-text);
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.sched-timeline-step.step-checked .sched-step-label {
+  text-decoration: line-through;
+  opacity: 0.55;
+}
+
+.step-duration-badge {
+  display: inline-block;
+  background: var(--clr-section-bg);
+  color: var(--clr-text-light);
+  padding: 0.1rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-decoration: none !important;
+}
+
+.sched-step-instruction {
+  font-size: 0.9rem;
+  color: var(--clr-text);
+  line-height: 1.5;
+  margin-bottom: 0.4rem;
+}
+
+.sched-timeline-step.step-checked .sched-step-instruction {
+  opacity: 0.5;
+}
+
+/* Why it matters accordion */
+.step-why-toggle {
+  background: none;
+  border: none;
+  color: var(--clr-accent);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.2rem 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: color 0.2s;
+}
+
+.step-why-toggle:hover {
+  color: var(--clr-primary);
+}
+
+.step-why-toggle::after {
+  content: "\25B6";
+  font-size: 0.6rem;
+  transition: transform 0.2s;
+}
+
+.step-why-toggle.open::after {
+  transform: rotate(90deg);
+}
+
+.step-why-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  font-size: 0.85rem;
+  color: var(--clr-text-light);
+  line-height: 1.5;
+  padding: 0;
+  background: var(--clr-section-bg);
+  border-radius: 6px;
+}
+
+.step-why-content.open {
+  max-height: 200px;
+  padding: 0.6rem 0.75rem;
+  margin-top: 0.3rem;
+}
+
+/* Countdown on next step */
+.sched-step-countdown {
+  display: inline-block;
+  background: var(--clr-primary);
+  color: #fff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.4rem;
+}
+
+.sched-step-countdown.countdown-now {
+  background: #2e7d32;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ── Active Schedule Banner ──────────────────────── */
+
+.active-schedule-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, var(--clr-primary), var(--clr-primary-dark));
+  color: #fff;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.banner-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.banner-icon {
+  font-size: 1.5rem;
+}
+
+.banner-info strong {
+  display: block;
+  font-size: 1rem;
+}
+
+.banner-info span {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.banner-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-banner-view {
+  padding: 0.4rem 1rem;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-banner-view:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.btn-banner-clear {
+  padding: 0.4rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.btn-banner-clear:hover {
+  color: #fff;
+}
+
+/* ── Scheduler Responsive ────────────────────────── */
+
+@media (max-width: 600px) {
+  .dough-scheduler {
+    padding: 1.25rem;
+  }
+  .scheduler-form {
+    flex-direction: column;
+  }
+  .sched-field {
+    flex: 1 1 100%;
+  }
+  .progress-label {
+    display: none;
+  }
+  .progress-line {
+    margin-bottom: 0;
+  }
+  .scheduler-actions {
+    flex-wrap: wrap;
+  }
+  .scheduler-actions button {
+    flex: 1 1 auto;
+  }
+  .active-schedule-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+  .banner-info {
+    flex-direction: column;
+  }
+  .schedule-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .method-card {
+    padding: 1.25rem;
+  }
+}
+
 /* ── Print Styles ────────────────────────────────── */
 @media print {
   body {
@@ -2878,6 +3501,7 @@ footer {
   .knowledge-hub,
   .pizza-toolkit,
   .pizza-journal,
+  .dough-scheduler,
   .results-actions,
   .results-learn-more,
   .modal-overlay,
