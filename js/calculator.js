@@ -3,6 +3,10 @@
    Page: index.html
    ══════════════════════════════════════════════════════ */
 
+// ── Populate Pizza Style Selector ────────────────────
+const typeSelectEl = document.getElementById("pizza-type");
+if (typeSelectEl) populateStyleSelect(typeSelectEl);
+
 // ── Populate Oven-Type Selector ──────────────────────
 const ovenSelect = document.getElementById("calc-oven-type");
 if (ovenSelect) {
