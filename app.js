@@ -31,34 +31,6 @@
   startAuto();
 })();
 
-// ── Unit Toggle ──────────────────────────────────────
-const unitBtns = document.querySelectorAll(".unit-btn");
-let currentUnit = "F";
-
-unitBtns.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    if (btn.dataset.unit === currentUnit) return;
-
-    unitBtns.forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    const tempInput = document.getElementById("oven-temp");
-    const currentVal = Number(tempInput.value);
-
-    if (btn.dataset.unit === "C") {
-      tempInput.value = fToC(currentVal);
-      tempInput.min = 150;
-      tempInput.max = 540;
-    } else {
-      tempInput.value = cToF(currentVal);
-      tempInput.min = 300;
-      tempInput.max = 1000;
-    }
-
-    currentUnit = btn.dataset.unit;
-  });
-});
-
 // ── Dynamic Size Selector ────────────────────────────
 const typeSelect = document.getElementById("pizza-type");
 const sizeSelect = document.getElementById("pizza-size");
@@ -91,11 +63,8 @@ document.getElementById("pizza-form").addEventListener("submit", (e) => {
   const type = document.getElementById("pizza-type").value;
   const sizeKey = sizeSelect.value;
   const numPizzas = parseInt(document.getElementById("num-pizzas").value, 10);
-  let ovenTemp = parseInt(document.getElementById("oven-temp").value, 10);
 
-  if (!type || !sizeKey || !numPizzas || !ovenTemp) return;
-
-  const ovenTempF = currentUnit === "C" ? cToF(ovenTemp) : ovenTemp;
+  if (!type || !sizeKey || !numPizzas) return;
 
   const recipe = PIZZA_RECIPES[type];
   if (!recipe) return;
@@ -104,6 +73,7 @@ document.getElementById("pizza-form").addEventListener("submit", (e) => {
   const dough = calculateDough(recipe, numPizzas, sizeKey);
   const sauce = calculateSauce(recipe, numPizzas, sizeKey);
   const toppings = calculateToppings(recipe, numPizzas, sizeKey);
+  const ovenTempF = recipe.idealTemp.max;
   const bakingInfo = getBakingInfo(recipe, ovenTempF);
 
   // ── Render title ──
@@ -139,24 +109,12 @@ document.getElementById("pizza-form").addEventListener("submit", (e) => {
   );
 
   // Baking instructions
-  const recTempDisplay =
-    currentUnit === "C"
-      ? `${fToC(bakingInfo.recommendedTemp)}°C`
-      : `${bakingInfo.recommendedTemp}°F`;
-
-  let tempNote = "";
-  if (bakingInfo.tempCategory === "optimal") {
-    tempNote = `Your oven is in the ideal range for ${recipe.name} pizza.`;
-  } else if (bakingInfo.tempCategory === "moderate") {
-    tempNote = `Your oven is a bit below ideal (${recipe.idealTemp.min}°F+), but you'll still get great results with a longer bake.`;
-  } else {
-    tempNote = `Your oven is well below ideal for ${recipe.name}. Consider using a pizza stone or steel to maximize heat retention. Bake longer and watch carefully.`;
-  }
+  const recTempF = bakingInfo.recommendedTemp;
+  const recTempC = fToC(recTempF);
 
   document.getElementById("baking-instructions").innerHTML = `
-    <p><strong>Preheat oven to:</strong> ${recTempDisplay} (preheat for at least 45 minutes)</p>
+    <p><strong>Preheat oven to:</strong> ${recTempF}°F / ${recTempC}°C (preheat for at least 45 minutes)</p>
     <p><strong>Bake time:</strong> ${bakingInfo.bakeTime}</p>
-    <p>${tempNote}</p>
   `;
 
   // Pro tips
