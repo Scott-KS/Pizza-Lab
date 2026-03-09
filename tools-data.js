@@ -154,7 +154,7 @@ const FERMENTATION_SCHEDULES = {
   },
 
   "ohio-valley": {
-    name: "Ohio River Valley",
+    name: "Ohio Valley",
     method: "Room Temperature",
     totalTime: "2–3 hours",
     steps: [
@@ -315,7 +315,7 @@ const HYDRATION_RANGES = {
   },
 
   "ohio-valley": {
-    name: "Ohio River Valley",
+    name: "Ohio Valley",
     min: 54, max: 64, default: 58,
     sweet: { low: 56, high: 61 },
     effects: {

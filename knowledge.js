@@ -176,7 +176,7 @@ const STYLE_LIBRARY = {
   },
 
   "ohio-valley": {
-    name: "Ohio River Valley",
+    name: "Ohio Valley",
     origin: "Wheeling, West Virginia / Ohio Valley — 1950s",
     story:
       "Ohio Valley-style pizza originated at DiCarlo's Pizza in Wheeling, West Virginia, though it spread across the upper Ohio River Valley into eastern Ohio and western Pennsylvania. The defining feature is cold cheese: after the pizza comes out of the oven with sauce and toppings already baked, shredded provolone is piled on top and served immediately. The cheese partially melts from the residual heat but stays mostly unmelted — a texture that's unlike any other pizza style.",
@@ -476,7 +476,7 @@ const TOPPING_COMBOS = {
   },
 
   "ohio-valley": {
-    name: "Ohio River Valley",
+    name: "Ohio Valley",
     combos: [
       {
         tier: "Classic",

@@ -385,7 +385,7 @@ const PIZZA_RECIPES = {
   },
 
   "ohio-valley": {
-    name: "Ohio River Valley",
+    name: "Ohio Valley",
     isSheet: false,
     sizes: {
       '10': { label: '10″ round', doughWeight: 200 },
