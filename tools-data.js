@@ -125,6 +125,74 @@ const FERMENTATION_SCHEDULES = {
       { label: "Top & Bake", offsetMin: 1725, desc: "Cheese goes under the sauce. Bake until edges are deeply golden." },
     ],
   },
+
+  "st-louis": {
+    name: "St. Louis",
+    method: "No Rise",
+    totalTime: "30 minutes – 1 hour",
+    steps: [
+      { label: "Mix Dough", offsetMin: 0, desc: "Combine flour, water, salt (no yeast). Mix until a stiff, smooth dough forms — this is a cracker crust." },
+      { label: "Rest", offsetMin: 10, desc: "Cover and rest 15–20 minutes. The gluten relaxes for easier rolling." },
+      { label: "Roll Very Thin", offsetMin: 30, desc: "Roll the dough as thin as possible — 1/8 inch or less. Use a rolling pin, not hands." },
+      { label: "Preheat Oven", offsetMin: 15, desc: "Preheat to 475–525°F with a stone or steel for even bottom heat." },
+      { label: "Top & Bake", offsetMin: 45, desc: "Add sweet sauce, Provel cheese, and toppings. Bake until cracker-crisp bottom and bubbly cheese." },
+    ],
+  },
+
+  "new-haven": {
+    name: "New Haven Apizza",
+    method: "Room Temperature",
+    totalTime: "8–24 hours",
+    steps: [
+      { label: "Mix & Knead", offsetMin: 0, desc: "Combine high-gluten flour, water, salt, yeast. Knead until smooth and elastic (10–15 min)." },
+      { label: "Bulk Ferment", offsetMin: 30, desc: "Cover and rest at room temperature for 6–8 hours. The dough should more than double." },
+      { label: "Ball the Dough", offsetMin: 480, desc: "Divide into larger balls (New Haven pies tend to be big). Shape tightly." },
+      { label: "Final Proof", offsetMin: 510, desc: "Rest dough balls at room temp for 2–4 hours until puffy and relaxed." },
+      { label: "Preheat Oven", offsetMin: 600, desc: "Get your oven as hot as possible. Coal-fired ovens hit 600–800°F. Home ovens — max temp with steel." },
+      { label: "Ready to Bake", offsetMin: 660, desc: "Stretch into an oblong shape (not a perfect circle). Top sparingly — the crust is the star." },
+    ],
+  },
+
+  "ohio-valley": {
+    name: "Ohio River Valley",
+    method: "Room Temperature",
+    totalTime: "2–3 hours",
+    steps: [
+      { label: "Mix & Knead", offsetMin: 0, desc: "Combine bread flour, water, salt, oil, sugar, yeast. Knead until smooth." },
+      { label: "Bulk Ferment", offsetMin: 15, desc: "Cover and rest at room temperature for 1–2 hours until doubled." },
+      { label: "Sheet & Rest", offsetMin: 90, desc: "Press dough into an oiled sheet pan. Let rest 20 minutes if it springs back." },
+      { label: "Preheat Oven", offsetMin: 75, desc: "Preheat to 475–525°F." },
+      { label: "Top & Bake", offsetMin: 120, desc: "Add sauce and pepperoni (baked on). Bake until crust is golden." },
+      { label: "Add Cold Cheese", offsetMin: 135, desc: "Immediately after removing from oven, pile on shredded provolone. Serve right away." },
+    ],
+  },
+
+  "cast-iron": {
+    name: "Cast Iron",
+    method: "Quick Rise",
+    totalTime: "1.5–3 hours",
+    steps: [
+      { label: "Mix & Knead", offsetMin: 0, desc: "Combine flour, water, salt, yeast, and a touch of sugar. Mix until smooth." },
+      { label: "Bulk Ferment", offsetMin: 15, desc: "Cover and rest at room temperature for 1–2 hours until puffy." },
+      { label: "Butter the Skillet", offsetMin: 90, desc: "Generously butter a 10 or 12-inch cast iron skillet. Press dough into the pan." },
+      { label: "Pan Proof", offsetMin: 100, desc: "Let the dough rest in the buttered skillet for 20–30 minutes." },
+      { label: "Stovetop Start", offsetMin: 130, desc: "Place skillet on stovetop over medium heat for 2–3 minutes to start crisping the bottom." },
+      { label: "Top & Oven Finish", offsetMin: 135, desc: "Add toppings, transfer to a preheated 475–500°F oven. Bake until cheese is bubbly and crust is golden." },
+    ],
+  },
+
+  "school-night": {
+    name: "School Night (No Rise)",
+    method: "No Rise",
+    totalTime: "30 minutes",
+    steps: [
+      { label: "Mix Dough", offsetMin: 0, desc: "Combine flour, water, salt, oil, and extra yeast. Mix just until smooth — don't overwork." },
+      { label: "Brief Rest", offsetMin: 8, desc: "Let dough rest 5 minutes while you prep toppings and preheat." },
+      { label: "Preheat Oven", offsetMin: 5, desc: "Preheat to 475–500°F. Use a stone or steel if you have one." },
+      { label: "Shape & Top", offsetMin: 15, desc: "Press or roll the dough directly on parchment. Add sauce, cheese, and toppings." },
+      { label: "Bake", offsetMin: 20, desc: "Bake 8–12 minutes until cheese is melted and crust is golden. Dinner is served." },
+    ],
+  },
 };
 
 
@@ -221,6 +289,66 @@ const HYDRATION_RANGES = {
     },
     notes: "Pan pizza dough is forgiving — the pan does the work. Higher hydration gives a lighter result, but even 65% makes a great pie.",
   },
+
+  "st-louis": {
+    name: "St. Louis",
+    min: 40, max: 52, default: 47,
+    sweet: { low: 45, high: 49 },
+    effects: {
+      low: "Extremely stiff and cracker-like. Rolls out paper-thin easily. Snaps like a crisp cracker.",
+      mid: "Classic cracker crust. Stiff but workable. Rolls thin without tearing. Perfect snap.",
+      high: "Still crispy but slightly more pliable. Easier to roll but less dramatic crunch.",
+    },
+    notes: "St. Louis crust is intentionally dry — some versions use no yeast at all. The low hydration creates the signature cracker texture. Don't be surprised by how stiff this dough feels.",
+  },
+
+  "new-haven": {
+    name: "New Haven Apizza",
+    min: 58, max: 68, default: 61,
+    sweet: { low: 59, high: 64 },
+    effects: {
+      low: "Slightly denser, easier to stretch into the thin oblong shape. Good char development.",
+      mid: "Classic New Haven texture — thin, charred, with just enough airiness in the cornicione. Stretches well.",
+      high: "More open crumb, harder to keep thin. Beautiful leopard spotting but can puff more than traditional.",
+    },
+    notes: "New Haven dough runs leaner than Neapolitan — no oil, no sugar. The high-gluten flour handles the moderate hydration well. The coal-fired oven does the rest.",
+  },
+
+  "ohio-valley": {
+    name: "Ohio River Valley",
+    min: 54, max: 64, default: 58,
+    sweet: { low: 56, high: 61 },
+    effects: {
+      low: "Sturdier crust, easier to hold when loaded with cold cheese. More bread-like texture.",
+      mid: "Medium-thickness crust with enough structure to support the pile of cold cheese on top.",
+      high: "Softer, more tender crumb. The cold cheese can weigh it down — handle carefully.",
+    },
+    notes: "Ohio Valley crust needs to be sturdy enough to support a pile of cold cheese on top without collapsing. Don't go too high on hydration or you'll have a soggy base.",
+  },
+
+  "cast-iron": {
+    name: "Cast Iron",
+    min: 58, max: 68, default: 62,
+    sweet: { low: 60, high: 65 },
+    effects: {
+      low: "Denser crumb, very easy to press into the skillet. Crispy butter-fried bottom.",
+      mid: "Nice balance — enough airiness for a tender crumb with a stellar butter-crisped bottom.",
+      high: "More open crumb, almost focaccia-like. The butter in the pan keeps it manageable.",
+    },
+    notes: "Cast-iron pizza is forgiving because the butter in the hot pan fries the bottom regardless. Focus more on the stovetop-to-oven technique than hydration precision.",
+  },
+
+  "school-night": {
+    name: "School Night (No Rise)",
+    min: 55, max: 65, default: 60,
+    sweet: { low: 58, high: 62 },
+    effects: {
+      low: "Easier to handle and shape quickly. Slightly cracker-like texture since there's no rise.",
+      mid: "Workable dough that presses out easily. Tender enough to be enjoyable despite no fermentation.",
+      high: "Softer, slightly more bread-like. Harder to shape quickly. Can be sticky without rest time.",
+    },
+    notes: "Without fermentation, the hydration matters less for flavor and more for workability. Aim for a dough that's easy to press out quickly — you're not going for perfection, you're going for dinner.",
+  },
 };
 
 
@@ -236,7 +364,7 @@ const OVEN_SETUPS = [
     tempRange: "450–550°F (230–290°C)",
     preheatTime: "60 minutes minimum",
     heatTransfer: "Moderate — stone absorbs then radiates heat. Good heat retention once hot.",
-    bestStyles: ["new-york", "chicago-tavern", "sicilian", "grandma", "thin-crust"],
+    bestStyles: ["new-york", "chicago-tavern", "sicilian", "grandma", "thin-crust", "ohio-valley", "cast-iron", "school-night", "st-louis"],
     limitations: "Takes longer to recover heat between pizzas. Can crack with thermal shock — always preheat gradually.",
     styleBakeTimes: {
       neapolitan: { time: "8–12 min", note: "Won't get true leopard charring, but still great. Use broiler for last 2 min." },
@@ -247,6 +375,11 @@ const OVEN_SETUPS = [
       grandma: { time: "16–22 min", note: "Pan on stone gives great bottom crust. Watch the edges." },
       "thin-crust": { time: "7–10 min", note: "Quick bake. Watch carefully — thin crust goes from done to burnt fast." },
       pan: { time: "14–20 min", note: "Cast iron on stone. Great combo for bottom heat." },
+      "st-louis": { time: "8–12 min", note: "Cracker crust bakes fast. Watch for browning — it goes quick on stone." },
+      "new-haven": { time: "7–10 min", note: "Get the stone screaming hot. Use broiler for char if your oven maxes at 550°F." },
+      "ohio-valley": { time: "12–16 min", note: "Bake with sauce and pepperoni. Add cold cheese immediately after pulling." },
+      "cast-iron": { time: "12–16 min", note: "Start on stovetop, then skillet on stone to finish. Great bottom heat." },
+      "school-night": { time: "8–12 min", note: "Fast bake — no need for long preheating if you're in a rush." },
     },
     tips: [
       "Place stone on lowest rack for maximum preheat.",
@@ -262,7 +395,7 @@ const OVEN_SETUPS = [
     tempRange: "450–550°F (230–290°C)",
     preheatTime: "45–60 minutes",
     heatTransfer: "High — steel conducts heat 18× faster than stone. Fastest bottom crust in a home oven.",
-    bestStyles: ["neapolitan", "new-york", "thin-crust", "chicago-tavern"],
+    bestStyles: ["neapolitan", "new-york", "thin-crust", "chicago-tavern", "new-haven", "cast-iron", "school-night"],
     limitations: "Heavy (15–25 lbs). Expensive ($70–150). Takes up oven space. Not needed for pan/sheet styles.",
     styleBakeTimes: {
       neapolitan: { time: "5–8 min", note: "Best home oven option for Neapolitan. Use broiler method — steel on top rack, broiler on." },
@@ -273,6 +406,11 @@ const OVEN_SETUPS = [
       grandma: { time: "14–20 min", note: "Steel gives excellent bottom fry. Great for Grandma style." },
       "thin-crust": { time: "5–7 min", note: "Fast! The steel crisps thin crust incredibly well. Don't walk away." },
       pan: { time: "12–18 min", note: "Cast iron + steel = double the bottom heat. Excellent." },
+      "st-louis": { time: "6–10 min", note: "Steel crisps the thin cracker crust fast. Watch closely." },
+      "new-haven": { time: "5–8 min", note: "Steel + broiler gets closest to coal-fired char at home." },
+      "ohio-valley": { time: "10–14 min", note: "Good bottom crisp from the steel. Add cold cheese when it comes out." },
+      "cast-iron": { time: "10–14 min", note: "Stovetop start + transfer to steel. Double the bottom-crisping power." },
+      "school-night": { time: "6–10 min", note: "Steel gets dinner done even faster. 6 minutes on a hot steel." },
     },
     tips: [
       "The broiler method: steel on top rack + broiler = closest to a pizza oven at home.",
@@ -288,7 +426,7 @@ const OVEN_SETUPS = [
     tempRange: "750–950°F (400–510°C)",
     preheatTime: "15–20 minutes",
     heatTransfer: "Very high — direct flame + stone floor. Closest to wood-fired performance.",
-    bestStyles: ["neapolitan", "new-york", "thin-crust"],
+    bestStyles: ["neapolitan", "new-york", "thin-crust", "new-haven"],
     limitations: "Small opening — max 12–13\" pizza. Learning curve for flame management. Not ideal for pan/sheet styles.",
     styleBakeTimes: {
       neapolitan: { time: "60–90 sec", note: "This is what Oonis are built for. Rotate every 15–20 seconds." },
@@ -299,6 +437,11 @@ const OVEN_SETUPS = [
       grandma: { time: "Not ideal", note: "Sheet pans don't fit. Use your home oven for Grandma." },
       "thin-crust": { time: "90 sec–3 min", note: "Lower temp (~600°F). Thin crust can scorch in seconds at full heat." },
       pan: { time: "Not ideal", note: "Cast iron can fit some Oonis, but bottom heat is tricky. Home oven is better." },
+      "st-louis": { time: "2–4 min", note: "Lower temp (~600°F). Paper-thin crust chars in seconds at full heat." },
+      "new-haven": { time: "90 sec–3 min", note: "Ooni can replicate coal-oven intensity. Oblong shape may need trimming to fit." },
+      "ohio-valley": { time: "3–5 min", note: "Bake the base in the Ooni, then add cold cheese outside. Works if the pan fits." },
+      "cast-iron": { time: "Not ideal", note: "Skillet may fit smaller Oonis but the stovetop step is lost. Use home oven." },
+      "school-night": { time: "2–4 min", note: "Quick dough + quick oven = dinner in 20 minutes total." },
     },
     tips: [
       "Turn pizza every 15–20 seconds for even charring.",
@@ -314,7 +457,7 @@ const OVEN_SETUPS = [
     tempRange: "800–1,000°F (425–540°C)",
     preheatTime: "1–2 hours (fire management)",
     heatTransfer: "Extreme — radiant heat from dome + conductive heat from floor. Unmatched char and flavor.",
-    bestStyles: ["neapolitan", "new-york", "thin-crust"],
+    bestStyles: ["neapolitan", "new-york", "thin-crust", "new-haven"],
     limitations: "Expensive ($500–5,000+). Requires fire-building skill. Weather dependent. Space needed. Long preheat.",
     styleBakeTimes: {
       neapolitan: { time: "60–90 sec", note: "The gold standard. A well-built fire gives the authentic leopard-spotted cornicione." },
@@ -325,6 +468,11 @@ const OVEN_SETUPS = [
       grandma: { time: "10–15 min", note: "Moderate fire works well. The wood flavor elevates Grandma pizza." },
       "thin-crust": { time: "90 sec–3 min", note: "Moderate fire. Thin crust chars fast — be ready with your peel." },
       pan: { time: "10–15 min", note: "Cast iron on the oven floor with moderate fire. Smoky, crispy, incredible." },
+      "st-louis": { time: "3–5 min", note: "Moderate fire. The smokiness is a nice bonus for the cracker crust." },
+      "new-haven": { time: "90 sec–2 min", note: "Wood-fired is the closest substitute for coal. Get it ripping hot." },
+      "ohio-valley": { time: "6–10 min", note: "Moderate fire. Bake the base, pull, pile cold cheese. Smoky contrast." },
+      "cast-iron": { time: "8–12 min", note: "Skillet on the oven floor. Skip the stovetop step — the fire does the work." },
+      "school-night": { time: "3–5 min", note: "Moderate fire. Quick dough in a wood-fired oven is underrated." },
     },
     tips: [
       "Build the fire 1–2 hours ahead. Push coals to the side when ready.",

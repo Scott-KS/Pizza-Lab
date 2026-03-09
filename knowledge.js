@@ -140,6 +140,91 @@ const STYLE_LIBRARY = {
       { label: "Ferment", value: "24\u201348 hour cold proof" },
     ],
   },
+
+  "st-louis": {
+    name: "St. Louis",
+    origin: "St. Louis, Missouri — mid-20th century",
+    story:
+      "St. Louis-style pizza was born in The Hill neighborhood, the city's Italian-American enclave. Ed and Margie Imo opened Imo's Pizza in 1964, popularizing a cracker-thin crust topped with Provel cheese — a processed blend of cheddar, Swiss, and provolone created by a local dairy. The pizza is cut into squares (party cut or tavern cut) and eaten without folding. It's a divisive style: locals are fiercely loyal, while outsiders often question the processed cheese.",
+    authenticity:
+      "Authentic St. Louis pizza requires Provel cheese — no substitutes. The crust must be unleavened and cracker-thin with no rise or puff. It is always cut into squares, never triangles. The sauce tends to be sweeter than New York or Neapolitan sauces, often with a noticeable oregano punch.",
+    debates:
+      "The biggest debate: is Provel cheese an abomination or a regional treasure? Outside Missouri, Provel is hard to find and even harder to love on first taste. But for St. Louisans, it's the whole point. There's also the question of whether a cracker crust with no yeast even counts as 'pizza dough.'",
+    keyFacts: [
+      { label: "Key Cheese", value: "Provel (processed blend)" },
+      { label: "Crust", value: "Cracker-thin, no yeast" },
+      { label: "Cut", value: "Squares (party cut)" },
+      { label: "Icon Shop", value: "Imo's Pizza (1964)" },
+    ],
+  },
+
+  "new-haven": {
+    name: "New Haven Apizza",
+    origin: "New Haven, Connecticut — early 1900s",
+    story:
+      "New Haven apizza (pronounced 'ah-BEETS') traces to Frank Pepe, a Neapolitan immigrant who started baking tomato pies in 1925 on Wooster Street. Pepe's and Sally's Apizza (opened by Pepe's nephew in 1938) created a rivalry that still defines the city's pizza identity. The style uses a coal-fired oven that reaches 600 to 800 degrees, producing a charred, blistered, thin crust with an irregular, oblong shape.",
+    authenticity:
+      "A true New Haven apizza is baked in a coal-fired oven — not wood, not gas. The default pie is a 'plain tomato pie' with no mozzarella (just sauce, garlic, pecorino, and olive oil). You add mozzarella as a topping. The crust is charred — sometimes aggressively — and that char is considered a feature, not a flaw.",
+    debates:
+      "Pepe's vs. Sally's vs. Modern is the eternal New Haven debate. The 'plain tomato pie' concept baffles outsiders who expect cheese on their pizza. The level of acceptable char is controversial — what New Haven calls 'well done,' most places would call 'burnt.' And the clam pie: genius or gimmick?",
+    keyFacts: [
+      { label: "Oven", value: "Coal-fired, 600–800°F" },
+      { label: "Default Order", value: "Plain tomato pie (no mozz)" },
+      { label: "Shape", value: "Oblong, irregular" },
+      { label: "Icon Shop", value: "Frank Pepe's (1925)" },
+    ],
+  },
+
+  "ohio-valley": {
+    name: "Ohio River Valley",
+    origin: "Wheeling, West Virginia / Ohio Valley — 1950s",
+    story:
+      "Ohio Valley-style pizza originated at DiCarlo's Pizza in Wheeling, West Virginia, though it spread across the upper Ohio River Valley into eastern Ohio and western Pennsylvania. The defining feature is cold cheese: after the pizza comes out of the oven with sauce and toppings already baked, shredded provolone is piled on top and served immediately. The cheese partially melts from the residual heat but stays mostly unmelted — a texture that's unlike any other pizza style.",
+    authenticity:
+      "Authentic Ohio Valley pizza has cold shredded provolone applied after baking — this is non-negotiable. The crust is a medium-thickness, slightly bready rectangle. Pepperoni is baked on, but the cheese is always cold. The pizza is typically sold by the slice from a counter window and eaten immediately while the contrast between hot crust and cold cheese is at its peak.",
+    debates:
+      "The obvious debate: why would you put cold cheese on hot pizza? Defenders say the contrast of hot, saucy crust with cool, tangy cheese is the entire point — it's meant to be eaten immediately when the contrast is sharpest. Critics say it's just pizza that wasn't finished properly.",
+    keyFacts: [
+      { label: "Signature Move", value: "Cold cheese after bake" },
+      { label: "Cheese", value: "Provolone, shredded cold" },
+      { label: "Shape", value: "Rectangle, counter-cut" },
+      { label: "Icon Shop", value: "DiCarlo's (1945)" },
+    ],
+  },
+
+  "cast-iron": {
+    name: "Cast Iron Skillet",
+    origin: "Home kitchens — modern era",
+    story:
+      "Cast-iron pizza isn't tied to a specific city or tradition — it evolved in home kitchens as cooks discovered that a well-seasoned skillet produces an incredible crust. The butter (or oil) in the hot pan essentially fries the bottom of the dough, creating a golden, crispy base that rivals any pizzeria. It became a home-cooking phenomenon through food blogs and YouTube in the 2010s, offering pizzeria-quality results with minimal equipment.",
+    authenticity:
+      "There's no rigid authenticity standard for cast-iron pizza, which is part of its appeal. The core requirement is a preheated or stovetop-started cast-iron skillet. Butter in the pan is traditional for the fried-bottom effect. The dough is typically pressed into the pan and par-cooked on the stovetop before finishing in the oven. It's a technique-driven style rather than a tradition-driven one.",
+    debates:
+      "Butter vs. oil in the pan is the main debate — butter gives a richer, more golden crust but can burn. Stovetop-to-oven vs. all-oven is another: starting on the stove gives a crispier bottom but requires more attention. Some argue this is just pan pizza in a different pan, but the butter-fried bottom and stovetop start create a distinctly different result.",
+    keyFacts: [
+      { label: "Pan", value: "10–12″ cast iron skillet" },
+      { label: "Fat", value: "Butter (traditional)" },
+      { label: "Method", value: "Stovetop → oven" },
+      { label: "Rise Time", value: "1–2 hours" },
+    ],
+  },
+
+  "school-night": {
+    name: "School Night (No Rise)",
+    origin: "Home kitchens — modern convenience",
+    story:
+      "School Night pizza exists because sometimes you need pizza and you need it now. It skips the long fermentation that most serious dough recipes demand, using more yeast and immediate baking to get dinner on the table in about 30 minutes from start to finish. It's not going to win any pizza competitions, but it scratches the itch when ordering delivery feels like giving up and you want to make something with your own hands on a busy weeknight.",
+    authenticity:
+      "There are no authenticity rules for School Night pizza — the whole point is speed and flexibility. Use whatever flour you have, whatever cheese is in the fridge, whatever toppings the kids will eat. The only real requirement is that it works fast: no long rise, no special equipment, no planning ahead.",
+    debates:
+      "Purists will say no-rise pizza isn't real pizza, and they're not entirely wrong — the flavor complexity from fermentation is missing. But School Night pizza is honest about what it is: a quick, homemade alternative to delivery that's better than frozen. The debate is really about whether speed or craft matters more on a Tuesday night.",
+    keyFacts: [
+      { label: "Total Time", value: "~30 minutes" },
+      { label: "Rise", value: "None" },
+      { label: "Yeast", value: "High (compensates for no rise)" },
+      { label: "Best For", value: "Weeknight dinners" },
+    ],
+  },
 };
 
 // ── Topping Combinations ────────────────────────────
@@ -335,6 +420,132 @@ const TOPPING_COMBOS = {
       },
     ],
   },
+
+  "st-louis": {
+    name: "St. Louis",
+    combos: [
+      {
+        tier: "Classic",
+        name: "The Deluxe (STL Classic)",
+        ingredients: ["Provel cheese", "Sweet sauce", "Sausage", "Pepperoni", "Mushroom", "Green pepper", "Onion"],
+        why: "The 'deluxe' is the default order at most St. Louis pizza joints — loaded toppings on cracker crust.",
+      },
+      {
+        tier: "Modern",
+        name: "BBQ Chicken STL",
+        ingredients: ["Provel cheese", "BBQ sauce base", "Grilled chicken", "Red onion", "Cilantro"],
+        why: "The gooey Provel works surprisingly well with sweet-smoky BBQ — a modern STL favorite.",
+      },
+      {
+        tier: "Seasonal",
+        name: "Garden Tomato & Basil",
+        ingredients: ["Provel cheese", "Fresh tomato slices", "Basil", "Garlic oil drizzle"],
+        why: "Summer tomatoes shine on the thin cracker crust with melted Provel underneath.",
+      },
+    ],
+  },
+
+  "new-haven": {
+    name: "New Haven Apizza",
+    combos: [
+      {
+        tier: "Classic",
+        name: "Plain Tomato Pie",
+        ingredients: ["Crushed tomato", "Garlic", "Pecorino Romano", "Olive oil"],
+        why: "The original — no mozzarella. The charred crust, bright sauce, and salty pecorino are all you need.",
+      },
+      {
+        tier: "Classic",
+        name: "White Clam Pie",
+        ingredients: ["Fresh littleneck clams", "Garlic", "Olive oil", "Pecorino", "Oregano"],
+        why: "Pepe's white clam pie is legendary — briny clams, garlic, oil, no tomato, no mozzarella.",
+      },
+      {
+        tier: "Modern",
+        name: "Mashed Potato & Bacon",
+        ingredients: ["Mozzarella", "Mashed potato", "Bacon", "Scallion", "Sour cream drizzle"],
+        why: "A BAR specialty — the coal-fired char balances the richness of potato and bacon.",
+      },
+      {
+        tier: "Seasonal",
+        name: "Fig & Prosciutto",
+        ingredients: ["Mozzarella", "Fresh figs", "Prosciutto (after bake)", "Arugula", "Honey drizzle"],
+        why: "Late-summer figs with the aggressive char of a coal oven — sweet, salty, bitter, smoky.",
+      },
+    ],
+  },
+
+  "ohio-valley": {
+    name: "Ohio River Valley",
+    combos: [
+      {
+        tier: "Classic",
+        name: "The DiCarlo's Standard",
+        ingredients: ["Baked: Tomato sauce, pepperoni", "After bake: Cold shredded provolone"],
+        why: "Hot pepperoni, bright sauce, cold tangy cheese — the signature Ohio Valley contrast.",
+      },
+      {
+        tier: "Modern",
+        name: "Italian Cold Cut",
+        ingredients: ["Baked: Sauce, pepperoni", "After bake: Cold provolone, shredded lettuce, Italian dressing"],
+        why: "An Italian sub meets pizza — the cold toppings on hot crust blur the line.",
+      },
+      {
+        tier: "Seasonal",
+        name: "Garden Fresh OV",
+        ingredients: ["Baked: Sauce, light mozz", "After bake: Cold provolone, diced fresh tomato, basil"],
+        why: "Summer garden tomatoes added cold with the cheese amplify the hot-cold contrast.",
+      },
+    ],
+  },
+
+  "cast-iron": {
+    name: "Cast Iron",
+    combos: [
+      {
+        tier: "Classic",
+        name: "Butter Crust Margherita",
+        ingredients: ["Fresh mozzarella", "Crushed tomato", "Fresh basil", "Butter in pan"],
+        why: "The butter-fried bottom adds richness to the classic Margherita — simple and stunning.",
+      },
+      {
+        tier: "Modern",
+        name: "Breakfast Pizza",
+        ingredients: ["Mozzarella", "Scrambled eggs", "Bacon", "Cheddar", "Everything bagel seasoning"],
+        why: "Cast iron is the natural breakfast vessel — the buttery crust is already halfway to a great egg dish.",
+      },
+      {
+        tier: "Seasonal",
+        name: "Wild Mushroom & Fontina",
+        ingredients: ["Fontina cheese", "Mixed wild mushrooms", "Thyme", "Truffle oil", "Garlic"],
+        why: "Fall mushrooms with nutty fontina in a butter-crisped crust — earthy, rich, satisfying.",
+      },
+    ],
+  },
+
+  "school-night": {
+    name: "School Night (No Rise)",
+    combos: [
+      {
+        tier: "Classic",
+        name: "The Weeknight Special",
+        ingredients: ["Shredded mozzarella", "Jarred marinara", "Pepperoni"],
+        why: "Three ingredients from the fridge. Fast, familiar, and better than delivery.",
+      },
+      {
+        tier: "Modern",
+        name: "Pesto Chicken",
+        ingredients: ["Mozzarella", "Basil pesto", "Shredded rotisserie chicken", "Sun-dried tomato", "Parmesan"],
+        why: "Rotisserie chicken + jarred pesto = zero-effort flavor. No-rise dough keeps it quick.",
+      },
+      {
+        tier: "Seasonal",
+        name: "Leftover Night",
+        ingredients: ["Mozzarella", "Whatever protein is in the fridge", "Whatever veggies need using up"],
+        why: "School Night pizza is the ultimate fridge cleaner — speed and flexibility over precision.",
+      },
+    ],
+  },
 };
 
 // ── Flour Guide ─────────────────────────────────────
@@ -433,7 +644,7 @@ const CHEESE_SAUCE_GUIDE = {
       description:
         "The workhorse of American pizza. Low-moisture mozzarella (whole milk, not part-skim) has less water content, so it melts into a uniform, stretchy, golden-brown sheet. It browns and blisters predictably, making it ideal for longer bakes at moderate temperatures where fresh mozzarella would release too much water.",
       tips: "Buy whole-milk low-moisture mozz in blocks and shred it yourself \u2014 pre-shredded contains anti-caking agents that affect melt. For the best stretch, let shredded cheese come to room temperature before topping.",
-      bestStyles: ["new-york", "chicago-tavern", "sicilian", "grandma", "thin-crust"],
+      bestStyles: ["new-york", "chicago-tavern", "sicilian", "grandma", "thin-crust", "new-haven", "st-louis", "cast-iron", "school-night"],
     },
     {
       id: "provolone",
@@ -441,7 +652,7 @@ const CHEESE_SAUCE_GUIDE = {
       description:
         "Sharp provolone has a tangy, assertive flavor that stands up to heavy tomato sauce and garlic. Deli-sliced rounds lay flat across the dough, creating an even layer that melts smoothly under the sauce. It's the traditional cheese for Grandma pizza, where its sharpness cuts through the oily, garlicky sauce.",
       tips: "Ask for it sliced thin at the deli counter \u2014 about 1/8 inch thick. Lay rounds slightly overlapping across the dough before adding sauce on top. Sharp provolone (aged 6+ months) has significantly more flavor than mild.",
-      bestStyles: ["grandma"],
+      bestStyles: ["grandma", "ohio-valley"],
     },
     {
       id: "brick-cheese",
@@ -457,7 +668,7 @@ const CHEESE_SAUCE_GUIDE = {
       description:
         "A hard, salty sheep's milk cheese from central Italy. Pecorino Romano is sharper and saltier than Parmesan, with a distinctive tang that adds depth as a finishing cheese. It's grated over the top of pizza before or after baking \u2014 never used as the primary melting cheese.",
       tips: "Buy it in wedges and grate it fresh. A Microplane gives a fine, snow-like texture that melts instantly. Use it sparingly \u2014 it's very salty. A tablespoon per pizza is usually enough. Add before baking for a toasted flavor, or after for a sharper hit.",
-      bestStyles: ["sicilian", "grandma", "new-york"],
+      bestStyles: ["sicilian", "grandma", "new-york", "new-haven"],
     },
     {
       id: "ricotta",
@@ -466,6 +677,14 @@ const CHEESE_SAUCE_GUIDE = {
         "A soft, creamy, slightly sweet fresh cheese. Ricotta is used as a topping dolloped in spoonfuls across the pizza, adding creamy richness that contrasts with acidic tomato sauce. It works best on styles with enough structure to hold the added moisture \u2014 thick crusts or fast-baked pies.",
       tips: "Use whole-milk ricotta, never part-skim. Drain it in a fine-mesh strainer for 30 minutes before use to remove excess whey. Dollop it in small spoonfuls rather than spreading \u2014 you want pockets of cream, not a uniform layer.",
       bestStyles: ["new-york", "sicilian", "pan"],
+    },
+    {
+      id: "parmesan",
+      name: "Parmesan (Parmigiano-Reggiano)",
+      description:
+        "A hard, granular, intensely savory cheese aged at least 12 months (often 24–36). True Parmigiano-Reggiano from Emilia-Romagna has a complex, nutty, umami-rich flavor that makes it an ideal finishing cheese. It doesn't melt into strings like mozzarella — instead it crisps and browns, adding salty, savory depth as a topping accent or mixed into other cheeses.",
+      tips: "Buy it in wedges and grate fresh — pre-grated Parmesan has anti-caking agents and stale flavor. A Microplane gives a fine, fluffy texture; a box grater gives thicker shreds that crisp up when baked. Use it as a finishing touch after baking for maximum aroma, or mix into shredded mozzarella before baking for umami depth. A little goes a long way.",
+      bestStyles: ["new-york", "thin-crust", "cast-iron", "school-night", "new-haven"],
     },
   ],
 
@@ -476,7 +695,7 @@ const CHEESE_SAUCE_GUIDE = {
       description:
         "Hand-crushed or blended canned San Marzano tomatoes with just salt, garlic, and maybe basil. No cooking \u2014 the sauce cooks on the pizza. This is the Neapolitan approach: the raw tomato flavor stays bright, fresh, and acidic, and the brief high-heat bake keeps it vibrant.",
       tips: "Use whole peeled San Marzano tomatoes (DOP if you can find them). Crush by hand for a chunky texture, or blend briefly for smooth. Don't add sugar \u2014 good San Marzanos are naturally sweet. Season lightly; the sauce should taste like tomatoes.",
-      bestStyles: ["neapolitan", "grandma", "sicilian"],
+      bestStyles: ["neapolitan", "grandma", "sicilian", "new-haven"],
     },
     {
       id: "cooked-sauce",
@@ -484,7 +703,7 @@ const CHEESE_SAUCE_GUIDE = {
       description:
         "Crushed tomatoes simmered with garlic, oregano, sugar, and olive oil for 20\u201330 minutes. Cooking mellows the acidity, deepens the flavor, and thickens the sauce. This is the standard for New York and most American pizza styles. It's more concentrated and less watery than raw crushed tomato.",
       tips: "Simmer low and slow \u2014 don't boil or the sauce will taste bitter. A pinch of sugar balances acidity. Let it cool completely before topping pizza, or it will make the dough soggy. The sauce should be thick enough to hold its shape on a spoon.",
-      bestStyles: ["new-york", "chicago-tavern", "pan", "thin-crust"],
+      bestStyles: ["new-york", "chicago-tavern", "pan", "thin-crust", "st-louis", "ohio-valley", "cast-iron", "school-night"],
     },
     {
       id: "vodka-sauce",
@@ -541,6 +760,12 @@ const CHEESE_SAUCE_GUIDE = {
       "vodka-sauce":   { rating: "avoid",     note: "Ricotta + vodka cream = too much dairy, no contrast." },
       "white-garlic":  { rating: "excellent", note: "Ricotta as the base of a white pie with garlic oil is iconic." },
     },
+    "parmesan": {
+      "crushed-raw":   { rating: "excellent", note: "Grated Parmesan over raw crushed tomato — bright, salty, umami-rich." },
+      "cooked-sauce":  { rating: "excellent", note: "A finishing shower of Parm over cooked sauce adds savory depth to any slice." },
+      "vodka-sauce":   { rating: "good",      note: "Parmesan and cream are natural partners — rich and indulgent." },
+      "white-garlic":  { rating: "excellent", note: "Parmesan crisped on a white pie with garlic oil is pure umami." },
+    },
   },
 
   styleRecommendations: {
@@ -552,5 +777,10 @@ const CHEESE_SAUCE_GUIDE = {
     "grandma":         { cheese: "provolone",          sauce: "crushed-raw" },
     "thin-crust":      { cheese: "low-moisture-mozz",  sauce: "cooked-sauce" },
     "pan":             { cheese: "low-moisture-mozz",   sauce: "cooked-sauce" },
+    "st-louis":        { cheese: "low-moisture-mozz",  sauce: "cooked-sauce" },
+    "new-haven":       { cheese: "fresh-mozz",         sauce: "crushed-raw" },
+    "ohio-valley":     { cheese: "provolone",          sauce: "cooked-sauce" },
+    "cast-iron":       { cheese: "low-moisture-mozz",  sauce: "crushed-raw" },
+    "school-night":    { cheese: "low-moisture-mozz",  sauce: "cooked-sauce" },
   },
 };

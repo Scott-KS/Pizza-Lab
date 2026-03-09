@@ -308,6 +308,193 @@ const PIZZA_RECIPES = {
       "Cheese goes under the sauce for a classic pan pizza.",
     ],
   },
+
+  "st-louis": {
+    name: "St. Louis",
+    isSheet: false,
+    sizes: {
+      '10': { label: '10″ round', doughWeight: 140 },
+      '12': { label: '12″ round', doughWeight: 175 },
+      '14': { label: '14″ round', doughWeight: 225 },
+    },
+    flour: "All-Purpose Flour",
+    yeast: "Instant Dry Yeast",
+    hydration: 0.47,
+    saltPct: 0.025,
+    oilPct: 0.02,
+    sugarPct: 0.02,
+    yeastPct: 0.003,
+    sauce: [
+      { ingredient: "Crushed Tomatoes", base: 70 },
+      { ingredient: "Tomato Paste", base: 10 },
+      { ingredient: "Dried Oregano", base: 2 },
+      { ingredient: "Garlic Powder", base: 1 },
+      { ingredient: "Sugar", base: 3 },
+      { ingredient: "Salt", base: 1.5 },
+    ],
+    toppings: [
+      { ingredient: "Provel Cheese (shredded)", base: 130 },
+      { ingredient: "Italian Sausage or Pepperoni", base: 30 },
+    ],
+    idealTemp: { min: 475, max: 525 },
+    bakeTime: { hot: "7–9 minutes", medium: "10–13 minutes", low: "14–18 minutes" },
+    tips: [
+      "Provel cheese is the signature — a processed blend of provolone, Swiss, and cheddar.",
+      "If you can't find Provel, blend equal parts white cheddar, Swiss, and provolone.",
+      "Roll the dough paper-thin with a rolling pin — thinner than Chicago tavern.",
+      "Cut in squares (party cut). Never in triangles.",
+      "The sauce is sweeter than most — the sugar is intentional.",
+    ],
+  },
+
+  "new-haven": {
+    name: "New Haven Apizza",
+    isSheet: false,
+    sizes: {
+      '12': { label: '12″ round', doughWeight: 270 },
+      '14': { label: '14″ round', doughWeight: 350 },
+      '16': { label: '16″ round', doughWeight: 450 },
+    },
+    flour: "High-Gluten Bread Flour",
+    yeast: "Instant Dry Yeast",
+    hydration: 0.61,
+    saltPct: 0.03,
+    oilPct: 0.02,
+    sugarPct: 0,
+    yeastPct: 0.004,
+    sauce: [
+      { ingredient: "Crushed Tomatoes", base: 90 },
+      { ingredient: "Garlic (minced)", base: 5 },
+      { ingredient: "Dried Oregano", base: 2 },
+      { ingredient: "Salt", base: 2 },
+      { ingredient: "Olive Oil", base: 5 },
+    ],
+    toppings: [
+      { ingredient: "Low-Moisture Mozzarella (shredded)", base: 130 },
+      { ingredient: "Pecorino Romano (grated)", base: 20 },
+    ],
+    idealTemp: { min: 600, max: 800 },
+    bakeTime: { hot: "3–5 minutes", medium: "8–12 minutes", low: "14–18 minutes" },
+    tips: [
+      "New Haven 'apizza' is pronounced 'ah-BEETS' — it's the local dialect.",
+      "A 'plain' tomato pie has no mozzarella — just sauce, garlic, pecorino, and olive oil.",
+      "The famous white clam pie: skip sauce, add fresh littleneck clams, garlic, olive oil, oregano.",
+      "Crank your oven as high as it goes — char is a feature, not a flaw.",
+      "The crust should be thin, charred, and cracker-like in spots.",
+    ],
+  },
+
+  "ohio-valley": {
+    name: "Ohio River Valley",
+    isSheet: false,
+    sizes: {
+      '10': { label: '10″ round', doughWeight: 200 },
+      '12': { label: '12″ round', doughWeight: 260 },
+      '14': { label: '14″ round', doughWeight: 330 },
+    },
+    flour: "Bread Flour",
+    yeast: "Instant Dry Yeast",
+    hydration: 0.58,
+    saltPct: 0.025,
+    oilPct: 0.03,
+    sugarPct: 0.02,
+    yeastPct: 0.005,
+    sauce: [
+      { ingredient: "Crushed Tomatoes", base: 90 },
+      { ingredient: "Tomato Paste", base: 15 },
+      { ingredient: "Garlic Powder", base: 1 },
+      { ingredient: "Dried Oregano", base: 2 },
+      { ingredient: "Sugar", base: 3 },
+      { ingredient: "Salt", base: 2 },
+    ],
+    toppings: [
+      { ingredient: "Provolone (shredded, added COLD after bake)", base: 150 },
+      { ingredient: "Pepperoni (baked on the pizza)", base: 50 },
+    ],
+    idealTemp: { min: 475, max: 525 },
+    bakeTime: { hot: "8–10 minutes", medium: "12–15 minutes", low: "16–20 minutes" },
+    tips: [
+      "The signature move: cheese goes on COLD after the pizza comes out of the oven.",
+      "Bake the crust with sauce and toppings (pepperoni, etc.) — no cheese in the oven.",
+      "Pull from oven, immediately pile on cold shredded provolone. It half-melts from residual heat.",
+      "Cut in squares while the cheese is still setting.",
+      "The contrast of hot crust and half-melted cold cheese is the whole point.",
+    ],
+  },
+
+  "cast-iron": {
+    name: "Cast Iron",
+    isSheet: false,
+    sizes: {
+      '10': { label: '10″ cast iron skillet', doughWeight: 240 },
+      '12': { label: '12″ cast iron skillet', doughWeight: 320 },
+    },
+    flour: "All-Purpose Flour",
+    yeast: "Instant Dry Yeast",
+    hydration: 0.62,
+    saltPct: 0.025,
+    oilPct: 0.04,
+    sugarPct: 0.01,
+    yeastPct: 0.006,
+    sauce: [
+      { ingredient: "Crushed Tomatoes", base: 80 },
+      { ingredient: "Garlic (minced)", base: 3 },
+      { ingredient: "Dried Oregano", base: 1 },
+      { ingredient: "Salt", base: 1.5 },
+      { ingredient: "Olive Oil", base: 5 },
+    ],
+    toppings: [
+      { ingredient: "Shredded Mozzarella", base: 140 },
+      { ingredient: "Parmesan (grated)", base: 15 },
+    ],
+    idealTemp: { min: 475, max: 525 },
+    bakeTime: { hot: "12–14 minutes", medium: "16–20 minutes", low: "22–26 minutes" },
+    tips: [
+      "Butter the skillet generously — 2 tablespoons minimum for a 12\" skillet.",
+      "Press dough to edges and up the sides slightly for a lip.",
+      "Start on the stovetop over medium heat for 2 minutes to set the bottom, then transfer to oven.",
+      "The butter creates an incredible crispy, golden bottom crust.",
+      "Let the pizza rest in the skillet 2 minutes before sliding out.",
+    ],
+  },
+
+  "school-night": {
+    name: "School Night (No Rise)",
+    isSheet: false,
+    sizes: {
+      '10': { label: '10″ round', doughWeight: 200 },
+      '12': { label: '12″ round', doughWeight: 260 },
+      '14': { label: '14″ round', doughWeight: 330 },
+    },
+    flour: "All-Purpose Flour",
+    yeast: "Instant Dry Yeast",
+    hydration: 0.60,
+    saltPct: 0.025,
+    oilPct: 0.03,
+    sugarPct: 0.01,
+    yeastPct: 0.008,
+    sauce: [
+      { ingredient: "Crushed Tomatoes", base: 80 },
+      { ingredient: "Garlic (minced)", base: 3 },
+      { ingredient: "Dried Oregano", base: 1 },
+      { ingredient: "Salt", base: 1.5 },
+      { ingredient: "Sugar", base: 2 },
+      { ingredient: "Olive Oil", base: 5 },
+    ],
+    toppings: [
+      { ingredient: "Shredded Mozzarella", base: 130 },
+      { ingredient: "Parmesan (grated)", base: 10 },
+    ],
+    idealTemp: { min: 475, max: 525 },
+    bakeTime: { hot: "8–10 minutes", medium: "12–15 minutes", low: "16–20 minutes" },
+    tips: [
+      "No rise needed — mix, rest 10 minutes, shape, and bake.",
+      "Higher yeast compensates for zero fermentation time.",
+      "The crust won't have complex fermented flavor, but it's dinner in 30 minutes.",
+      "Roll with a rolling pin or press by hand — either works.",
+      "Great for kids' pizza night — let them shape and top their own.",
+    ],
+  },
 };
 
 /**
@@ -368,7 +555,7 @@ function calculateDough(recipe, numPizzas, sizeKey) {
  */
 function calculateSauce(recipe, numPizzas, sizeKey) {
   // Size multiplier for round pizzas (12″ is baseline)
-  const roundMultiplier = { '10': 0.70, '12': 1.0, '14': 1.36 };
+  const roundMultiplier = { '10': 0.70, '12': 1.0, '14': 1.36, '16': 1.78 };
 
   return recipe.sauce.map((s) => {
     let perUnit;
@@ -388,7 +575,7 @@ function calculateSauce(recipe, numPizzas, sizeKey) {
  * Calculate topping ingredients scaled by number of pizzas/pans.
  */
 function calculateToppings(recipe, numPizzas, sizeKey) {
-  const roundMultiplier = { '10': 0.70, '12': 1.0, '14': 1.36 };
+  const roundMultiplier = { '10': 0.70, '12': 1.0, '14': 1.36, '16': 1.78 };
 
   return recipe.toppings.map((t) => {
     let perUnit;
