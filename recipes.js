@@ -386,11 +386,11 @@ const PIZZA_RECIPES = {
 
   "ohio-valley": {
     name: "Ohio Valley",
-    isSheet: false,
+    isSheet: true,
     sizes: {
-      '10': { label: '10″ round', doughWeight: 200 },
-      '12': { label: '12″ round', doughWeight: 260 },
-      '14': { label: '14″ round', doughWeight: 330 },
+      'quarter': { label: 'Quarter sheet (9×13″)', doughWeight: 260 },
+      'half': { label: 'Half sheet (13×18″)', doughWeight: 480 },
+      'full': { label: 'Full sheet (18×26″)', doughWeight: 900 },
     },
     flour: "Bread Flour",
     yeast: "Instant Dry Yeast",
