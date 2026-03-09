@@ -50,6 +50,15 @@
     <section class="calculator-card">
       <h2>Build Your Recipe</h2>
 
+      <div class="settings-toggle-row">
+        <span class="toggle-label" id="toggle-label-rec">Recommended</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="settings-mode-toggle" />
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label" id="toggle-label-personal">Personal</span>
+      </div>
+
       <form id="pizza-form">
         <div class="form-group">
           <label for="pizza-type">Pizza Style</label>
@@ -85,6 +94,39 @@
 
         <button type="submit" class="btn-calculate">Calculate Recipe</button>
       </form>
+
+      <div id="personal-settings-editor" class="personal-settings-editor hidden">
+        <h3>Personal Settings <span id="personal-style-label"></span></h3>
+        <div class="settings-grid">
+          <div class="setting-field">
+            <label for="ps-hydration">Hydration %</label>
+            <input type="number" id="ps-hydration" step="0.1" min="40" max="100" />
+          </div>
+          <div class="setting-field">
+            <label for="ps-salt">Salt %</label>
+            <input type="number" id="ps-salt" step="0.1" min="0" max="10" />
+          </div>
+          <div class="setting-field">
+            <label for="ps-oil">Oil %</label>
+            <input type="number" id="ps-oil" step="0.1" min="0" max="20" />
+          </div>
+          <div class="setting-field">
+            <label for="ps-sugar">Sugar %</label>
+            <input type="number" id="ps-sugar" step="0.1" min="0" max="20" />
+          </div>
+          <div class="setting-field">
+            <label for="ps-yeast">Yeast %</label>
+            <input type="number" id="ps-yeast" step="0.01" min="0" max="5" />
+          </div>
+          <div class="setting-field">
+            <label for="ps-dough-weight">Dough Ball (g)</label>
+            <input type="number" id="ps-dough-weight" step="1" min="50" max="2000" />
+          </div>
+        </div>
+        <div class="settings-actions">
+          <button type="button" class="btn-reset-settings" id="btn-reset-personal">Reset to Default</button>
+        </div>
+      </div>
     </section>
 
     <section id="results" class="results-card hidden">
@@ -139,6 +181,7 @@
 
       <div class="results-actions">
         <button class="btn-print" onclick="window.print()">Print Recipe</button>
+        <button class="btn-log-bake" id="btn-log-bake">Log This Bake</button>
         <button class="btn-reset" onclick="document.getElementById('results').classList.add('hidden'); window.scrollTo({top:0,behavior:'smooth'});">New Recipe</button>
       </div>
     </section>
@@ -176,7 +219,120 @@
         <div class="toolkit-panel" id="tool-troubleshoot" role="tabpanel"></div>
       </div>
     </section>
+
+    <!-- Pizza Journal -->
+    <section class="pizza-journal" id="pizza-journal">
+      <h2>Pizza Journal</h2>
+
+      <div class="journal-toolbar">
+        <div class="journal-filter">
+          <label for="journal-style-filter">Filter by style:</label>
+          <select id="journal-style-filter">
+            <option value="all">All Styles</option>
+          </select>
+        </div>
+        <button class="btn-compare" id="btn-compare" disabled>Compare</button>
+      </div>
+
+      <div class="journal-form-wrapper hidden" id="journal-form-wrapper">
+        <h3>Log a Bake</h3>
+        <form id="journal-form">
+          <div class="journal-form-grid">
+            <div class="form-group">
+              <label for="j-style">Pizza Style</label>
+              <select id="j-style" required>
+                <option value="" disabled selected>Select a style…</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="j-date">Date</label>
+              <input type="date" id="j-date" required />
+            </div>
+          </div>
+
+          <div class="dough-snapshot" id="j-dough-snapshot">
+            <span class="snapshot-label">Dough Snapshot:</span>
+            <span class="snapshot-empty">Calculate a recipe first to capture dough settings</span>
+          </div>
+
+          <div class="journal-form-grid">
+            <div class="form-group">
+              <label for="j-bake-temp">Bake Temp (°F)</label>
+              <input type="number" id="j-bake-temp" min="300" max="1000" />
+            </div>
+            <div class="form-group">
+              <label for="j-bake-time">Bake Time (min)</label>
+              <input type="number" id="j-bake-time" min="1" max="120" />
+            </div>
+            <div class="form-group">
+              <label for="j-oven-type">Oven Type</label>
+              <select id="j-oven-type">
+                <option value="home">Home</option>
+                <option value="outdoor">Outdoor / Pizza Oven</option>
+                <option value="commercial">Commercial</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Rating</label>
+            <div class="star-rating" id="j-star-rating">
+              <button type="button" class="star" data-value="1" aria-label="1 star">&#9733;</button>
+              <button type="button" class="star" data-value="2" aria-label="2 stars">&#9733;</button>
+              <button type="button" class="star" data-value="3" aria-label="3 stars">&#9733;</button>
+              <button type="button" class="star" data-value="4" aria-label="4 stars">&#9733;</button>
+              <button type="button" class="star" data-value="5" aria-label="5 stars">&#9733;</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="j-notes">Notes</label>
+            <textarea id="j-notes" rows="3" placeholder="How did it turn out? What would you change?"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Photo</label>
+            <div class="photo-upload" id="j-photo-upload">
+              <input type="file" id="j-photo-input" accept="image/*" class="sr-only" />
+              <div class="photo-preview hidden" id="j-photo-preview">
+                <img id="j-photo-img" alt="Bake photo preview" />
+                <button type="button" class="photo-remove" id="j-photo-remove" aria-label="Remove photo">&times;</button>
+              </div>
+              <label for="j-photo-input" class="photo-placeholder" id="j-photo-placeholder">
+                <span class="photo-icon">📷</span>
+                <span>Add a photo</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="journal-form-actions">
+            <button type="submit" class="btn-save-entry">Save Entry</button>
+            <button type="button" class="btn-cancel-entry" id="btn-cancel-entry">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <button class="btn-new-entry" id="btn-new-entry">+ Log a Bake</button>
+
+      <div class="journal-entries" id="journal-entries">
+        <div class="journal-empty" id="journal-empty">
+          <p class="empty-icon">📓</p>
+          <p>No bakes logged yet.</p>
+          <p class="empty-hint">Calculate a recipe and click "Log This Bake" to start tracking your pizza journey.</p>
+        </div>
+      </div>
+
+      <div class="journal-comparison hidden" id="journal-comparison"></div>
+    </section>
   </main>
+
+  <!-- Journal Detail Modal -->
+  <div class="modal-overlay hidden" id="journal-detail-modal">
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
 
   <footer>
     <p>&copy; 2026 The Pie Lab. All rights reserved.</p>
@@ -185,6 +341,7 @@
   <script src="recipes.js"></script>
   <script src="knowledge.js"></script>
   <script src="tools-data.js"></script>
+  <script src="journal.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
