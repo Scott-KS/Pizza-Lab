@@ -15,13 +15,8 @@ const OVEN_PREHEAT_MINUTES = {
   steel: 55,        // "45–60 minutes" → 55 for safety
   ooni: 20,         // "15–20 minutes" → 20 for safety
   "wood-fired": 90, // "1–2 hours" → 90 as middle ground
-};
-
-const OVEN_LABELS = {
-  stone: "Home Oven + Pizza Stone",
-  steel: "Home Oven + Pizza Steel",
-  ooni: "Ooni / Portable Pizza Oven",
-  "wood-fired": "Wood-Fired Oven",
+  "cast-iron": 15,  // Stovetop preheat + brief oven finish
+  pan: 45,          // Standard home oven preheat
 };
 
 
@@ -193,7 +188,7 @@ function buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWe
   const min = (m) => m * 60000; // minutes to ms
 
   const preheatMinutes = OVEN_PREHEAT_MINUTES[ovenType] || 60;
-  const ovenLabel = OVEN_LABELS[ovenType] || ovenType;
+  const ovenLabel = OVEN_TYPES[ovenType] || ovenType;
   const isNoRise = NO_RISE_STYLES.includes(styleKey);
 
   // ── Compute step times backward from eat ──

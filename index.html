@@ -9,7 +9,8 @@
   <meta property="og:image" content="assets/logos/logo-stacked.svg">
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body data-page="calculator">
+
   <!-- Pizza Carousel Hero -->
   <section class="pizza-hero">
     <div class="carousel-track">
@@ -49,6 +50,24 @@
     <button class="carousel-arrow next" aria-label="Next">&#8594;</button>
   </section>
 
+  <!-- Shared Navigation -->
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" />
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link" data-page="calculator">Calculator</a>
+        <a href="schedule.html" class="nav-link" data-page="schedule">
+          Schedule
+          <span class="schedule-badge hidden"></span>
+        </a>
+        <a href="learn.html" class="nav-link" data-page="learn">Learn</a>
+        <a href="journal.html" class="nav-link" data-page="journal">Journal</a>
+      </div>
+    </nav>
+  </header>
+
   <main>
     <section class="calculator-card">
       <h2>Build Your Recipe</h2>
@@ -66,7 +85,7 @@
         <div class="form-group">
           <label for="pizza-type">Pizza Style</label>
           <select id="pizza-type" required>
-            <option value="" disabled selected>Select a style…</option>
+            <option value="" disabled selected>Select a style&hellip;</option>
             <option value="neapolitan">Neapolitan</option>
             <option value="new-york">New York</option>
             <option value="chicago-tavern">Chicago Tavern</option>
@@ -188,260 +207,40 @@
         <button class="btn-reset" onclick="document.getElementById('results').classList.add('hidden'); window.scrollTo({top:0,behavior:'smooth'});">New Recipe</button>
       </div>
     </section>
-
-    <!-- Dough Scheduler -->
-    <section class="dough-scheduler" id="dough-scheduler">
-      <h2>Dough Scheduler</h2>
-      <p class="scheduler-subtitle">Plan backward from dinner time. We'll tell you exactly when to start each step.</p>
-
-      <!-- Active Schedule Banner (shown when a saved schedule exists) -->
-      <div class="active-schedule-banner hidden" id="active-schedule-banner">
-        <div class="banner-info">
-          <span class="banner-icon">&#128339;</span>
-          <div>
-            <strong id="banner-style-name"></strong>
-            <span id="banner-next-step"></span>
-          </div>
-        </div>
-        <div class="banner-actions">
-          <button type="button" class="btn-banner-view" id="btn-banner-view">View Schedule</button>
-          <button type="button" class="btn-banner-clear" id="btn-banner-clear">Clear</button>
-        </div>
-      </div>
-
-      <!-- Wizard Progress Bar -->
-      <div class="scheduler-progress" id="scheduler-progress">
-        <div class="progress-step active" data-step="1">
-          <span class="progress-dot">1</span>
-          <span class="progress-label">The Basics</span>
-        </div>
-        <div class="progress-line"></div>
-        <div class="progress-step" data-step="2">
-          <span class="progress-dot">2</span>
-          <span class="progress-label">Method</span>
-        </div>
-        <div class="progress-line"></div>
-        <div class="progress-step" data-step="3">
-          <span class="progress-dot">3</span>
-          <span class="progress-label">Schedule</span>
-        </div>
-      </div>
-
-      <!-- Step 1: The Basics -->
-      <div class="scheduler-step active" id="sched-step-1">
-        <h3>The Basics</h3>
-        <div class="scheduler-form">
-          <div class="sched-field">
-            <label for="sched-style">Pizza Style</label>
-            <select id="sched-style" required>
-              <option value="" disabled selected>Select a style&hellip;</option>
-            </select>
-          </div>
-          <div class="sched-field">
-            <label for="sched-count">Number of Pizzas</label>
-            <input type="number" id="sched-count" min="1" max="50" value="2" />
-          </div>
-          <div class="sched-field">
-            <label for="sched-datetime">When do you want to eat?</label>
-            <input type="datetime-local" id="sched-datetime" />
-          </div>
-          <div class="sched-field">
-            <label for="sched-oven">Oven Type</label>
-            <select id="sched-oven">
-              <option value="stone">Home Oven + Stone</option>
-              <option value="steel">Home Oven + Steel</option>
-              <option value="ooni">Ooni / Portable</option>
-              <option value="wood-fired">Wood-Fired</option>
-            </select>
-          </div>
-        </div>
-        <div class="scheduler-actions">
-          <button type="button" class="btn-sched-next" id="btn-sched-next-1" disabled>Next &rarr;</button>
-        </div>
-      </div>
-
-      <!-- Step 2: Method Selection -->
-      <div class="scheduler-step" id="sched-step-2">
-        <h3>Your Fermentation Method</h3>
-        <div class="method-card" id="sched-method-card"></div>
-        <div class="sched-validation hidden" id="sched-validation"></div>
-        <div class="scheduler-actions">
-          <button type="button" class="btn-sched-back" id="btn-sched-back-2">&larr; Back</button>
-          <button type="button" class="btn-sched-next" id="btn-sched-next-2">Build My Schedule &rarr;</button>
-        </div>
-      </div>
-
-      <!-- Step 3: Full Schedule Timeline -->
-      <div class="scheduler-step" id="sched-step-3">
-        <h3>Your Dough Schedule</h3>
-        <div class="schedule-timeline" id="sched-timeline"></div>
-        <div class="scheduler-actions">
-          <button type="button" class="btn-sched-back" id="btn-sched-back-3">&larr; Back</button>
-          <button type="button" class="btn-sched-save-img" id="btn-sched-save-img">Save as Image</button>
-          <button type="button" class="btn-sched-start-over" id="btn-sched-start-over">Start Over</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Knowledge Hub -->
-    <section class="knowledge-hub">
-      <h2>The Pizza Knowledge Hub</h2>
-      <nav class="hub-tabs" role="tablist">
-        <button class="hub-tab active" role="tab" aria-selected="true" data-tab="styles">Style Library</button>
-        <button class="hub-tab" role="tab" aria-selected="false" data-tab="toppings">Toppings</button>
-        <button class="hub-tab" role="tab" aria-selected="false" data-tab="flour">Flour Guide</button>
-        <button class="hub-tab" role="tab" aria-selected="false" data-tab="cheese">Cheese &amp; Sauce</button>
-      </nav>
-      <div class="hub-panels">
-        <div class="hub-panel active" id="panel-styles" role="tabpanel"></div>
-        <div class="hub-panel" id="panel-toppings" role="tabpanel"></div>
-        <div class="hub-panel" id="panel-flour" role="tabpanel"></div>
-        <div class="hub-panel" id="panel-cheese" role="tabpanel"></div>
-      </div>
-    </section>
-
-    <!-- Pizza Toolkit -->
-    <section class="pizza-toolkit">
-      <h2>Pizza Toolkit</h2>
-      <nav class="toolkit-tabs" role="tablist">
-        <button class="toolkit-tab active" role="tab" aria-selected="true" data-tool="ferment">Fermentation Timer</button>
-        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="hydration">Hydration Guide</button>
-        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="oven">Oven Guide</button>
-        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="troubleshoot">Troubleshooting</button>
-      </nav>
-      <div class="toolkit-panels">
-        <div class="toolkit-panel active" id="tool-ferment" role="tabpanel"></div>
-        <div class="toolkit-panel" id="tool-hydration" role="tabpanel"></div>
-        <div class="toolkit-panel" id="tool-oven" role="tabpanel"></div>
-        <div class="toolkit-panel" id="tool-troubleshoot" role="tabpanel"></div>
-      </div>
-    </section>
-
-    <!-- Pizza Journal -->
-    <section class="pizza-journal" id="pizza-journal">
-      <h2>Pizza Journal</h2>
-
-      <div class="journal-toolbar">
-        <div class="journal-filter">
-          <label for="journal-style-filter">Filter by style:</label>
-          <select id="journal-style-filter">
-            <option value="all">All Styles</option>
-          </select>
-        </div>
-        <button class="btn-compare" id="btn-compare" disabled>Compare</button>
-      </div>
-
-      <div class="journal-form-wrapper hidden" id="journal-form-wrapper">
-        <h3>Log a Bake</h3>
-        <form id="journal-form">
-          <div class="journal-form-grid">
-            <div class="form-group">
-              <label for="j-style">Pizza Style</label>
-              <select id="j-style" required>
-                <option value="" disabled selected>Select a style…</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="j-date">Date</label>
-              <input type="date" id="j-date" required />
-            </div>
-          </div>
-
-          <div class="dough-snapshot" id="j-dough-snapshot">
-            <span class="snapshot-label">Dough Snapshot:</span>
-            <span class="snapshot-empty">Calculate a recipe first to capture dough settings</span>
-          </div>
-
-          <div class="journal-form-grid">
-            <div class="form-group">
-              <label for="j-bake-temp">Bake Temp (°F)</label>
-              <input type="number" id="j-bake-temp" min="300" max="1000" />
-            </div>
-            <div class="form-group">
-              <label for="j-bake-time">Bake Time (min)</label>
-              <input type="number" id="j-bake-time" min="1" max="120" />
-            </div>
-            <div class="form-group">
-              <label for="j-oven-type">Oven Type</label>
-              <select id="j-oven-type">
-                <option value="home">Home</option>
-                <option value="outdoor">Outdoor / Pizza Oven</option>
-                <option value="commercial">Commercial</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Rating</label>
-            <div class="star-rating" id="j-star-rating">
-              <button type="button" class="star" data-value="1" aria-label="1 star">&#9733;</button>
-              <button type="button" class="star" data-value="2" aria-label="2 stars">&#9733;</button>
-              <button type="button" class="star" data-value="3" aria-label="3 stars">&#9733;</button>
-              <button type="button" class="star" data-value="4" aria-label="4 stars">&#9733;</button>
-              <button type="button" class="star" data-value="5" aria-label="5 stars">&#9733;</button>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="j-notes">Notes</label>
-            <textarea id="j-notes" rows="3" placeholder="How did it turn out? What would you change?"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Photo</label>
-            <div class="photo-upload" id="j-photo-upload">
-              <input type="file" id="j-photo-input" accept="image/*" class="sr-only" />
-              <div class="photo-preview hidden" id="j-photo-preview">
-                <img id="j-photo-img" alt="Bake photo preview" />
-                <button type="button" class="photo-remove" id="j-photo-remove" aria-label="Remove photo">&times;</button>
-              </div>
-              <label for="j-photo-input" class="photo-placeholder" id="j-photo-placeholder">
-                <span class="photo-icon">📷</span>
-                <span>Add a photo</span>
-              </label>
-            </div>
-          </div>
-
-          <div class="journal-form-actions">
-            <button type="submit" class="btn-save-entry">Save Entry</button>
-            <button type="button" class="btn-cancel-entry" id="btn-cancel-entry">Cancel</button>
-          </div>
-        </form>
-      </div>
-
-      <button class="btn-new-entry" id="btn-new-entry">+ Log a Bake</button>
-
-      <div class="journal-entries" id="journal-entries">
-        <div class="journal-empty" id="journal-empty">
-          <p class="empty-icon">📓</p>
-          <p>No bakes logged yet.</p>
-          <p class="empty-hint">Calculate a recipe and click "Log This Bake" to start tracking your pizza journey.</p>
-        </div>
-      </div>
-
-      <div class="journal-comparison hidden" id="journal-comparison"></div>
-    </section>
   </main>
 
-  <!-- Journal Detail Modal -->
-  <div class="modal-overlay hidden" id="journal-detail-modal">
-    <div class="modal-content">
-      <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
-      <div id="modal-body"></div>
-    </div>
-  </div>
+  <!-- Mobile Tab Bar -->
+  <nav class="mobile-tab-bar">
+    <a href="index.html" class="tab-item" data-page="calculator">
+      <span class="tab-icon">&#127829;</span>
+      <span class="tab-label">Calculator</span>
+    </a>
+    <a href="schedule.html" class="tab-item" data-page="schedule">
+      <span class="tab-icon">&#128197;</span>
+      <span class="tab-label">Schedule</span>
+      <span class="schedule-badge hidden"></span>
+    </a>
+    <a href="learn.html" class="tab-item" data-page="learn">
+      <span class="tab-icon">&#128214;</span>
+      <span class="tab-label">Learn</span>
+    </a>
+    <a href="journal.html" class="tab-item" data-page="journal">
+      <span class="tab-icon">&#128211;</span>
+      <span class="tab-label">Journal</span>
+    </a>
+  </nav>
 
   <footer>
     <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" class="footer-logo" />
     <p>&copy; 2026 The Pie Lab. All rights reserved.</p>
   </footer>
 
+  <!-- Scripts: data files first, then shared nav, then page features -->
   <script src="recipes.js"></script>
-  <script src="knowledge.js"></script>
-  <script src="tools-data.js"></script>
-  <script src="scheduler-data.js"></script>
+  <script src="knowledge-data.js"></script>
   <script src="journal.js"></script>
-  <script src="app.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+  <script src="js/nav.js"></script>
+  <script src="js/carousel.js"></script>
+  <script src="js/calculator.js"></script>
 </body>
 </html>

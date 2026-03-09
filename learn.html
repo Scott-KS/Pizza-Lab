@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Pie Lab — Pizza Toolkit</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logos/favicon-32.svg">
+  <link rel="apple-touch-icon" href="assets/logos/logo-monogram-512.svg">
+  <meta property="og:image" content="assets/logos/logo-stacked.svg">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="learn">
+
+  <!-- Shared Navigation -->
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" />
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link" data-page="calculator">Calculator</a>
+        <a href="schedule.html" class="nav-link" data-page="schedule">
+          Schedule
+          <span class="schedule-badge hidden"></span>
+        </a>
+        <a href="learn.html" class="nav-link" data-page="learn">Learn</a>
+        <a href="journal.html" class="nav-link" data-page="journal">Journal</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Pizza Toolkit (includes Knowledge Hub + Tools) -->
+    <section class="pizza-toolkit">
+      <h2>Pizza Toolkit</h2>
+      <nav class="toolkit-tabs" role="tablist">
+        <!-- Knowledge Hub tabs -->
+        <button class="toolkit-tab active" role="tab" aria-selected="true" data-tool="styles">Style Library</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="toppings">Toppings</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="flour">Flour Guide</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="cheese">Cheese &amp; Sauce</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="fermentation">Fermentation</button>
+        <!-- Tool tabs -->
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="hydration">Hydration Guide</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="oven">Oven Guide</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="troubleshoot">Troubleshooting</button>
+      </nav>
+      <div class="toolkit-panels">
+        <!-- Knowledge Hub panels -->
+        <div class="toolkit-panel active" id="tool-styles" role="tabpanel"></div>
+        <div class="toolkit-panel" id="tool-toppings" role="tabpanel"></div>
+        <div class="toolkit-panel" id="tool-flour" role="tabpanel"></div>
+        <div class="toolkit-panel" id="tool-cheese" role="tabpanel"></div>
+        <div class="toolkit-panel" id="tool-fermentation" role="tabpanel"></div>
+        <!-- Tool panels -->
+        <div class="toolkit-panel" id="tool-hydration" role="tabpanel"></div>
+        <div class="toolkit-panel" id="tool-oven" role="tabpanel"></div>
+        <div class="toolkit-panel" id="tool-troubleshoot" role="tabpanel"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Mobile Tab Bar -->
+  <nav class="mobile-tab-bar">
+    <a href="index.html" class="tab-item" data-page="calculator">
+      <span class="tab-icon">&#127829;</span>
+      <span class="tab-label">Calculator</span>
+    </a>
+    <a href="schedule.html" class="tab-item" data-page="schedule">
+      <span class="tab-icon">&#128197;</span>
+      <span class="tab-label">Schedule</span>
+      <span class="schedule-badge hidden"></span>
+    </a>
+    <a href="learn.html" class="tab-item" data-page="learn">
+      <span class="tab-icon">&#128214;</span>
+      <span class="tab-label">Learn</span>
+    </a>
+    <a href="journal.html" class="tab-item" data-page="journal">
+      <span class="tab-icon">&#128211;</span>
+      <span class="tab-label">Journal</span>
+    </a>
+  </nav>
+
+  <footer>
+    <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" class="footer-logo" />
+    <p>&copy; 2026 The Pie Lab. All rights reserved.</p>
+  </footer>
+
+  <!-- Scripts: data files first, then shared nav, then page features -->
+  <script src="recipes.js"></script>
+  <script src="knowledge-data.js"></script>
+  <script src="tools-data.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/knowledge.js"></script>
+  <script src="js/toolkit.js"></script>
+</body>
+</html>

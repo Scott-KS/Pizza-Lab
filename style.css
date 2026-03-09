@@ -608,82 +608,10 @@ main {
   }
 }
 
-/* ── Knowledge Hub Container ─────────────────────── */
-.knowledge-hub {
-  background: var(--clr-card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 2.5rem;
-  margin-bottom: 2rem;
-}
-
-.knowledge-hub h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  color: var(--clr-primary);
-}
-
-/* ── Tab Strip ───────────────────────────────────── */
-.hub-tabs {
-  display: flex;
-  border-bottom: 2px solid var(--clr-border);
-  margin-bottom: 1.5rem;
-  overflow-x: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.hub-tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.hub-tab {
-  flex-shrink: 0;
-  padding: 0.75rem 1.25rem;
-  border: none;
-  background: none;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--clr-text-light);
-  cursor: pointer;
-  position: relative;
-  transition: color 0.2s;
-  white-space: nowrap;
-}
-
-.hub-tab::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: transparent;
-  border-radius: 3px 3px 0 0;
-  transition: background 0.2s;
-}
-
-.hub-tab:hover {
-  color: var(--clr-primary);
-}
-
-.hub-tab.active {
-  color: var(--clr-primary);
-}
-
-.hub-tab.active::after {
-  background: var(--clr-primary);
-}
-
-/* ── Hub Panels ──────────────────────────────────── */
-.hub-panel {
-  display: none;
-}
-
-.hub-panel.active {
-  display: block;
-  animation: fadePanel 0.3s ease-out;
-}
+/* ── Knowledge Hub (merged into Pizza Toolkit) ────── */
+/* Hub-specific container and tab CSS removed — all
+   knowledge panels now live inside .pizza-toolkit and
+   use .toolkit-tab / .toolkit-panel classes.           */
 
 @keyframes fadePanel {
   from { opacity: 0; transform: translateY(8px); }
@@ -3489,16 +3417,271 @@ footer {
   }
 }
 
+/* ══════════════════════════════════════════════════════
+   STICKY HEADER NAV
+   ══════════════════════════════════════════════════════ */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(243, 235, 226, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.site-nav {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+}
+
+/* ── Nav Logo ───────────────────────────────────── */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.nav-logo img {
+  height: 32px;
+  width: auto;
+}
+
+/* ── Nav Links ──────────────────────────────────── */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--clr-text-light);
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: var(--clr-primary);
+  background: rgba(140, 53, 36, 0.06);
+}
+
+.nav-link.active {
+  color: var(--clr-primary);
+  background: rgba(140, 53, 36, 0.08);
+}
+
+.nav-link.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0.85rem;
+  right: 0.85rem;
+  height: 2px;
+  background: var(--clr-primary);
+  border-radius: 2px;
+}
+
+/* ── Schedule Badge (nav) ───────────────────────── */
+.schedule-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e53935;
+  position: relative;
+}
+
+.schedule-badge.hidden {
+  display: none !important;
+}
+
+.schedule-badge::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: rgba(229, 57, 53, 0.35);
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.6); opacity: 0; }
+}
+
+/* ══════════════════════════════════════════════════════
+   MOBILE BOTTOM TAB BAR
+   ══════════════════════════════════════════════════════ */
+
+.mobile-tab-bar {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  /* Hide desktop nav links on mobile */
+  .nav-links {
+    display: none;
+  }
+
+  /* Show mobile tab bar */
+  .mobile-tab-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    z-index: 1000;
+    background: rgba(243, 235, 226, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-top: 1px solid var(--clr-border);
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 0.5rem;
+  }
+
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    flex: 1;
+    padding: 0.4rem 0;
+    text-decoration: none;
+    color: var(--clr-text-light);
+    transition: color 0.2s;
+    position: relative;
+  }
+
+  .tab-item.active {
+    color: var(--clr-primary);
+  }
+
+  .tab-icon {
+    font-size: 1.35rem;
+    line-height: 1;
+  }
+
+  .tab-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  /* Badge on mobile tab bar */
+  .tab-item .schedule-badge {
+    position: absolute;
+    top: 4px;
+    right: calc(50% - 16px);
+  }
+
+  /* Give main content clearance above the tab bar */
+  main {
+    padding-bottom: 72px !important;
+  }
+
+  /* Keep header logo centered on mobile */
+  .site-nav {
+    justify-content: center;
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   FERMENTATION REFERENCE CHART
+   ══════════════════════════════════════════════════════ */
+
+.ferment-chart-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 0.5rem;
+}
+
+.ferment-reference-chart {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  min-width: 620px;
+}
+
+.ferment-reference-chart thead th {
+  background: var(--clr-section-bg);
+  padding: 0.65rem 0.6rem;
+  font-weight: 700;
+  text-align: left;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--clr-text-light);
+  border-bottom: 2px solid var(--clr-border);
+  white-space: nowrap;
+}
+
+.ferment-reference-chart thead th:first-child {
+  border-radius: 8px 0 0 0;
+}
+
+.ferment-reference-chart thead th:last-child {
+  border-radius: 0 8px 0 0;
+}
+
+.ferment-reference-chart tbody td {
+  padding: 0.6rem;
+  border-bottom: 1px solid var(--clr-border);
+  color: var(--clr-text);
+  vertical-align: top;
+}
+
+.ferment-reference-chart tbody td:first-child {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ferment-reference-chart tbody tr:hover {
+  background: rgba(140, 53, 36, 0.03);
+}
+
+.ferment-reference-chart tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Pages without hero need top spacing ─────────── */
+body[data-page="schedule"] main,
+body[data-page="learn"] main,
+body[data-page="journal"] main {
+  padding-top: 2rem;
+}
+
 /* ── Print Styles ────────────────────────────────── */
 @media print {
   body {
     background: #fff;
   }
-  .pizza-hero {
+  .pizza-hero,
+  .site-header,
+  .mobile-tab-bar {
     display: none;
   }
   .calculator-card,
-  .knowledge-hub,
   .pizza-toolkit,
   .pizza-journal,
   .dough-scheduler,
@@ -3515,5 +3698,8 @@ footer {
   .hydration-info-btn,
   .hydration-popover {
     display: none !important;
+  }
+  main {
+    padding-bottom: 0 !important;
   }
 }

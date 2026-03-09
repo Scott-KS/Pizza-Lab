@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Pie Lab — Pizza Journal</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logos/favicon-32.svg">
+  <link rel="apple-touch-icon" href="assets/logos/logo-monogram-512.svg">
+  <meta property="og:image" content="assets/logos/logo-stacked.svg">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="journal">
+
+  <!-- Shared Navigation -->
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" />
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link" data-page="calculator">Calculator</a>
+        <a href="schedule.html" class="nav-link" data-page="schedule">
+          Schedule
+          <span class="schedule-badge hidden"></span>
+        </a>
+        <a href="learn.html" class="nav-link" data-page="learn">Learn</a>
+        <a href="journal.html" class="nav-link" data-page="journal">Journal</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Pizza Journal -->
+    <section class="pizza-journal" id="pizza-journal">
+      <h2>Pizza Journal</h2>
+
+      <div class="journal-toolbar">
+        <div class="journal-filter">
+          <label for="journal-style-filter">Filter by style:</label>
+          <select id="journal-style-filter">
+            <option value="all">All Styles</option>
+          </select>
+        </div>
+        <button class="btn-compare" id="btn-compare" disabled>Compare</button>
+      </div>
+
+      <div class="journal-form-wrapper hidden" id="journal-form-wrapper">
+        <h3>Log a Bake</h3>
+        <form id="journal-form">
+          <div class="journal-form-grid">
+            <div class="form-group">
+              <label for="j-style">Pizza Style</label>
+              <select id="j-style" required>
+                <option value="" disabled selected>Select a style&hellip;</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="j-date">Date</label>
+              <input type="date" id="j-date" required />
+            </div>
+          </div>
+
+          <div class="dough-snapshot" id="j-dough-snapshot">
+            <span class="snapshot-label">Dough Snapshot:</span>
+            <span class="snapshot-empty">Calculate a recipe first to capture dough settings</span>
+          </div>
+
+          <div class="journal-form-grid">
+            <div class="form-group">
+              <label for="j-bake-temp">Bake Temp (&deg;F)</label>
+              <input type="number" id="j-bake-temp" min="300" max="1000" />
+            </div>
+            <div class="form-group">
+              <label for="j-bake-time">Bake Time (min)</label>
+              <input type="number" id="j-bake-time" min="1" max="120" />
+            </div>
+            <div class="form-group">
+              <label for="j-oven-type">Oven Type</label>
+              <select id="j-oven-type">
+                <!-- Populated by populateOvenSelect() -->
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Rating</label>
+            <div class="star-rating" id="j-star-rating">
+              <button type="button" class="star" data-value="1" aria-label="1 star">&#9733;</button>
+              <button type="button" class="star" data-value="2" aria-label="2 stars">&#9733;</button>
+              <button type="button" class="star" data-value="3" aria-label="3 stars">&#9733;</button>
+              <button type="button" class="star" data-value="4" aria-label="4 stars">&#9733;</button>
+              <button type="button" class="star" data-value="5" aria-label="5 stars">&#9733;</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="j-notes">Notes</label>
+            <textarea id="j-notes" rows="3" placeholder="How did it turn out? What would you change?"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Photo</label>
+            <div class="photo-upload" id="j-photo-upload">
+              <input type="file" id="j-photo-input" accept="image/*" class="sr-only" />
+              <div class="photo-preview hidden" id="j-photo-preview">
+                <img id="j-photo-img" alt="Bake photo preview" />
+                <button type="button" class="photo-remove" id="j-photo-remove" aria-label="Remove photo">&times;</button>
+              </div>
+              <label for="j-photo-input" class="photo-placeholder" id="j-photo-placeholder">
+                <span class="photo-icon">&#128247;</span>
+                <span>Add a photo</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="journal-form-actions">
+            <button type="submit" class="btn-save-entry">Save Entry</button>
+            <button type="button" class="btn-cancel-entry" id="btn-cancel-entry">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <button class="btn-new-entry" id="btn-new-entry">+ Log a Bake</button>
+
+      <div class="journal-entries" id="journal-entries">
+        <div class="journal-empty" id="journal-empty">
+          <p class="empty-icon">&#128211;</p>
+          <p>No bakes logged yet.</p>
+          <p class="empty-hint">Calculate a recipe and click "Log This Bake" to start tracking your pizza journey.</p>
+        </div>
+      </div>
+
+      <div class="journal-comparison hidden" id="journal-comparison"></div>
+    </section>
+  </main>
+
+  <!-- Journal Detail Modal -->
+  <div class="modal-overlay hidden" id="journal-detail-modal">
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Mobile Tab Bar -->
+  <nav class="mobile-tab-bar">
+    <a href="index.html" class="tab-item" data-page="calculator">
+      <span class="tab-icon">&#127829;</span>
+      <span class="tab-label">Calculator</span>
+    </a>
+    <a href="schedule.html" class="tab-item" data-page="schedule">
+      <span class="tab-icon">&#128197;</span>
+      <span class="tab-label">Schedule</span>
+      <span class="schedule-badge hidden"></span>
+    </a>
+    <a href="learn.html" class="tab-item" data-page="learn">
+      <span class="tab-icon">&#128214;</span>
+      <span class="tab-label">Learn</span>
+    </a>
+    <a href="journal.html" class="tab-item" data-page="journal">
+      <span class="tab-icon">&#128211;</span>
+      <span class="tab-label">Journal</span>
+    </a>
+  </nav>
+
+  <footer>
+    <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" class="footer-logo" />
+    <p>&copy; 2026 The Pie Lab. All rights reserved.</p>
+  </footer>
+
+  <!-- Scripts: data files first, then shared nav, then page features -->
+  <script src="recipes.js"></script>
+  <script src="journal.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/journal-ui.js"></script>
+</body>
+</html>
