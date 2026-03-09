@@ -83,40 +83,6 @@
       </form>
     </section>
 
-    <!-- Knowledge Hub -->
-    <section class="knowledge-hub">
-      <h2>The Pizza Knowledge Hub</h2>
-      <nav class="hub-tabs" role="tablist">
-        <button class="hub-tab active" role="tab" aria-selected="true" data-tab="styles">Style Library</button>
-        <button class="hub-tab" role="tab" aria-selected="false" data-tab="toppings">Toppings</button>
-        <button class="hub-tab" role="tab" aria-selected="false" data-tab="flour">Flour Guide</button>
-        <button class="hub-tab" role="tab" aria-selected="false" data-tab="cheese">Cheese &amp; Sauce</button>
-      </nav>
-      <div class="hub-panels">
-        <div class="hub-panel active" id="panel-styles" role="tabpanel"></div>
-        <div class="hub-panel" id="panel-toppings" role="tabpanel"></div>
-        <div class="hub-panel" id="panel-flour" role="tabpanel"></div>
-        <div class="hub-panel" id="panel-cheese" role="tabpanel"></div>
-      </div>
-    </section>
-
-    <!-- Pizza Toolkit -->
-    <section class="pizza-toolkit">
-      <h2>Pizza Toolkit</h2>
-      <nav class="toolkit-tabs" role="tablist">
-        <button class="toolkit-tab active" role="tab" aria-selected="true" data-tool="ferment">Fermentation Timer</button>
-        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="hydration">Hydration Guide</button>
-        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="oven">Oven Guide</button>
-        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="troubleshoot">Troubleshooting</button>
-      </nav>
-      <div class="toolkit-panels">
-        <div class="toolkit-panel active" id="tool-ferment" role="tabpanel"></div>
-        <div class="toolkit-panel" id="tool-hydration" role="tabpanel"></div>
-        <div class="toolkit-panel" id="tool-oven" role="tabpanel"></div>
-        <div class="toolkit-panel" id="tool-troubleshoot" role="tabpanel"></div>
-      </div>
-    </section>
-
     <section id="results" class="results-card hidden">
       <div class="results-header">
         <h2 id="result-title"></h2>
@@ -170,6 +136,40 @@
       <div class="results-actions">
         <button class="btn-print" onclick="window.print()">Print Recipe</button>
         <button class="btn-reset" onclick="document.getElementById('results').classList.add('hidden'); window.scrollTo({top:0,behavior:'smooth'});">New Recipe</button>
+      </div>
+    </section>
+
+    <!-- Knowledge Hub -->
+    <section class="knowledge-hub">
+      <h2>The Pizza Knowledge Hub</h2>
+      <nav class="hub-tabs" role="tablist">
+        <button class="hub-tab active" role="tab" aria-selected="true" data-tab="styles">Style Library</button>
+        <button class="hub-tab" role="tab" aria-selected="false" data-tab="toppings">Toppings</button>
+        <button class="hub-tab" role="tab" aria-selected="false" data-tab="flour">Flour Guide</button>
+        <button class="hub-tab" role="tab" aria-selected="false" data-tab="cheese">Cheese &amp; Sauce</button>
+      </nav>
+      <div class="hub-panels">
+        <div class="hub-panel active" id="panel-styles" role="tabpanel"></div>
+        <div class="hub-panel" id="panel-toppings" role="tabpanel"></div>
+        <div class="hub-panel" id="panel-flour" role="tabpanel"></div>
+        <div class="hub-panel" id="panel-cheese" role="tabpanel"></div>
+      </div>
+    </section>
+
+    <!-- Pizza Toolkit -->
+    <section class="pizza-toolkit">
+      <h2>Pizza Toolkit</h2>
+      <nav class="toolkit-tabs" role="tablist">
+        <button class="toolkit-tab active" role="tab" aria-selected="true" data-tool="ferment">Fermentation Timer</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="hydration">Hydration Guide</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="oven">Oven Guide</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="troubleshoot">Troubleshooting</button>
+      </nav>
+      <div class="toolkit-panels">
+        <div class="toolkit-panel active" id="tool-ferment" role="tabpanel"></div>
+        <div class="toolkit-panel" id="tool-hydration" role="tabpanel"></div>
+        <div class="toolkit-panel" id="tool-oven" role="tabpanel"></div>
+        <div class="toolkit-panel" id="tool-troubleshoot" role="tabpanel"></div>
       </div>
     </section>
   </main>
