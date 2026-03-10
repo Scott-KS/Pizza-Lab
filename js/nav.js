@@ -76,7 +76,8 @@ function updateScheduleBadge() {
   const badges = document.querySelectorAll(".schedule-badge");
   try {
     const raw = localStorage.getItem("pielab-active-schedule");
-    const has = raw && JSON.parse(raw).steps && JSON.parse(raw).steps.length > 0;
+    const parsed = raw ? JSON.parse(raw) : null;
+    const has = parsed && parsed.steps && parsed.steps.length > 0;
     badges.forEach(b => b.classList.toggle("hidden", !has));
   } catch {
     badges.forEach(b => b.classList.add("hidden"));

@@ -171,6 +171,9 @@ const PieLabJournal = (() => {
     const bakeTempGroups = {};
 
     entries.forEach((entry) => {
+      // Skip unrated entries (rating 0) — they'd drag averages down
+      if (!entry.rating) return;
+
       // Hydration grouping
       if (entry.doughSnapshot && entry.doughSnapshot.hydration != null) {
         const hKey = Math.round(entry.doughSnapshot.hydration * 100);

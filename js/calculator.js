@@ -70,7 +70,11 @@ document.getElementById("pizza-form").addEventListener("submit", (e) => {
   const numPizzas = parseInt(document.getElementById("num-pizzas").value, 10);
   const ovenType = ovenSelect ? ovenSelect.value : "stone";
 
-  if (!type || !sizeKey || !numPizzas) return;
+  if (!type || !sizeKey) return;
+  if (!numPizzas || numPizzas < 1) {
+    alert("Please enter at least 1 pizza.");
+    return;
+  }
 
   const useCustom = document.getElementById("settings-mode-toggle").checked;
   const recipe = PieLabJournal.getEffectiveRecipe(type, useCustom);

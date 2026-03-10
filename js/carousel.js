@@ -6,6 +6,7 @@
 
   let current = 0;
   const total = slides.length;
+  let autoTimer = null;
 
   function goTo(i) {
     slides[current].classList.remove("active");
@@ -15,10 +16,25 @@
     dots[current]?.classList.add("active");
   }
 
-  setInterval(() => goTo(current + 1), 5000);
-  document.querySelector(".carousel-arrow.next")?.addEventListener("click", () => goTo(current + 1));
-  document.querySelector(".carousel-arrow.prev")?.addEventListener("click", () => goTo(current - 1));
+  function resetAutoplay() {
+    clearInterval(autoTimer);
+    autoTimer = setInterval(() => goTo(current + 1), 5000);
+  }
+
+  resetAutoplay();
+
+  document.querySelector(".carousel-arrow.next")?.addEventListener("click", () => {
+    goTo(current + 1);
+    resetAutoplay();
+  });
+  document.querySelector(".carousel-arrow.prev")?.addEventListener("click", () => {
+    goTo(current - 1);
+    resetAutoplay();
+  });
   dots.forEach(d =>
-    d.addEventListener("click", () => goTo(parseInt(d.dataset.index, 10)))
+    d.addEventListener("click", () => {
+      goTo(parseInt(d.dataset.index, 10));
+      resetAutoplay();
+    })
   );
 })();

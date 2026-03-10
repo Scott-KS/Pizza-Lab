@@ -61,6 +61,18 @@ function activateTab(tabId) {
       }
     }, 100);
   }
+
+  // ── Tab scroll fade indicator ──
+  const tabsNav = document.querySelector(".toolkit-tabs");
+  const tabsWrapper = document.querySelector(".toolkit-tabs-wrapper");
+  if (tabsNav && tabsWrapper) {
+    function updateScrollFade() {
+      const atEnd = tabsNav.scrollLeft + tabsNav.clientWidth >= tabsNav.scrollWidth - 4;
+      tabsWrapper.classList.toggle("scrolled-end", atEnd);
+    }
+    tabsNav.addEventListener("scroll", updateScrollFade, { passive: true });
+    updateScrollFade();
+  }
 })();
 
 // ── Accordion Factory ────────────────────────────────

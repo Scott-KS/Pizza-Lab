@@ -6,7 +6,3 @@ ios/
 *.log
 Thumbs.db
 .claude/
-plan_raw.txt
-Logos/
-Images/*.jpg
-Images/*.png

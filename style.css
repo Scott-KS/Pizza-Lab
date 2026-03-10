@@ -1014,6 +1014,28 @@ main {
 }
 
 /* ── Toolkit Tab Strip ───────────────────────────── */
+.toolkit-tabs-wrapper {
+  position: relative;
+}
+
+/* Right-edge fade hint — signals more tabs are scrollable */
+.toolkit-tabs-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: calc(100% - 2px);
+  background: linear-gradient(to right, transparent, var(--clr-card-bg, #fff));
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.toolkit-tabs-wrapper.scrolled-end::after {
+  opacity: 0;
+}
+
 .toolkit-tabs {
   display: flex;
   border-bottom: 2px solid var(--clr-border);

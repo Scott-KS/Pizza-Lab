@@ -52,45 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
     cityStatus.className   = "city-status resolved";
   }
 
-  function triggerResolve() {
-    clearTimeout(resolveTimer);
-    const city = cityInput.value.trim();
-
-    // Nothing to resolve
-    if (!city) {
-      cityStatus.textContent = "";
-      cityStatus.className   = "city-status";
-      cityResolved = false;
-      return;
-    }
-
-    // City hasn't changed from stored value — keep existing elevation
-    if (city === storedCity) return;
-
-    // Reset pending state
-    resolvedElevation = null;
-    cityResolved      = false;
-    cityStatus.textContent = "Resolving elevation\u2026";
-    cityStatus.className   = "city-status resolving";
-
-    resolveTimer = setTimeout(async () => {
-      const result = await PieLabProfile.resolveElevationFromCity(city);
-
-      if (result.error) {
-        cityStatus.textContent = result.error;
-        cityStatus.className   = "city-status error";
-      } else {
-        resolvedElevation = result.elevationFeet;
-        cityResolved      = true;
-        const label = result.countryCode
-          ? `${result.displayName}, ${result.countryCode}`
-          : result.displayName;
-        cityStatus.textContent = `\uD83D\uDCCD ${label} \u2014 ${result.elevationFeet.toLocaleString()} ft`;
-        cityStatus.className   = "city-status resolved";
-      }
-    }, 600);
-  }
-
   cityInput.addEventListener("input", () => {
     clearTimeout(resolveTimer);
     const city = cityInput.value.trim();

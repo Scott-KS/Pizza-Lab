@@ -1,5 +1,5 @@
 /**
- * PizzaPro — Recipe Data & Calculation Engine
+ * The Pie Lab — Recipe Data & Calculation Engine
  *
  * Dough weights are per-pizza/pan in grams.
  * All baker's percentages are relative to flour (flour = 100%).
@@ -619,10 +619,6 @@ function round1(n) {
 
 function fToC(f) {
   return Math.round(((f - 32) * 5) / 9);
-}
-
-function cToF(c) {
-  return Math.round((c * 9) / 5 + 32);
 }
 
 /**

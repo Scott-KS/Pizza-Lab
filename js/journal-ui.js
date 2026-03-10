@@ -32,15 +32,23 @@
   // Iteration / derivedFrom state
   let pendingDerivedFromId = null;
 
-  // Edit mode state (kept for backwards compat — no UI button triggers it now)
-  let editingEntryId = null;
-
   // Dough snapshot state
   let currentSnapshot = null;
   const snapshotEl = document.getElementById("j-dough-snapshot");
 
   // Form heading
   const formHeading = document.getElementById("journal-form-heading");
+
+  // ── HTML escaping — prevents XSS from user-supplied text ──
+  function escapeHtml(str) {
+    if (!str) return "";
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
 
   // ── Populate dropdowns ────────────────────────────
   function populateDropdowns() {
@@ -159,7 +167,6 @@
     document.getElementById("j-bake-temp").value = "";
     document.getElementById("j-bake-time").value = "";
     document.getElementById("j-oven-type").selectedIndex = 0;
-    editingEntryId = null;
     pendingDerivedFromId = null;
 
     if (derivedFrom) {
@@ -226,7 +233,6 @@
   function hideForm() {
     formWrapper.classList.add("hidden");
     btnNewEntry.classList.remove("hidden");
-    editingEntryId = null;
     pendingDerivedFromId = null;
     formHeading.textContent = "Log a Bake";
   }
@@ -278,12 +284,7 @@
       derivedFromId: pendingDerivedFromId || null,
     };
 
-    if (editingEntryId) {
-      PieLabJournal.updateEntry(editingEntryId, entry);
-      editingEntryId = null;
-    } else {
-      PieLabJournal.addEntry(entry);
-    }
+    PieLabJournal.addEntry(entry);
 
     pendingDerivedFromId = null;
     hideForm();
@@ -324,7 +325,7 @@
       if (entry.ovenType && OVEN_TYPES[entry.ovenType]) {
         detailParts.push(OVEN_TYPES[entry.ovenType]);
       } else if (entry.ovenType) {
-        detailParts.push(entry.ovenType);
+        detailParts.push(escapeHtml(entry.ovenType));
       }
 
       // Lineage badge
@@ -337,13 +338,13 @@
         <div class="entry-info">
           <div class="entry-top-row">
             <span class="entry-date">${formatDate(entry.date)}</span>
-            <span class="entry-style-badge">${entry.styleName}</span>
+            <span class="entry-style-badge">${escapeHtml(entry.styleName)}</span>
             ${lineageBadge}
             ${entry.rating ? `<span class="entry-stars">${renderStars(entry.rating)}</span>` : ""}
           </div>
-          ${entry.bakeName ? `<div class="entry-bake-name">${entry.bakeName}</div>` : ""}
+          ${entry.bakeName ? `<div class="entry-bake-name">${escapeHtml(entry.bakeName)}</div>` : ""}
           ${detailParts.length ? `<div class="entry-details">${detailParts.join(" \u00B7 ")}</div>` : ""}
-          ${entry.notes ? `<div class="entry-notes-preview">${entry.notes}</div>` : ""}
+          ${entry.notes ? `<div class="entry-notes-preview">${escapeHtml(entry.notes)}</div>` : ""}
         </div>
       `;
 
@@ -407,8 +408,8 @@
 
     html += `
       <div class="modal-header">
-        <h3>${entry.bakeName || entry.styleName}</h3>
-        ${entry.bakeName ? `<span class="modal-style-label">${entry.styleName}</span>` : ""}
+        <h3>${escapeHtml(entry.bakeName || entry.styleName)}</h3>
+        ${entry.bakeName ? `<span class="modal-style-label">${escapeHtml(entry.styleName)}</span>` : ""}
         <span class="entry-date">${formatDate(entry.date)}</span>
         ${entry.rating ? `<span class="modal-stars">${renderStars(entry.rating)}</span>` : ""}
       </div>
@@ -421,7 +422,7 @@
         html += `
           <div class="modal-lineage">
             <span class="lineage-icon">\uD83D\uDD04</span>
-            <span>Based on <strong>${parent.styleName}</strong> bake from ${formatDate(parent.date)}</span>
+            <span>Based on <strong>${escapeHtml(parent.styleName)}</strong> bake from ${formatDate(parent.date)}</span>
           </div>
         `;
       } else {
@@ -439,7 +440,7 @@
     if (entry.bakeTemp) details.push({ label: "Bake Temp", value: `${entry.bakeTemp}\u00B0F` });
     if (entry.bakeTime) details.push({ label: "Bake Time", value: `${entry.bakeTime} min` });
     if (entry.ovenType) {
-      const label = OVEN_TYPES[entry.ovenType] || entry.ovenType;
+      const label = OVEN_TYPES[entry.ovenType] || escapeHtml(entry.ovenType);
       details.push({ label: "Oven", value: label });
     }
 
@@ -462,7 +463,7 @@
     }
 
     if (entry.notes) {
-      html += `<div class="modal-notes"><h4>Notes</h4><p>${entry.notes}</p></div>`;
+      html += `<div class="modal-notes"><h4>Notes</h4><p>${escapeHtml(entry.notes)}</p></div>`;
     }
 
     html += `
@@ -581,7 +582,7 @@
       const hClass = hydration != null && analysis.bestHydration && hydration === analysis.bestHydration.value ? "highlight-cell" : "";
       const tClass = bakeTemp != null && analysis.bestBakeTemp && bakeTemp === analysis.bestBakeTemp.value ? "highlight-cell" : "";
 
-      const ovenLabel = OVEN_TYPES[entry.ovenType] || entry.ovenType || "\u2014";
+      const ovenLabel = OVEN_TYPES[entry.ovenType] || escapeHtml(entry.ovenType) || "\u2014";
 
       html += `<tr>
         <td>${formatDate(entry.date)}</td>

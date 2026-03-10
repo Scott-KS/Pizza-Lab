@@ -204,18 +204,6 @@ function getAvailableFermentMethods(availableHours, styleKey) {
 }
 
 /**
- * Auto-selects the best fermentation method (used as default when only one option or for fallback).
- * @param {number} availableHours
- * @returns {object} the selected FERMENT_METHODS entry
- */
-function selectFermentMethod(availableHours) {
-  if (availableHours >= FERMENT_METHODS["cold-72"].minHoursNeeded) return FERMENT_METHODS["cold-72"];
-  if (availableHours >= FERMENT_METHODS["cold-48"].minHoursNeeded) return FERMENT_METHODS["cold-48"];
-  if (availableHours >= FERMENT_METHODS["cold-24"].minHoursNeeded) return FERMENT_METHODS["cold-24"];
-  return FERMENT_METHODS["same-day"];
-}
-
-/**
  * Builds a complete dough schedule by working backward from the eat time.
  *
  * @param {Date}   eatTime        — target eat time
