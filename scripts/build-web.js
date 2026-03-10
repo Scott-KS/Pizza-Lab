@@ -23,7 +23,6 @@ const EXCLUDE = new Set([
   "scripts",
   "resources",
   "Logos",
-  "nul",
   "plan_raw.txt",
   "capacitor.config.ts",
   "package.json",

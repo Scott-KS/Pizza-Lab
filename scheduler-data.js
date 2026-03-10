@@ -58,6 +58,17 @@ const FERMENT_METHODS = {
     coldFermentHours: 24,
     pullBeforePreheatMinutes: 120,
   },
+  "cure-24": {
+    id: "cure-24",
+    label: "24-Hour Dough Cure",
+    description: "Chicago Tavern style. The dough balls are wrapped tightly and refrigerated for 24 hours. This curing step relaxes the gluten and produces the thin, crackery crust that defines the style.",
+    reason: "Chicago Tavern dough must be cured — it's what gives the crust its signature snap.",
+    minHoursNeeded: 28,
+    isColdFerment: false,  // curing path, not standard cold ferment
+    bulkFermentMinutes: 60,
+    coldFermentHours: 0,
+    pullBeforePreheatMinutes: 30,
+  },
   "same-day": {
     id: "same-day",
     label: "Same-Day Room Temperature",
@@ -192,7 +203,7 @@ function getAvailableFermentMethods(availableHours, styleKey) {
   }
   // Chicago Tavern always cures — minimum 28 hours needed (24h cure + other steps)
   if (CURING_STYLES.includes(styleKey)) {
-    return [FERMENT_METHODS["cold-24"]]; // curing logic handled in buildScheduleBackward
+    return [FERMENT_METHODS["cure-24"]];
   }
 
   const available = [];
@@ -288,7 +299,7 @@ function buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWe
     const pullT = preheatT - min(30);          // pull from fridge 30 min before preheat
     const cureEndT = pullT;
     const cureStartT = cureEndT - min(24 * 60); // 24h minimum cure
-    const ballT = cureStartT;
+    const ballT = cureStartT - min(10);          // ball 10 min before cure begins
     const bulkStartT = ballT - min(60);         // 1hr bulk ferment (short — low hydration dough)
     const mixT = bulkStartT;
     const autolyseT = mixT - min(20);

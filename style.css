@@ -906,94 +906,6 @@ main {
   margin-top: 0.5rem;
 }
 
-/* ── Pairing Matrix ──────────────────────────────── */
-.matrix-wrapper {
-  overflow-x: auto;
-  margin-top: 0.5rem;
-  -webkit-overflow-scrolling: touch;
-}
-
-.pairing-matrix {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.82rem;
-  min-width: 540px;
-}
-
-.pairing-matrix th {
-  background: var(--clr-section-bg);
-  padding: 0.6rem 0.5rem;
-  font-weight: 600;
-  text-align: left;
-  font-size: 0.78rem;
-  white-space: nowrap;
-  border-bottom: 2px solid var(--clr-border);
-}
-
-.pairing-matrix thead th:first-child {
-  border-radius: 8px 0 0 0;
-}
-
-.pairing-matrix thead th:last-child {
-  border-radius: 0 8px 0 0;
-}
-
-.pairing-matrix tbody th {
-  font-weight: 600;
-  color: var(--clr-text);
-  border-bottom: 1px solid var(--clr-border);
-  padding: 0.6rem 0.5rem;
-}
-
-.pairing-matrix td {
-  padding: 0.6rem 0.5rem;
-  text-align: center;
-  border-bottom: 1px solid var(--clr-border);
-  cursor: default;
-  position: relative;
-  font-size: 1rem;
-}
-
-.rating-excellent { color: #3d7a3d; }
-.rating-good      { color: var(--clr-accent); }
-.rating-avoid     { color: #b33a3a; }
-
-.matrix-note {
-  display: none;
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--clr-text);
-  color: #fff;
-  font-size: 0.75rem;
-  padding: 0.4rem 0.65rem;
-  border-radius: 6px;
-  white-space: nowrap;
-  max-width: 240px;
-  white-space: normal;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.pairing-matrix td:hover .matrix-note {
-  display: block;
-}
-
-.matrix-legend {
-  display: flex;
-  gap: 1.25rem;
-  margin-top: 0.75rem;
-  font-size: 0.82rem;
-  color: var(--clr-text-light);
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
 /* ══════════════════════════════════════════════════ */
 /* ── PIZZA TOOLKIT ─────────────────────────────── */
 /* ══════════════════════════════════════════════════ */
@@ -1014,77 +926,35 @@ main {
 }
 
 /* ── Toolkit Tab Strip ───────────────────────────── */
-.toolkit-tabs-wrapper {
-  position: relative;
-}
-
-/* Right-edge fade hint — signals more tabs are scrollable */
-.toolkit-tabs-wrapper::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 40px;
-  height: calc(100% - 2px);
-  background: linear-gradient(to right, transparent, var(--clr-card-bg, #fff));
-  pointer-events: none;
-  opacity: 1;
-  transition: opacity 0.2s;
-}
-
-.toolkit-tabs-wrapper.scrolled-end::after {
-  opacity: 0;
-}
-
 .toolkit-tabs {
   display: flex;
-  border-bottom: 2px solid var(--clr-border);
+  flex-wrap: wrap;
+  gap: 0.25rem;
   margin-bottom: 1.5rem;
-  overflow-x: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.toolkit-tabs::-webkit-scrollbar {
-  display: none;
 }
 
 .toolkit-tab {
-  flex-shrink: 0;
-  padding: 0.75rem 1.25rem;
-  border: none;
-  background: none;
-  font-size: 0.95rem;
+  padding: 0.5rem 1rem;
+  border: 1.5px solid var(--clr-border);
+  border-radius: 6px;
+  background: var(--clr-card);
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--clr-text-light);
   cursor: pointer;
-  position: relative;
-  transition: color 0.2s;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
   white-space: nowrap;
-}
-
-.toolkit-tab::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: transparent;
-  border-radius: 3px 3px 0 0;
-  transition: background 0.2s;
 }
 
 .toolkit-tab:hover {
   color: var(--clr-primary);
+  border-color: var(--clr-primary);
 }
 
 .toolkit-tab.active {
-  color: var(--clr-primary);
-}
-
-.toolkit-tab.active::after {
+  color: #fff;
   background: var(--clr-primary);
+  border-color: var(--clr-primary);
 }
 
 .toolkit-panel {
@@ -2062,6 +1932,39 @@ main {
   text-align: center;
   color: var(--clr-display);
   margin-bottom: 1.25rem;
+}
+
+/* ── Journal Storage Display ─────────────────────── */
+.journal-storage {
+  margin-bottom: 1rem;
+}
+
+.storage-label {
+  font-size: 0.78rem;
+  color: var(--clr-text-light);
+  margin-bottom: 0.3rem;
+}
+
+.storage-bar {
+  height: 6px;
+  background: var(--clr-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.storage-bar-fill {
+  height: 100%;
+  background: var(--clr-primary);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.storage-bar-fill.storage-warning {
+  background: #d4a017;
+}
+
+.storage-bar-fill.storage-critical {
+  background: #b33a3a;
 }
 
 /* ── Journal Toolbar ─────────────────────────────── */
@@ -4194,33 +4097,84 @@ body[data-page="kitchen"] main {
 
 /* ── Print Styles ────────────────────────────────── */
 @media print {
+  /* ── Reset page to clean white ───────────────────── */
   body {
     background: #fff;
+    color: #000;
   }
-  .pizza-hero,
+  main {
+    padding: 0 !important;
+  }
+
+  /* ── Hide everything that isn't the recipe ────────── */
   .site-header,
-  .mobile-tab-bar {
-    display: none;
-  }
+  .pizza-hero,
+  .mobile-tab-bar,
   .calculator-card,
   .pizza-toolkit,
   .pizza-journal,
   .dough-scheduler,
+  .modal-overlay,
+  footer,
   .results-actions,
   .results-learn-more,
-  .modal-overlay,
-  footer {
-    display: none;
-  }
-  .results-card {
-    box-shadow: none;
-    padding: 0;
-  }
+  .flour-sub-row,
   .hydration-info-btn,
   .hydration-popover {
     display: none !important;
   }
-  main {
-    padding-bottom: 0 !important;
+
+  /* ── Show the results card even if JS set .hidden ── */
+  .results-card,
+  .results-card.hidden {
+    display: block !important;
+    box-shadow: none;
+    padding: 0;
+    background: #fff;
+    animation: none;
+  }
+
+  /* ── Results header ──────────────────────────────── */
+  .results-header h2 {
+    color: #000;
+  }
+  .badge {
+    border: 1px solid #666;
+    background: #fff;
+    color: #000;
+  }
+
+  /* ── Tables & sections print cleanly ─────────────── */
+  .results-grid {
+    display: block;
+  }
+  .result-section,
+  .instructions-section,
+  .tips-section {
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    break-inside: avoid;
+  }
+  .result-section h3,
+  .instructions-section h3,
+  .tips-section h3 {
+    color: #333;
+  }
+  .result-section th {
+    border-bottom: 2px solid #333;
+    color: #333;
+  }
+  .result-section td {
+    color: #000;
+  }
+  .result-section tr:not(:last-child) td {
+    border-bottom: 1px solid #ddd;
+  }
+
+  /* ── Pro tips marker ─────────────────────────────── */
+  #pro-tips li::before {
+    color: #333;
   }
 }

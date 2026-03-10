@@ -129,7 +129,7 @@ const PieLabJournal = (() => {
   }
 
   // ── Photo Compression ─────────────────────────────
-  function compressPhoto(file, maxWidth = 800) {
+  function compressPhoto(file, maxWidth = 600) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -152,7 +152,7 @@ const PieLabJournal = (() => {
           canvas.height = h;
           const ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL("image/jpeg", 0.8));
+          resolve(canvas.toDataURL("image/jpeg", 0.65));
         };
         img.onerror = reject;
         img.src = e.target.result;

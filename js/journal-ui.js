@@ -50,6 +50,29 @@
       .replace(/'/g, "&#039;");
   }
 
+  // ── Storage usage display ────────────────────────
+  function updateStorageDisplay() {
+    const label = document.getElementById("storage-label");
+    const fill = document.getElementById("storage-bar-fill");
+    if (!label || !fill) return;
+
+    let totalBytes = 0;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        totalBytes += (key.length + localStorage.getItem(key).length) * 2; // UTF-16
+      }
+    } catch { /* ignore */ }
+
+    const limitBytes = 5 * 1024 * 1024; // ~5 MB
+    const usedMB = (totalBytes / (1024 * 1024)).toFixed(1);
+    const pct = Math.min((totalBytes / limitBytes) * 100, 100);
+
+    label.textContent = `Storage: ${usedMB} MB of ~5 MB used`;
+    fill.style.width = `${pct}%`;
+    fill.className = "storage-bar-fill" + (pct > 80 ? " storage-warning" : pct > 95 ? " storage-critical" : "");
+  }
+
   // ── Populate dropdowns ────────────────────────────
   function populateDropdowns() {
     const jStyle = document.getElementById("j-style");
@@ -290,6 +313,7 @@
     hideForm();
     renderEntries();
     updateCompareButton();
+    updateStorageDisplay();
   });
 
   // ── Render entries ────────────────────────────────
@@ -517,6 +541,7 @@
         modalOverlay.classList.add("hidden");
         renderEntries();
         updateCompareButton();
+        updateStorageDisplay();
       }
     });
   }
@@ -611,4 +636,5 @@
   populateOvenDropdown();
   renderEntries();
   updateCompareButton();
+  updateStorageDisplay();
 })();

@@ -37,20 +37,18 @@
     <!-- Pizza Toolkit (includes Knowledge Hub + Tools) -->
     <section class="pizza-toolkit">
       <h2>Pizza Toolkit</h2>
-      <div class="toolkit-tabs-wrapper">
-        <nav class="toolkit-tabs" role="tablist">
-          <!-- Knowledge Hub tabs -->
-          <button class="toolkit-tab active" role="tab" aria-selected="true" data-tool="styles">Style Library</button>
-          <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="toppings">Toppings</button>
-          <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="flour">Flour Guide</button>
-          <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="cheese">Cheese &amp; Sauce</button>
-          <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="fermentation">Fermentation</button>
-          <!-- Tool tabs -->
-          <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="hydration">Hydration Guide</button>
-          <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="oven">Oven Guide</button>
-          <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="troubleshoot">Troubleshooting</button>
-        </nav>
-      </div>
+      <nav class="toolkit-tabs" role="tablist">
+        <!-- Knowledge Hub tabs -->
+        <button class="toolkit-tab active" role="tab" aria-selected="true" data-tool="styles">Style Library</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="toppings">Toppings</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="flour">Flour Guide</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="cheese">Cheese &amp; Sauce</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="fermentation">Fermentation</button>
+        <!-- Tool tabs -->
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="hydration">Hydration Guide</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="oven">Oven Guide</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="troubleshoot">Troubleshooting</button>
+      </nav>
       <div class="toolkit-panels">
         <!-- Knowledge Hub panels -->
         <div class="toolkit-panel active" id="tool-styles" role="tabpanel"></div>
@@ -98,9 +96,9 @@
 
   <!-- Scripts: Capacitor init first, then data files, then shared nav, then page features -->
   <script src="js/capacitor-init.js"></script>
-  <script src="recipes.js"></script>
-  <script src="knowledge-data.js"></script>
-  <script src="tools-data.js"></script>
+  <script src="recipes.js?v=2"></script>
+  <script src="knowledge-data.js?v=2"></script>
+  <script src="tools-data.js?v=2"></script>
   <script src="js/nav.js"></script>
   <script src="js/user-profile.js"></script>
   <script src="js/knowledge.js"></script>

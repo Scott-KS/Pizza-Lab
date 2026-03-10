@@ -62,17 +62,6 @@ function activateTab(tabId) {
     }, 100);
   }
 
-  // ── Tab scroll fade indicator ──
-  const tabsNav = document.querySelector(".toolkit-tabs");
-  const tabsWrapper = document.querySelector(".toolkit-tabs-wrapper");
-  if (tabsNav && tabsWrapper) {
-    function updateScrollFade() {
-      const atEnd = tabsNav.scrollLeft + tabsNav.clientWidth >= tabsNav.scrollWidth - 4;
-      tabsWrapper.classList.toggle("scrolled-end", atEnd);
-    }
-    tabsNav.addEventListener("scroll", updateScrollFade, { passive: true });
-    updateScrollFade();
-  }
 })();
 
 // ── Accordion Factory ────────────────────────────────
@@ -309,57 +298,6 @@ function populateCheeseSauceGuide() {
       `;
     }
   );
-
-  // Pairing Matrix
-  const matrixHeader = document.createElement("h3");
-  matrixHeader.className = "panel-subheader";
-  matrixHeader.textContent = "Pairing Matrix";
-  panel.appendChild(matrixHeader);
-
-  const matrixWrapper = document.createElement("div");
-  matrixWrapper.className = "matrix-wrapper";
-  matrixWrapper.innerHTML = buildPairingMatrixHTML();
-  panel.appendChild(matrixWrapper);
-}
-
-// ── Pairing Matrix ──────────────────────────────────
-function buildPairingMatrixHTML() {
-  const cheeses = CHEESE_SAUCE_GUIDE.cheeses;
-  const sauces = CHEESE_SAUCE_GUIDE.sauces;
-  const pairings = CHEESE_SAUCE_GUIDE.pairings;
-
-  let headerCells = sauces
-    .map((s) => `<th>${s.name}</th>`)
-    .join("");
-
-  let rows = cheeses
-    .map((cheese) => {
-      const cells = sauces
-        .map((sauce) => {
-          const pairing = pairings[cheese.id] && pairings[cheese.id][sauce.id];
-          if (!pairing) return `<td class="rating-none">\u2014</td>`;
-          const ratingClass = `rating-${pairing.rating}`;
-          const label =
-            pairing.rating === "excellent" ? "\u2605" :
-            pairing.rating === "good" ? "\u25CB" : "\u2716";
-          return `<td class="${ratingClass}" title="${pairing.note}">${label}<span class="matrix-note">${pairing.note}</span></td>`;
-        })
-        .join("");
-      return `<tr><th>${cheese.name}</th>${cells}</tr>`;
-    })
-    .join("");
-
-  return `
-    <table class="pairing-matrix">
-      <thead><tr><th></th>${headerCells}</tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    <div class="matrix-legend">
-      <span class="legend-item"><span class="rating-excellent">\u2605</span> Excellent</span>
-      <span class="legend-item"><span class="rating-good">\u25CB</span> Good</span>
-      <span class="legend-item"><span class="rating-avoid">\u2716</span> Avoid</span>
-    </div>
-  `;
 }
 
 // ── Fermentation Reference Chart (replaces Timer) ────

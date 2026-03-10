@@ -38,6 +38,11 @@
     <section class="pizza-journal" id="pizza-journal">
       <h2>Pizza Journal</h2>
 
+      <div class="journal-storage" id="journal-storage">
+        <div class="storage-label" id="storage-label">Storage: calculating…</div>
+        <div class="storage-bar"><div class="storage-bar-fill" id="storage-bar-fill"></div></div>
+      </div>
+
       <div class="journal-toolbar">
         <div class="journal-filter">
           <label for="journal-style-filter">Filter by style:</label>
@@ -181,7 +186,7 @@
 
   <!-- Scripts: Capacitor init first, then data files, then shared nav, then page features -->
   <script src="js/capacitor-init.js"></script>
-  <script src="recipes.js"></script>
+  <script src="recipes.js?v=2"></script>
   <script src="journal.js"></script>
   <script src="js/nav.js"></script>
   <script src="js/user-profile.js"></script>
