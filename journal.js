@@ -124,14 +124,18 @@ const PieLabJournal = (() => {
     return getAllEntries().filter((e) => e.styleKey === styleKey);
   }
 
+  function getEntryById(id) {
+    return getAllEntries().find((e) => e.id === id) || null;
+  }
+
   // ── Photo Compression ─────────────────────────────
-  function compressPhoto(file) {
+  function compressPhoto(file, maxWidth = 800) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
-          const MAX = 800;
+          const MAX = maxWidth;
           let w = img.width;
           let h = img.height;
           if (w > MAX || h > MAX) {
@@ -220,6 +224,7 @@ const PieLabJournal = (() => {
     updateEntry,
     deleteEntry,
     getEntriesByStyle,
+    getEntryById,
     compressPhoto,
     analyzeEntries,
   };

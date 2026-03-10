@@ -72,8 +72,8 @@ document.getElementById("pizza-form").addEventListener("submit", (e) => {
 
   if (!type || !sizeKey || !numPizzas) return;
 
-  const usePersonal = document.getElementById("settings-mode-toggle").checked;
-  const recipe = PieLabJournal.getEffectiveRecipe(type, usePersonal);
+  const useCustom = document.getElementById("settings-mode-toggle").checked;
+  const recipe = PieLabJournal.getEffectiveRecipe(type, useCustom);
   if (!recipe) return;
 
   // ── Apply kitchen profile adjustments ──
@@ -195,7 +195,7 @@ document.getElementById("pizza-form").addEventListener("submit", (e) => {
     sizeKey,
     numPizzas,
     ovenType,
-    usePersonal,
+    useCustom,
     doughSnapshot: {
       hydration: adjustedRecipe.hydration,
       saltPct: adjustedRecipe.saltPct,
@@ -206,6 +206,16 @@ document.getElementById("pizza-form").addEventListener("submit", (e) => {
     },
     bakeTemp: recipe.idealTemp ? recipe.idealTemp.max : null,
   };
+
+  // Preserve derivedFromId if user arrived via "Use as Starting Point"
+  // and is still working with the same pizza style
+  try {
+    const existing = JSON.parse(localStorage.getItem("pielab-last-calc") || "{}");
+    if (existing.derivedFromId && existing.styleKey === type) {
+      lastCalcData.derivedFromId = existing.derivedFromId;
+    }
+  } catch { /* ignore */ }
+
   try {
     localStorage.setItem("pielab-last-calc", JSON.stringify(lastCalcData));
   } catch { /* ignore storage errors */ }
@@ -217,8 +227,7 @@ document.getElementById("pizza-form").addEventListener("submit", (e) => {
   const flourSubSelect = document.getElementById("flour-sub-select");
   const flourSubNote = document.getElementById("flour-sub-note");
 
-  if (adjustedRecipe.flour && adjustedRecipe.flour !== "All-Purpose Flour" &&
-      FLOUR_ABSORPTION[adjustedRecipe.flour] != null) {
+  if (adjustedRecipe.flour && FLOUR_ABSORPTION[adjustedRecipe.flour] != null) {
     // Populate select with flour options (excluding recipe's own flour)
     flourSubSelect.innerHTML = '<option value="">— Use recommended flour —</option>';
     for (const flour of Object.keys(FLOUR_ABSORPTION)) {
@@ -287,14 +296,29 @@ document.getElementById("flour-sub-select").addEventListener("change", () => {
   const hydrationDelta = origAbsorption - subAbsorption;
   const absDelta = Math.abs(hydrationDelta);
 
-  // Create substituted recipe with adjusted hydration
+  // Create substituted recipe with adjusted hydration and flour name
   const subRecipe = { ...adjustedRecipe };
+  subRecipe.flour = selectedFlour;
   subRecipe.hydration = Math.min(1.00, Math.max(0.40,
     adjustedRecipe.hydration + hydrationDelta));
 
   // Recalculate and re-render dough table only
   const dough = calculateDough(subRecipe, numPizzas, sizeKey);
   renderDoughTable(dough);
+
+  // If Custom mode is active, update the hydration field and save
+  const toggle = document.getElementById("settings-mode-toggle");
+  if (toggle && toggle.checked) {
+    const hydField = document.getElementById("ps-hydration");
+    if (hydField) hydField.value = (subRecipe.hydration * 100).toFixed(1);
+
+    const styleKey = document.getElementById("pizza-type").value;
+    if (styleKey) {
+      const current = PieLabJournal.getPersonalSettings(styleKey) || {};
+      current.hydration = subRecipe.hydration;
+      PieLabJournal.savePersonalSettings(styleKey, current);
+    }
+  }
 
   // Compatibility badge
   let badgeClass, badgeText, noteClass;
@@ -416,10 +440,10 @@ document.getElementById("dough-table").addEventListener("click", (e) => {
 (() => {
   const toggle = document.getElementById("settings-mode-toggle");
   const labelRec = document.getElementById("toggle-label-rec");
-  const labelPersonal = document.getElementById("toggle-label-personal");
-  const editor = document.getElementById("personal-settings-editor");
+  const labelCustom = document.getElementById("toggle-label-custom");
+  const editor = document.getElementById("custom-settings-editor");
   const styleSelect = document.getElementById("pizza-type");
-  const personalStyleLabel = document.getElementById("personal-style-label");
+  const customStyleLabel = document.getElementById("custom-style-label");
 
   const fields = {
     hydration: document.getElementById("ps-hydration"),
@@ -431,9 +455,9 @@ document.getElementById("dough-table").addEventListener("click", (e) => {
   };
 
   function updateToggleLabels() {
-    const isPersonal = toggle.checked;
-    labelRec.classList.toggle("active", !isPersonal);
-    labelPersonal.classList.toggle("active", isPersonal);
+    const isCustom = toggle.checked;
+    labelRec.classList.toggle("active", !isCustom);
+    labelCustom.classList.toggle("active", isCustom);
   }
 
   function showEditor() {
@@ -450,7 +474,7 @@ document.getElementById("dough-table").addEventListener("click", (e) => {
     const sizeKeys = Object.keys(recipe.sizes);
     const defaultDoughWeight = recipe.sizes[sizeKeys[0]].doughWeight;
 
-    personalStyleLabel.textContent = `\u2014 ${recipe.name}`;
+    customStyleLabel.textContent = `\u2014 ${recipe.name}`;
 
     fields.hydration.value = personal?.hydration != null
       ? (personal.hydration * 100).toFixed(1)
@@ -501,7 +525,7 @@ document.getElementById("dough-table").addEventListener("click", (e) => {
     input.addEventListener("change", saveCurrentSettings);
   });
 
-  document.getElementById("btn-reset-personal").addEventListener("click", () => {
+  document.getElementById("btn-reset-custom").addEventListener("click", () => {
     const styleKey = styleSelect.value;
     if (styleKey) {
       PieLabJournal.deletePersonalSettings(styleKey);
@@ -511,4 +535,110 @@ document.getElementById("dough-table").addEventListener("click", (e) => {
 
   // Init labels
   updateToggleLabels();
+})();
+
+// ── "Cook This Again" / "Use as Starting Point" loader (?load=1) ──
+(() => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("load") !== "1") return;
+
+  try {
+    const raw = localStorage.getItem("pielab-last-calc");
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (!data || !data.styleKey) return;
+
+    // 1. Set pizza style (triggers size selector population)
+    const typeSelect = document.getElementById("pizza-type");
+    if (typeSelect) {
+      typeSelect.value = data.styleKey;
+      typeSelect.dispatchEvent(new Event("change"));
+    }
+
+    // 2. Set oven type
+    if (data.ovenType) {
+      const ovenSelect = document.getElementById("calc-oven-type");
+      if (ovenSelect && ovenSelect.querySelector(`option[value="${data.ovenType}"]`)) {
+        ovenSelect.value = data.ovenType;
+      }
+    }
+
+    // 3. Set number of pizzas
+    if (data.numPizzas) {
+      const numInput = document.getElementById("num-pizzas");
+      if (numInput) numInput.value = data.numPizzas;
+    }
+
+    // 4. Set pizza size if we have one
+    if (data.sizeKey) {
+      const sizeSelect = document.getElementById("pizza-size");
+      if (sizeSelect && sizeSelect.querySelector(`option[value="${data.sizeKey}"]`)) {
+        sizeSelect.value = data.sizeKey;
+      }
+    }
+
+    // 5. If we have a doughSnapshot (from "Use as Starting Point"),
+    //    switch to Custom mode and populate the fields
+    if (data.doughSnapshot) {
+      const snap = data.doughSnapshot;
+      const toggle = document.getElementById("settings-mode-toggle");
+      const editor = document.getElementById("custom-settings-editor");
+      const labelRec = document.getElementById("toggle-label-rec");
+      const labelCustom = document.getElementById("toggle-label-custom");
+      const customStyleLabel = document.getElementById("custom-style-label");
+
+      // Switch toggle to Custom
+      if (toggle && !toggle.checked) {
+        toggle.checked = true;
+        labelRec.classList.remove("active");
+        labelCustom.classList.add("active");
+      }
+
+      // Save the snapshot values as custom settings for this style
+      // so getEffectiveRecipe() picks them up on Calculate
+      const customSettings = {};
+      if (snap.hydration != null)      customSettings.hydration = snap.hydration;
+      if (snap.saltPct != null)        customSettings.saltPct = snap.saltPct;
+      if (snap.oilPct != null)         customSettings.oilPct = snap.oilPct;
+      if (snap.sugarPct != null)       customSettings.sugarPct = snap.sugarPct;
+      if (snap.yeastPct != null)       customSettings.yeastPct = snap.yeastPct;
+      if (snap.doughBallWeight != null) customSettings.doughBallWeight = snap.doughBallWeight;
+
+      PieLabJournal.savePersonalSettings(data.styleKey, customSettings);
+
+      // Populate the visible editor fields
+      const fieldMap = {
+        hydration:       { el: document.getElementById("ps-hydration"),    mult: 100, dec: 1 },
+        saltPct:         { el: document.getElementById("ps-salt"),         mult: 100, dec: 1 },
+        oilPct:          { el: document.getElementById("ps-oil"),          mult: 100, dec: 1 },
+        sugarPct:        { el: document.getElementById("ps-sugar"),        mult: 100, dec: 1 },
+        yeastPct:        { el: document.getElementById("ps-yeast"),        mult: 100, dec: 2 },
+        doughBallWeight: { el: document.getElementById("ps-dough-weight"), mult: 1,   dec: 0 },
+      };
+
+      for (const [key, cfg] of Object.entries(fieldMap)) {
+        if (snap[key] != null && cfg.el) {
+          cfg.el.value = (snap[key] * cfg.mult).toFixed(cfg.dec);
+        }
+      }
+
+      // Show editor panel with style label
+      const recipe = PIZZA_RECIPES[data.styleKey];
+      if (customStyleLabel && recipe) {
+        customStyleLabel.textContent = `\u2014 ${recipe.name}`;
+      }
+      if (editor) editor.classList.remove("hidden");
+    }
+
+    // Scroll to calculator
+    const calcCard = document.querySelector(".calculator-card");
+    if (calcCard) {
+      setTimeout(() => calcCard.scrollIntoView({ behavior: "smooth", block: "start" }), 150);
+    }
+
+    // Clean URL so reload doesn't re-trigger
+    history.replaceState(null, "", window.location.pathname);
+  } catch {
+    // Silently ignore malformed data
+  }
 })();

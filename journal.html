@@ -50,8 +50,13 @@
       </div>
 
       <div class="journal-form-wrapper hidden" id="journal-form-wrapper">
-        <h3>Log a Bake</h3>
+        <h3 id="journal-form-heading">Log a Bake</h3>
         <form id="journal-form">
+          <div class="form-group">
+            <label for="j-bake-name">Bake Name <span class="field-hint">(optional)</span></label>
+            <input type="text" id="j-bake-name" placeholder="e.g. Sunday Night Margherita" maxlength="80" />
+          </div>
+
           <div class="journal-form-grid">
             <div class="form-group">
               <label for="j-style">Pizza Style</label>
@@ -104,18 +109,15 @@
           </div>
 
           <div class="form-group">
-            <label>Photo</label>
-            <div class="photo-upload" id="j-photo-upload">
-              <input type="file" id="j-photo-input" accept="image/*" class="sr-only" />
-              <div class="photo-preview hidden" id="j-photo-preview">
-                <img id="j-photo-img" alt="Bake photo preview" />
-                <button type="button" class="photo-remove" id="j-photo-remove" aria-label="Remove photo">&times;</button>
-              </div>
-              <label for="j-photo-input" class="photo-placeholder" id="j-photo-placeholder">
-                <span class="photo-icon">&#128247;</span>
-                <span>Add a photo</span>
-              </label>
+            <label>Photos <span class="photo-count-hint">(up to 4)</span></label>
+            <input type="file" id="j-photo-input" accept="image/*" multiple class="sr-only" />
+            <div class="photo-grid" id="j-photo-grid">
+              <!-- Thumbnails rendered by JS -->
             </div>
+            <label for="j-photo-input" class="photo-add-btn" id="j-photo-add-btn">
+              <span class="photo-icon">&#128247;</span>
+              <span>Add Photos</span>
+            </label>
           </div>
 
           <div class="journal-form-actions">

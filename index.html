@@ -82,7 +82,7 @@
           <input type="checkbox" id="settings-mode-toggle" />
           <span class="toggle-slider"></span>
         </label>
-        <span class="toggle-label" id="toggle-label-personal">Personal</span>
+        <span class="toggle-label" id="toggle-label-custom">Custom</span>
       </div>
 
       <form id="pizza-form">
@@ -110,41 +110,41 @@
           <select id="calc-oven-type" required></select>
         </div>
 
+        <div id="custom-settings-editor" class="custom-settings-editor hidden">
+          <h3>Custom Settings <span id="custom-style-label"></span></h3>
+          <div class="settings-grid">
+            <div class="setting-field">
+              <label for="ps-hydration">Hydration %</label>
+              <input type="number" id="ps-hydration" step="0.1" min="40" max="100" />
+            </div>
+            <div class="setting-field">
+              <label for="ps-salt">Salt %</label>
+              <input type="number" id="ps-salt" step="0.1" min="0" max="10" />
+            </div>
+            <div class="setting-field">
+              <label for="ps-oil">Oil %</label>
+              <input type="number" id="ps-oil" step="0.1" min="0" max="20" />
+            </div>
+            <div class="setting-field">
+              <label for="ps-sugar">Sugar %</label>
+              <input type="number" id="ps-sugar" step="0.1" min="0" max="20" />
+            </div>
+            <div class="setting-field">
+              <label for="ps-yeast">Yeast %</label>
+              <input type="number" id="ps-yeast" step="0.01" min="0" max="5" />
+            </div>
+            <div class="setting-field">
+              <label for="ps-dough-weight">Dough Ball (g)</label>
+              <input type="number" id="ps-dough-weight" step="1" min="50" max="2000" />
+            </div>
+          </div>
+          <div class="settings-actions">
+            <button type="button" class="btn-reset-settings" id="btn-reset-custom">Reset to Default</button>
+          </div>
+        </div>
+
         <button type="submit" class="btn-calculate">Calculate Recipe</button>
       </form>
-
-      <div id="personal-settings-editor" class="personal-settings-editor hidden">
-        <h3>Personal Settings <span id="personal-style-label"></span></h3>
-        <div class="settings-grid">
-          <div class="setting-field">
-            <label for="ps-hydration">Hydration %</label>
-            <input type="number" id="ps-hydration" step="0.1" min="40" max="100" />
-          </div>
-          <div class="setting-field">
-            <label for="ps-salt">Salt %</label>
-            <input type="number" id="ps-salt" step="0.1" min="0" max="10" />
-          </div>
-          <div class="setting-field">
-            <label for="ps-oil">Oil %</label>
-            <input type="number" id="ps-oil" step="0.1" min="0" max="20" />
-          </div>
-          <div class="setting-field">
-            <label for="ps-sugar">Sugar %</label>
-            <input type="number" id="ps-sugar" step="0.1" min="0" max="20" />
-          </div>
-          <div class="setting-field">
-            <label for="ps-yeast">Yeast %</label>
-            <input type="number" id="ps-yeast" step="0.01" min="0" max="5" />
-          </div>
-          <div class="setting-field">
-            <label for="ps-dough-weight">Dough Ball (g)</label>
-            <input type="number" id="ps-dough-weight" step="1" min="50" max="2000" />
-          </div>
-        </div>
-        <div class="settings-actions">
-          <button type="button" class="btn-reset-settings" id="btn-reset-personal">Reset to Default</button>
-        </div>
-      </div>
     </section>
 
     <section id="results" class="results-card hidden">

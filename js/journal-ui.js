@@ -22,33 +22,39 @@
   const starContainer = document.getElementById("j-star-rating");
   const stars = starContainer.querySelectorAll(".star");
 
-  // Photo state
-  let currentPhotoData = null;
+  // Multi-photo state (replaces single-photo)
+  let currentPhotos = []; // array of data-URL strings, max 4
   const photoInput = document.getElementById("j-photo-input");
-  const photoPreview = document.getElementById("j-photo-preview");
-  const photoImg = document.getElementById("j-photo-img");
-  const photoPlaceholder = document.getElementById("j-photo-placeholder");
-  const photoRemove = document.getElementById("j-photo-remove");
+  const photoGrid = document.getElementById("j-photo-grid");
+  const photoAddBtn = document.getElementById("j-photo-add-btn");
+  const MAX_PHOTOS = 4;
+
+  // Iteration / derivedFrom state
+  let pendingDerivedFromId = null;
+
+  // Edit mode state (kept for backwards compat — no UI button triggers it now)
+  let editingEntryId = null;
 
   // Dough snapshot state
   let currentSnapshot = null;
   const snapshotEl = document.getElementById("j-dough-snapshot");
 
-  // Populate style dropdowns using shared utility
+  // Form heading
+  const formHeading = document.getElementById("journal-form-heading");
+
+  // ── Populate dropdowns ────────────────────────────
   function populateDropdowns() {
     const jStyle = document.getElementById("j-style");
     populateStyleSelect(jStyle);
-
     populateStyleSelect(filterSelect, { includeAll: true, placeholder: null });
   }
 
-  // Populate oven dropdown using shared OVEN_TYPES
   function populateOvenDropdown() {
     const ovenSelect = document.getElementById("j-oven-type");
     populateOvenSelect(ovenSelect);
   }
 
-  // Star rating — click to set, hover to preview
+  // ── Star rating — click to set, hover to preview ──
   stars.forEach((star) => {
     star.addEventListener("click", () => {
       const clicked = parseInt(star.dataset.value);
@@ -81,29 +87,62 @@
     return "\u2605".repeat(rating) + "\u2606".repeat(5 - rating);
   }
 
-  // Photo handling
-  photoInput.addEventListener("change", async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    try {
-      currentPhotoData = await PieLabJournal.compressPhoto(file);
-      photoImg.src = currentPhotoData;
-      photoPreview.classList.remove("hidden");
-      photoPlaceholder.classList.add("hidden");
-    } catch {
-      alert("Could not process image. Please try another photo.");
+  // ── Multi-photo handling ──────────────────────────
+  function renderPhotoGrid() {
+    photoGrid.innerHTML = "";
+
+    currentPhotos.forEach((dataUrl, idx) => {
+      const thumb = document.createElement("div");
+      thumb.className = "photo-grid-thumb";
+      thumb.innerHTML = `
+        <img src="${dataUrl}" alt="Photo ${idx + 1}" />
+        <button type="button" class="photo-grid-remove" data-idx="${idx}" aria-label="Remove photo">&times;</button>
+      `;
+      photoGrid.appendChild(thumb);
+    });
+
+    // Show/hide the add button based on count
+    if (currentPhotos.length >= MAX_PHOTOS) {
+      photoAddBtn.classList.add("hidden");
+    } else {
+      photoAddBtn.classList.remove("hidden");
+    }
+  }
+
+  async function handlePhotoFiles(files) {
+    const remaining = MAX_PHOTOS - currentPhotos.length;
+    const toProcess = Array.from(files).slice(0, remaining);
+
+    for (const file of toProcess) {
+      try {
+        const dataUrl = await PieLabJournal.compressPhoto(file, 800);
+        currentPhotos.push(dataUrl);
+      } catch {
+        // silently skip unreadable files
+      }
+    }
+
+    renderPhotoGrid();
+  }
+
+  photoInput.addEventListener("change", (e) => {
+    if (e.target.files.length) {
+      handlePhotoFiles(e.target.files);
+      photoInput.value = ""; // reset so same file can be re-selected
     }
   });
 
-  photoRemove.addEventListener("click", () => {
-    currentPhotoData = null;
-    photoInput.value = "";
-    photoPreview.classList.add("hidden");
-    photoPlaceholder.classList.remove("hidden");
+  // Delegate remove clicks on photo grid
+  photoGrid.addEventListener("click", (e) => {
+    const removeBtn = e.target.closest(".photo-grid-remove");
+    if (!removeBtn) return;
+    const idx = parseInt(removeBtn.dataset.idx);
+    currentPhotos.splice(idx, 1);
+    renderPhotoGrid();
   });
 
-  // Show/hide form
-  function showForm(prefill) {
+  // ── Show/hide form ────────────────────────────────
+  function showForm(prefill, derivedFrom) {
     formWrapper.classList.remove("hidden");
     btnNewEntry.classList.add("hidden");
 
@@ -113,17 +152,37 @@
     // Reset
     currentRating = 0;
     updateStars();
-    currentPhotoData = null;
-    photoInput.value = "";
-    photoPreview.classList.add("hidden");
-    photoPlaceholder.classList.remove("hidden");
+    currentPhotos = [];
+    renderPhotoGrid();
+    document.getElementById("j-bake-name").value = "";
     document.getElementById("j-notes").value = "";
     document.getElementById("j-bake-temp").value = "";
     document.getElementById("j-bake-time").value = "";
     document.getElementById("j-oven-type").selectedIndex = 0;
+    editingEntryId = null;
+    pendingDerivedFromId = null;
 
-    if (prefill) {
-      // Read from localStorage instead of window._lastCalc
+    if (derivedFrom) {
+      // Iteration mode — new entry based on an existing one
+      pendingDerivedFromId = derivedFrom.id;
+      formHeading.textContent = `New Bake \u2014 Based on ${derivedFrom.styleName}`;
+
+      document.getElementById("j-style").value = derivedFrom.styleKey || "";
+      if (derivedFrom.bakeTemp) document.getElementById("j-bake-temp").value = derivedFrom.bakeTemp;
+      if (derivedFrom.bakeTime) document.getElementById("j-bake-time").value = derivedFrom.bakeTime;
+      if (derivedFrom.ovenType) document.getElementById("j-oven-type").value = derivedFrom.ovenType;
+
+      if (derivedFrom.doughSnapshot) {
+        currentSnapshot = derivedFrom.doughSnapshot;
+        renderSnapshot(derivedFrom.doughSnapshot);
+      } else {
+        currentSnapshot = null;
+        snapshotEl.innerHTML = '<span class="snapshot-label">Dough Snapshot:</span><span class="snapshot-empty">No dough data for this entry</span>';
+      }
+
+      // Don't copy photos or notes — user starts fresh for the new bake
+    } else if (prefill) {
+      // New entry with calculator prefill
       try {
         const raw = localStorage.getItem("pielab-last-calc");
         if (raw) {
@@ -134,15 +193,29 @@
           }
           currentSnapshot = calc.doughSnapshot;
           renderSnapshot(calc.doughSnapshot);
+
+          // Carry lineage through from "Use as Starting Point" flow
+          if (calc.derivedFromId) {
+            pendingDerivedFromId = calc.derivedFromId;
+            const parent = PieLabJournal.getEntryById(calc.derivedFromId);
+            formHeading.textContent = parent
+              ? `New Bake \u2014 Based on ${parent.styleName} (${formatDate(parent.date)})`
+              : "New Bake \u2014 Iteration";
+          } else {
+            formHeading.textContent = "Log a Bake";
+          }
         } else {
+          formHeading.textContent = "Log a Bake";
           currentSnapshot = null;
           snapshotEl.innerHTML = '<span class="snapshot-label">Dough Snapshot:</span><span class="snapshot-empty">Calculate a recipe first to capture dough settings</span>';
         }
       } catch {
+        formHeading.textContent = "Log a Bake";
         currentSnapshot = null;
         snapshotEl.innerHTML = '<span class="snapshot-label">Dough Snapshot:</span><span class="snapshot-empty">Calculate a recipe first to capture dough settings</span>';
       }
     } else {
+      formHeading.textContent = "Log a Bake";
       currentSnapshot = null;
       snapshotEl.innerHTML = '<span class="snapshot-label">Dough Snapshot:</span><span class="snapshot-empty">Calculate a recipe first to capture dough settings</span>';
     }
@@ -153,6 +226,9 @@
   function hideForm() {
     formWrapper.classList.add("hidden");
     btnNewEntry.classList.remove("hidden");
+    editingEntryId = null;
+    pendingDerivedFromId = null;
+    formHeading.textContent = "Log a Bake";
   }
 
   function renderSnapshot(snap) {
@@ -174,11 +250,10 @@
   // Check for ?prefill=1 URL parameter
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get("prefill") === "1") {
-    // Auto-open form with prefill after a brief delay for DOM
     setTimeout(() => showForm(true), 100);
   }
 
-  // Save entry
+  // ── Save entry ────────────────────────────────────
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -186,8 +261,10 @@
     if (!styleKey) { alert("Please select a pizza style."); return; }
 
     const recipe = PIZZA_RECIPES[styleKey];
+    const bakeName = document.getElementById("j-bake-name").value.trim();
     const entry = {
       date: document.getElementById("j-date").value,
+      bakeName: bakeName || null,
       styleKey,
       styleName: recipe ? recipe.name : styleKey,
       doughSnapshot: currentSnapshot || null,
@@ -196,16 +273,25 @@
       ovenType: document.getElementById("j-oven-type").value,
       rating: currentRating || 0,
       notes: document.getElementById("j-notes").value.trim(),
-      photo: currentPhotoData || null,
+      photos: currentPhotos.length ? [...currentPhotos] : [],
+      photo: currentPhotos.length ? currentPhotos[0] : null, // legacy compat
+      derivedFromId: pendingDerivedFromId || null,
     };
 
-    PieLabJournal.addEntry(entry);
+    if (editingEntryId) {
+      PieLabJournal.updateEntry(editingEntryId, entry);
+      editingEntryId = null;
+    } else {
+      PieLabJournal.addEntry(entry);
+    }
+
+    pendingDerivedFromId = null;
     hideForm();
     renderEntries();
     updateCompareButton();
   });
 
-  // Render entries
+  // ── Render entries ────────────────────────────────
   function renderEntries() {
     const filter = filterSelect.value;
     const entries = filter === "all"
@@ -219,8 +305,6 @@
     }
 
     emptyState.classList.add("hidden");
-
-    // Clear existing cards
     entriesContainer.querySelectorAll(".journal-entry-card").forEach((c) => c.remove());
 
     entries.forEach((entry) => {
@@ -228,8 +312,10 @@
       card.className = "journal-entry-card";
       card.dataset.id = entry.id;
 
-      const thumbHtml = entry.photo
-        ? `<img class="entry-thumb" src="${entry.photo}" alt="Bake photo" />`
+      // Use first photo from photos array, fall back to legacy photo field
+      const thumbSrc = (entry.photos && entry.photos.length) ? entry.photos[0] : entry.photo;
+      const thumbHtml = thumbSrc
+        ? `<img class="entry-thumb" src="${thumbSrc}" alt="Bake photo" />`
         : `<div class="entry-thumb-placeholder">\uD83C\uDF55</div>`;
 
       const detailParts = [];
@@ -241,14 +327,21 @@
         detailParts.push(entry.ovenType);
       }
 
+      // Lineage badge
+      const lineageBadge = entry.derivedFromId
+        ? '<span class="lineage-badge">\uD83D\uDD04 Iteration</span>'
+        : "";
+
       card.innerHTML = `
         ${thumbHtml}
         <div class="entry-info">
           <div class="entry-top-row">
             <span class="entry-date">${formatDate(entry.date)}</span>
             <span class="entry-style-badge">${entry.styleName}</span>
+            ${lineageBadge}
             ${entry.rating ? `<span class="entry-stars">${renderStars(entry.rating)}</span>` : ""}
           </div>
+          ${entry.bakeName ? `<div class="entry-bake-name">${entry.bakeName}</div>` : ""}
           ${detailParts.length ? `<div class="entry-details">${detailParts.join(" \u00B7 ")}</div>` : ""}
           ${entry.notes ? `<div class="entry-notes-preview">${entry.notes}</div>` : ""}
         </div>
@@ -265,7 +358,7 @@
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   }
 
-  // Filter
+  // ── Filter ────────────────────────────────────────
   filterSelect.addEventListener("change", () => {
     renderEntries();
     updateCompareButton();
@@ -293,21 +386,53 @@
     }
   }
 
-  // Detail Modal
+  // ── Detail Modal ──────────────────────────────────
   function openDetailModal(entry) {
     let html = "";
 
-    if (entry.photo) {
-      html += `<img class="modal-photo" src="${entry.photo}" alt="Bake photo" />`;
+    // Photo strip — supports multiple photos
+    const photos = (entry.photos && entry.photos.length) ? entry.photos : (entry.photo ? [entry.photo] : []);
+    if (photos.length) {
+      html += '<div class="modal-photo-strip">';
+      photos.forEach((src, i) => {
+        html += `<img class="modal-strip-img${i === 0 ? " active" : ""}" src="${src}" alt="Bake photo ${i + 1}" data-idx="${i}" />`;
+      });
+      html += "</div>";
+
+      // If multiple photos, show the first as large preview
+      if (photos.length > 1) {
+        html += `<img class="modal-photo-main" id="modal-photo-main" src="${photos[0]}" alt="Bake photo" />`;
+      }
     }
 
     html += `
       <div class="modal-header">
-        <h3>${entry.styleName}</h3>
+        <h3>${entry.bakeName || entry.styleName}</h3>
+        ${entry.bakeName ? `<span class="modal-style-label">${entry.styleName}</span>` : ""}
         <span class="entry-date">${formatDate(entry.date)}</span>
         ${entry.rating ? `<span class="modal-stars">${renderStars(entry.rating)}</span>` : ""}
       </div>
     `;
+
+    // Lineage row
+    if (entry.derivedFromId) {
+      const parent = PieLabJournal.getEntryById(entry.derivedFromId);
+      if (parent) {
+        html += `
+          <div class="modal-lineage">
+            <span class="lineage-icon">\uD83D\uDD04</span>
+            <span>Based on <strong>${parent.styleName}</strong> bake from ${formatDate(parent.date)}</span>
+          </div>
+        `;
+      } else {
+        html += `
+          <div class="modal-lineage">
+            <span class="lineage-icon">\uD83D\uDD04</span>
+            <span>Iteration of a previous bake</span>
+          </div>
+        `;
+      }
+    }
 
     // Details grid
     const details = [];
@@ -342,12 +467,47 @@
 
     html += `
       <div class="modal-actions">
-        <button class="btn-modal-delete" data-id="${entry.id}">Delete Entry</button>
+        <button class="btn-modal-iterate" data-id="${entry.id}">
+          Use as Starting Point
+        </button>
+        <button class="btn-modal-delete" data-id="${entry.id}">
+          Delete
+        </button>
       </div>
     `;
 
     modalBody.innerHTML = html;
     modalOverlay.classList.remove("hidden");
+
+    // Photo strip click → swap main image
+    if (photos.length > 1) {
+      const mainImg = document.getElementById("modal-photo-main");
+      const stripImgs = modalBody.querySelectorAll(".modal-strip-img");
+      stripImgs.forEach((img) => {
+        img.addEventListener("click", () => {
+          mainImg.src = img.src;
+          stripImgs.forEach((s) => s.classList.remove("active"));
+          img.classList.add("active");
+        });
+      });
+    }
+
+    // Iterate handler — "Use as Starting Point" → load into calculator
+    modalBody.querySelector(".btn-modal-iterate").addEventListener("click", () => {
+      const lastCalcData = {
+        styleKey: entry.styleKey,
+        styleName: entry.styleName,
+        sizeKey: null,
+        numPizzas: 1,
+        ovenType: entry.ovenType || "",
+        useCustom: false,
+        doughSnapshot: entry.doughSnapshot || null,
+        bakeTemp: entry.bakeTemp || null,
+        derivedFromId: entry.id,
+      };
+      localStorage.setItem("pielab-last-calc", JSON.stringify(lastCalcData));
+      window.location.href = "index.html?load=1";
+    });
 
     // Delete handler
     modalBody.querySelector(".btn-modal-delete").addEventListener("click", (e) => {
@@ -365,7 +525,7 @@
     if (e.target === modalOverlay) modalOverlay.classList.add("hidden");
   });
 
-  // Comparison
+  // ── Comparison ────────────────────────────────────
   btnCompare.addEventListener("click", () => {
     const filter = filterSelect.value;
     if (filter === "all") return;
@@ -386,7 +546,6 @@
       </div>
     `;
 
-    // Insight cards
     html += '<div class="insights-row">';
     if (analysis.bestHydration) {
       html += `
@@ -412,7 +571,6 @@
     }
     html += "</div>";
 
-    // Comparison table
     html += '<div class="comparison-table-wrapper"><table class="comparison-table">';
     html += "<thead><tr><th>Date</th><th>Hydration</th><th>Bake Temp</th><th>Time</th><th>Oven</th><th>Rating</th></tr></thead><tbody>";
 
@@ -447,7 +605,7 @@
     });
   });
 
-  // Initialize
+  // ── Initialize ────────────────────────────────────
   populateDropdowns();
   populateOvenDropdown();
   renderEntries();
