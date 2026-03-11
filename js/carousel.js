@@ -37,4 +37,17 @@
       resetAutoplay();
     })
   );
+
+  // ── Splash page: clicking a slide navigates to calculator ──
+  if (document.body.classList.contains("splash-page")) {
+    slides.forEach(slide => {
+      slide.style.cursor = "pointer";
+      slide.addEventListener("click", () => {
+        const style = slide.dataset.style;
+        if (style) {
+          window.location.href = "calculator.html?style=" + encodeURIComponent(style);
+        }
+      });
+    });
+  }
 })();

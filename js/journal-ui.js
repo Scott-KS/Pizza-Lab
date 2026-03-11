@@ -531,7 +531,7 @@
         derivedFromId: entry.id,
       };
       localStorage.setItem("pielab-last-calc", JSON.stringify(lastCalcData));
-      window.location.href = "index.html?load=1";
+      window.location.href = "calculator.html?load=1";
     });
 
     // Delete handler

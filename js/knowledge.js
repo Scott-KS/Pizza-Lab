@@ -24,7 +24,7 @@ function activateTab(tabId) {
   });
 
   // Hash-based routing on load
-  const knowledgeTabs = ["styles", "toppings", "flour", "cheese", "fermentation"];
+  const knowledgeTabs = ["styles", "cheese", "flour", "fermentation"];
   const hash = location.hash.replace("#", "");
   if (knowledgeTabs.includes(hash)) {
     activateTab(hash);
@@ -38,7 +38,6 @@ function activateTab(tabId) {
 
   // Populate all panels
   populateStyleLibrary();
-  populateToppingCombos();
   populateFlourGuide();
   populateCheeseSauceGuide();
   populateFermentationChart();
@@ -116,20 +115,50 @@ function openAccordion(wrapper) {
   body.style.maxHeight = body.scrollHeight + "px";
 }
 
-// ── Style Library ────────────────────────────────────
+// ── Style Library (includes Topping Combos) ─────────
 function populateStyleLibrary() {
   const panel = document.getElementById("tool-styles");
   if (!panel) return;
   const items = Object.entries(STYLE_LIBRARY).map(([key, style]) => ({
     key,
     title: style.name,
-    data: style,
+    data: { ...style, _key: key },
   }));
 
   createAccordion(panel, items, (style) => {
     const factsHtml = style.keyFacts
       .map((f) => `<span class="key-fact"><strong>${f.label}:</strong> ${f.value}</span>`)
       .join("");
+
+    // Topping combos for this style (merged from former Toppings tab)
+    let combosSection = "";
+    const combos = typeof TOPPING_COMBOS !== "undefined" ? TOPPING_COMBOS[style._key] : null;
+    if (combos && combos.combos && combos.combos.length) {
+      const combosHtml = combos.combos
+        .map((combo) => {
+          const tierClass = combo.tier.toLowerCase();
+          return `
+            <div class="combo-card">
+              <div class="combo-header">
+                <span class="tier-badge tier-${tierClass}">${combo.tier}</span>
+                <strong class="combo-name">${combo.name}</strong>
+              </div>
+              <ul class="combo-ingredients">
+                ${combo.ingredients.map((i) => `<li>${i}</li>`).join("")}
+              </ul>
+              <p class="combo-why">${combo.why}</p>
+            </div>
+          `;
+        })
+        .join("");
+
+      combosSection = `
+        <div class="style-combos">
+          <h4>Suggested Recipes</h4>
+          <div class="combos-grid">${combosHtml}</div>
+        </div>
+      `;
+    }
 
     return `
       <span class="origin-badge">${style.origin}</span>
@@ -142,84 +171,170 @@ function populateStyleLibrary() {
         <p>${style.debates}</p>
       </div>
       <div class="key-facts">${factsHtml}</div>
+      ${combosSection}
     `;
   });
 }
 
-// ── Topping Combinations ─────────────────────────────
-function populateToppingCombos() {
-  const panel = document.getElementById("tool-toppings");
-  if (!panel) return;
-  const items = Object.entries(TOPPING_COMBOS).map(([key, data]) => ({
-    key,
-    title: data.name,
-    data: data,
-  }));
-
-  createAccordion(panel, items, (data) => {
-    const combosHtml = data.combos
-      .map((combo) => {
-        const tierClass = combo.tier.toLowerCase();
-        return `
-          <div class="combo-card">
-            <div class="combo-header">
-              <span class="tier-badge tier-${tierClass}">${combo.tier}</span>
-              <strong class="combo-name">${combo.name}</strong>
-            </div>
-            <ul class="combo-ingredients">
-              ${combo.ingredients.map((i) => `<li>${i}</li>`).join("")}
-            </ul>
-            <p class="combo-why">${combo.why}</p>
-          </div>
-        `;
-      })
-      .join("");
-
-    return `<div class="combos-grid">${combosHtml}</div>`;
-  });
-}
-
-// ── Flour Guide ──────────────────────────────────────
+// ── Flour & Yeast Guide ──────────────────────────────
 function populateFlourGuide() {
   const panel = document.getElementById("tool-flour");
   if (!panel) return;
-  const items = Object.entries(FLOUR_GUIDE).map(([key, flour]) => ({
-    key,
-    title: flour.name,
-    data: flour,
-  }));
 
-  createAccordion(panel, items, (flour) => {
-    const usesHtml = flour.bestUses
-      .map((u) => `<span class="use-tag">${u}</span>`)
-      .join("");
+  // ── Flour sub-section ──────────────────────────────
+  const flourHeader = document.createElement("h3");
+  flourHeader.className = "panel-subheader";
+  flourHeader.textContent = "Flour";
+  panel.appendChild(flourHeader);
 
-    const linksHtml = flour.buyLinks
-      .map(
-        (link) =>
-          `<a href="${link.url}" class="buy-link" target="_blank" rel="noopener">
-            <strong>${link.brand}</strong>
-            <span class="buy-note">${link.note}</span>
-            <span class="buy-arrow">\u2192</span>
-          </a>`
-      )
-      .join("");
+  const flourContainer = document.createElement("div");
+  flourContainer.className = "flour-accordions";
+  panel.appendChild(flourContainer);
 
-    return `
-      <span class="protein-badge">${flour.proteinContent} protein</span>
-      <p class="flour-desc">${flour.description}</p>
-      <h4>Effect on Dough</h4>
-      <p class="flour-effect">${flour.doughEffect}</p>
-      <div class="flour-uses">
-        <h4>Best For</h4>
-        <div class="use-tags">${usesHtml}</div>
+  createAccordion(
+    flourContainer,
+    Object.entries(FLOUR_GUIDE).map(([key, flour]) => ({
+      key,
+      title: flour.name,
+      data: flour,
+    })),
+    (flour) => {
+      const usesHtml = flour.bestUses
+        .map((u) => `<span class="use-tag">${u}</span>`)
+        .join("");
+
+      const linksHtml = flour.buyLinks
+        .map(
+          (link) =>
+            `<a href="${link.url}" class="buy-link" target="_blank" rel="noopener">
+              <strong>${link.brand}</strong>
+              <span class="buy-note">${link.note}</span>
+              <span class="buy-arrow">\u2192</span>
+            </a>`
+        )
+        .join("");
+
+      return `
+        <span class="protein-badge">${flour.proteinContent} protein</span>
+        <p class="flour-desc">${flour.description}</p>
+        <h4>Effect on Dough</h4>
+        <p class="flour-effect">${flour.doughEffect}</p>
+        <div class="flour-uses">
+          <h4>Best For</h4>
+          <div class="use-tags">${usesHtml}</div>
+        </div>
+        <div class="flour-buy">
+          <h4>Where to Buy</h4>
+          ${linksHtml}
+        </div>
+      `;
+    }
+  );
+
+  // ── Yeast sub-section ──────────────────────────────
+  if (typeof YEAST_GUIDE === "undefined") return;
+
+  const yeastHeader = document.createElement("h3");
+  yeastHeader.className = "panel-subheader";
+  yeastHeader.textContent = "Yeast";
+  panel.appendChild(yeastHeader);
+
+  const yeastContainer = document.createElement("div");
+  yeastContainer.className = "yeast-accordions";
+  panel.appendChild(yeastContainer);
+
+  createAccordion(
+    yeastContainer,
+    Object.entries(YEAST_GUIDE).map(([key, yeast]) => ({
+      key,
+      title: yeast.name,
+      data: yeast,
+    })),
+    (yeast) => {
+      const usesHtml = yeast.bestUses
+        .map((u) => `<span class="use-tag">${u}</span>`)
+        .join("");
+
+      const linksHtml = yeast.buyLinks
+        .map(
+          (link) =>
+            `<a href="${link.url}" class="buy-link" target="_blank" rel="noopener">
+              <strong>${link.brand}</strong>
+              <span class="buy-note">${link.note}</span>
+              <span class="buy-arrow">\u2192</span>
+            </a>`
+        )
+        .join("");
+
+      const noteHtml = yeast.note
+        ? `<p class="yeast-note">${yeast.note}</p>`
+        : "";
+
+      return `
+        <span class="protein-badge">${yeast.badge}</span>
+        <p class="flour-desc">${yeast.description}</p>
+        <h4>How to Use</h4>
+        <p class="flour-effect">${yeast.usage}</p>
+        <div class="flour-uses">
+          <h4>Best For</h4>
+          <div class="use-tags">${usesHtml}</div>
+        </div>
+        <div class="flour-buy">
+          <h4>Where to Buy</h4>
+          ${linksHtml}
+        </div>
+        ${noteHtml}
+      `;
+    }
+  );
+
+  // ── Yeast Converter Widget ─────────────────────────
+  // Ratios: 1g IDY = 1.25g ADY = 3g Fresh
+  const converter = document.createElement("div");
+  converter.className = "yeast-converter";
+  converter.innerHTML = `
+    <h4>Yeast Converter</h4>
+    <p class="converter-desc">Enter an amount in any type and see the equivalent for the other two.</p>
+    <div class="converter-row">
+      <div class="converter-field">
+        <label for="yc-idy">Instant Dry (IDY)</label>
+        <input type="number" id="yc-idy" step="0.1" min="0" placeholder="g" />
       </div>
-      <div class="flour-buy">
-        <h4>Where to Buy</h4>
-        ${linksHtml}
+      <div class="converter-field">
+        <label for="yc-ady">Active Dry (ADY)</label>
+        <input type="number" id="yc-ady" step="0.1" min="0" placeholder="g" />
       </div>
-    `;
-  });
+      <div class="converter-field">
+        <label for="yc-fresh">Fresh (Cake)</label>
+        <input type="number" id="yc-fresh" step="0.1" min="0" placeholder="g" />
+      </div>
+    </div>
+  `;
+  panel.appendChild(converter);
+
+  const idyInput   = converter.querySelector("#yc-idy");
+  const adyInput   = converter.querySelector("#yc-ady");
+  const freshInput = converter.querySelector("#yc-fresh");
+
+  function updateFrom(source) {
+    const val = parseFloat(source.value);
+    if (isNaN(val) || val < 0) return;
+    const round = (n) => Math.round(n * 100) / 100;
+    if (source === idyInput) {
+      adyInput.value   = round(val * 1.25);
+      freshInput.value = round(val * 3);
+    } else if (source === adyInput) {
+      idyInput.value   = round(val / 1.25);
+      freshInput.value = round(val * 2.4);
+    } else {
+      idyInput.value = round(val / 3);
+      adyInput.value = round(val / 2.4);
+    }
+  }
+
+  idyInput.addEventListener("input",   () => updateFrom(idyInput));
+  adyInput.addEventListener("input",   () => updateFrom(adyInput));
+  freshInput.addEventListener("input", () => updateFrom(freshInput));
 }
 
 // ── Cheese & Sauce Guide ─────────────────────────────

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Pie Lab — Perfect Pizza Recipe Calculator</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logos/favicon-32.svg">
+  <link rel="apple-touch-icon" href="assets/logos/logo-monogram-512.svg">
+  <meta property="og:image" content="assets/logos/logo-stacked.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="calculator">
+
+  <!-- Shared Navigation -->
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" />
+      </a>
+      <div class="nav-links">
+        <a href="calculator.html" class="nav-link" data-page="calculator">Calculator</a>
+        <a href="schedule.html" class="nav-link" data-page="schedule">
+          Schedule
+          <span class="schedule-badge hidden"></span>
+        </a>
+        <a href="journal.html" class="nav-link" data-page="journal">Journal</a>
+        <a href="learn.html" class="nav-link" data-page="learn">Learn</a>
+        <a href="kitchen.html" class="nav-link" data-page="kitchen">My Kitchen</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="calculator-card">
+      <h2>Build Your Recipe</h2>
+
+      <div class="settings-toggle-row">
+        <span class="toggle-label" id="toggle-label-rec">Recommended</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="settings-mode-toggle" />
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label" id="toggle-label-custom">Custom</span>
+      </div>
+
+      <form id="pizza-form">
+        <div class="form-group">
+          <label for="pizza-type">Pizza Style</label>
+          <select id="pizza-type" required>
+            <option value="" disabled selected>Select a style&hellip;</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="pizza-size">Pizza Size</label>
+          <select id="pizza-size" required>
+            <option value="" disabled selected>Select a style first</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="num-pizzas">Number of Pizzas</label>
+          <input type="number" id="num-pizzas" min="1" max="50" value="1" required />
+        </div>
+
+        <div class="form-group">
+          <label for="calc-oven-type">Oven Type</label>
+          <select id="calc-oven-type" required></select>
+        </div>
+
+        <div id="custom-settings-editor" class="custom-settings-editor hidden">
+          <h3>Custom Settings <span id="custom-style-label"></span></h3>
+          <div class="settings-grid">
+            <div class="setting-field">
+              <label for="ps-hydration">Hydration %</label>
+              <input type="number" id="ps-hydration" step="0.1" min="40" max="100" />
+            </div>
+            <div class="setting-field">
+              <label for="ps-salt">Salt %</label>
+              <input type="number" id="ps-salt" step="0.1" min="0" max="10" />
+            </div>
+            <div class="setting-field">
+              <label for="ps-oil">Oil %</label>
+              <input type="number" id="ps-oil" step="0.1" min="0" max="20" />
+            </div>
+            <div class="setting-field">
+              <label for="ps-sugar">Sugar %</label>
+              <input type="number" id="ps-sugar" step="0.1" min="0" max="20" />
+            </div>
+            <div class="setting-field">
+              <label for="ps-yeast">Yeast %</label>
+              <input type="number" id="ps-yeast" step="0.01" min="0" max="5" />
+            </div>
+            <div class="setting-field">
+              <label for="ps-dough-weight">Dough Ball (g)</label>
+              <input type="number" id="ps-dough-weight" step="1" min="50" max="2000" />
+            </div>
+          </div>
+          <div class="settings-actions">
+            <button type="button" class="btn-reset-settings" id="btn-reset-custom">Reset to Default</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-calculate">Calculate Recipe</button>
+      </form>
+    </section>
+
+    <section id="results" class="results-card hidden">
+      <div class="results-header">
+        <h2 id="result-title"></h2>
+        <span class="badge" id="result-badge"></span>
+      </div>
+
+      <div class="unit-toggle-row">
+        <div class="toggle-group" id="unit-toggle">
+          <button type="button" class="toggle-btn selected" data-unit="g">Grams</button>
+          <button type="button" class="toggle-btn" data-unit="oz">Ounces</button>
+          <button type="button" class="toggle-btn" data-unit="vol">Volume</button>
+        </div>
+      </div>
+      <p class="volume-note hidden" id="volume-note">
+        <em>Note: Volume measurements are approximate. Weights are always more accurate for baking.</em>
+      </p>
+
+      <div class="results-grid">
+        <div class="result-section">
+          <h3>Dough</h3>
+          <table id="dough-table" class="three-col">
+            <thead>
+              <tr><th>Ingredient</th><th>Grams</th><th>% of Flour</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="result-section">
+          <h3>Sauce</h3>
+          <table id="sauce-table">
+            <thead>
+              <tr><th>Ingredient</th><th>Grams</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="result-section">
+          <h3>Toppings</h3>
+          <table id="toppings-table">
+            <thead>
+              <tr><th>Ingredient</th><th>Grams</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="instructions-section">
+        <h3>Baking Instructions</h3>
+        <div id="baking-instructions"></div>
+      </div>
+
+      <div class="tips-section">
+        <h3>Pro Tips</h3>
+        <ul id="pro-tips"></ul>
+      </div>
+
+      <div class="results-learn-more" id="results-learn-more"></div>
+
+      <div id="flour-sub-row" class="flour-sub-row hidden">
+        <label for="flour-sub-select">Substitute Flour</label>
+        <select id="flour-sub-select">
+          <option value="">— Use recommended flour —</option>
+        </select>
+      </div>
+
+      <div class="results-actions">
+        <button class="btn-print" onclick="window.print()">Print Recipe</button>
+        <button class="btn-log-bake" id="btn-log-bake">Log This Bake</button>
+        <button class="btn-reset" onclick="document.getElementById('results').classList.add('hidden'); window.scrollTo({top:0,behavior:'smooth'});">New Recipe</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Mobile Tab Bar -->
+  <nav class="mobile-tab-bar">
+    <a href="calculator.html" class="tab-item" data-page="calculator">
+      <span class="tab-icon">&#127829;</span>
+      <span class="tab-label">Calculator</span>
+    </a>
+    <a href="schedule.html" class="tab-item" data-page="schedule">
+      <span class="tab-icon">&#128197;</span>
+      <span class="tab-label">Schedule</span>
+      <span class="schedule-badge hidden"></span>
+    </a>
+    <a href="journal.html" class="tab-item" data-page="journal">
+      <span class="tab-icon">&#128211;</span>
+      <span class="tab-label">Journal</span>
+    </a>
+    <a href="learn.html" class="tab-item" data-page="learn">
+      <span class="tab-icon">&#128214;</span>
+      <span class="tab-label">Learn</span>
+    </a>
+    <a href="kitchen.html" class="tab-item" data-page="kitchen">
+      <span class="tab-icon">&#9881;&#65039;</span>
+      <span class="tab-label">My Kitchen</span>
+    </a>
+  </nav>
+
+  <footer>
+    <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" class="footer-logo" />
+    <p>&copy; 2026 The Pie Lab. All rights reserved.</p>
+  </footer>
+
+  <!-- Scripts: Capacitor init first, then data files, then shared nav, then page features -->
+  <script src="js/capacitor-init.js"></script>
+  <script src="recipes.js?v=2"></script>
+  <script src="knowledge-data.js?v=2"></script>
+  <script src="journal.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/user-profile.js"></script>
+  <script src="scheduler-data.js"></script>
+  <script src="js/calculator.js"></script>
+</body>
+</html>

@@ -627,6 +627,52 @@ const FLOUR_GUIDE = {
   },
 };
 
+// ── Yeast Guide ───────────────────────────────────────
+const YEAST_GUIDE = {
+  "instant-dry": {
+    name: "Instant Dry Yeast (IDY)",
+    badge: "Default in Recipes",
+    description:
+      "Instant dry yeast is the most convenient yeast for home pizza bakers. The granules are finer than active dry yeast and are manufactured to absorb liquid rapidly, so IDY goes straight into the flour — no proofing step required. It activates on contact with moisture in the dough and works across a wide temperature range, making it reliable for both room-temperature bulk ferments and long cold retards.",
+    usage:
+      "Mix directly into the flour before adding water. No proofing, no blooming, no waiting. IDY is the default yeast in all Pie Lab recipes. It performs well in cold fermentation (24–72 hours in the fridge) because it stays active at low temperatures without dying off. Use the recipe amount as-is — no conversion needed.",
+    bestUses: ["All pizza styles", "Cold fermentation", "Same-day doughs"],
+    buyLinks: [
+      { brand: "SAF Red Instant Yeast", url: "https://www.amazon.com/s?k=saf+red+instant+yeast", note: "Industry standard, buy the 1 lb brick" },
+      { brand: "Fleischmann\u2019s RapidRise", url: "https://www.amazon.com/s?k=fleischmanns+rapidrise+yeast", note: "Widely available in grocery stores" },
+    ],
+    note: "You may see SAF Gold (osmotolerant) yeast at specialty shops. It\u2019s designed for high-sugar enriched doughs where regular yeast struggles — brioche, cinnamon rolls, sweet breads. None of the pizza styles in this app have enough sugar to need it, so stick with SAF Red. If you already have SAF Gold, it will work fine in pizza dough — just don\u2019t seek it out specifically for pizza.",
+  },
+
+  "active-dry": {
+    name: "Active Dry Yeast (ADY)",
+    badge: "Requires Proofing",
+    description:
+      "Active dry yeast has larger, coarser granules than instant dry and is processed at higher temperatures, which kills some of the outer yeast cells. This means ADY needs to be dissolved (proofed) in warm water before it can be used — the dead outer layer has to soften and release the live cells inside. Many home bakers already have a jar of this in the fridge from other baking projects.",
+    usage:
+      "Dissolve in warm water (100\u2013110\u00B0F / 38\u201343\u00B0C) with a pinch of sugar and wait 5\u201310 minutes until it foams. If it doesn\u2019t foam, the yeast is dead — discard it and start fresh. Subtract the proofing water from the total water in the recipe. Use 25% more ADY than the IDY amount called for (e.g., if the recipe says 3g IDY, use 3.75g ADY). The converter below does this math for you.",
+    bestUses: ["Any style (with conversion)", "Bakers who already stock ADY"],
+    buyLinks: [
+      { brand: "Fleischmann\u2019s Active Dry", url: "https://www.amazon.com/s?k=fleischmanns+active+dry+yeast", note: "The classic red-label jar" },
+      { brand: "Red Star Active Dry", url: "https://www.amazon.com/s?k=red+star+active+dry+yeast", note: "Reliable alternative, widely available" },
+    ],
+  },
+
+  "fresh": {
+    name: "Fresh Yeast (Cake Yeast)",
+    badge: "Perishable",
+    description:
+      "Fresh yeast (also called cake yeast or compressed yeast) is a moist, crumbly block of live yeast cells with no drying process. It has a mild, slightly sweet aroma and produces a subtly different flavor profile that many old-school pizza makers swear by. It\u2019s perishable — it must be refrigerated and used within two weeks of purchase, or frozen for longer storage.",
+    usage:
+      "Crumble directly into the flour or dissolve in a small portion of the recipe water (no need for warm water — room temperature is fine). Use three times the IDY weight (e.g., if the recipe calls for 3g IDY, use 9g fresh yeast). Fresh yeast is stronger out of the gate, so your dough may rise slightly faster in the first hour — keep an eye on the bulk ferment. Frozen fresh yeast loses about 10\u201315% potency, so bump the amount up slightly if using from frozen.",
+    bestUses: ["Neapolitan (traditional)", "Old-school NY style", "Bakers who prefer fresh flavor"],
+    buyLinks: [
+      { brand: "Fleischmann\u2019s Fresh Yeast", url: "https://www.amazon.com/s?k=fleischmanns+fresh+cake+yeast", note: "Check bakery section, often behind the counter" },
+      { brand: "Red Star Fresh Yeast", url: "https://www.amazon.com/s?k=red+star+fresh+cake+yeast", note: "Ask your local bakery if stores don\u2019t carry it" },
+    ],
+  },
+};
+
 // ── Cheese & Sauce Guide ────────────────────────────
 const CHEESE_SAUCE_GUIDE = {
   cheeses: [
@@ -648,10 +694,10 @@ const CHEESE_SAUCE_GUIDE = {
     },
     {
       id: "provolone",
-      name: "Provolone (Sharp, Deli-Sliced)",
+      name: "Provolone (Sharp)",
       description:
-        "Sharp provolone has a tangy, assertive flavor that stands up to heavy tomato sauce and garlic. Deli-sliced rounds lay flat across the dough, creating an even layer that melts smoothly under the sauce. It's the traditional cheese for Grandma pizza, where its sharpness cuts through the oily, garlicky sauce.",
-      tips: "Ask for it sliced thin at the deli counter \u2014 about 1/8 inch thick. Lay rounds slightly overlapping across the dough before adding sauce on top. Sharp provolone (aged 6+ months) has significantly more flavor than mild.",
+        "Sharp provolone has a tangy, assertive flavor that stands up to heavy tomato sauce and garlic. It plays two distinct roles depending on the style. For Grandma pizza, deli-sliced rounds are layered across the dough before baking \u2014 the slices melt smoothly under the sauce and the sharpness cuts through the oily, garlicky crust. For Ohio Valley pizza, provolone is shredded cold and piled on after baking \u2014 it stays unmelted and tangy, creating the signature hot-cold contrast.",
+      tips: "For Grandma: ask for it sliced thin at the deli counter (about 1/8 inch). Lay rounds slightly overlapping across the dough before adding sauce on top. For Ohio Valley: shred it on the large holes of a box grater and keep it cold in the fridge until the pizza comes out of the oven. Sharp provolone (aged 6+ months) has significantly more flavor than mild.",
       bestStyles: ["grandma", "ohio-valley"],
     },
     {
@@ -661,14 +707,6 @@ const CHEESE_SAUCE_GUIDE = {
         "A semi-soft, buttery American cheese with a mild, slightly tangy flavor. Brick cheese melts beautifully and is the traditional choice for Detroit-style pizza, where it's pushed to the edges of the pan to create the caramelized cheese crust (frico) that defines the style. It has higher fat content than mozzarella, which is what makes those crispy edges possible.",
       tips: "Push cubed or shredded brick cheese all the way to the pan walls. As it bakes, it melts down the sides of the dough and fries against the hot steel pan. If you can't find brick cheese, a 50/50 blend of Monterey Jack and mild cheddar is the closest substitute.",
       bestStyles: ["detroit"],
-    },
-    {
-      id: "pecorino",
-      name: "Pecorino Romano",
-      description:
-        "A hard, salty sheep's milk cheese from central Italy. Pecorino Romano is sharper and saltier than Parmesan, with a distinctive tang that adds depth as a finishing cheese. It's grated over the top of pizza before or after baking \u2014 never used as the primary melting cheese.",
-      tips: "Buy it in wedges and grate it fresh. A Microplane gives a fine, snow-like texture that melts instantly. Use it sparingly \u2014 it's very salty. A tablespoon per pizza is usually enough. Add before baking for a toasted flavor, or after for a sharper hit.",
-      bestStyles: ["sicilian", "grandma", "new-york", "new-haven"],
     },
     {
       id: "ricotta",
@@ -685,6 +723,14 @@ const CHEESE_SAUCE_GUIDE = {
         "A hard, granular, intensely savory cheese aged at least 12 months (often 24–36). True Parmigiano-Reggiano from Emilia-Romagna has a complex, nutty, umami-rich flavor that makes it an ideal finishing cheese. It doesn't melt into strings like mozzarella — instead it crisps and browns, adding salty, savory depth as a topping accent or mixed into other cheeses.",
       tips: "Buy it in wedges and grate fresh — pre-grated Parmesan has anti-caking agents and stale flavor. A Microplane gives a fine, fluffy texture; a box grater gives thicker shreds that crisp up when baked. Use it as a finishing touch after baking for maximum aroma, or mix into shredded mozzarella before baking for umami depth. A little goes a long way.",
       bestStyles: ["new-york", "thin-crust", "cast-iron", "school-night", "new-haven"],
+    },
+    {
+      id: "pecorino",
+      name: "Pecorino Romano",
+      description:
+        "A hard, salty sheep's milk cheese from central Italy. Pecorino Romano is sharper and saltier than Parmesan, with a distinctive tang that adds depth as a finishing cheese. It's grated over the top of pizza before or after baking \u2014 never used as the primary melting cheese.",
+      tips: "Buy it in wedges and grate it fresh. A Microplane gives a fine, snow-like texture that melts instantly. Use it sparingly \u2014 it's very salty. A tablespoon per pizza is usually enough. Add before baking for a toasted flavor, or after for a sharper hit.",
+      bestStyles: ["sicilian", "grandma", "new-york", "new-haven"],
     },
   ],
 
