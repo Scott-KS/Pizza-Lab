@@ -73,7 +73,8 @@ function createAccordion(parentEl, items, renderContent) {
     const header = document.createElement("button");
     header.className = "accordion-header";
     header.type = "button";
-    header.innerHTML = `<span class="accordion-title">${item.title}</span><span class="accordion-arrow">\u25BC</span>`;
+    const subtitleHtml = item.subtitle ? `<span class="accordion-subtitle">${item.subtitle}</span>` : "";
+    header.innerHTML = `<span class="accordion-title">${item.title}${subtitleHtml}</span><span class="accordion-arrow">\u25BC</span>`;
 
     const body = document.createElement("div");
     body.className = "accordion-body";
@@ -122,6 +123,7 @@ function populateStyleLibrary() {
   const items = Object.entries(STYLE_LIBRARY).map(([key, style]) => ({
     key,
     title: style.name,
+    subtitle: style.origin || "",
     data: { ...style, _key: key },
   }));
 

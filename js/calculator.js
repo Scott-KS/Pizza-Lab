@@ -291,6 +291,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const numPizzas = parseInt(document.getElementById("num-pizzas").value, 10);
     const ovenType = ovenSelect ? ovenSelect.value : "stone";
 
+    // Inline validation
+    const errType = document.getElementById("err-pizza-type");
+    const errSize = document.getElementById("err-pizza-size");
+    if (errType) errType.classList.toggle("hidden", !!type);
+    if (errSize) errSize.classList.toggle("hidden", !!sizeKey);
     if (!type || !sizeKey) return;
     if (!numPizzas || numPizzas < 1) {
       alert("Please enter at least 1 pizza.");
@@ -966,6 +971,31 @@ document.addEventListener("DOMContentLoaded", () => {
       // Silently ignore malformed data
     }
   })();
+
+  // ── Print & New Recipe buttons (no inline handlers) ──
+  const btnPrint = document.getElementById("btn-print");
+  if (btnPrint) btnPrint.addEventListener("click", () => window.print());
+
+  const btnReset = document.getElementById("btn-reset");
+  if (btnReset) btnReset.addEventListener("click", () => {
+    document.getElementById("results").classList.add("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  // Clear validation errors when user changes selection
+  const typeSelect = document.getElementById("pizza-type");
+  const sizeSelect2 = document.getElementById("pizza-size");
+  if (typeSelect) typeSelect.addEventListener("change", () => {
+    const err = document.getElementById("err-pizza-type");
+    if (err) err.classList.add("hidden");
+    // Style change auto-populates size, so clear that error too
+    const errSize = document.getElementById("err-pizza-size");
+    if (errSize) errSize.classList.add("hidden");
+  });
+  if (sizeSelect2) sizeSelect2.addEventListener("change", () => {
+    const err = document.getElementById("err-pizza-size");
+    if (err) err.classList.add("hidden");
+  });
 
 }); // end DOMContentLoaded
 

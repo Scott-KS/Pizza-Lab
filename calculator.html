@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body data-page="calculator">
 
@@ -64,12 +64,13 @@
         <span class="toggle-label" id="toggle-label-custom">Custom</span>
       </div>
 
-      <form id="pizza-form">
+      <form id="pizza-form" novalidate>
         <div class="form-group">
           <label for="pizza-type">Pizza Style</label>
           <select id="pizza-type" required>
             <option value="" disabled selected>Select a style&hellip;</option>
           </select>
+          <span class="field-error hidden" id="err-pizza-type">Please select a pizza style.</span>
         </div>
 
         <div class="form-group">
@@ -77,6 +78,7 @@
           <select id="pizza-size" required>
             <option value="" disabled selected>Select a style first</option>
           </select>
+          <span class="field-error hidden" id="err-pizza-size">Please select a pizza size.</span>
         </div>
 
         <div class="form-group">
@@ -223,9 +225,9 @@
       </div>
 
       <div class="results-actions">
-        <button class="btn-print" onclick="window.print()">Print Recipe</button>
+        <button class="btn-print" id="btn-print">Print Recipe</button>
         <button class="btn-log-bake" id="btn-log-bake">Log This Bake</button>
-        <button class="btn-reset" onclick="document.getElementById('results').classList.add('hidden'); window.scrollTo({top:0,behavior:'smooth'});">New Recipe</button>
+        <button class="btn-reset" id="btn-reset">New Recipe</button>
       </div>
     </section>
   </main>
@@ -268,6 +270,6 @@
   <script src="js/nav.js?v=3"></script>
   <script src="js/user-profile.js?v=2"></script>
   <script src="scheduler-data.js?v=3"></script>
-  <script src="js/calculator.js?v=5"></script>
+  <script src="js/calculator.js?v=6"></script>
 </body>
 </html>

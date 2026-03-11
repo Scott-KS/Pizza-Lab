@@ -332,6 +332,11 @@
       ? PieLabJournal.getAllEntries()
       : PieLabJournal.getEntriesByStyle(filter);
 
+    // Hide toolbar when journal is empty (no entries at all, not just filtered)
+    const toolbar = document.querySelector(".journal-toolbar");
+    const allEntries = PieLabJournal.getAllEntries();
+    if (toolbar) toolbar.classList.toggle("hidden", !allEntries || allEntries.length === 0);
+
     if (!entries || entries.length === 0) {
       entriesContainer.innerHTML = buildEmptyState();
       return;
