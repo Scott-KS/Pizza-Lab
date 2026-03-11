@@ -146,6 +146,33 @@ const PieLabProfile = (() => {
     }
   }
 
+  // ── Per-style skill level ──────────────────────────
+
+  const STYLE_LEVELS_KEY = "pielab-style-levels";
+
+  function _readStyleLevels() {
+    try {
+      const raw = localStorage.getItem(STYLE_LEVELS_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch { return {}; }
+  }
+
+  function getStyleLevel(styleKey) {
+    return _readStyleLevels()[styleKey] || null;
+  }
+
+  function setStyleLevel(styleKey, level) {
+    const map = _readStyleLevels();
+    map[styleKey] = level;
+    try { localStorage.setItem(STYLE_LEVELS_KEY, JSON.stringify(map)); } catch {}
+  }
+
+  function levelFromBakeCount(count) {
+    if (count >= 10) return "pro";
+    if (count >= 3)  return "intermediate";
+    return "beginner";
+  }
+
   return {
     getProfile,
     saveProfile,
@@ -153,5 +180,8 @@ const PieLabProfile = (() => {
     getElevationAdjustments,
     getHumidityAdjustments,
     resolveElevationFromCity,
+    getStyleLevel,
+    setStyleLevel,
+    levelFromBakeCount,
   };
 })();

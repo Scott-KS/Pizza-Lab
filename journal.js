@@ -124,6 +124,10 @@ const PieLabJournal = (() => {
     return getAllEntries().filter((e) => e.styleKey === styleKey);
   }
 
+  function getBakesCountByStyle(styleKey) {
+    return getEntriesByStyle(styleKey).length;
+  }
+
   function getEntryById(id) {
     return getAllEntries().find((e) => e.id === id) || null;
   }
@@ -227,6 +231,7 @@ const PieLabJournal = (() => {
     updateEntry,
     deleteEntry,
     getEntriesByStyle,
+    getBakesCountByStyle,
     getEntryById,
     compressPhoto,
     analyzeEntries,

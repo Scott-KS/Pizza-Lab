@@ -426,10 +426,12 @@ function populateFermentationChart() {
     if (!recipe) continue;
 
     // Extract room-temp and fridge info from steps
-    let hasFridge = sched.method.toLowerCase().includes("cold") ||
-                    sched.steps.some((s) => s.label.toLowerCase().includes("fridge") ||
-                                            s.label.toLowerCase().includes("refrigerat") ||
-                                            s.label.toLowerCase().includes("cold"));
+    const COLD_METHOD_NAMES = ["Cold Ferment", "Cold Cure", "Tavern Cure"];
+    let hasFridge = COLD_METHOD_NAMES.some(m => sched.method.includes(m)) ||
+                    sched.steps.some((s) =>
+                      s.label.toLowerCase().includes("fridge") ||
+                      s.label.toLowerCase().includes("refrigerat")
+                    );
 
     const bakeTemp = recipe.idealTemp
       ? `${recipe.idealTemp.min}\u2013${recipe.idealTemp.max}\u00B0F`

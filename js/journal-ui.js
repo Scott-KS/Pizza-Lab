@@ -297,7 +297,7 @@
       styleName: recipe ? recipe.name : styleKey,
       doughSnapshot: currentSnapshot || null,
       bakeTemp: parseInt(document.getElementById("j-bake-temp").value) || null,
-      bakeTime: parseInt(document.getElementById("j-bake-time").value) || null,
+      bakeTime: document.getElementById("j-bake-time").value.trim() || null,
       ovenType: document.getElementById("j-oven-type").value,
       rating: currentRating || 0,
       notes: document.getElementById("j-notes").value.trim(),
@@ -376,6 +376,10 @@
           </div>
           ${entry.bakeName ? `<div class="entry-bake-name">${escapeHtml(entry.bakeName)}</div>` : ""}
           ${detailParts.length ? `<div class="entry-details">${detailParts.join(" \u00B7 ")}</div>` : ""}
+          ${(() => {
+            const lvl = (typeof PieLabProfile !== "undefined") ? PieLabProfile.getStyleLevel(entry.styleKey) : null;
+            return lvl ? `<span class="skill-badge skill-badge--${lvl} skill-badge--card">${lvl.charAt(0).toUpperCase() + lvl.slice(1)}</span>` : "";
+          })()}
           ${entry.notes ? `<div class="entry-notes-preview">${escapeHtml(entry.notes)}</div>` : ""}
         </div>
       `;
@@ -438,9 +442,20 @@
       }
     }
 
+    // Skill badge for this style
+    const modalSkillLevel = (typeof PieLabProfile !== "undefined")
+      ? PieLabProfile.getStyleLevel(entry.styleKey)
+      : null;
+    const modalBadgeHtml = modalSkillLevel
+      ? `<span class="skill-badge skill-badge--${modalSkillLevel}">${modalSkillLevel.charAt(0).toUpperCase() + modalSkillLevel.slice(1)}</span>`
+      : "";
+
     html += `
       <div class="modal-header">
-        <h3>${escapeHtml(entry.bakeName || entry.styleName)}</h3>
+        <div class="modal-header-top">
+          <h3>${escapeHtml(entry.bakeName || entry.styleName)}</h3>
+          ${modalBadgeHtml}
+        </div>
         ${entry.bakeName ? `<span class="modal-style-label">${escapeHtml(entry.styleName)}</span>` : ""}
         <span class="entry-date">${formatDate(entry.date)}</span>
         ${entry.rating ? `<span class="modal-stars">${renderStars(entry.rating)}</span>` : ""}

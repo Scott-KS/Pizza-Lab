@@ -181,7 +181,24 @@
       </div>
 
       <div class="tips-section">
-        <h3>Pro Tips</h3>
+        <div class="tips-header">
+          <h3>Tips</h3>
+          <div class="tips-level-control" id="tips-level-control">
+            <div class="tips-slider-labels">
+              <span>Beginner</span>
+              <span>Intermediate</span>
+              <span>Pro</span>
+            </div>
+            <input
+              type="range"
+              id="tips-level-slider"
+              min="0" max="2" step="1"
+              value="0"
+              aria-label="Skill level"
+            />
+            <div class="tips-level-badge" id="tips-level-badge">Beginner</div>
+          </div>
+        </div>
         <ul id="pro-tips"></ul>
       </div>
 
@@ -240,12 +257,12 @@
 
   <!-- Scripts: Capacitor init first, then data files, then shared nav, then page features -->
   <script src="js/capacitor-init.js"></script>
-  <script src="recipes.js?v=3"></script>
+  <script src="recipes.js?v=5"></script>
   <script src="knowledge-data.js?v=2"></script>
-  <script src="journal.js"></script>
+  <script src="journal.js?v=2"></script>
   <script src="js/nav.js?v=2"></script>
-  <script src="js/user-profile.js"></script>
+  <script src="js/user-profile.js?v=2"></script>
   <script src="scheduler-data.js?v=3"></script>
-  <script src="js/calculator.js?v=2"></script>
+  <script src="js/calculator.js?v=4"></script>
 </body>
 </html>

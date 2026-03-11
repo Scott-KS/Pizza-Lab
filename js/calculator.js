@@ -254,11 +254,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ── Dynamic Size Selector ────────────────────────────
-  const typeSelect = document.getElementById("pizza-type");
   const sizeSelect = document.getElementById("pizza-size");
 
-  typeSelect.addEventListener("change", () => {
-    const recipe = PIZZA_RECIPES[typeSelect.value];
+  typeSelectEl.addEventListener("change", () => {
+    const recipe = PIZZA_RECIPES[typeSelectEl.value];
     if (!recipe) return;
 
     sizeSelect.innerHTML = "";
@@ -347,7 +346,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const adjustments = [];
     if (elevAdj.hydrationDelta !== 0) {
       adjustments.push(
-        `Hydration ${elevAdj.hydrationDelta > 0 ? "+" : ""}${(elevAdj.hydrationDelta * 100).toFixed(0)}% for ${profile.elevation.toLocaleString()} ft elevation`
+        `Hydration ${elevAdj.hydrationDelta > 0 ? "+" : ""}${(elevAdj.hydrationDelta * 100).toFixed(0)}% for ${(profile.elevation != null ? profile.elevation.toLocaleString() : "your elevation")} ft elevation`
       );
     }
     if (humidAdj.hydrationDelta !== 0) {
@@ -358,7 +357,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (yeastMultiplier !== 1.0) {
       const reduction = Math.round((1 - yeastMultiplier) * 100);
       adjustments.push(
-        `Yeast \u2212${reduction}% for ${profile.elevation.toLocaleString()} ft elevation`
+        `Yeast \u2212${reduction}% for ${(profile.elevation != null ? profile.elevation.toLocaleString() : "your elevation")} ft elevation`
       );
     }
 
@@ -404,14 +403,11 @@ document.addEventListener("DOMContentLoaded", () => {
       <p><strong>Bake time:</strong> ${bakingInfo.bakeTime}</p>
     `;
 
-    // Pro tips
-    const tipsList = document.getElementById("pro-tips");
-    tipsList.innerHTML = "";
-    recipe.tips.forEach((tip) => {
-      const li = document.createElement("li");
-      li.textContent = tip;
-      tipsList.appendChild(li);
-    });
+    // Tiered tips — init slider for this style (sets level from profile/bakes), then render
+    window._currentTips   = recipe.tips || [];
+    window._currentStyleKey = type;
+    if (window.initTipsSlider) window.initTipsSlider(type);
+    if (window.renderTips)    window.renderTips();
 
     // ── Contextual "Learn More" link (cross-page) ──
     const learnMoreEl = document.getElementById("results-learn-more");
@@ -602,8 +598,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (origAbsorption == null || subAbsorption == null) return;
 
-    // Higher absorption flour needs more water → positive delta when subbing to lower absorption
-    const hydrationDelta = origAbsorption - subAbsorption;
+    // Subbing to a higher-absorption flour needs more water (positive delta); lower-absorption needs less (negative delta)
+    const hydrationDelta = subAbsorption - origAbsorption;
     const absDelta = Math.abs(hydrationDelta);
 
     // Create substituted recipe with adjusted hydration and flour name
@@ -967,3 +963,97 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 }); // end DOMContentLoaded
+
+// ── Tiered Tips & Skill Level Slider ─────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+
+  const LEVEL_LABELS = ["beginner", "intermediate", "pro"];
+  const LEVEL_DISPLAY = { beginner: "Beginner", intermediate: "Intermediate", pro: "Pro" };
+
+  const slider   = document.getElementById("tips-level-slider");
+  const badge    = document.getElementById("tips-level-badge");
+  const tipsList = document.getElementById("pro-tips");
+
+  // ── Helpers ────────────────────────────────────────────────────────────
+
+  function getActiveLevel() {
+    return LEVEL_LABELS[parseInt(slider?.value ?? 0)];
+  }
+
+  function setSliderToLevel(level) {
+    const idx = LEVEL_LABELS.indexOf(level);
+    if (slider && idx !== -1) {
+      slider.value = idx;
+      updateBadge(level);
+    }
+  }
+
+  function updateBadge(level) {
+    if (!badge) return;
+    badge.textContent = LEVEL_DISPLAY[level] || "Beginner";
+    badge.className = "tips-level-badge tips-level-badge--" + level;
+  }
+
+  function renderTips() {
+    if (!tipsList) return;
+    const level = getActiveLevel();
+    const tips  = (window._currentTips || []).filter(t => t.level === level);
+    tipsList.innerHTML = "";
+    if (!tips.length) {
+      const li = document.createElement("li");
+      li.textContent = "Calculate a recipe to see tips.";
+      li.style.color = "var(--clr-text-muted, #9a9690)";
+      tipsList.appendChild(li);
+      return;
+    }
+    tips.forEach(({ tip }) => {
+      const li = document.createElement("li");
+      li.textContent = tip;
+      tipsList.appendChild(li);
+    });
+  }
+
+  // Expose globally so the calculate() function can call it
+  window.renderTips = renderTips;
+
+  // ── Initialize slider from saved profile (or bake count) ───────────────
+  // Called each time a style is calculated so the default updates per style.
+  window.initTipsSlider = function(styleKey) {
+    if (!styleKey || !slider) return;
+
+    // 1. Check for a manually saved level
+    const saved = (typeof PieLabProfile !== "undefined")
+      ? PieLabProfile.getStyleLevel(styleKey)
+      : null;
+
+    if (saved) {
+      setSliderToLevel(saved);
+      return;
+    }
+
+    // 2. Fall back to computing from bake count
+    const bakeCount = (typeof PieLabJournal !== "undefined")
+      ? PieLabJournal.getBakesCountByStyle(styleKey)
+      : 0;
+
+    const computed = (typeof PieLabProfile !== "undefined")
+      ? PieLabProfile.levelFromBakeCount(bakeCount)
+      : "beginner";
+
+    setSliderToLevel(computed);
+  };
+
+  // ── Slider interaction ─────────────────────────────────────────────────
+  slider?.addEventListener("input", () => {
+    const level = getActiveLevel();
+    updateBadge(level);
+    renderTips();
+
+    // Persist the manual choice against the current style
+    const styleKey = window._currentStyleKey;
+    if (styleKey && typeof PieLabProfile !== "undefined") {
+      PieLabProfile.setStyleLevel(styleKey, level);
+    }
+  });
+
+});
