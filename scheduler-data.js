@@ -302,12 +302,6 @@ function buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWe
     const ballT = cureStartT - min(10);          // ball 10 min before cure begins
     const bulkStartT = ballT - min(60);         // 1hr bulk ferment (short — low hydration dough)
     const mixT = bulkStartT;
-    const autolyseT = mixT - min(20);
-
-    steps.push({
-      ...SCHEDULE_STEP_TEMPLATES.autolyse,
-      dateTime: new Date(autolyseT),
-    });
     steps.push({
       ...SCHEDULE_STEP_TEMPLATES.mix,
       dateTime: new Date(mixT),

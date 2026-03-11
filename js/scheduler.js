@@ -165,7 +165,7 @@
     }
 
     if (styleKey === "chicago-tavern") {
-      selectedMethod = FERMENT_METHODS["cold-24"];
+      selectedMethod = FERMENT_METHODS["cure-24"];
       methodCard.innerHTML = `
         <div class="method-card-fixed">
           <span class="method-req-badge">Style Requirement</span>
