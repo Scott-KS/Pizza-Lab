@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Pie Lab — Perfect Pizza Recipe Calculator</title>
+  <title>The Pie Lab — Make</title>
   <link rel="icon" type="image/svg+xml" href="assets/logos/favicon-32.svg">
   <link rel="apple-touch-icon" href="assets/logos/logo-monogram-512.svg">
   <meta property="og:image" content="assets/logos/logo-stacked.svg">
@@ -21,7 +21,7 @@
         <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" />
       </a>
       <div class="nav-links">
-        <a href="calculator.html" class="nav-link" data-page="calculator">Calculator</a>
+        <a href="calculator.html" class="nav-link" data-page="calculator">Make</a>
         <a href="schedule.html" class="nav-link" data-page="schedule">
           Schedule
           <span class="schedule-badge hidden"></span>
@@ -36,6 +36,24 @@
   <main>
     <section class="calculator-card">
       <h2>Build Your Recipe</h2>
+
+      <div class="mode-toggle" id="mode-toggle">
+        <button type="button" class="mode-btn active" data-mode="quick">Quick Calculate</button>
+        <button type="button" class="mode-btn" data-mode="plan">Plan My Bake</button>
+      </div>
+
+      <div id="plan-fields" class="plan-fields hidden">
+        <div class="form-group">
+          <label for="eat-time">When do you want to eat?</label>
+          <input type="datetime-local" id="eat-time" />
+        </div>
+        <div class="form-group">
+          <label for="ferment-method">Fermentation Method</label>
+          <select id="ferment-method">
+            <option value="" disabled selected>Select eat time first</option>
+          </select>
+        </div>
+      </div>
 
       <div class="settings-toggle-row">
         <span class="toggle-label" id="toggle-label-rec">Recommended</span>
@@ -176,6 +194,12 @@
         </select>
       </div>
 
+      <div id="plan-preview" class="plan-preview hidden">
+        <h3>Your Bake Plan</h3>
+        <div id="plan-preview-steps" class="plan-preview-steps"></div>
+        <a href="schedule.html?prefill=1" class="btn-view-schedule" id="btn-view-schedule">View Full Schedule &rarr;</a>
+      </div>
+
       <div class="results-actions">
         <button class="btn-print" onclick="window.print()">Print Recipe</button>
         <button class="btn-log-bake" id="btn-log-bake">Log This Bake</button>
@@ -188,7 +212,7 @@
   <nav class="mobile-tab-bar">
     <a href="calculator.html" class="tab-item" data-page="calculator">
       <span class="tab-icon">&#127829;</span>
-      <span class="tab-label">Calculator</span>
+      <span class="tab-label">Make</span>
     </a>
     <a href="schedule.html" class="tab-item" data-page="schedule">
       <span class="tab-icon">&#128197;</span>
@@ -216,12 +240,12 @@
 
   <!-- Scripts: Capacitor init first, then data files, then shared nav, then page features -->
   <script src="js/capacitor-init.js"></script>
-  <script src="recipes.js?v=2"></script>
+  <script src="recipes.js?v=3"></script>
   <script src="knowledge-data.js?v=2"></script>
   <script src="journal.js"></script>
-  <script src="js/nav.js"></script>
+  <script src="js/nav.js?v=2"></script>
   <script src="js/user-profile.js"></script>
   <script src="scheduler-data.js"></script>
-  <script src="js/calculator.js"></script>
+  <script src="js/calculator.js?v=2"></script>
 </body>
 </html>

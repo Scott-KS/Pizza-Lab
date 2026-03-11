@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=2" />
 </head>
 <body data-page="kitchen">
 
@@ -21,7 +21,7 @@
         <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" />
       </a>
       <div class="nav-links">
-        <a href="calculator.html" class="nav-link" data-page="calculator">Calculator</a>
+        <a href="calculator.html" class="nav-link" data-page="calculator">Make</a>
         <a href="schedule.html" class="nav-link" data-page="schedule">
           Schedule
           <span class="schedule-badge hidden"></span>
@@ -48,8 +48,12 @@
         </div>
 
         <div class="form-group">
-          <label for="k-city">City</label>
-          <input type="text" id="k-city" placeholder="e.g. Solvang, CA" />
+          <label for="k-city">Location</label>
+          <div class="autocomplete-wrap">
+            <input type="text" id="k-city" placeholder="e.g. Solvang, CA" autocomplete="off" />
+            <ul id="k-city-suggestions" class="autocomplete-list hidden"></ul>
+          </div>
+          <small class="field-hint">City and state — used for elevation adjustments and social posts.</small>
           <div id="k-city-status" class="city-status"></div>
         </div>
       </fieldset>
@@ -86,7 +90,7 @@
   <nav class="mobile-tab-bar">
     <a href="calculator.html" class="tab-item" data-page="calculator">
       <span class="tab-icon">&#127829;</span>
-      <span class="tab-label">Calculator</span>
+      <span class="tab-label">Make</span>
     </a>
     <a href="schedule.html" class="tab-item" data-page="schedule">
       <span class="tab-icon">&#128197;</span>
@@ -114,12 +118,12 @@
 
   <!-- Scripts: Capacitor init first, then data files, then shared, then page feature -->
   <script src="js/capacitor-init.js"></script>
-  <script src="recipes.js?v=2"></script>
+  <script src="recipes.js?v=3"></script>
   <script src="scheduler-data.js?v=2"></script>
   <script src="knowledge-data.js?v=2"></script>
   <script src="journal.js"></script>
   <script src="js/user-profile.js"></script>
-  <script src="js/nav.js"></script>
-  <script src="js/kitchen.js"></script>
+  <script src="js/nav.js?v=2"></script>
+  <script src="js/kitchen.js?v=2"></script>
 </body>
 </html>

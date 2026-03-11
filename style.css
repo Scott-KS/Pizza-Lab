@@ -210,7 +210,7 @@ main {
   padding: 2rem 1rem 4rem;
 }
 
-/* ── Calculator Card ─────────────────────────────── */
+/* ── Make Page Card ──────────────────────────────── */
 .calculator-card {
   background: var(--clr-card);
   border-radius: var(--radius);
@@ -253,6 +253,133 @@ main {
 .form-group input:focus {
   outline: none;
   border-color: var(--clr-primary);
+}
+
+/* ── Mode Toggle (Quick Calculate / Plan My Bake) ── */
+.mode-toggle {
+  display: flex;
+  gap: 0;
+  border: 2px solid var(--clr-border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border: none;
+  background: #fff;
+  color: var(--clr-text-light);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.mode-btn:first-child {
+  border-right: 2px solid var(--clr-border);
+}
+
+.mode-btn:hover {
+  background: var(--clr-section-bg);
+}
+
+.mode-btn.active {
+  background: var(--clr-primary);
+  color: #fff;
+}
+
+/* Plan fields (eat time, ferment method) */
+.plan-fields {
+  margin-bottom: 0.5rem;
+}
+
+.plan-fields input[type="datetime-local"],
+.plan-fields select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--clr-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  color: var(--clr-text);
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.plan-fields input[type="datetime-local"]:focus,
+.plan-fields select:focus {
+  outline: none;
+  border-color: var(--clr-primary);
+}
+
+/* ── Plan Preview (in results) ─────────────────────── */
+.plan-preview {
+  background: var(--clr-section-bg);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.plan-preview h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--clr-display);
+  margin-bottom: 1rem;
+}
+
+.plan-preview-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.plan-step {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.plan-step:last-child {
+  border-bottom: none;
+}
+
+.plan-step-time {
+  font-size: 0.82rem;
+  color: var(--clr-text-light);
+  min-width: 160px;
+  flex-shrink: 0;
+}
+
+.plan-step-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.plan-warning {
+  color: var(--clr-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.btn-view-schedule {
+  display: inline-block;
+  padding: 0.6rem 1.4rem;
+  background: var(--clr-primary);
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.btn-view-schedule:hover {
+  background: var(--clr-primary-dark);
 }
 
 .btn-calculate {
@@ -2487,20 +2614,47 @@ main {
 }
 
 /* ── Journal Empty State ─────────────────────────── */
-.journal-empty {
+.journal-empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--clr-text-light);
+}
+.journal-empty-state h3 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--clr-text);
+  margin: 16px 0 8px;
+}
+.journal-empty-state p {
+  font-size: 0.95rem;
+  max-width: 280px;
+  margin: 0 auto 24px;
+  line-height: 1.6;
+}
+.empty-state-icon {
+  font-size: 2.5rem;
+  color: var(--clr-primary);
+  opacity: 0.4;
+}
+.comparison-empty {
   text-align: center;
   padding: 2rem 1rem;
   color: var(--clr-text-light);
+  font-size: 0.95rem;
 }
-
-.journal-empty .empty-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
+.journal-empty-state .btn-primary {
+  display: inline-block;
+  padding: 0.7rem 1.6rem;
+  background: var(--clr-primary);
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background 0.2s;
 }
-
-.journal-empty .empty-hint {
-  font-size: 0.85rem;
-  font-style: italic;
+.journal-empty-state .btn-primary:hover {
+  background: var(--clr-primary-dark, #5a1a1a);
 }
 
 /* ── Log Bake Button ─────────────────────────────── */
@@ -3612,6 +3766,33 @@ footer {
   color: #fff;
 }
 
+/* ── Prefill Banner ──────────────────────────────── */
+.prefill-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--clr-section-bg);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+  color: var(--clr-text);
+}
+.prefill-banner .link-btn {
+  background: none;
+  border: none;
+  color: var(--clr-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  font-family: inherit;
+}
+.prefill-banner .link-btn:hover {
+  color: var(--clr-primary-dark);
+}
+
 /* ── Scheduler Responsive ────────────────────────── */
 
 @media (max-width: 600px) {
@@ -3764,6 +3945,37 @@ footer {
   50% { transform: scale(1.6); opacity: 0; }
 }
 
+/* ── Session Progress Banner ─────────────────────── */
+.session-banner {
+  background: var(--clr-section-bg);
+  border-bottom: 1px solid var(--clr-border);
+  padding: 8px 20px;
+  font-size: 0.8rem;
+  color: var(--clr-text-light);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.session-banner span {
+  color: var(--clr-text);
+  font-weight: 500;
+}
+
+.session-banner a {
+  color: var(--clr-primary);
+  text-decoration: none;
+  margin-left: 4px;
+}
+
+.session-banner a:hover {
+  text-decoration: underline;
+}
+
+.session-banner[hidden] {
+  display: none;
+}
+
 /* ══════════════════════════════════════════════════════
    MOBILE BOTTOM TAB BAR
    ══════════════════════════════════════════════════════ */
@@ -3824,6 +4036,16 @@ footer {
     font-weight: 600;
     letter-spacing: 0.3px;
     text-transform: uppercase;
+  }
+
+  /* De-emphasize utility tabs (Learn, Kitchen) */
+  .tab-item[data-page="learn"],
+  .tab-item[data-page="kitchen"] {
+    opacity: 0.75;
+  }
+  .tab-item[data-page="learn"].active,
+  .tab-item[data-page="kitchen"].active {
+    opacity: 1;
   }
 
   /* Badge on mobile tab bar */
@@ -3938,6 +4160,7 @@ body[data-page="journal"] main {
   border-radius: 10px;
   padding: 1.5rem 1.25rem 1rem;
   margin-bottom: 1.75rem;
+  overflow: visible;
 }
 
 .kitchen-fieldset legend {
@@ -3961,6 +4184,54 @@ body[data-page="journal"] main {
 .kitchen-fieldset .form-group input[type="text"]:focus {
   outline: none;
   border-color: var(--clr-primary);
+}
+
+/* Location autocomplete */
+.autocomplete-wrap {
+  position: relative;
+}
+.kitchen-fieldset .autocomplete-wrap input.ac-open {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-color: var(--clr-border);
+}
+.autocomplete-list {
+  position: absolute;
+  z-index: 50;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0.25rem 0;
+  list-style: none;
+  background: #fff;
+  border: 2px solid var(--clr-border);
+  border-top: 1px solid var(--clr-border);
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.10);
+  max-height: 240px;
+  overflow-y: auto;
+}
+.autocomplete-list li {
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--clr-text);
+  transition: background 0.12s;
+}
+.autocomplete-list li + li {
+  border-top: 1px solid rgba(0,0,0,.05);
+}
+.autocomplete-list li:hover,
+.autocomplete-list li.active {
+  background: var(--clr-warm-bg, #f5f0eb);
+}
+.autocomplete-list li .ac-city {
+  font-weight: 600;
+}
+.autocomplete-list li .ac-region {
+  color: var(--clr-text-light);
+  font-weight: 400;
 }
 
 /* City status feedback */
@@ -4073,7 +4344,7 @@ body[data-page="kitchen"] main {
   }
 }
 
-/* ── Adjustment Notice (Calculator Results) ──────── */
+/* ── Adjustment Notice (Make Results) ────────────── */
 .adjustment-notice {
   background: linear-gradient(135deg, #fff8e1, #fff3cd);
   border: 1px solid #ffe082;
@@ -4089,7 +4360,7 @@ body[data-page="kitchen"] main {
   color: #4e342e;
 }
 
-/* ── Unit Toggle (Calculator Results) ────────────── */
+/* ── Unit Toggle (Make Results) ──────────────────── */
 .unit-toggle-row {
   display: flex;
   justify-content: flex-end;
@@ -4108,7 +4379,7 @@ body[data-page="kitchen"] main {
   text-align: right;
 }
 
-/* ── Flour Substitution (Calculator Results) ──────── */
+/* ── Flour Substitution (Make Results) ────────────── */
 .flour-sub-row {
   display: flex;
   align-items: center;
@@ -4249,7 +4520,10 @@ body[data-page="kitchen"] main {
   .hydration-info-btn,
   .hydration-popover,
   .unit-toggle-row,
-  .volume-note {
+  .volume-note,
+  .plan-preview,
+  .session-banner,
+  .prefill-banner {
     display: none !important;
   }
 

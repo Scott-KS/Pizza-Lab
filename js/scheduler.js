@@ -116,7 +116,7 @@
     const styleKey = styleSelect.value;
     const recipe = PIZZA_RECIPES[styleKey];
     const sizeKeys = Object.keys(recipe.sizes);
-    const defaultSize = sizeKeys.includes("12") ? "12" : sizeKeys[0];
+    const defaultSize = recipe.defaultSize || (sizeKeys.includes("12") ? "12" : sizeKeys[0]);
     const doughBallWeight = recipe.sizes[defaultSize].doughWeight;
     const numPizzas = parseInt(countInput.value, 10);
 
@@ -233,7 +233,7 @@
     const styleKey = styleSelect.value;
     const recipe = PIZZA_RECIPES[styleKey];
     const sizeKeys = Object.keys(recipe.sizes);
-    const defaultSize = sizeKeys.includes("12") ? "12" : sizeKeys[0];
+    const defaultSize = recipe.defaultSize || (sizeKeys.includes("12") ? "12" : sizeKeys[0]);
     const doughBallWeight = recipe.sizes[defaultSize].doughWeight;
     const numPizzas = parseInt(countInput.value, 10);
 
@@ -699,6 +699,178 @@
   const saved = loadActiveSchedule();
   if (saved && saved.steps && saved.steps.length > 0) {
     showBanner(saved);
+  }
+
+  // ── On-Load: Plan My Bake Prefill ──
+
+  (function checkPrefill() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has("prefill")) return;
+
+    const raw = localStorage.getItem("pielab-plan-prefill");
+    if (!raw) return;
+
+    let prefill;
+    try { prefill = JSON.parse(raw); } catch { return; }
+    localStorage.removeItem("pielab-plan-prefill");
+
+    // Strip ?prefill=1 from URL without reload
+    const cleanUrl = window.location.pathname + window.location.hash;
+    window.history.replaceState(null, "", cleanUrl);
+
+    // Read oven type from user profile, default "stone"
+    const profile = (typeof PieLabProfile !== "undefined") ? PieLabProfile.getProfile() : {};
+    const ovenType = profile.preferredOven || "stone";
+
+    // Validate eat time is in the future
+    const eatTime = new Date(prefill.eatTime);
+    const now = new Date();
+
+    if (eatTime <= now) {
+      // Eat time in the past — show message and fall back to wizard with pre-filled values
+      showPrefillBanner(
+        "Your planned eat time has passed.",
+        "Set a new time"
+      );
+      // Pre-fill wizard step 1 fields
+      if (prefill.styleKey && styleSelect.querySelector(`option[value="${prefill.styleKey}"]`)) {
+        styleSelect.value = prefill.styleKey;
+      }
+      if (prefill.quantity) countInput.value = prefill.quantity;
+      checkStep1Ready();
+      goToStep(1);
+      return;
+    }
+
+    // Get doughBallWeight from calcResult
+    const doughBallWeight = prefill.calcResult
+      ? prefill.calcResult.doughBallWeight
+      : null;
+
+    if (!doughBallWeight || !prefill.fermentMethodKey || !prefill.styleKey) return;
+
+    const method = FERMENT_METHODS[prefill.fermentMethodKey];
+    if (!method) return;
+
+    const numPizzas = prefill.quantity || 1;
+
+    // Build the schedule
+    const result = buildScheduleBackward(
+      eatTime, ovenType, method, numPizzas, doughBallWeight, prefill.styleKey
+    );
+
+    if (!result.isValid) {
+      // Invalid schedule — show wizard with pre-filled values
+      showPrefillBanner(
+        result.validationMsg || "Could not build schedule.",
+        "Start over"
+      );
+      if (prefill.styleKey && styleSelect.querySelector(`option[value="${prefill.styleKey}"]`)) {
+        styleSelect.value = prefill.styleKey;
+      }
+      if (prefill.quantity) countInput.value = prefill.quantity;
+      checkStep1Ready();
+      goToStep(1);
+      return;
+    }
+
+    // Set scheduler state so timeline rendering works
+    const recipe = PIZZA_RECIPES[prefill.styleKey];
+    styleSelect.value = prefill.styleKey;
+    countInput.value = numPizzas;
+    ovenSelect.value = ovenType;
+    const off = eatTime.getTimezoneOffset() * 60000;
+    datetimeInput.value = new Date(eatTime.getTime() - off).toISOString().slice(0, 16);
+    selectedMethod = method;
+    computedSchedule = result.steps;
+
+    methodDisplayLabel =
+      prefill.styleKey === "chicago-tavern" ? "Chicago Tavern \u2014 Cured Dough"
+      : prefill.styleKey === "school-night" ? "No Rise"
+      : method.label;
+
+    // Request notification permission
+    PieNotifications.requestPermission();
+
+    // Save to localStorage as active schedule
+    saveActiveSchedule({
+      createdAt: new Date().toISOString(),
+      styleKey: prefill.styleKey,
+      styleName: recipe ? recipe.name : prefill.styleKey,
+      numPizzas,
+      ovenType,
+      methodId: method.id,
+      methodLabel: method.label,
+      methodDisplayLabel,
+      reminderMinutes: parseInt(reminderSelect.value, 10) || 0,
+      eatTime: eatTime.toISOString(),
+      doughBallWeight,
+      steps: computedSchedule.map((s) => ({
+        id: s.id,
+        label: s.label,
+        dateTime: s.dateTime.toISOString(),
+        instruction: s.instruction,
+        why: s.why,
+        duration: s.duration || null,
+        checked: s.checked || false,
+      })),
+    });
+
+    updateScheduleBadge();
+
+    // Hide the existing active-schedule banner
+    bannerEl.classList.add("hidden");
+    // Hide the wizard progress bar
+    progressEl.classList.add("hidden");
+
+    // Show prefill info banner
+    showPrefillBanner(
+      "Schedule built from your Make calculation.",
+      "Start over"
+    );
+
+    renderScheduleTimeline(computedSchedule);
+    goToStep(3);
+  })();
+
+  // ── Prefill Banner Helper ──
+
+  function showPrefillBanner(message, linkText) {
+    // Remove existing prefill banner if any
+    const existing = document.getElementById("prefill-banner");
+    if (existing) existing.remove();
+
+    const banner = document.createElement("div");
+    banner.className = "prefill-banner";
+    banner.id = "prefill-banner";
+    banner.innerHTML = `
+      <span>${message}</span>
+      <button type="button" class="link-btn" id="restart-wizard-btn">${linkText}</button>
+    `;
+
+    // Insert at top of scheduler section
+    const scheduler = document.getElementById("dough-scheduler");
+    const firstChild = scheduler.querySelector("h2");
+    if (firstChild && firstChild.nextSibling) {
+      scheduler.insertBefore(banner, firstChild.nextSibling);
+    } else {
+      scheduler.prepend(banner);
+    }
+
+    // "Start over" / "Set a new time" click handler
+    document.getElementById("restart-wizard-btn").addEventListener("click", () => {
+      banner.remove();
+      stopCountdown();
+      notifiedSteps.clear();
+      clearActiveSchedule();
+      computedSchedule = null;
+      selectedMethod = null;
+      methodDisplayLabel = "";
+      bannerEl.classList.add("hidden");
+      progressEl.classList.remove("hidden");
+      updateScheduleBadge();
+      goToStep(1);
+    });
   }
 
 })();

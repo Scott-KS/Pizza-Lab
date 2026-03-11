@@ -68,8 +68,9 @@ function populateOvenSelect(selectEl) {
     tab.classList.toggle("active", tab.dataset.page === page);
   });
 
-  // Schedule badge
+  // Schedule badge + session banner
   updateScheduleBadge();
+  updateSessionBanner();
 })();
 
 function updateScheduleBadge() {
@@ -82,4 +83,104 @@ function updateScheduleBadge() {
   } catch {
     badges.forEach(b => b.classList.add("hidden"));
   }
+}
+
+// ── Session Progress Banner ─────────────────────────
+function updateSessionBanner() {
+  const page = document.body.dataset.page;
+
+  // Create or find the banner element
+  let banner = document.querySelector(".session-banner");
+  if (!banner) {
+    banner = document.createElement("div");
+    banner.className = "session-banner";
+    const header = document.querySelector("header.site-header");
+    if (header && header.nextSibling) {
+      header.parentNode.insertBefore(banner, header.nextSibling);
+    } else if (header) {
+      header.parentNode.appendChild(banner);
+    } else {
+      return; // no header found (splash page)
+    }
+  }
+
+  let scheduleData = null;
+  let lastCalcData = null;
+
+  try {
+    const rawSchedule = localStorage.getItem("pielab-active-schedule");
+    if (rawSchedule) scheduleData = JSON.parse(rawSchedule);
+  } catch { /* ignore */ }
+
+  try {
+    const rawCalc = localStorage.getItem("pielab-last-calc");
+    if (rawCalc) lastCalcData = JSON.parse(rawCalc);
+  } catch { /* ignore */ }
+
+  const now = new Date();
+  const fourHoursAgo = new Date(now.getTime() - 4 * 3600000);
+
+  // ── STATE 1 & 2: Active schedule ──
+  if (scheduleData && scheduleData.steps && scheduleData.steps.length > 0) {
+    // Find the eat step (last step)
+    const eatStep = scheduleData.steps[scheduleData.steps.length - 1];
+    const eatTime = new Date(eatStep.dateTime);
+
+    // Find next unchecked step in the future
+    let nextStep = null;
+    for (const step of scheduleData.steps) {
+      const stepTime = new Date(step.dateTime);
+      if (!step.checked && stepTime > now) {
+        nextStep = step;
+        break;
+      }
+    }
+
+    // STATE 1: Eat time has passed (within last 4 hours), or all steps done
+    if (eatTime <= now && eatTime >= fourHoursAgo) {
+      banner.innerHTML =
+        '<span>Bake time!</span> How did it turn out? ' +
+        '<a href="journal.html?prefill=1">Log This Bake \u2192</a>';
+      banner.removeAttribute("hidden");
+      return;
+    }
+
+    // Also STATE 1 if eat time is future but no unchecked future steps remain
+    if (!nextStep && eatTime <= now) {
+      banner.innerHTML =
+        '<span>Bake time!</span> How did it turn out? ' +
+        '<a href="journal.html?prefill=1">Log This Bake \u2192</a>';
+      banner.removeAttribute("hidden");
+      return;
+    }
+
+    // STATE 2: Schedule running, eat time in the future
+    if (eatTime > now && nextStep) {
+      const timeStr = new Date(nextStep.dateTime).toLocaleString(undefined, {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+      banner.innerHTML =
+        '<span>Schedule active.</span> Next: ' + nextStep.label +
+        ' at ' + timeStr +
+        ' <a href="schedule.html">View \u2192</a>';
+      banner.removeAttribute("hidden");
+      return;
+    }
+  }
+
+  // ── STATE 3: Calculation done, no active schedule ──
+  if (lastCalcData && lastCalcData.styleKey && !scheduleData) {
+    // Only show on pages other than calculator (the Make page)
+    if (page !== "calculator") {
+      banner.innerHTML =
+        '<span>Dough calculated.</span> Ready to schedule? ' +
+        '<a href="schedule.html">Start Schedule \u2192</a>';
+      banner.removeAttribute("hidden");
+      return;
+    }
+  }
+
+  // ── STATE 4: Nothing active ──
+  banner.setAttribute("hidden", "");
 }

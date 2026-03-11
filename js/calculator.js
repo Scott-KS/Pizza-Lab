@@ -10,6 +10,7 @@ let lastDough = null;
 let lastSauce = null;
 let lastToppings = null;
 let currentUnit = "g";
+let currentMode = "quick"; // "quick" or "plan"
 
 // ── Flour Substitution Data ─────────────────────────
 const FLOUR_ABSORPTION = {
@@ -171,6 +172,79 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // ── Mode Toggle (Quick Calculate / Plan My Bake) ───
+  const modeToggleEl = document.getElementById("mode-toggle");
+  const planFieldsEl = document.getElementById("plan-fields");
+  const eatTimeInput = document.getElementById("eat-time");
+  const fermentSelect = document.getElementById("ferment-method");
+
+  // Restore mode from localStorage
+  try {
+    const savedMode = localStorage.getItem("pielab-calc-mode");
+    if (savedMode === "plan") currentMode = "plan";
+  } catch { /* ignore */ }
+
+  function setMode(mode) {
+    currentMode = mode;
+    modeToggleEl.querySelectorAll(".mode-btn").forEach((b) =>
+      b.classList.toggle("active", b.dataset.mode === mode)
+    );
+    planFieldsEl.classList.toggle("hidden", mode !== "plan");
+
+    if (mode === "plan" && !eatTimeInput.value) {
+      // Default to tomorrow 6:30 PM local
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(18, 30, 0, 0);
+      eatTimeInput.value = toLocalDateTimeString(tomorrow);
+      updateFermentOptions();
+    }
+
+    try {
+      localStorage.setItem("pielab-calc-mode", mode);
+    } catch { /* ignore */ }
+  }
+
+  function toLocalDateTimeString(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    const h = String(date.getHours()).padStart(2, "0");
+    const min = String(date.getMinutes()).padStart(2, "0");
+    return `${y}-${m}-${d}T${h}:${min}`;
+  }
+
+  function updateFermentOptions() {
+    const eatTime = new Date(eatTimeInput.value);
+    const now = new Date();
+    const availableHours = (eatTime - now) / 3600000;
+    const styleKey = document.getElementById("pizza-type").value || "";
+
+    const methods = (typeof getAvailableFermentMethods === "function")
+      ? getAvailableFermentMethods(availableHours, styleKey)
+      : [{ id: "same-day", label: "Same-Day Room Temperature" }];
+
+    fermentSelect.innerHTML = "";
+    methods.forEach((m, i) => {
+      const opt = document.createElement("option");
+      opt.value = m.id;
+      opt.textContent = m.label;
+      if (i === 0) opt.selected = true;
+      fermentSelect.appendChild(opt);
+    });
+  }
+
+  modeToggleEl.addEventListener("click", (e) => {
+    const btn = e.target.closest(".mode-btn");
+    if (!btn) return;
+    setMode(btn.dataset.mode);
+  });
+
+  eatTimeInput.addEventListener("change", updateFermentOptions);
+
+  // Apply saved mode on load
+  if (currentMode === "plan") setMode("plan");
+
   // ── Auto-select style from splash page link ─────────
   const urlParams = new URLSearchParams(window.location.search);
   const presetStyle = urlParams.get("style");
@@ -195,13 +269,18 @@ document.addEventListener("DOMContentLoaded", () => {
       sizeSelect.appendChild(opt);
     }
 
-    // Default to middle option for round (12″), or half for sheet
+    // Default to recipe-specified default, or middle option for round (12″), or half for sheet
     const keys = Object.keys(recipe.sizes);
-    if (recipe.isSheet) {
+    if (recipe.defaultSize && keys.includes(recipe.defaultSize)) {
+      sizeSelect.value = recipe.defaultSize;
+    } else if (recipe.isSheet) {
       sizeSelect.value = keys.includes("half") ? "half" : keys[0];
     } else {
       sizeSelect.value = keys.includes("12") ? "12" : keys[0];
     }
+
+    // Refresh ferment options when style changes in plan mode
+    if (currentMode === "plan" && eatTimeInput.value) updateFermentOptions();
   });
 
   // ── Form Submit ──────────────────────────────────────
@@ -374,6 +453,54 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       localStorage.setItem("pielab-last-calc", JSON.stringify(lastCalcData));
     } catch { /* ignore storage errors */ }
+
+    // ── Plan preview (Plan My Bake mode) ──
+    const planPreviewEl = document.getElementById("plan-preview");
+    const planStepsEl = document.getElementById("plan-preview-steps");
+
+    if (currentMode === "plan" && eatTimeInput.value) {
+      const eatTime = new Date(eatTimeInput.value);
+      const methodKey = fermentSelect.value || "same-day";
+      const method = (typeof FERMENT_METHODS !== "undefined") ? FERMENT_METHODS[methodKey] : null;
+      const doughBallWeight = adjustedRecipe.sizes[sizeKey].doughWeight;
+      const ovenType = ovenSelect ? ovenSelect.value : "stone";
+
+      if (method && typeof buildScheduleBackward === "function") {
+        const schedule = buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWeight, type);
+
+        // Render preview steps
+        const fmtOpts = { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" };
+        planStepsEl.innerHTML = schedule.steps.map((s) => {
+          const time = s.dateTime.toLocaleString(undefined, fmtOpts);
+          return `<div class="plan-step">
+            <span class="plan-step-time">${time}</span>
+            <span class="plan-step-label">${s.label}</span>
+          </div>`;
+        }).join("");
+
+        if (!schedule.isValid) {
+          planStepsEl.innerHTML += `<p class="plan-warning">${schedule.validationMsg}</p>`;
+        }
+
+        // Save to localStorage for schedule page prefill
+        try {
+          const planData = {
+            styleKey: type,
+            quantity: numPizzas,
+            eatTime: eatTimeInput.value,
+            fermentMethodKey: methodKey,
+            calcResult: { doughBallWeight },
+          };
+          localStorage.setItem("pielab-plan-prefill", JSON.stringify(planData));
+        } catch { /* ignore */ }
+
+        planPreviewEl.classList.remove("hidden");
+      } else {
+        planPreviewEl.classList.add("hidden");
+      }
+    } else {
+      planPreviewEl.classList.add("hidden");
+    }
 
     // ── Flour substitution row ──
     lastCalcContext = { adjustedRecipe, numPizzas, sizeKey };

@@ -21,7 +21,7 @@
         <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" />
       </a>
       <div class="nav-links">
-        <a href="calculator.html" class="nav-link" data-page="calculator">Calculator</a>
+        <a href="calculator.html" class="nav-link" data-page="calculator">Make</a>
         <a href="schedule.html" class="nav-link" data-page="schedule">
           Schedule
           <span class="schedule-badge hidden"></span>
@@ -134,13 +134,7 @@
 
       <button class="btn-new-entry" id="btn-new-entry">+ Log a Bake</button>
 
-      <div class="journal-entries" id="journal-entries">
-        <div class="journal-empty" id="journal-empty">
-          <p class="empty-icon">&#128211;</p>
-          <p>No bakes logged yet.</p>
-          <p class="empty-hint">Calculate a recipe and click "Log This Bake" to start tracking your pizza journey.</p>
-        </div>
-      </div>
+      <div class="journal-entries" id="journal-entries"></div>
 
       <div class="journal-comparison hidden" id="journal-comparison"></div>
     </section>
@@ -158,7 +152,7 @@
   <nav class="mobile-tab-bar">
     <a href="calculator.html" class="tab-item" data-page="calculator">
       <span class="tab-icon">&#127829;</span>
-      <span class="tab-label">Calculator</span>
+      <span class="tab-label">Make</span>
     </a>
     <a href="schedule.html" class="tab-item" data-page="schedule">
       <span class="tab-icon">&#128197;</span>
@@ -186,10 +180,10 @@
 
   <!-- Scripts: Capacitor init first, then data files, then shared nav, then page features -->
   <script src="js/capacitor-init.js"></script>
-  <script src="recipes.js?v=2"></script>
+  <script src="recipes.js?v=3"></script>
   <script src="journal.js"></script>
-  <script src="js/nav.js"></script>
+  <script src="js/nav.js?v=2"></script>
   <script src="js/user-profile.js"></script>
-  <script src="js/journal-ui.js"></script>
+  <script src="js/journal-ui.js?v=2"></script>
 </body>
 </html>

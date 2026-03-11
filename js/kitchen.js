@@ -40,11 +40,29 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedHumidity = btn.dataset.value;
   });
 
-  // ── City elevation resolver ──────────────────────────
+  // ── Location autocomplete & elevation ────────────────
+  const suggestList = document.getElementById("k-city-suggestions");
   let storedCity         = profile.city || "";
   let resolvedElevation  = profile.elevation ?? null;
-  let resolveTimer       = null;
-  let cityResolved       = false;   // true after a successful resolve this session
+  let searchTimer        = null;
+  let cityResolved       = false;
+  let activeIndex        = -1;
+
+  // US state abbreviation map
+  const US_STATES = {
+    Alabama:"AL",Alaska:"AK",Arizona:"AZ",Arkansas:"AR",California:"CA",
+    Colorado:"CO",Connecticut:"CT",Delaware:"DE",Florida:"FL",Georgia:"GA",
+    Hawaii:"HI",Idaho:"ID",Illinois:"IL",Indiana:"IN",Iowa:"IA",Kansas:"KS",
+    Kentucky:"KY",Louisiana:"LA",Maine:"ME",Maryland:"MD",Massachusetts:"MA",
+    Michigan:"MI",Minnesota:"MN",Mississippi:"MS",Missouri:"MO",Montana:"MT",
+    Nebraska:"NE",Nevada:"NV","New Hampshire":"NH","New Jersey":"NJ",
+    "New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND",
+    Ohio:"OH",Oklahoma:"OK",Oregon:"OR",Pennsylvania:"PA","Rhode Island":"RI",
+    "South Carolina":"SC","South Dakota":"SD",Tennessee:"TN",Texas:"TX",
+    Utah:"UT",Vermont:"VT",Virginia:"VA",Washington:"WA","West Virginia":"WV",
+    Wisconsin:"WI",Wyoming:"WY",
+    "District of Columbia":"DC"
+  };
 
   // Show saved elevation on load
   if (storedCity && resolvedElevation != null) {
@@ -52,69 +70,148 @@ document.addEventListener("DOMContentLoaded", () => {
     cityStatus.className   = "city-status resolved";
   }
 
-  cityInput.addEventListener("input", () => {
-    clearTimeout(resolveTimer);
-    const city = cityInput.value.trim();
+  function closeSuggestions() {
+    suggestList.classList.add("hidden");
+    suggestList.innerHTML = "";
+    cityInput.classList.remove("ac-open");
+    activeIndex = -1;
+  }
 
-    if (!city) {
-      cityStatus.textContent = "";
-      cityStatus.className   = "city-status";
-      cityResolved = false;
-      resolvedElevation = null;
-      return;
+  function formatPlace(place) {
+    const region = place.admin1 || "";
+    const abbr = US_STATES[region];
+    if (place.country_code?.toUpperCase() === "US" && abbr) {
+      return { display: `${place.name}, ${abbr}`, detail: "" };
     }
+    const parts = [place.name];
+    if (region) parts.push(region);
+    if (place.country && place.country !== "United States") parts.push(place.country);
+    return { display: parts.join(", "), detail: "" };
+  }
 
-    if (city === storedCity) return;
+  async function resolveElevationForPlace(place) {
+    const lat = place.latitude;
+    const lng = place.longitude;
+    try {
+      const res = await fetch(
+        `https://api.open-meteo.com/v1/elevation?latitude=${lat}&longitude=${lng}`
+      );
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (!data.elevation || data.elevation.length === 0) return null;
+      return Math.round((data.elevation[0] * 3.28084) / 10) * 10;
+    } catch {
+      return null;
+    }
+  }
+
+  function selectPlace(place) {
+    const { display } = formatPlace(place);
+    cityInput.value = display;
+    closeSuggestions();
 
     cityStatus.textContent = "Resolving elevation\u2026";
     cityStatus.className   = "city-status resolving";
-    resolvedElevation      = null;
-    cityResolved           = false;
 
-    resolveTimer = setTimeout(async () => {
-      const result = await PieLabProfile.resolveElevationFromCity(city);
-
-      if (result.error) {
-        cityStatus.textContent = result.error;
-        cityStatus.className   = "city-status error";
-      } else {
-        resolvedElevation = result.elevationFeet;
-        cityResolved      = true;
-        const label = result.countryCode
-          ? `${result.displayName}, ${result.countryCode}`
-          : result.displayName;
-        cityStatus.textContent = `\uD83D\uDCCD ${label} \u2014 ${result.elevationFeet.toLocaleString()} ft`;
+    resolveElevationForPlace(place).then((feet) => {
+      if (feet != null) {
+        resolvedElevation  = feet;
+        cityResolved       = true;
+        cityStatus.textContent = `\uD83D\uDCCD ${display} \u2014 ${feet.toLocaleString()} ft`;
         cityStatus.className   = "city-status resolved";
+      } else {
+        cityStatus.textContent = "Could not resolve elevation";
+        cityStatus.className   = "city-status error";
       }
-    }, 600);
+    });
+  }
+
+  function renderSuggestions(results) {
+    suggestList.innerHTML = "";
+    activeIndex = -1;
+
+    if (!results.length) {
+      closeSuggestions();
+      return;
+    }
+
+    results.forEach((place, i) => {
+      const li = document.createElement("li");
+      const { display } = formatPlace(place);
+      const region = place.admin1 || "";
+      const abbr = US_STATES[region];
+      const isUS = place.country_code?.toUpperCase() === "US" && abbr;
+
+      li.innerHTML = isUS
+        ? `<span class="ac-city">${place.name}</span>, <span class="ac-region">${abbr}</span>`
+        : `<span class="ac-city">${place.name}</span>${region ? `, <span class="ac-region">${region}</span>` : ""}${place.country && place.country !== "United States" ? `, <span class="ac-region">${place.country}</span>` : ""}`;
+
+      li.addEventListener("mousedown", (e) => {
+        e.preventDefault();          // prevent blur from firing first
+        selectPlace(place);
+      });
+      suggestList.appendChild(li);
+    });
+
+    suggestList.classList.remove("hidden");
+    cityInput.classList.add("ac-open");
+  }
+
+  cityInput.addEventListener("input", () => {
+    clearTimeout(searchTimer);
+    const q = cityInput.value.trim();
+
+    cityResolved      = false;
+    resolvedElevation = null;
+
+    if (q.length < 2) {
+      closeSuggestions();
+      if (!q) {
+        cityStatus.textContent = "";
+        cityStatus.className   = "city-status";
+      }
+      return;
+    }
+
+    searchTimer = setTimeout(async () => {
+      try {
+        const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=6&language=en&format=json`;
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const data = await res.json();
+        renderSuggestions(data.results || []);
+      } catch { /* network error — ignore */ }
+    }, 300);
+  });
+
+  // Keyboard navigation in dropdown
+  cityInput.addEventListener("keydown", (e) => {
+    const items = suggestList.querySelectorAll("li");
+    if (!items.length) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      activeIndex = Math.min(activeIndex + 1, items.length - 1);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      activeIndex = Math.max(activeIndex - 1, 0);
+    } else if (e.key === "Enter" && activeIndex >= 0) {
+      e.preventDefault();
+      items[activeIndex].dispatchEvent(new MouseEvent("mousedown"));
+      return;
+    } else if (e.key === "Escape") {
+      closeSuggestions();
+      return;
+    } else {
+      return;
+    }
+
+    items.forEach((li, i) => li.classList.toggle("active", i === activeIndex));
   });
 
   cityInput.addEventListener("blur", () => {
-    // On blur, resolve immediately if city changed and no pending result
-    const city = cityInput.value.trim();
-    if (city && city !== storedCity && !cityResolved) {
-      clearTimeout(resolveTimer);
-      resolvedElevation = null;
-      cityStatus.textContent = "Resolving elevation\u2026";
-      cityStatus.className   = "city-status resolving";
-
-      (async () => {
-        const result = await PieLabProfile.resolveElevationFromCity(city);
-
-        if (result.error) {
-          cityStatus.textContent = result.error;
-          cityStatus.className   = "city-status error";
-        } else {
-          resolvedElevation = result.elevationFeet;
-          cityResolved      = true;
-          const label = result.countryCode
-            ? `${result.displayName}, ${result.countryCode}`
-            : result.displayName;
-          cityStatus.textContent = `\uD83D\uDCCD ${label} \u2014 ${result.elevationFeet.toLocaleString()} ft`;
-          cityStatus.className   = "city-status resolved";
-        }
-      })();
-    }
+    // Short delay to let mousedown on suggestion fire first
+    setTimeout(() => closeSuggestions(), 150);
   });
 
   // ── Save ─────────────────────────────────────────────

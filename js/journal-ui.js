@@ -7,7 +7,6 @@
   const formWrapper = document.getElementById("journal-form-wrapper");
   const form = document.getElementById("journal-form");
   const entriesContainer = document.getElementById("journal-entries");
-  const emptyState = document.getElementById("journal-empty");
   const btnNewEntry = document.getElementById("btn-new-entry");
   const btnCancel = document.getElementById("btn-cancel-entry");
   const filterSelect = document.getElementById("journal-style-filter");
@@ -316,6 +315,16 @@
     updateStorageDisplay();
   });
 
+  // ── Empty state builder ──────────────────────────
+  function buildEmptyState() {
+    return `<div class="journal-empty-state">
+      <div class="empty-state-icon">\u25CB</div>
+      <h3>No bakes logged yet</h3>
+      <p>Run the calculator, hit \u201CLog This Bake,\u201D and your first session will appear here.</p>
+      <a href="calculator.html" class="btn-primary">Go to Make \u2192</a>
+    </div>`;
+  }
+
   // ── Render entries ────────────────────────────────
   function renderEntries() {
     const filter = filterSelect.value;
@@ -323,13 +332,12 @@
       ? PieLabJournal.getAllEntries()
       : PieLabJournal.getEntriesByStyle(filter);
 
-    if (entries.length === 0) {
-      emptyState.classList.remove("hidden");
-      entriesContainer.querySelectorAll(".journal-entry-card").forEach((c) => c.remove());
+    if (!entries || entries.length === 0) {
+      entriesContainer.innerHTML = buildEmptyState();
       return;
     }
 
-    emptyState.classList.add("hidden");
+    entriesContainer.querySelectorAll(".journal-empty-state").forEach((c) => c.remove());
     entriesContainer.querySelectorAll(".journal-entry-card").forEach((c) => c.remove());
 
     entries.forEach((entry) => {
@@ -560,7 +568,7 @@
     const analysis = PieLabJournal.analyzeEntries(entries);
 
     if (analysis.insufficient) {
-      comparisonEl.innerHTML = "<p>Need at least 2 entries for the same style to compare.</p>";
+      comparisonEl.innerHTML = '<p class="comparison-empty">You need at least 2 logged bakes to compare. Keep baking.</p>';
       comparisonEl.classList.remove("hidden");
       return;
     }

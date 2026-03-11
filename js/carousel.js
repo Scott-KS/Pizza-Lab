@@ -18,7 +18,7 @@
 
   function resetAutoplay() {
     clearInterval(autoTimer);
-    autoTimer = setInterval(() => goTo(current + 1), 5000);
+    autoTimer = setInterval(() => goTo(current + 1), 2000);
   }
 
   resetAutoplay();
