@@ -507,6 +507,7 @@ main {
   color: var(--clr-text-light);
   font-size: 0.8rem;
   text-transform: uppercase;
+  padding-right: 0.5rem;
 }
 
 .result-section td:last-child {
@@ -533,6 +534,27 @@ main {
 
 .result-section tr:not(:last-child) td {
   border-bottom: 1px solid var(--clr-border);
+}
+
+/* ── Mobile: dough table + action buttons ────────── */
+@media (max-width: 480px) {
+  .three-col th:last-child {
+    font-size: 0;         /* hide "% OF FLOUR" text */
+  }
+  .three-col th:last-child::after {
+    content: "%";
+    font-size: 0.8rem;    /* show short label instead */
+  }
+
+  .result-section th,
+  .result-section td {
+    padding: 0.4rem 0.25rem;
+    font-size: 0.88rem;
+  }
+
+  .results-actions {
+    flex-direction: column;
+  }
 }
 
 /* ── Instructions & Tips ─────────────────────────── */
@@ -3882,6 +3904,12 @@ footer {
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;          /* Firefox */
+}
+.nav-links::-webkit-scrollbar {
+  display: none;                  /* Chrome/Safari */
 }
 
 .nav-link {
@@ -3979,6 +4007,14 @@ footer {
 
 .session-banner[hidden] {
   display: none;
+}
+
+/* ── Tight Desktop Nav (641–820px) ─────────────────── */
+@media (max-width: 820px) and (min-width: 641px) {
+  .nav-link {
+    padding: 0.5rem 0.55rem;
+    font-size: 0.82rem;
+  }
 }
 
 /* ══════════════════════════════════════════════════════
