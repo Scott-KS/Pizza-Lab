@@ -101,6 +101,12 @@ const PieLabJournal = (() => {
     const entries = getAllEntries();
     entry.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     entry.createdAt = new Date().toISOString();
+
+    // Stamp skill progression — count includes this new entry
+    const prevCount = entries.filter((e) => e.styleKey === entry.styleKey).length;
+    entry.skillCount = prevCount + 1;
+    entry.skillBadge = getSkillBadge(entry.skillCount);
+
     entries.unshift(entry); // newest first
     saveAllEntries(entries);
     return entry;
@@ -130,6 +136,27 @@ const PieLabJournal = (() => {
 
   function getEntryById(id) {
     return getAllEntries().find((e) => e.id === id) || null;
+  }
+
+  // ── Skill Badge System ─────────────────────────────
+  const SKILL_TIERS = [
+    { min: 26, badge: "\uD83C\uDFC6 Master of the Oven" },
+    { min: 16, badge: "\uD83D\uDC68\u200D\uD83C\uDF73 Style Specialist" },
+    { min:  9, badge: "\u2B50 Dialed In" },
+    { min:  4, badge: "\uD83D\uDD25 Getting Comfortable" },
+    { min:  1, badge: "\uD83C\uDF55 First Stretch" },
+  ];
+
+  function getStyleBakeCount(styleKey) {
+    return getBakesCountByStyle(styleKey);
+  }
+
+  function getSkillBadge(count) {
+    if (!count || count < 1) return null;
+    for (const tier of SKILL_TIERS) {
+      if (count >= tier.min) return tier.badge;
+    }
+    return null;
   }
 
   // ── Photo Compression ─────────────────────────────
@@ -235,5 +262,7 @@ const PieLabJournal = (() => {
     getEntryById,
     compressPhoto,
     analyzeEntries,
+    getStyleBakeCount,
+    getSkillBadge,
   };
 })();

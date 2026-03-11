@@ -344,6 +344,26 @@
 
     entriesContainer.querySelectorAll(".journal-empty-state").forEach((c) => c.remove());
     entriesContainer.querySelectorAll(".journal-entry-card").forEach((c) => c.remove());
+    entriesContainer.querySelectorAll(".styles-mastered-row").forEach((c) => c.remove());
+
+    // ── Styles Mastered summary (only if any style ≥ 26 bakes) ──
+    if (typeof PIZZA_RECIPES !== "undefined") {
+      const masteredStyles = Object.keys(PIZZA_RECIPES).filter(
+        (key) => PieLabJournal.getStyleBakeCount(key) >= 26
+      );
+      if (masteredStyles.length > 0) {
+        const row = document.createElement("div");
+        row.className = "styles-mastered-row";
+        const pills = masteredStyles
+          .map((key) => {
+            const name = PIZZA_RECIPES[key] ? PIZZA_RECIPES[key].name : key;
+            return `<span class="mastered-pill">\uD83C\uDFC6 ${escapeHtml(name)}</span>`;
+          })
+          .join("");
+        row.innerHTML = `<span class="mastered-label">Styles Mastered</span><div class="mastered-list">${pills}</div>`;
+        entriesContainer.appendChild(row);
+      }
+    }
 
     entries.forEach((entry) => {
       const card = document.createElement("div");
@@ -381,10 +401,7 @@
           </div>
           ${entry.bakeName ? `<div class="entry-bake-name">${escapeHtml(entry.bakeName)}</div>` : ""}
           ${detailParts.length ? `<div class="entry-details">${detailParts.join(" \u00B7 ")}</div>` : ""}
-          ${(() => {
-            const lvl = (typeof PieLabProfile !== "undefined") ? PieLabProfile.getStyleLevel(entry.styleKey) : null;
-            return lvl ? `<span class="skill-badge skill-badge--${lvl} skill-badge--card">${lvl.charAt(0).toUpperCase() + lvl.slice(1)}</span>` : "";
-          })()}
+          ${entry.skillBadge ? `<div class="entry-skill-line"><span class="skill-pill">${entry.skillBadge}</span><span class="skill-bake-count">Bake #${entry.skillCount} in ${escapeHtml(entry.styleName)}</span></div>` : ""}
           ${entry.notes ? `<div class="entry-notes-preview">${escapeHtml(entry.notes)}</div>` : ""}
         </div>
       `;
@@ -447,12 +464,9 @@
       }
     }
 
-    // Skill badge for this style
-    const modalSkillLevel = (typeof PieLabProfile !== "undefined")
-      ? PieLabProfile.getStyleLevel(entry.styleKey)
-      : null;
-    const modalBadgeHtml = modalSkillLevel
-      ? `<span class="skill-badge skill-badge--${modalSkillLevel}">${modalSkillLevel.charAt(0).toUpperCase() + modalSkillLevel.slice(1)}</span>`
+    // Skill badge — use entry-stamped data
+    const modalBadgeHtml = entry.skillBadge
+      ? `<span class="skill-pill skill-pill--modal">${entry.skillBadge}</span>`
       : "";
 
     html += `
