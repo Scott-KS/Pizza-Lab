@@ -3,7 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'app.pielab',
   appName: 'The Pie Lab',
-  webDir: 'www',
+  webDir: '.',
   server: {
     androidScheme: 'https',
   },

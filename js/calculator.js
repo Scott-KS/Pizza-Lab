@@ -676,6 +676,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return [d.ingredient, formatAmount(d.amount, d.ingredient), pctCell];
       })
     );
+
+    // Total batch weight
+    const totalGrams = dough.reduce((sum, d) => sum + d.amount, 0);
+    const totalEl = document.getElementById("dough-total-amount");
+    if (totalEl) totalEl.textContent = formatAmount(Math.round(totalGrams), "Total");
   }
 
   function renderSimpleTable(tableId, rows) {

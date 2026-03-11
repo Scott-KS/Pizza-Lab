@@ -514,6 +514,11 @@ main {
   font-weight: 600;
 }
 
+.dough-total-row {
+  font-weight: 700;
+  border-top: 2px solid var(--clr-border);
+}
+
 .three-col td:nth-child(2) {
   text-align: right;
   font-weight: 600;

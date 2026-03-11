@@ -5,8 +5,8 @@
 
 // ── Canonical Oven Types (6 types) ────────────────────
 const OVEN_TYPES = {
-  stone:        "Home Oven + Pizza Stone",
   steel:        "Home Oven + Pizza Steel",
+  stone:        "Home Oven + Pizza Stone",
   ooni:         "Ooni / Portable Pizza Oven",
   "wood-fired": "Wood-Fired Oven",
   "cast-iron":  "Cast Iron Skillet",
