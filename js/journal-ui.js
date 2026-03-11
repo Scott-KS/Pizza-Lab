@@ -532,8 +532,15 @@
       html += `<div class="modal-notes"><h4>Notes</h4><p>${escapeHtml(entry.notes)}</p></div>`;
     }
 
+    // Share button — only if entry has a photo
+    const hasPhoto = (entry.photos && entry.photos.length) || entry.photo;
+    const shareBtnHtml = hasPhoto
+      ? `<button class="btn-modal-share" data-id="${entry.id}">Share This Bake</button>`
+      : "";
+
     html += `
       <div class="modal-actions">
+        ${shareBtnHtml}
         <button class="btn-modal-iterate" data-id="${entry.id}">
           Use as Starting Point
         </button>
@@ -586,6 +593,10 @@
         updateStorageDisplay();
       }
     });
+
+    // Share handler
+    const shareBtn = modalBody.querySelector(".btn-modal-share");
+    if (shareBtn) shareBtn.addEventListener("click", () => shareThisBake(entry));
   }
 
   modalClose.addEventListener("click", () => modalOverlay.classList.add("hidden"));
@@ -672,6 +683,234 @@
       comparisonEl.classList.add("hidden");
     });
   });
+
+  // ── Toast Notification ──────────────────────────────
+  function showToast(message) {
+    const existing = document.querySelector(".toast");
+    if (existing) existing.remove();
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    // Trigger reflow then add visible class for transition
+    requestAnimationFrame(() => toast.classList.add("toast--visible"));
+    setTimeout(() => {
+      toast.classList.remove("toast--visible");
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  // ── Share This Bake ────────────────────────────────
+  async function shareThisBake(entry) {
+    // 1. Read profile
+    if (typeof PieLabProfile === "undefined") {
+      showToast("Complete your profile in the Kitchen tab to share your bakes");
+      return;
+    }
+    const profile = PieLabProfile.getProfile();
+    const name = (profile.displayName || "").trim();
+    const location = (profile.city || "").trim();
+
+    if (!name || !location) {
+      showToast("Complete your profile in the Kitchen tab to share your bakes");
+      return;
+    }
+
+    // 2. Get photo
+    const photoSrc = (entry.photos && entry.photos.length) ? entry.photos[0] : entry.photo;
+    if (!photoSrc) {
+      showToast("Add a photo to share this bake");
+      return;
+    }
+
+    // 3. Get skill level from entry-stamped badge
+    const skillLevel = entry.skillBadge || null;
+
+    // 4. Generate Polaroid card
+    showToast("Generating share image\u2026");
+    let blob;
+    try {
+      blob = await generatePolaroidCard(entry, { name, location, skillLevel });
+    } catch (err) {
+      console.error("Polaroid generation failed:", err);
+      showToast("Could not generate share image");
+      return;
+    }
+
+    // 5. Build file list — Polaroid card + all bake photos
+    const files = [new File([blob], "my-bake.png", { type: "image/png" })];
+    const photos = (entry.photos && entry.photos.length) ? entry.photos : (entry.photo ? [entry.photo] : []);
+    photos.forEach((dataUri, i) => {
+      const photoFile = dataUriToFile(dataUri, `bake-photo-${i + 1}.jpg`);
+      if (photoFile) files.push(photoFile);
+    });
+
+    // 6. Share or download
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare({ files })) {
+        await navigator.share({
+          files,
+          title: "Check out my bake on The Pie Lab",
+        });
+      } else {
+        // Fallback: download Polaroid card + all photos
+        files.forEach((f) => downloadBlob(f, f.name));
+      }
+    } catch (err) {
+      if (err.name !== "AbortError") {
+        files.forEach((f) => downloadBlob(f, f.name));
+      }
+    }
+  }
+
+  function dataUriToFile(dataUri, filename) {
+    try {
+      const [header, b64] = dataUri.split(",");
+      const mime = header.match(/:(.*?);/)[1];
+      const bytes = atob(b64);
+      const arr = new Uint8Array(bytes.length);
+      for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+      return new File([arr], filename, { type: mime });
+    } catch { return null; }
+  }
+
+  function downloadBlob(blobOrFile, filename) {
+    const url = URL.createObjectURL(blobOrFile);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename || blobOrFile.name || "download";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  // ── Polaroid Card Generator ────────────────────────
+  function generatePolaroidCard(entry, profile) {
+    return new Promise((resolve, reject) => {
+      const W = 1080, H = 1360, PHOTO_H = 1080;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext("2d");
+
+      // White background
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, W, H);
+
+      // Load bake photo
+      const photoSrc = (entry.photos && entry.photos.length) ? entry.photos[0] : entry.photo;
+      const img = new Image();
+      img.onload = () => {
+        // Draw cropped/centered to fill 1080x1080
+        const srcW = img.width, srcH = img.height;
+        const scale = Math.max(PHOTO_H / srcW, PHOTO_H / srcH);
+        const drawW = srcW * scale, drawH = srcH * scale;
+        const dx = (W - drawW) / 2, dy = (PHOTO_H - drawH) / 2;
+        ctx.drawImage(img, dx, dy, drawW, drawH);
+
+        // Load logo watermark (may fail — graceful)
+        const logo = new Image();
+        logo.onload = () => {
+          drawLogoWatermark(ctx, logo, W, PHOTO_H);
+          finishCard(ctx, canvas, entry, profile, W, H, PHOTO_H, resolve);
+        };
+        logo.onerror = () => {
+          // Logo missing — skip watermark, still finish card
+          finishCard(ctx, canvas, entry, profile, W, H, PHOTO_H, resolve);
+        };
+        logo.src = "assets/logos/logo-watermark.png";
+      };
+      img.onerror = () => reject(new Error("Failed to load bake photo"));
+      img.src = photoSrc;
+    });
+  }
+
+  function drawLogoWatermark(ctx, logo, canvasW, photoH) {
+    const SIZE = 120, MARGIN = 15, PADDING = 8, RADIUS = 8;
+    const x = canvasW - SIZE - MARGIN;
+    const y = photoH - SIZE - MARGIN;
+
+    // Semi-transparent white backing pill
+    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+    roundRect(ctx, x - PADDING, y - PADDING, SIZE + PADDING * 2, SIZE + PADDING * 2, RADIUS);
+    ctx.fill();
+
+    // Draw logo
+    ctx.drawImage(logo, x, y, SIZE, SIZE);
+  }
+
+  function finishCard(ctx, canvas, entry, profile, W, H, PHOTO_H, resolve) {
+    // Separator line
+    ctx.strokeStyle = "#e0ddd8";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, PHOTO_H);
+    ctx.lineTo(W, PHOTO_H);
+    ctx.stroke();
+
+    // Polaroid border is already white from initial fill
+    const LEFT = 40;
+
+    // Username
+    ctx.fillStyle = "#1a1a1a";
+    ctx.font = "600 28px Inter, sans-serif";
+    ctx.textBaseline = "alphabetic";
+    ctx.fillText(profile.name, LEFT, 1138);
+
+    // Location · Style
+    ctx.fillStyle = "#555555";
+    ctx.font = "400 22px Inter, sans-serif";
+    const styleName = entry.styleName || entry.styleKey || "";
+    ctx.fillText(`${profile.location} \u00B7 ${styleName}`, LEFT, 1178);
+
+    // Skill badge pill
+    if (profile.skillLevel) {
+      ctx.font = "500 18px Inter, sans-serif";
+      const badgeText = profile.skillLevel;
+      const textW = ctx.measureText(badgeText).width;
+      const pillPadH = 12, pillPadV = 6;
+      const pillW = textW + pillPadH * 2;
+      const pillH = 18 + pillPadV * 2;
+      const pillX = LEFT, pillY = 1205;
+
+      // Rounded rect background
+      ctx.fillStyle = "#c9622a";
+      roundRect(ctx, pillX, pillY, pillW, pillH, 6);
+      ctx.fill();
+
+      // Badge text
+      ctx.fillStyle = "#ffffff";
+      ctx.textBaseline = "middle";
+      ctx.fillText(badgeText, pillX + pillPadH, pillY + pillH / 2);
+    }
+
+    // ThePieLab.app branding
+    ctx.fillStyle = "#9a9690";
+    ctx.font = "400 16px Inter, sans-serif";
+    ctx.textBaseline = "alphabetic";
+    ctx.textAlign = "right";
+    ctx.fillText("ThePieLab.app", 1040, 1335);
+    ctx.textAlign = "left"; // reset
+
+    // Export
+    canvas.toBlob((blob) => resolve(blob), "image/png");
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+    ctx.lineTo(x + r, y + h);
+    ctx.arcTo(x, y + h, x, y + h - r, r);
+    ctx.lineTo(x, y + r);
+    ctx.arcTo(x, y, x + r, y, r);
+    ctx.closePath();
+  }
 
   // ── Initialize ────────────────────────────────────
   populateDropdowns();
