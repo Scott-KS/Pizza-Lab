@@ -424,6 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ── Store last calculation in localStorage (for journal pre-fill) ──
+    const doughBallWeight = adjustedRecipe.sizes[sizeKey].doughWeight;
     const lastCalcData = {
       styleKey: type,
       styleName: recipe.name,
@@ -437,9 +438,11 @@ document.addEventListener("DOMContentLoaded", () => {
         oilPct: adjustedRecipe.oilPct,
         sugarPct: adjustedRecipe.sugarPct,
         yeastPct: adjustedRecipe.yeastPct,
-        doughBallWeight: adjustedRecipe.sizes[sizeKey].doughWeight,
+        doughBallWeight,
       },
       bakeTemp: recipe.idealTemp ? recipe.idealTemp.max : null,
+      totalDoughWeight: Math.round(doughBallWeight * numPizzas),
+      timestamp: Date.now(),
     };
 
     // Preserve derivedFromId if user arrived via "Use as Starting Point"
@@ -453,6 +456,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       localStorage.setItem("pielab-last-calc", JSON.stringify(lastCalcData));
+      localStorage.setItem("pielab-pending-bake", JSON.stringify(lastCalcData));
     } catch { /* ignore storage errors */ }
 
     // ── Plan preview (Plan My Bake mode) ──

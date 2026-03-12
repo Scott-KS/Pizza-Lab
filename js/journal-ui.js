@@ -255,6 +255,23 @@
       snapshotEl.innerHTML = '<span class="snapshot-label">Dough Snapshot:</span><span class="snapshot-empty">Calculate a recipe first to capture dough settings</span>';
     }
 
+    // Style match indicator
+    const styleHistoryEl = document.getElementById("j-style-history");
+    const selectedStyle = document.getElementById("j-style").value;
+    if (selectedStyle && styleHistoryEl) {
+      const styleEntries = PieLabJournal.getEntriesByStyle(selectedStyle);
+      if (styleEntries.length > 0) {
+        const bestRating = Math.max(...styleEntries.map(e => e.rating || 0));
+        const styleName = (PIZZA_RECIPES[selectedStyle] || {}).name || selectedStyle;
+        styleHistoryEl.textContent = `You\u2019ve logged ${styleEntries.length} ${styleName} bake${styleEntries.length > 1 ? "s" : ""}. Your best was ${bestRating} \u2605`;
+        styleHistoryEl.classList.remove("hidden");
+      } else {
+        styleHistoryEl.classList.add("hidden");
+      }
+    } else if (styleHistoryEl) {
+      styleHistoryEl.classList.add("hidden");
+    }
+
     formWrapper.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -263,6 +280,7 @@
     btnNewEntry.classList.remove("hidden");
     pendingDerivedFromId = null;
     formHeading.textContent = "Log a Bake";
+    localStorage.removeItem("pielab-pending-bake");
   }
 
   function renderSnapshot(snap) {
@@ -285,6 +303,19 @@
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get("prefill") === "1") {
     setTimeout(() => showForm(true), 100);
+  } else {
+    // Auto-detect pending bake (no button press required)
+    try {
+      const raw = localStorage.getItem("pielab-pending-bake");
+      if (raw) {
+        const pending = JSON.parse(raw);
+        if (pending.timestamp && (Date.now() - pending.timestamp < 24 * 60 * 60 * 1000)) {
+          setTimeout(() => showForm(true), 100);
+        } else {
+          localStorage.removeItem("pielab-pending-bake"); // stale
+        }
+      }
+    } catch { /* ignore */ }
   }
 
   // ── Save entry ────────────────────────────────────
@@ -313,6 +344,7 @@
     };
 
     PieLabJournal.addEntry(entry);
+    localStorage.removeItem("pielab-pending-bake");
 
     pendingDerivedFromId = null;
     hideForm();

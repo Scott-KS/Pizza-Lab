@@ -2451,6 +2451,13 @@ main {
   font-size: 0.95rem;
 }
 
+.style-history-note {
+  color: var(--clr-text-light);
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0;
+  font-style: italic;
+}
+
 .btn-compare {
   padding: 0.5rem 1.25rem;
   border: 2px solid var(--clr-primary);
