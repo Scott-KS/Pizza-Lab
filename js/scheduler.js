@@ -16,6 +16,7 @@
   const methodCard = document.getElementById("sched-method-card");
   const validationEl = document.getElementById("sched-validation");
   const timelineEl = document.getElementById("sched-timeline");
+  const visualBarEl = document.getElementById("sched-visual-bar");
   const bannerEl = document.getElementById("active-schedule-banner");
 
   // Wizard step panels
@@ -287,6 +288,7 @@
     updateScheduleBadge();
 
     renderScheduleTimeline(computedSchedule);
+    renderVisualBar(computedSchedule);
     goToStep(3);
 
     // Hide banner when viewing full schedule
@@ -387,6 +389,7 @@
         computedSchedule[idx].checked = !computedSchedule[idx].checked;
         updateStoredChecks();
         renderScheduleTimeline(computedSchedule);
+        renderVisualBar(computedSchedule);
       });
     });
 
@@ -401,6 +404,81 @@
 
     // Start countdown
     startCountdown();
+  }
+
+  // ── Visual Overview Bar ────────────────────────────
+  function renderVisualBar(steps) {
+    if (!visualBarEl || !steps || steps.length < 2) {
+      if (visualBarEl) visualBarEl.innerHTML = "";
+      return;
+    }
+
+    const now = new Date();
+    const startTime = steps[0].dateTime.getTime();
+    const endTime = steps[steps.length - 1].dateTime.getTime();
+    const totalSpan = endTime - startTime;
+    if (totalSpan <= 0) { visualBarEl.innerHTML = ""; return; }
+
+    // Compute raw widths as percentage of total span
+    const rawWidths = steps.map((step, i) => {
+      if (i === steps.length - 1) return 3; // last step gets minimum
+      const next = steps[i + 1].dateTime.getTime();
+      return ((next - step.dateTime.getTime()) / totalSpan) * 100;
+    });
+
+    // Cap at 40% max, redistribute excess proportionally among uncapped
+    const CAP = 40;
+    let excess = 0;
+    let uncappedTotal = 0;
+    const capped = rawWidths.map((w) => {
+      if (w > CAP) { excess += w - CAP; return CAP; }
+      uncappedTotal += w;
+      return w;
+    });
+    const widths = capped.map((w) => {
+      if (w < CAP && uncappedTotal > 0) return w + (w / uncappedTotal) * excess;
+      return w;
+    });
+
+    // Build blocks
+    let blocksHtml = "";
+    steps.forEach((step, i) => {
+      // Status class (mirrors timeline logic)
+      let statusClass = "step-upcoming";
+      if (step.checked) {
+        statusClass = "step-checked";
+      } else {
+        const stepTime = step.dateTime.getTime();
+        if (stepTime <= now.getTime()) {
+          // Find if this is the "next" unchecked step
+          const firstUncheckedPast = steps.findIndex(
+            (s) => !s.checked && s.dateTime.getTime() <= now.getTime()
+          );
+          statusClass = firstUncheckedPast === i ? "step-next" : "step-done";
+        }
+      }
+
+      const shortTime = step.dateTime.toLocaleTimeString(undefined, {
+        hour: "numeric", minute: "2-digit",
+      });
+      const shortLabel = step.label.length > 14 ? step.label.slice(0, 13) + "\u2026" : step.label;
+
+      blocksHtml += `<div class="bar-block ${statusClass}" style="flex:${widths[i].toFixed(2)};" data-step-idx="${i}">
+        <span class="bar-block-label">${shortLabel}</span>
+        <span class="bar-block-time">${shortTime}</span>
+      </div>`;
+    });
+
+    visualBarEl.innerHTML = `<div class="visual-bar-track">${blocksHtml}</div>`;
+
+    // Click handlers — scroll to timeline step
+    visualBarEl.querySelectorAll(".bar-block").forEach((block) => {
+      block.addEventListener("click", () => {
+        const idx = block.dataset.stepIdx;
+        const target = timelineEl.querySelector(`.sched-timeline-step[data-step-idx="${idx}"]`);
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
   }
 
   function formatScheduleTime(date) {
@@ -453,7 +531,10 @@
       if (!el.dataset.advanced) {
         el.dataset.advanced = "1";
         setTimeout(() => {
-          if (computedSchedule) renderScheduleTimeline(computedSchedule);
+          if (computedSchedule) {
+            renderScheduleTimeline(computedSchedule);
+            renderVisualBar(computedSchedule);
+          }
         }, 1500);
       }
       return;
@@ -513,7 +594,10 @@
       const tid = setTimeout(() => {
         if (notifiedSteps.has(key)) return;
         notifiedSteps.add(key);
-        if (computedSchedule) renderScheduleTimeline(computedSchedule);
+        if (computedSchedule) {
+          renderScheduleTimeline(computedSchedule);
+          renderVisualBar(computedSchedule);
+        }
       }, delay);
 
       stepTimeouts.push(tid);
@@ -658,6 +742,7 @@
 
     bannerEl.classList.add("hidden");
     renderScheduleTimeline(computedSchedule);
+    renderVisualBar(computedSchedule);
     goToStep(3);
   }
 
@@ -830,6 +915,7 @@
     );
 
     renderScheduleTimeline(computedSchedule);
+    renderVisualBar(computedSchedule);
     goToStep(3);
   })();
 

@@ -24,7 +24,7 @@ function activateTab(tabId) {
   });
 
   // Hash-based routing on load
-  const knowledgeTabs = ["styles", "cheese", "flour", "fermentation"];
+  const knowledgeTabs = ["styles", "cheese", "flour", "fermentation", "compare"];
   const hash = location.hash.replace("#", "");
   if (knowledgeTabs.includes(hash)) {
     activateTab(hash);
@@ -41,6 +41,7 @@ function activateTab(tabId) {
   populateFlourGuide();
   populateCheeseSauceGuide();
   populateFermentationChart();
+  populateCompareTab();
 
   // ── Auto-open style accordion from URL param ──
   // Supports: learn.html?style=new-york#styles
@@ -474,4 +475,157 @@ function populateFermentationChart() {
       </table>
     </div>
   `;
+}
+
+// ── Side-by-Side Recipe Compare ──────────────────────
+function populateCompareTab() {
+  const panel = document.getElementById("tool-compare");
+  if (!panel) return;
+
+  const styleKeys = Object.keys(PIZZA_RECIPES);
+
+  // Build option markup shared across selects
+  const optionsHtml = styleKeys
+    .map((k) => `<option value="${k}">${PIZZA_RECIPES[k].name}</option>`)
+    .join("");
+
+  panel.innerHTML = `
+    <p class="compare-intro">Pick 2\u20133 pizza styles to see their dough formulas, bake temps, and techniques side by side.</p>
+    <div class="compare-picker">
+      <div class="compare-picker-row">
+        <select class="compare-select" id="compare-a">
+          <option value="">Style 1\u2026</option>
+          ${optionsHtml}
+        </select>
+        <select class="compare-select" id="compare-b">
+          <option value="">Style 2\u2026</option>
+          ${optionsHtml}
+        </select>
+        <select class="compare-select" id="compare-c">
+          <option value="">(Optional) Style 3\u2026</option>
+          ${optionsHtml}
+        </select>
+        <button class="btn-compare-go" id="btn-compare-go" disabled>Compare</button>
+      </div>
+    </div>
+    <div id="compare-result"></div>
+  `;
+
+  const selA = panel.querySelector("#compare-a");
+  const selB = panel.querySelector("#compare-b");
+  const selC = panel.querySelector("#compare-c");
+  const btn  = panel.querySelector("#btn-compare-go");
+  const resultEl = panel.querySelector("#compare-result");
+
+  function getSelectedKeys() {
+    return [selA.value, selB.value, selC.value].filter(Boolean);
+  }
+
+  function updateButtonState() {
+    const keys = getSelectedKeys();
+    const unique = new Set(keys);
+    btn.disabled = unique.size < 2;
+  }
+
+  [selA, selB, selC].forEach((sel) => sel.addEventListener("change", updateButtonState));
+
+  btn.addEventListener("click", () => {
+    const keys = [...new Set(getSelectedKeys())];
+    if (keys.length < 2) return;
+    renderComparison(keys, resultEl);
+  });
+}
+
+function renderComparison(keys, container) {
+  const recipes = keys.map((k) => ({ key: k, ...PIZZA_RECIPES[k] }));
+  const colCount = recipes.length;
+
+  // Data rows definition
+  const rows = [
+    {
+      label: "Flour Type",
+      values: recipes.map((r) => r.flour),
+    },
+    {
+      label: "Hydration",
+      values: recipes.map((r) => (r.hydration * 100).toFixed(0) + "%"),
+      raw: recipes.map((r) => r.hydration * 100),
+      diffThreshold: 5,
+    },
+    {
+      label: "Salt %",
+      values: recipes.map((r) => (r.saltPct * 100).toFixed(1) + "%"),
+      raw: recipes.map((r) => r.saltPct * 100),
+      diffThreshold: 1,
+    },
+    {
+      label: "Oil %",
+      values: recipes.map((r) => (r.oilPct * 100).toFixed(1) + "%"),
+      raw: recipes.map((r) => r.oilPct * 100),
+      diffThreshold: 1,
+    },
+    {
+      label: "Sugar %",
+      values: recipes.map((r) => (r.sugarPct * 100).toFixed(1) + "%"),
+      raw: recipes.map((r) => r.sugarPct * 100),
+      diffThreshold: 1,
+    },
+    {
+      label: "Yeast %",
+      values: recipes.map((r) => (r.yeastPct * 100).toFixed(2) + "%"),
+      raw: recipes.map((r) => r.yeastPct * 100),
+      diffThreshold: 0.5,
+    },
+    {
+      label: "Ideal Temp",
+      values: recipes.map((r) =>
+        r.idealTemp ? `${r.idealTemp.min}\u2013${r.idealTemp.max}\u00B0F` : "\u2014"
+      ),
+    },
+    {
+      label: "Bake Time",
+      values: recipes.map((r) => (r.bakeTime ? r.bakeTime.medium : "\u2014")),
+    },
+    {
+      label: '12\u2033 Dough',
+      values: recipes.map((r) => {
+        const s = r.sizes["12"];
+        return s ? s.doughWeight + "g" : "\u2014";
+      }),
+    },
+  ];
+
+  // Check if a row has significant diff
+  function hasDiff(row) {
+    if (!row.raw || !row.diffThreshold) return false;
+    const min = Math.min(...row.raw);
+    const max = Math.max(...row.raw);
+    return max - min >= row.diffThreshold;
+  }
+
+  // Build HTML
+  let html = `<div class="compare-grid-table" style="--col-count:${colCount}">`;
+
+  // Header row
+  html += `<div class="compare-row compare-header-row"><div class="compare-label-cell"></div>`;
+  recipes.forEach((r) => {
+    html += `<div class="compare-header-cell">
+      <strong>${r.name}</strong>
+      <a href="calculator.html?style=${r.key}" class="btn-compare-make">Make This \u2192</a>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // Data rows
+  rows.forEach((row) => {
+    const diffClass = hasDiff(row) ? " compare-diff-highlight" : "";
+    html += `<div class="compare-row${diffClass}"><div class="compare-label-cell">${row.label}</div>`;
+    row.values.forEach((val) => {
+      html += `<div class="compare-value-cell">${val}</div>`;
+    });
+    html += `</div>`;
+  });
+
+  html += `</div>`;
+  container.innerHTML = html;
 }

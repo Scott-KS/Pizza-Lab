@@ -695,6 +695,31 @@
       html += "</div>";
     }
 
+    // Dough Formula — reconstruct gram amounts from baker's percentages
+    if (entry.doughSnapshot && entry.doughSnapshot.doughBallWeight > 0) {
+      const s = entry.doughSnapshot;
+      const totalPct = 1 + (s.hydration || 0) + (s.saltPct || 0) + (s.oilPct || 0) + (s.sugarPct || 0) + (s.yeastPct || 0);
+      const flourG = s.doughBallWeight / totalPct;
+      const ingredients = [
+        { name: "Flour", grams: flourG, pct: 100 },
+        { name: "Water", grams: flourG * (s.hydration || 0), pct: (s.hydration || 0) * 100 },
+        { name: "Salt", grams: flourG * (s.saltPct || 0), pct: (s.saltPct || 0) * 100 },
+        { name: "Oil", grams: flourG * (s.oilPct || 0), pct: (s.oilPct || 0) * 100 },
+        { name: "Sugar", grams: flourG * (s.sugarPct || 0), pct: (s.sugarPct || 0) * 100 },
+        { name: "Yeast", grams: flourG * (s.yeastPct || 0), pct: (s.yeastPct || 0) * 100 },
+      ].filter((ing) => Math.round(ing.grams) > 0);
+      const totalG = ingredients.reduce((sum, ing) => sum + ing.grams, 0);
+
+      html += '<div class="modal-formula-section"><h4>Dough Formula <span class="formula-per-ball">(per ball)</span></h4>';
+      html += '<div class="modal-formula-grid">';
+      ingredients.forEach((ing) => {
+        const pctStr = ing.name === "Flour" ? "100%" : ing.pct < 1 ? `${ing.pct.toFixed(2)}%` : `${ing.pct.toFixed(1)}%`;
+        html += `<div class="formula-row"><span class="formula-ingredient">${ing.name}</span><span class="formula-grams">${Math.round(ing.grams)}g</span><span class="formula-pct">${pctStr}</span></div>`;
+      });
+      html += `<div class="formula-row formula-total"><span class="formula-ingredient">Total</span><span class="formula-grams">${Math.round(totalG)}g</span><span class="formula-pct">${(totalPct * 100).toFixed(0)}%</span></div>`;
+      html += "</div></div>";
+    }
+
     if (entry.notes) {
       html += `<div class="modal-notes"><h4>Notes</h4><p>${escapeHtml(entry.notes)}</p></div>`;
     }
@@ -709,7 +734,7 @@
       <div class="modal-actions">
         ${shareBtnHtml}
         <button class="btn-modal-iterate" data-id="${entry.id}">
-          Use as Starting Point
+          Bake Again ↻
         </button>
         <button class="btn-modal-delete" data-id="${entry.id}">
           Delete

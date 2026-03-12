@@ -5372,3 +5372,155 @@ body[data-page="kitchen"] main {
 }
 .btn-timer-pause:hover { opacity: 0.9; background: var(--clr-primary); }
 .btn-timer-pause:disabled { opacity: 0.5; cursor: default; }
+
+/* ── Journal Detail: Dough Formula Section ─────────── */
+.modal-formula-section { margin-bottom: 1.25rem; }
+.modal-formula-section h4 {
+  font-size: 0.88rem; color: var(--clr-text-light);
+  text-transform: uppercase; letter-spacing: 0.04em;
+  margin-bottom: 0.5rem; font-family: var(--ff-body);
+}
+.formula-per-ball { font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 0.8rem; }
+.modal-formula-grid {
+  border: 1px solid var(--clr-border); border-radius: 6px; overflow: hidden;
+}
+.formula-row {
+  display: grid; grid-template-columns: 1fr auto auto;
+  padding: 0.45rem 0.75rem; border-bottom: 1px solid var(--clr-border);
+  align-items: center; font-size: 0.88rem;
+}
+.formula-row:last-child { border-bottom: none; }
+.formula-total {
+  font-weight: 700; background: var(--clr-section-bg);
+}
+.formula-ingredient { color: var(--clr-text); }
+.formula-grams { font-weight: 600; color: var(--clr-text); text-align: right; min-width: 48px; }
+.formula-pct { font-size: 0.8rem; color: var(--clr-text-light); text-align: right; min-width: 48px; padding-left: 0.75rem; }
+
+/* ── Recipe Compare Tab ─────────────────────────────── */
+.compare-intro {
+  font-size: 0.92rem; color: var(--clr-text-light);
+  margin-bottom: 1rem; line-height: 1.5;
+}
+.compare-picker { margin-bottom: 1.5rem; }
+.compare-picker-row {
+  display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;
+}
+.compare-select {
+  flex: 1 1 160px; min-width: 140px;
+  padding: 0.55rem 0.75rem; font-size: 0.88rem;
+  border: 1px solid var(--clr-border); border-radius: 6px;
+  background: var(--clr-card-bg); color: var(--clr-text);
+  font-family: var(--ff-body);
+}
+.btn-compare-go {
+  padding: 0.55rem 1.25rem; font-size: 0.88rem; font-weight: 600;
+  border: none; border-radius: 6px; cursor: pointer;
+  background: var(--clr-primary); color: #fff;
+  font-family: var(--ff-body); transition: opacity 0.2s;
+}
+.btn-compare-go:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-compare-go:not(:disabled):hover { opacity: 0.88; }
+
+.compare-grid-table {
+  display: grid;
+  grid-template-columns: 110px repeat(var(--col-count), 1fr);
+  border: 1px solid var(--clr-border); border-radius: 8px;
+  overflow: hidden; background: var(--clr-card-bg);
+}
+.compare-row {
+  display: contents;
+}
+.compare-header-row .compare-label-cell,
+.compare-header-row .compare-header-cell {
+  background: var(--clr-section-bg);
+  border-bottom: 2px solid var(--clr-border);
+  padding: 0.65rem 0.75rem;
+}
+.compare-header-cell {
+  display: flex; flex-direction: column; gap: 0.35rem;
+  font-size: 0.92rem;
+}
+.compare-header-cell strong { font-size: 0.95rem; }
+.btn-compare-make {
+  display: inline-block; font-size: 0.75rem; font-weight: 600;
+  color: var(--clr-primary); text-decoration: none;
+  border: 1px solid var(--clr-primary); border-radius: 4px;
+  padding: 0.2rem 0.5rem; width: fit-content;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-compare-make:hover {
+  background: var(--clr-primary); color: #fff;
+}
+.compare-label-cell {
+  font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.03em; color: var(--clr-text-light);
+  padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--clr-border);
+  display: flex; align-items: center;
+}
+.compare-value-cell {
+  font-size: 0.88rem; color: var(--clr-text);
+  padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--clr-border);
+  display: flex; align-items: center;
+}
+.compare-diff-highlight .compare-value-cell {
+  background: rgba(var(--clr-primary-rgb, 200, 80, 40), 0.10);
+}
+
+@media (max-width: 600px) {
+  .compare-picker-row { flex-direction: column; }
+  .compare-select { flex: 1 1 100%; }
+  .compare-grid-table { grid-template-columns: 90px repeat(var(--col-count), 1fr); font-size: 0.82rem; }
+  .compare-label-cell { font-size: 0.68rem; padding: 0.45rem 0.5rem; }
+  .compare-value-cell { font-size: 0.82rem; padding: 0.45rem 0.5rem; }
+}
+
+/* ── Schedule Visual Overview Bar ───────────────────── */
+.sched-visual-bar { margin-bottom: 1.25rem; }
+.visual-bar-track {
+  display: flex; height: 48px; border-radius: 8px; overflow: hidden;
+  background: var(--clr-section-bg); border: 1px solid var(--clr-border);
+}
+.bar-block {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; min-width: 32px; border-right: 1px solid rgba(255,255,255,0.15);
+  transition: filter 0.2s; padding: 0 4px; overflow: hidden;
+}
+.bar-block:last-child { border-right: none; }
+.bar-block:hover { filter: brightness(1.1); }
+
+.bar-block.step-upcoming {
+  background: var(--clr-card-bg); color: var(--clr-text-light);
+  border-right-color: var(--clr-border);
+}
+.bar-block.step-next {
+  background: var(--clr-primary); color: #fff;
+}
+.bar-block.step-checked {
+  background: #27ae60; color: #fff;
+}
+.bar-block.step-done {
+  background: var(--clr-border); color: var(--clr-text-light);
+}
+
+.bar-block-label {
+  font-size: 0.68rem; font-weight: 700; line-height: 1.1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 100%;
+}
+.bar-block-time {
+  font-size: 0.6rem; opacity: 0.8;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .visual-bar-track { flex-direction: column; height: auto; }
+  .bar-block {
+    flex-direction: row; justify-content: space-between;
+    height: 32px; min-width: unset; padding: 0 0.75rem;
+    border-right: none; border-bottom: 1px solid rgba(255,255,255,0.15);
+  }
+  .bar-block:last-child { border-bottom: none; }
+  .bar-block-label { font-size: 0.72rem; }
+  .bar-block-time { font-size: 0.65rem; }
+}
