@@ -61,8 +61,8 @@
 }
 
 [data-theme="dark"] .nav-logo img,
-[data-theme="dark"] .footer-logo img {
-  filter: brightness(0) invert(1);
+[data-theme="dark"] img.footer-logo {
+  content: url("assets/logos/logo-horizontal-light.svg");
 }
 
 [data-theme="dark"] input,

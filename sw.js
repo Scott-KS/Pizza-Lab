@@ -1,5 +1,5 @@
 /*  The Pie Lab — Service Worker  */
-const CACHE_NAME = "pielab-v4";
+const CACHE_NAME = "pielab-v5";
 
 /* ── Shell assets (app skeleton — always cached) ── */
 const APP_SHELL = [
@@ -10,7 +10,7 @@ const APP_SHELL = [
   "/journal.html",
   "/kitchen.html",
   "/learn.html",
-  "/style.css?v=9",
+  "/style.css?v=10",
   "/js/premium.js",
   "/js/toolkit.js",
   "/js/calculator.js",
@@ -40,6 +40,7 @@ const IMAGE_ASSETS = [
   "/Images/Ohio-Valley.webp",
   "/assets/logos/logo-stacked.svg",
   "/assets/logos/logo-stacked-light.svg",
+  "/assets/logos/logo-horizontal-light.svg",
   "/assets/logos/logo-watermark.png",
 ];
 
