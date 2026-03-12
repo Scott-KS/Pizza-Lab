@@ -90,6 +90,74 @@
     populateOvenSelect(ovenSelect);
   }
 
+  // ── Journal Stats Dashboard ─────────────────────────
+  const statsSection = document.getElementById("journal-stats-section");
+  const statsGrid = document.getElementById("stats-grid");
+  const statsToggle = document.getElementById("stats-toggle");
+  const statsArrow = document.getElementById("stats-toggle-arrow");
+
+  function renderStats() {
+    if (!statsSection || !statsGrid) return;
+    const entries = PieLabJournal.getAllEntries();
+    if (entries.length < 2) { statsSection.classList.add("hidden"); return; }
+    statsSection.classList.remove("hidden");
+
+    // Total Bakes
+    const total = entries.length;
+
+    // Favorite Style
+    const styleCounts = {};
+    entries.forEach(e => { styleCounts[e.styleKey] = (styleCounts[e.styleKey] || 0) + 1; });
+    const favKey = Object.keys(styleCounts).sort((a, b) => styleCounts[b] - styleCounts[a])[0];
+    const favName = (PIZZA_RECIPES[favKey] || {}).name || favKey;
+    const favCount = styleCounts[favKey];
+
+    // Average Rating
+    const rated = entries.filter(e => e.rating > 0);
+    const avgRating = rated.length ? (rated.reduce((s, e) => s + e.rating, 0) / rated.length) : 0;
+
+    // Best Rated Bake
+    const best = rated.length ? rated.reduce((a, b) => (b.rating > a.rating || (b.rating === a.rating && b.date > a.date)) ? b : a) : null;
+    const bestLabel = best ? (best.bakeName || best.date || "—") : "—";
+
+    // Bakes This Month
+    const now = new Date();
+    const monthPrefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const thisMonth = entries.filter(e => e.date && e.date.startsWith(monthPrefix)).length;
+
+    // Most Common Oven
+    const ovenCounts = {};
+    entries.forEach(e => { if (e.ovenType) ovenCounts[e.ovenType] = (ovenCounts[e.ovenType] || 0) + 1; });
+    const topOven = Object.keys(ovenCounts).sort((a, b) => ovenCounts[b] - ovenCounts[a])[0] || "";
+    const ovenLabel = (typeof OVEN_TYPES !== "undefined" && OVEN_TYPES[topOven]) ? OVEN_TYPES[topOven].replace("Home Oven + ", "") : topOven;
+
+    const cards = [
+      { value: total, label: "Total Bakes" },
+      { value: favName, label: `Favorite (×${favCount})` },
+      { value: avgRating ? avgRating.toFixed(1) + " ★" : "—", label: "Avg Rating" },
+      { value: best ? best.rating + " ★" : "—", label: bestLabel },
+      { value: thisMonth, label: "This Month" },
+      { value: ovenLabel || "—", label: "Top Oven" },
+    ];
+
+    statsGrid.innerHTML = cards.map(c =>
+      `<div class="stat-card"><div class="stat-value">${c.value}</div><div class="stat-label">${c.label}</div></div>`
+    ).join("");
+
+    // Restore collapse state
+    const collapsed = localStorage.getItem("pielab-stats-open") === "0";
+    statsGrid.classList.toggle("collapsed", collapsed);
+    statsArrow.style.transform = collapsed ? "rotate(0deg)" : "rotate(180deg)";
+  }
+
+  if (statsToggle) {
+    statsToggle.addEventListener("click", () => {
+      const isCollapsed = statsGrid.classList.toggle("collapsed");
+      statsArrow.style.transform = isCollapsed ? "rotate(0deg)" : "rotate(180deg)";
+      localStorage.setItem("pielab-stats-open", isCollapsed ? "0" : "1");
+    });
+  }
+
   // ── Star rating — click to set, hover to preview ──
   stars.forEach((star) => {
     star.addEventListener("click", () => {
@@ -349,6 +417,7 @@
     pendingDerivedFromId = null;
     hideForm();
     renderEntries();
+    renderStats();
     updateCompareButton();
     updateStorageDisplay();
   });
@@ -687,6 +756,7 @@
         PieLabJournal.deleteEntry(e.target.dataset.id);
         modalOverlay.classList.add("hidden");
         renderEntries();
+        renderStats();
         updateCompareButton();
         updateStorageDisplay();
       }
@@ -1015,6 +1085,7 @@
   populateDropdowns();
   populateOvenDropdown();
   renderEntries();
+  renderStats();
   updateCompareButton();
   updateStorageDisplay();
 })();

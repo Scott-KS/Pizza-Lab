@@ -91,6 +91,18 @@ function nearestFraction(decimal) {
   return best.display;
 }
 
+function showScalingMemoryIndicator(styleName) {
+  const el = document.getElementById("scaling-memory-indicator");
+  if (!el) return;
+  el.textContent = `Restored from your last ${styleName} bake`;
+  el.classList.remove("hidden", "fade-out");
+  el.classList.add("fade-in");
+  setTimeout(() => {
+    el.classList.add("fade-out");
+    setTimeout(() => { el.classList.add("hidden"); el.classList.remove("fade-in", "fade-out"); }, 500);
+  }, 3000);
+}
+
 function findVolumeDensity(name) {
   if (VOLUME_DENSITIES[name]) return VOLUME_DENSITIES[name];
   for (const key of VOLUME_KEYS) {
@@ -278,6 +290,29 @@ document.addEventListener("DOMContentLoaded", () => {
       sizeSelect.value = keys.includes("12") ? "12" : keys[0];
     }
 
+    // Restore scaling memory for this style (skip if explicit load/style URL)
+    if (!urlParams.get("load") && !urlParams.get("style")) {
+      try {
+        const mem = JSON.parse(localStorage.getItem("pielab-scaling-memory") || "{}");
+        const saved = mem[typeSelectEl.value];
+        if (saved) {
+          if (saved.sizeKey && sizeSelect.querySelector(`option[value="${saved.sizeKey}"]`)) {
+            sizeSelect.value = saved.sizeKey;
+          }
+          if (saved.numPizzas) {
+            document.getElementById("num-pizzas").value = saved.numPizzas;
+          }
+          // Restore oven only if no preferred oven in kitchen profile
+          const profile = (typeof PieLabProfile !== "undefined") ? PieLabProfile.getProfile() : {};
+          const hasPreferred = profile.preferredOven && ovenSelect.querySelector(`option[value="${profile.preferredOven}"]`);
+          if (saved.ovenType && !hasPreferred && ovenSelect.querySelector(`option[value="${saved.ovenType}"]`)) {
+            ovenSelect.value = saved.ovenType;
+          }
+          showScalingMemoryIndicator(recipe.name);
+        }
+      } catch { /* ignore */ }
+    }
+
     // Refresh ferment options when style changes in plan mode
     if (currentMode === "plan" && eatTimeInput.value) updateFermentOptions();
   });
@@ -458,6 +493,13 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("pielab-last-calc", JSON.stringify(lastCalcData));
       localStorage.setItem("pielab-pending-bake", JSON.stringify(lastCalcData));
     } catch { /* ignore storage errors */ }
+
+    // Save scaling memory for this style
+    try {
+      const mem = JSON.parse(localStorage.getItem("pielab-scaling-memory") || "{}");
+      mem[type] = { sizeKey, numPizzas, ovenType };
+      localStorage.setItem("pielab-scaling-memory", JSON.stringify(mem));
+    } catch { /* ignore */ }
 
     // ── Plan preview (Plan My Bake mode) ──
     const planPreviewEl = document.getElementById("plan-preview");
@@ -1094,5 +1136,196 @@ document.addEventListener("DOMContentLoaded", () => {
       PieLabProfile.setStyleLevel(styleKey, level);
     }
   });
+
+  // ══════════════════════════════════════════════════════
+  //  BAKE TIMER
+  // ══════════════════════════════════════════════════════
+  const RING_CIRCUMFERENCE = 2 * Math.PI * 88; // matches SVG r=88
+  const timerOverlay = document.getElementById("timer-overlay");
+  const timerTimeEl  = document.getElementById("timer-time");
+  const timerStatusEl = document.getElementById("timer-status");
+  const timerRingFg  = document.getElementById("timer-ring-fg");
+  const timerPauseBtn = document.getElementById("timer-pause");
+
+  if (timerRingFg) {
+    timerRingFg.style.strokeDasharray = RING_CIRCUMFERENCE;
+    timerRingFg.style.strokeDashoffset = 0;
+  }
+
+  const timer = { running: false, paused: false, total: 0, remaining: 0, startedAt: 0, pauseOffset: 0, intervalId: null };
+
+  function parseBakeTimeString(str) {
+    const m = str.match(/(\d+)[–\u2013-](\d+)\s*(seconds?|minutes?)/i);
+    if (!m) return 300; // fallback 5 min
+    const lo = parseInt(m[1], 10);
+    const hi = parseInt(m[2], 10);
+    const multiplier = m[3].toLowerCase().startsWith("minute") ? 60 : 1;
+    return Math.round(((lo + hi) / 2) * multiplier);
+  }
+
+  function formatTime(secs) {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  }
+
+  function updateTimerDisplay() {
+    const secs = Math.max(0, timer.remaining);
+    timerTimeEl.textContent = formatTime(secs);
+    const frac = timer.total > 0 ? secs / timer.total : 0;
+    timerRingFg.style.strokeDashoffset = RING_CIRCUMFERENCE * (1 - frac);
+  }
+
+  function saveTimerState() {
+    try {
+      localStorage.setItem("pielab-bake-timer", JSON.stringify({
+        total: timer.total, startedAt: timer.startedAt, pauseOffset: timer.pauseOffset,
+        paused: timer.paused, pausedAt: timer.paused ? Date.now() : 0
+      }));
+    } catch { /* ignore */ }
+  }
+
+  function clearTimerState() {
+    localStorage.removeItem("pielab-bake-timer");
+  }
+
+  function playTimerSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [0, 0.3, 0.6].forEach(offset => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 880;
+        gain.gain.value = 0.3;
+        osc.start(ctx.currentTime + offset);
+        osc.stop(ctx.currentTime + offset + 0.15);
+      });
+    } catch { /* Web Audio not available */ }
+  }
+
+  function timerComplete() {
+    timer.running = false;
+    clearInterval(timer.intervalId);
+    timer.remaining = 0;
+    updateTimerDisplay();
+    clearTimerState();
+    timerPauseBtn.textContent = "Done!";
+    timerPauseBtn.disabled = true;
+    playTimerSound();
+    if (typeof PieNotifications !== "undefined") {
+      PieNotifications.requestPermission().then(ok => {
+        if (ok) PieNotifications.schedule({ id: 9999, title: "Pizza is done! 🍕", body: "Your bake timer has finished.", at: new Date(Date.now() + 100) });
+      });
+    }
+  }
+
+  function timerTick() {
+    if (timer.paused) return;
+    const elapsed = (Date.now() - timer.startedAt - timer.pauseOffset) / 1000;
+    timer.remaining = Math.round(timer.total - elapsed);
+    if (timer.remaining <= 0) { timerComplete(); return; }
+    updateTimerDisplay();
+    // Save state every 5 seconds
+    if (timer.remaining % 5 === 0) saveTimerState();
+  }
+
+  function startTimer(seconds) {
+    timer.total = seconds;
+    timer.remaining = seconds;
+    timer.startedAt = Date.now();
+    timer.pauseOffset = 0;
+    timer.running = true;
+    timer.paused = false;
+    timerPauseBtn.textContent = "Pause";
+    timerPauseBtn.disabled = false;
+    timerStatusEl.textContent = `Total: ${formatTime(seconds)}`;
+    updateTimerDisplay();
+    saveTimerState();
+    clearInterval(timer.intervalId);
+    timer.intervalId = setInterval(timerTick, 1000);
+    timerOverlay.classList.remove("hidden");
+  }
+
+  function resumeTimer(saved) {
+    timer.total = saved.total;
+    timer.startedAt = saved.startedAt;
+    timer.pauseOffset = saved.pauseOffset || 0;
+    timer.paused = saved.paused || false;
+    if (timer.paused && saved.pausedAt) {
+      // Add time spent while page was closed during pause
+      timer.pauseOffset += Date.now() - saved.pausedAt;
+    }
+    const elapsed = (Date.now() - timer.startedAt - timer.pauseOffset) / 1000;
+    timer.remaining = Math.round(timer.total - elapsed);
+    if (timer.remaining <= 0) { timerComplete(); timerOverlay.classList.remove("hidden"); return; }
+    timer.running = true;
+    timerPauseBtn.textContent = timer.paused ? "Resume" : "Pause";
+    timerPauseBtn.disabled = false;
+    timerStatusEl.textContent = `Total: ${formatTime(timer.total)}`;
+    updateTimerDisplay();
+    if (!timer.paused) {
+      clearInterval(timer.intervalId);
+      timer.intervalId = setInterval(timerTick, 1000);
+    }
+    timerOverlay.classList.remove("hidden");
+  }
+
+  // Start button
+  document.getElementById("btn-start-timer").addEventListener("click", () => {
+    const instrEl = document.getElementById("baking-instructions");
+    const bakeTimeText = instrEl ? instrEl.textContent : "";
+    const seconds = parseBakeTimeString(bakeTimeText);
+    startTimer(seconds);
+  });
+
+  // Pause / Resume
+  timerPauseBtn.addEventListener("click", () => {
+    if (!timer.running) return;
+    if (timer.paused) {
+      timer.pauseOffset += Date.now() - timer._pausedAt;
+      timer.paused = false;
+      timerPauseBtn.textContent = "Pause";
+      timer.intervalId = setInterval(timerTick, 1000);
+    } else {
+      timer.paused = true;
+      timer._pausedAt = Date.now();
+      timerPauseBtn.textContent = "Resume";
+      clearInterval(timer.intervalId);
+    }
+    saveTimerState();
+  });
+
+  // ±30s adjustments
+  document.getElementById("timer-plus").addEventListener("click", () => {
+    if (!timer.running) return;
+    timer.total += 30;
+    timerStatusEl.textContent = `Total: ${formatTime(timer.total)}`;
+    timerTick();
+    saveTimerState();
+  });
+  document.getElementById("timer-minus").addEventListener("click", () => {
+    if (!timer.running) return;
+    timer.total = Math.max(timer.total - 30, 1);
+    timerStatusEl.textContent = `Total: ${formatTime(timer.total)}`;
+    timerTick();
+    if (timer.remaining <= 0) timerComplete();
+    saveTimerState();
+  });
+
+  // Cancel
+  document.getElementById("timer-cancel").addEventListener("click", () => {
+    timer.running = false;
+    timer.paused = false;
+    clearInterval(timer.intervalId);
+    clearTimerState();
+    timerOverlay.classList.add("hidden");
+  });
+
+  // Resume timer on page load
+  try {
+    const saved = JSON.parse(localStorage.getItem("pielab-bake-timer"));
+    if (saved && saved.startedAt) resumeTimer(saved);
+  } catch { /* ignore */ }
 
 });

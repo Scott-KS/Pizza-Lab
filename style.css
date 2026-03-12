@@ -5188,3 +5188,187 @@ body[data-page="kitchen"] main {
     color: #333;
   }
 }
+
+/* ── Scaling Memory Indicator ─────────────────────── */
+.scaling-memory-indicator {
+  font-size: 0.82rem;
+  color: var(--clr-accent);
+  padding: 0.3rem 0;
+  font-style: italic;
+  transition: opacity 0.5s ease;
+}
+.scaling-memory-indicator.fade-in { opacity: 1; }
+.scaling-memory-indicator.fade-out { opacity: 0; }
+.scaling-memory-indicator.hidden { display: none; }
+
+/* ── Journal Stats Dashboard ──────────────────────── */
+.journal-stats-section {
+  margin-bottom: 1.25rem;
+}
+.stats-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--clr-section-bg);
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--clr-text);
+  transition: background 0.2s;
+}
+.stats-toggle:hover { background: var(--clr-card); }
+.stats-toggle-arrow {
+  transition: transform 0.2s;
+  font-size: 0.75rem;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+.stats-grid.collapsed { display: none; }
+.stat-card {
+  background: var(--clr-card);
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  padding: 0.85rem 0.5rem;
+  text-align: center;
+}
+.stat-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--clr-primary);
+  font-family: var(--font-display);
+  line-height: 1.2;
+}
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--clr-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-top: 0.2rem;
+}
+@media (max-width: 600px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Bake Timer ───────────────────────────────────── */
+.btn-start-timer {
+  margin-top: 1rem;
+  background: var(--clr-accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-start-timer:hover { opacity: 0.85; }
+
+.timer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+}
+.timer-overlay.hidden { display: none; }
+
+.timer-content {
+  background: var(--clr-card);
+  border-radius: var(--radius);
+  padding: 2rem;
+  max-width: 340px;
+  width: 90%;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.timer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.timer-header h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--clr-text);
+}
+.timer-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--clr-text-light);
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+}
+.timer-close:hover { color: var(--clr-primary); }
+
+.timer-display {
+  position: relative;
+  display: inline-block;
+  margin: 0 auto 1rem;
+}
+.timer-ring-bg {
+  stroke: var(--clr-border);
+}
+.timer-ring-fg {
+  stroke: var(--clr-primary);
+  transition: stroke-dashoffset 0.3s ease;
+}
+.timer-time {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  color: var(--clr-text);
+  letter-spacing: 1px;
+}
+.timer-status {
+  font-size: 0.82rem;
+  color: var(--clr-text-light);
+  margin-bottom: 1.25rem;
+}
+.timer-controls {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+.btn-timer-adjust,
+.btn-timer-pause {
+  border: 1px solid var(--clr-border);
+  background: var(--clr-section-bg);
+  color: var(--clr-text);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-timer-adjust:hover,
+.btn-timer-pause:hover { background: var(--clr-card); }
+.btn-timer-pause {
+  background: var(--clr-primary);
+  color: #fff;
+  border-color: var(--clr-primary);
+  min-width: 5rem;
+}
+.btn-timer-pause:hover { opacity: 0.9; background: var(--clr-primary); }
+.btn-timer-pause:disabled { opacity: 0.5; cursor: default; }

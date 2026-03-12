@@ -92,6 +92,8 @@
           <select id="calc-oven-type" required></select>
         </div>
 
+        <div id="scaling-memory-indicator" class="scaling-memory-indicator hidden"></div>
+
         <div id="custom-settings-editor" class="custom-settings-editor hidden">
           <h3>Custom Settings <span id="custom-style-label"></span></h3>
           <div class="settings-grid">
@@ -186,6 +188,7 @@
       <div class="instructions-section">
         <h3>Baking Instructions</h3>
         <div id="baking-instructions"></div>
+        <button class="btn-start-timer" id="btn-start-timer" type="button">⏱ Start Bake Timer</button>
       </div>
 
       <div class="tips-section">
@@ -233,6 +236,30 @@
     </section>
   </main>
 
+  <!-- Bake Timer Overlay -->
+  <div class="timer-overlay hidden" id="timer-overlay">
+    <div class="timer-content">
+      <div class="timer-header">
+        <h3>Bake Timer</h3>
+        <button class="timer-close" id="timer-cancel" type="button" aria-label="Cancel timer">&times;</button>
+      </div>
+      <div class="timer-display">
+        <svg class="timer-ring" viewBox="0 0 200 200" width="200" height="200">
+          <circle class="timer-ring-bg" cx="100" cy="100" r="88" fill="none" stroke-width="8" />
+          <circle class="timer-ring-fg" id="timer-ring-fg" cx="100" cy="100" r="88" fill="none" stroke-width="8"
+            stroke-linecap="round" transform="rotate(-90 100 100)" />
+        </svg>
+        <span class="timer-time" id="timer-time">00:00</span>
+      </div>
+      <div class="timer-status" id="timer-status"></div>
+      <div class="timer-controls">
+        <button class="btn-timer-adjust" id="timer-minus" type="button">−30s</button>
+        <button class="btn-timer-pause" id="timer-pause" type="button">Pause</button>
+        <button class="btn-timer-adjust" id="timer-plus" type="button">+30s</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Mobile Tab Bar -->
   <nav class="mobile-tab-bar">
     <a href="calculator.html" class="tab-item" data-page="calculator">
@@ -271,6 +298,7 @@
   <script src="js/nav.js?v=3"></script>
   <script src="js/user-profile.js?v=2"></script>
   <script src="scheduler-data.js?v=3"></script>
-  <script src="js/calculator.js?v=6"></script>
+  <script src="js/pie-notifications.js"></script>
+  <script src="js/calculator.js?v=7"></script>
 </body>
 </html>
