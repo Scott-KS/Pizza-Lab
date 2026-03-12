@@ -2,7 +2,7 @@
   "name": "The Pie Lab",
   "short_name": "Pie Lab",
   "description": "Pizza recipe calculator, dough scheduler, and baking journal.",
-  "start_url": "/index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#faf7f2",
   "theme_color": "#c0392b",

@@ -1,47 +1,50 @@
 /*  The Pie Lab — Service Worker  */
 const CACHE_NAME = "pielab-v5";
 
+/* ── Derive base path so caching works on both localhost and /Pizza-Lab/ ── */
+const BASE = self.registration.scope;
+
 /* ── Shell assets (app skeleton — always cached) ── */
-const APP_SHELL = [
-  "/",
-  "/index.html",
-  "/calculator.html",
-  "/schedule.html",
-  "/journal.html",
-  "/kitchen.html",
-  "/learn.html",
-  "/style.css?v=10",
-  "/js/premium.js",
-  "/js/toolkit.js",
-  "/js/calculator.js",
-  "/js/scheduler.js",
-  "/js/journal-ui.js",
-  "/js/kitchen.js",
-  "/js/knowledge.js",
-  "/js/nav.js",
-  "/js/carousel.js",
-  "/js/user-profile.js",
-  "/js/pie-notifications.js",
-  "/js/capacitor-init.js",
-  "/js/vendor/html2canvas.min.js",
-  "/assets/logos/favicon-32.svg",
-  "/assets/logos/logo-monogram-512.svg",
-  "/assets/logos/logo-horizontal.svg",
-  "/manifest.json",
+const APP_SHELL_PATHS = [
+  "",
+  "index.html",
+  "calculator.html",
+  "schedule.html",
+  "journal.html",
+  "kitchen.html",
+  "learn.html",
+  "style.css?v=10",
+  "js/premium.js",
+  "js/toolkit.js",
+  "js/calculator.js",
+  "js/scheduler.js",
+  "js/journal-ui.js",
+  "js/kitchen.js",
+  "js/knowledge.js",
+  "js/nav.js",
+  "js/carousel.js",
+  "js/user-profile.js",
+  "js/pie-notifications.js",
+  "js/capacitor-init.js",
+  "js/vendor/html2canvas.min.js",
+  "assets/logos/favicon-32.svg",
+  "assets/logos/logo-monogram-512.svg",
+  "assets/logos/logo-horizontal.svg",
+  "manifest.json",
 ];
 
 /* ── Images (cached on first load, not blocking install) ── */
-const IMAGE_ASSETS = [
-  "/Images/Neapolitan.webp",
-  "/Images/New-York.webp",
-  "/Images/Grandma.webp",
-  "/Images/Chicago-Tavern.webp",
-  "/Images/Sicilian.webp",
-  "/Images/Ohio-Valley.webp",
-  "/assets/logos/logo-stacked.svg",
-  "/assets/logos/logo-stacked-light.svg",
-  "/assets/logos/logo-horizontal-light.svg",
-  "/assets/logos/logo-watermark.png",
+const IMAGE_PATHS = [
+  "Images/Neapolitan.webp",
+  "Images/New-York.webp",
+  "Images/Grandma.webp",
+  "Images/Chicago-Tavern.webp",
+  "Images/Sicilian.webp",
+  "Images/Ohio-Valley.webp",
+  "assets/logos/logo-stacked.svg",
+  "assets/logos/logo-stacked-light.svg",
+  "assets/logos/logo-horizontal-light.svg",
+  "assets/logos/logo-watermark.png",
 ];
 
 /* ── Install: pre-cache the app shell ── */
@@ -49,11 +52,11 @@ self.addEventListener("install", (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       // Cache images in background (don't block install)
-      IMAGE_ASSETS.forEach((url) =>
-        cache.add(url).catch(() => {/* non-critical */})
+      IMAGE_PATHS.forEach((p) =>
+        cache.add(BASE + p).catch(() => {/* non-critical */})
       );
       // App shell must succeed
-      return cache.addAll(APP_SHELL);
+      return cache.addAll(APP_SHELL_PATHS.map((p) => BASE + p));
     })
   );
   self.skipWaiting();
