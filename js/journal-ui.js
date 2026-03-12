@@ -15,6 +15,12 @@
   const modalOverlay = document.getElementById("journal-detail-modal");
   const modalBody = document.getElementById("modal-body");
   const modalClose = document.getElementById("modal-close");
+  const searchInput = document.getElementById("journal-search-input");
+  const sortSelect = document.getElementById("journal-sort-select");
+
+  // Restore saved sort preference
+  const savedSort = localStorage.getItem("pielab-journal-sort");
+  if (savedSort && sortSelect) sortSelect.value = savedSort;
 
   // Star rating state
   let currentRating = 0;
@@ -328,7 +334,7 @@
   // ── Render entries ────────────────────────────────
   function renderEntries() {
     const filter = filterSelect.value;
-    const entries = filter === "all"
+    let entries = filter === "all"
       ? PieLabJournal.getAllEntries()
       : PieLabJournal.getEntriesByStyle(filter);
 
@@ -337,8 +343,51 @@
     const allEntries = PieLabJournal.getAllEntries();
     if (toolbar) toolbar.classList.toggle("hidden", !allEntries || allEntries.length === 0);
 
-    if (!entries || entries.length === 0) {
+    if (!allEntries || allEntries.length === 0) {
       entriesContainer.innerHTML = buildEmptyState();
+      return;
+    }
+
+    // ── Text search filter ──────────────────────────
+    const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : "";
+    if (searchTerm) {
+      entries = entries.filter((entry) => {
+        const bakeName = (entry.bakeName || "").toLowerCase();
+        const styleName = (entry.styleName || "").toLowerCase();
+        const notes = (entry.notes || "").toLowerCase();
+        return bakeName.includes(searchTerm) || styleName.includes(searchTerm) || notes.includes(searchTerm);
+      });
+    }
+
+    // ── Sort ────────────────────────────────────────
+    const sortValue = sortSelect ? sortSelect.value : "newest";
+    entries.sort((a, b) => {
+      switch (sortValue) {
+        case "oldest":
+          return (a.date || "").localeCompare(b.date || "");
+        case "newest":
+          return (b.date || "").localeCompare(a.date || "");
+        case "hydration-high": {
+          const aH = a.doughSnapshot ? a.doughSnapshot.hydration : -1;
+          const bH = b.doughSnapshot ? b.doughSnapshot.hydration : -1;
+          return bH - aH;
+        }
+        case "hydration-low": {
+          const aH = a.doughSnapshot ? a.doughSnapshot.hydration : Infinity;
+          const bH = b.doughSnapshot ? b.doughSnapshot.hydration : Infinity;
+          return aH - bH;
+        }
+        case "rating-high":
+          return (b.rating || 0) - (a.rating || 0);
+        case "rating-low":
+          return (a.rating || 0) - (b.rating || 0);
+        default:
+          return 0;
+      }
+    });
+
+    if (!entries || entries.length === 0) {
+      entriesContainer.innerHTML = '<div class="journal-no-results">No matching bakes found.</div>';
       return;
     }
 
@@ -423,6 +472,23 @@
     updateCompareButton();
     comparisonEl.classList.add("hidden");
   });
+
+  // Search (debounced)
+  let searchTimer = null;
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => renderEntries(), 300);
+    });
+  }
+
+  // Sort
+  if (sortSelect) {
+    sortSelect.addEventListener("change", () => {
+      localStorage.setItem("pielab-journal-sort", sortSelect.value);
+      renderEntries();
+    });
+  }
 
   const compareHint = document.getElementById("compare-hint");
 

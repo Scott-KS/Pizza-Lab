@@ -10,7 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=6" />
+  <script>(function(){var t=localStorage.getItem("pielab-theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches))document.documentElement.dataset.theme="dark";})()</script>
+  <link rel="stylesheet" href="style.css?v=7" />
 </head>
 <body data-page="journal">
 
@@ -44,10 +45,24 @@
       </div>
 
       <div class="journal-toolbar">
+        <div class="journal-search">
+          <input type="search" id="journal-search-input" placeholder="Search bakes…" aria-label="Search journal entries" />
+        </div>
         <div class="journal-filter">
           <label for="journal-style-filter">Filter by style:</label>
           <select id="journal-style-filter">
             <option value="all">All Styles</option>
+          </select>
+        </div>
+        <div class="journal-sort">
+          <label for="journal-sort-select">Sort:</label>
+          <select id="journal-sort-select">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="hydration-high">Highest Hydration</option>
+            <option value="hydration-low">Lowest Hydration</option>
+            <option value="rating-high">Highest Rating</option>
+            <option value="rating-low">Lowest Rating</option>
           </select>
         </div>
         <button class="btn-compare" id="btn-compare" disabled>Compare</button>
@@ -184,6 +199,6 @@
   <script src="journal.js?v=3"></script>
   <script src="js/nav.js?v=3"></script>
   <script src="js/user-profile.js?v=2"></script>
-  <script src="js/journal-ui.js?v=6"></script>
+  <script src="js/journal-ui.js?v=7"></script>
 </body>
 </html>

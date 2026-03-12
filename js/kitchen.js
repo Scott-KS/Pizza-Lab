@@ -258,4 +258,112 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     }, 2500);
   });
+
+  // ── Theme Toggle ──────────────────────────────────
+  const themeGrp = document.getElementById("k-theme");
+  const savedTheme = localStorage.getItem("pielab-theme");
+
+  // Highlight active button: null → "system"
+  const activeTheme = savedTheme || "system";
+  themeGrp.querySelectorAll(".toggle-btn").forEach((btn) => {
+    btn.classList.toggle("selected", btn.dataset.value === activeTheme);
+  });
+
+  function applyTheme(choice) {
+    if (choice === "dark") {
+      document.documentElement.dataset.theme = "dark";
+    } else if (choice === "light") {
+      document.documentElement.dataset.theme = "light";
+    } else {
+      // System preference
+      const prefersDark = matchMedia("(prefers-color-scheme:dark)").matches;
+      document.documentElement.dataset.theme = prefersDark ? "dark" : "light";
+    }
+  }
+
+  themeGrp.addEventListener("click", (e) => {
+    const btn = e.target.closest(".toggle-btn");
+    if (!btn) return;
+    themeGrp.querySelectorAll(".toggle-btn").forEach((b) => b.classList.remove("selected"));
+    btn.classList.add("selected");
+    const value = btn.dataset.value;
+    if (value === "system") {
+      localStorage.removeItem("pielab-theme");
+    } else {
+      localStorage.setItem("pielab-theme", value);
+    }
+    applyTheme(value);
+  });
+
+  // ── Data Export / Import ──────────────────────────
+  const BACKUP_KEYS = [
+    "pielab-journal",
+    "pielab-personal-settings",
+    "pielab-user-profile",
+    "pielab-style-levels",
+  ];
+
+  document.getElementById("btn-export").addEventListener("click", () => {
+    const backup = { _version: 1, _exportedAt: new Date().toISOString() };
+    BACKUP_KEYS.forEach((key) => {
+      const raw = localStorage.getItem(key);
+      backup[key] = raw ? JSON.parse(raw) : null;
+    });
+
+    const json = JSON.stringify(backup, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
+    const dateStr = new Date().toISOString().split("T")[0];
+    const filename = "pielab-backup-" + dateStr + ".json";
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+    const status = document.getElementById("export-status");
+    status.textContent = "Exported " + filename + " (" + sizeMB + " MB)";
+    status.classList.remove("hidden");
+  });
+
+  document.getElementById("import-file").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const data = JSON.parse(evt.target.result);
+        const hasValidKey = BACKUP_KEYS.some((key) => key in data);
+        if (!hasValidKey) {
+          alert("This file doesn\u2019t appear to be a valid Pie Lab backup.");
+          return;
+        }
+        const journalCount = Array.isArray(data["pielab-journal"])
+          ? data["pielab-journal"].length
+          : 0;
+        const msg =
+          "This will replace your current data with:\n" +
+          "- " + journalCount + " journal entries\n" +
+          "- Kitchen settings & profile\n\n" +
+          "Your current data will be overwritten. Continue?";
+        if (!confirm(msg)) return;
+
+        BACKUP_KEYS.forEach((key) => {
+          if (data[key] != null) {
+            localStorage.setItem(key, JSON.stringify(data[key]));
+          }
+        });
+        window.location.reload();
+      } catch {
+        alert("Could not read backup file. Make sure it\u2019s a valid JSON file.");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  });
 });

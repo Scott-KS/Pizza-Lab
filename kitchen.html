@@ -10,7 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=5" />
+  <script>(function(){var t=localStorage.getItem("pielab-theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches))document.documentElement.dataset.theme="dark";})()</script>
+  <link rel="stylesheet" href="style.css?v=7" />
 </head>
 <body data-page="kitchen">
 
@@ -82,8 +83,33 @@
         </div>
       </fieldset>
 
+      <fieldset class="kitchen-fieldset">
+        <legend>Appearance</legend>
+        <div class="form-group">
+          <label>Theme</label>
+          <div class="toggle-group" id="k-theme">
+            <button type="button" class="toggle-btn" data-value="light">Light</button>
+            <button type="button" class="toggle-btn" data-value="system">System</button>
+            <button type="button" class="toggle-btn" data-value="dark">Dark</button>
+          </div>
+        </div>
+      </fieldset>
+
       <button id="k-save" class="btn-save-kitchen">Save My Kitchen</button>
       <p id="k-save-confirm" class="save-confirm hidden">Settings saved.</p>
+
+      <div class="kitchen-data-section">
+        <h3>Data Backup</h3>
+        <p class="kitchen-subtitle">Export or import all your Pie Lab data — journal entries, kitchen settings, and profile.</p>
+        <div class="data-actions">
+          <button id="btn-export" class="btn-export">Export Data</button>
+          <label for="import-file" class="btn-import">
+            Import Data
+            <input type="file" id="import-file" accept=".json" style="display:none" />
+          </label>
+        </div>
+        <p id="export-status" class="save-confirm hidden"></p>
+      </div>
     </section>
   </main>
 

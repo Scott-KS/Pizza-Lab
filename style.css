@@ -27,6 +27,100 @@
   --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
 }
 
+/* ── Dark Mode ───────────────────────────────────── */
+[data-theme="dark"] {
+  --clr-bg: #1c1614;
+  --clr-card: #2a2220;
+  --clr-primary: #c4604b;
+  --clr-primary-dark: #d4756a;
+  --clr-accent: #d9a85a;
+  --clr-text: #e8ddd4;
+  --clr-display: #f0e6dd;
+  --clr-text-light: #9a8e85;
+  --clr-border: #3d332e;
+  --clr-section-bg: #241e1b;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.4);
+  --brand-charcoal: #e0d6cc;
+  --brand-white: #1c1614;
+  color-scheme: dark;
+}
+
+[data-theme="dark"] body {
+  background: var(--clr-bg);
+  color: var(--clr-text);
+}
+
+[data-theme="dark"] .site-header {
+  background: rgba(28, 22, 20, 0.92);
+}
+
+[data-theme="dark"] .mobile-tab-bar {
+  background: rgba(28, 22, 20, 0.95);
+  border-top-color: var(--clr-border);
+}
+
+[data-theme="dark"] .nav-logo img,
+[data-theme="dark"] .footer-logo img {
+  filter: brightness(0) invert(1);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background: var(--clr-section-bg) !important;
+  color: var(--clr-text);
+  border-color: var(--clr-border);
+}
+
+[data-theme="dark"] .journal-entry-card,
+[data-theme="dark"] .result-section,
+[data-theme="dark"] .instructions-section,
+[data-theme="dark"] .tips-section,
+[data-theme="dark"] .schedule-step,
+[data-theme="dark"] .kitchen-card {
+  background: var(--clr-card);
+}
+
+[data-theme="dark"] .modal-content {
+  background: var(--clr-card);
+  color: var(--clr-text);
+}
+
+[data-theme="dark"] .accordion-header {
+  background: var(--clr-section-bg);
+  color: var(--clr-text);
+}
+
+[data-theme="dark"] .style-badge {
+  background: var(--clr-section-bg);
+  color: var(--clr-text);
+}
+
+[data-theme="dark"] .btn-modal-delete {
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+[data-theme="dark"] .btn-modal-delete:hover {
+  background: #e74c3c;
+  color: #fff;
+}
+
+[data-theme="dark"] .splash-page .hero-title,
+[data-theme="dark"] .splash-page .hero-subtitle {
+  color: #f0e6dd;
+}
+
+[data-theme="dark"] .carousel-caption {
+  background: rgba(28, 22, 20, 0.85);
+}
+
+[data-theme="dark"] .toast {
+  background: rgba(240, 230, 221, 0.92);
+  color: #1c1614;
+}
+
 body {
   font-family: var(--font-body);
   background: var(--clr-bg);
@@ -2309,6 +2403,54 @@ main {
   color: var(--clr-text);
 }
 
+.journal-search {
+  flex: 1 1 180px;
+  min-width: 140px;
+}
+
+.journal-search input {
+  width: 100%;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--clr-border);
+  border-radius: 6px;
+  font-size: 0.88rem;
+  background: var(--clr-card);
+  color: var(--clr-text);
+}
+
+.journal-search input::placeholder {
+  color: var(--clr-text-light);
+}
+
+.journal-sort {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.journal-sort label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--clr-text-light);
+  white-space: nowrap;
+}
+
+.journal-sort select {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--clr-border);
+  border-radius: 6px;
+  font-size: 0.88rem;
+  background: var(--clr-card);
+  color: var(--clr-text);
+}
+
+.journal-no-results {
+  text-align: center;
+  color: var(--clr-text-light);
+  padding: 2rem 1rem;
+  font-size: 0.95rem;
+}
+
 .btn-compare {
   padding: 0.5rem 1.25rem;
   border: 2px solid var(--clr-primary);
@@ -3159,6 +3301,14 @@ main {
   .journal-filter {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .journal-search {
+    flex-basis: 100%;
+  }
+
+  .journal-sort {
+    flex-basis: 100%;
   }
 
   .journal-form-grid {
@@ -4451,6 +4601,68 @@ body[data-page="journal"] main {
 
 .save-confirm.fade-out {
   opacity: 0;
+}
+
+/* ── Kitchen Data Backup ──────────────────────────── */
+.kitchen-data-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--clr-border);
+}
+
+.kitchen-data-section h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--clr-display);
+  margin-bottom: 0.3rem;
+}
+
+.kitchen-subtitle {
+  font-size: 0.85rem;
+  color: var(--clr-text-light);
+  margin-bottom: 1rem;
+}
+
+.data-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-export,
+.btn-import {
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  transition: all 0.2s;
+}
+
+.btn-export {
+  background: var(--clr-primary);
+  color: #fff;
+  border: none;
+}
+
+.btn-export:hover {
+  background: var(--clr-primary-dark);
+}
+
+.btn-import {
+  background: none;
+  border: 2px solid var(--clr-primary);
+  color: var(--clr-primary);
+}
+
+.btn-import:hover {
+  background: var(--clr-primary);
+  color: #fff;
 }
 
 /* Kitchen page body spacing */
