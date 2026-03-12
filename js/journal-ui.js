@@ -411,7 +411,6 @@
       derivedFromId: pendingDerivedFromId || null,
     };
 
-    const isFirstBakeEver = PieLabJournal.getAllEntries().length === 0;
     const saved = PieLabJournal.addEntry(entry);
     localStorage.removeItem("pielab-pending-bake");
 
@@ -422,7 +421,11 @@
     updateCompareButton();
     updateStorageDisplay();
 
-    if (isFirstBakeEver) showFirstBakeCelebration(saved);
+    // Celebrate milestone tier achievements (1, 4, 9, 16, 26 bakes per style)
+    const MILESTONE_COUNTS = [1, 4, 9, 16, 26];
+    if (MILESTONE_COUNTS.includes(saved.skillCount)) {
+      showMilestoneCelebration(saved);
+    }
   });
 
   // ── Empty state builder ──────────────────────────
@@ -880,16 +883,31 @@
     });
   });
 
-  // ── First Bake Celebration ─────────────────────────
-  function showFirstBakeCelebration(entry) {
+  // ── Milestone Celebration ─────────────────────────
+  function showMilestoneCelebration(entry) {
+    const badge = entry.skillBadge || "";
+    const badgeEmoji = badge.split(" ")[0];
+    const badgeName  = badge.split(" ").slice(1).join(" ");
+    const isFirst = entry.skillCount === 1;
+
+    const title = isFirst
+      ? "Your First Bake!"
+      : `${badgeName}!`;
+    const msg = isFirst
+      ? `You just logged <strong>${entry.styleName}</strong>. Your pizza journey starts now.`
+      : `<strong>${entry.styleName}</strong> \u2014 bake #${entry.skillCount}. You\u2019ve earned a new badge.`;
+    const hint = isFirst
+      ? "Fill your Style Passport by baking all 13 styles."
+      : `Keep going \u2014 your ${entry.styleName} game is leveling up.`;
+
     const overlay = document.createElement("div");
     overlay.className = "first-bake-overlay";
     overlay.innerHTML = `
       <div class="first-bake-card">
-        <span class="first-bake-emoji">🍕</span>
-        <h2 class="first-bake-title">Your First Bake!</h2>
-        <p class="first-bake-msg">You just logged <strong>${entry.styleName}</strong>. Your pizza journey starts now.</p>
-        <p class="first-bake-hint">Fill your Style Passport by baking all 13 styles.</p>
+        <span class="first-bake-emoji">${badgeEmoji}</span>
+        <h2 class="first-bake-title">${title}</h2>
+        <p class="first-bake-msg">${msg}</p>
+        <p class="first-bake-hint">${hint}</p>
         <button class="first-bake-dismiss">Let\u2019s Go</button>
       </div>`;
     document.body.appendChild(overlay);
