@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=7" />
+  <link rel="stylesheet" href="style.css?v=8" />
 </head>
 <body data-page="kitchen">
 
@@ -101,6 +101,14 @@
       <button id="k-save" class="btn-save-kitchen">Save My Kitchen</button>
       <p id="k-save-confirm" class="save-confirm hidden">Settings saved.</p>
 
+      <!-- Style Passport -->
+      <div class="passport-section">
+        <h3>Style Passport</h3>
+        <p class="kitchen-subtitle">Log a bake in every style to fill your passport.</p>
+        <div class="passport-progress" id="passport-progress"><span id="passport-count">0</span> of 13 unlocked</div>
+        <div class="passport-grid" id="passport-grid"></div>
+      </div>
+
       <div class="kitchen-data-section">
         <h3>Data Backup</h3>
         <p class="kitchen-subtitle">Export or import all your Pie Lab data — journal entries, kitchen settings, and profile.</p>
@@ -153,6 +161,6 @@
   <script src="journal.js?v=2"></script>
   <script src="js/user-profile.js?v=2"></script>
   <script src="js/nav.js?v=3"></script>
-  <script src="js/kitchen.js?v=2"></script>
+  <script src="js/kitchen.js?v=3"></script>
 </body>
 </html>

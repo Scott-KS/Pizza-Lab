@@ -1,5 +1,5 @@
 /*  The Pie Lab — Service Worker  */
-const CACHE_NAME = "pielab-v1";
+const CACHE_NAME = "pielab-v2";
 
 /* ── Shell assets (app skeleton — always cached) ── */
 const APP_SHELL = [
@@ -10,7 +10,7 @@ const APP_SHELL = [
   "/journal.html",
   "/kitchen.html",
   "/learn.html",
-  "/style.css?v=7",
+  "/style.css?v=8",
   "/js/toolkit.js",
   "/js/calculator.js",
   "/js/scheduler.js",

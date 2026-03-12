@@ -5524,3 +5524,83 @@ body[data-page="kitchen"] main {
   .bar-block-label { font-size: 0.72rem; }
   .bar-block-time { font-size: 0.65rem; }
 }
+
+/* ═══════════════════════════════════════════════════════
+   Style Passport — My Kitchen achievement grid
+   ═══════════════════════════════════════════════════════ */
+.passport-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--clr-border);
+}
+.passport-section h3 {
+  font-family: "Playfair Display", serif;
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+.passport-progress {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  color: var(--clr-primary);
+}
+.passport-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+}
+@media (min-width: 520px) {
+  .passport-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 768px) {
+  .passport-grid { grid-template-columns: repeat(4, 1fr); }
+}
+.passport-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem 0.5rem;
+  border-radius: 10px;
+  border: 2px solid var(--clr-border);
+  background: var(--clr-card-bg);
+  transition: transform 0.15s, box-shadow 0.15s;
+  text-decoration: none;
+  color: inherit;
+  min-height: 120px;
+}
+
+/* Locked state */
+.passport-card.locked {
+  opacity: 0.4;
+  filter: grayscale(0.8);
+  border-style: dashed;
+}
+
+/* Unlocked state */
+.passport-card.unlocked {
+  border-color: var(--clr-primary);
+  box-shadow: 0 2px 8px rgba(192, 57, 43, 0.1);
+}
+.passport-card.unlocked:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(192, 57, 43, 0.18);
+}
+
+.passport-badge {
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: 0.4rem;
+}
+.passport-style-name {
+  font-weight: 600;
+  font-size: 0.82rem;
+  line-height: 1.2;
+  margin-bottom: 0.2rem;
+}
+.passport-bake-count {
+  font-size: 0.72rem;
+  color: var(--clr-muted);
+}
