@@ -722,3 +722,17 @@ const TROUBLESHOOTING_TREE = {
     },
   },
 };
+
+// ══════════════════════════════════════════════════════
+// 5. DDT (Desired Dough Temperature) PRESETS
+// ══════════════════════════════════════════════════════
+const DDT_PRESETS = {
+  "":            { ddt: 76, friction: 28, label: "General (default)" },
+  neapolitan:    { ddt: 75, friction: 25, label: "Neapolitan" },
+  "new-york":    { ddt: 78, friction: 28, label: "New York" },
+  "new-haven":   { ddt: 76, friction: 25, label: "New Haven" },
+  sicilian:      { ddt: 78, friction: 28, label: "Sicilian" },
+  detroit:       { ddt: 78, friction: 28, label: "Detroit" },
+  grandma:       { ddt: 76, friction: 25, label: "Grandma" },
+  pan:           { ddt: 78, friction: 28, label: "Pan" },
+};

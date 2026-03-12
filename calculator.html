@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=8" />
+  <link rel="stylesheet" href="style.css?v=9" />
 </head>
 <body data-page="calculator">
 
@@ -56,6 +56,21 @@
           <select id="ferment-method">
             <option value="" disabled selected>Select eat time first</option>
           </select>
+        </div>
+
+        <!-- Dynamic Yeast Scaling (premium, Plan mode only) -->
+        <div id="yeast-scaling-controls" class="yeast-scaling-controls hidden">
+          <h4>Fermentation Tuning <span class="premium-tag">PRO</span></h4>
+          <div class="setting-field">
+            <label for="ferment-hours">Fermentation Time</label>
+            <input type="range" id="ferment-hours" min="4" max="72" value="24" step="1">
+            <span id="ferment-hours-label">24 hours</span>
+          </div>
+          <div class="setting-field">
+            <label for="ferment-temp">Fermentation Temp</label>
+            <input type="range" id="ferment-temp" min="38" max="80" value="72" step="1">
+            <span id="ferment-temp-label">72°F</span>
+          </div>
         </div>
       </div>
 
@@ -128,6 +143,40 @@
           <div class="settings-actions">
             <button type="button" class="btn-reset-settings" id="btn-reset-custom">Reset to Default</button>
           </div>
+
+          <!-- Preferment Controls (premium, eligible styles only) -->
+          <div id="preferment-controls" class="preferment-controls hidden">
+            <div class="preferment-toggle-row">
+              <label class="toggle-switch">
+                <input type="checkbox" id="preferment-toggle">
+                <span class="toggle-slider"></span>
+              </label>
+              <span>Use Preferment <span class="premium-tag">PRO</span></span>
+            </div>
+            <div id="preferment-options" class="preferment-options hidden">
+              <div class="form-group" style="flex:1 1 180px;margin:0">
+                <label for="preferment-type">Preferment Type</label>
+                <select id="preferment-type">
+                  <option value="poolish">Poolish (100% hydration)</option>
+                  <option value="biga">Biga (50% hydration)</option>
+                </select>
+              </div>
+              <div class="setting-field" style="flex:0 1 200px">
+                <label for="preferment-pct">Flour in Preferment</label>
+                <input type="range" id="preferment-pct" min="20" max="40" value="25" step="5">
+                <span id="preferment-pct-label">25%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bowl Residue Toggle (free) -->
+          <div class="residue-toggle-row">
+            <label class="toggle-switch">
+              <input type="checkbox" id="bowl-residue-toggle">
+              <span class="toggle-slider"></span>
+            </label>
+            <span>Add +1.5% for bowl residue</span>
+          </div>
         </div>
 
         <button type="submit" class="btn-calculate">Calculate Recipe</button>
@@ -152,8 +201,18 @@
       </p>
 
       <div class="results-grid">
-        <div class="result-section">
-          <h3>Dough</h3>
+        <!-- Preferment result (shown when preferment toggle is on) -->
+        <div id="preferment-result" class="result-section preferment-section hidden">
+          <h3>Preferment <span id="preferment-type-badge" class="preferment-type-badge"></span></h3>
+          <p class="preferment-note" id="preferment-timing-note">Mix 12–16 hours before final dough</p>
+          <table id="preferment-table" class="three-col">
+            <thead><tr><th>Ingredient</th><th>Grams</th><th>% of Flour</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="result-section" id="dough-section">
+          <h3 id="dough-section-title">Dough</h3>
           <table id="dough-table" class="three-col">
             <thead>
               <tr><th>Ingredient</th><th>Grams</th><th>% of Flour</th></tr>
@@ -165,6 +224,8 @@
               </tr>
             </tfoot>
           </table>
+          <p id="residue-note" class="residue-note hidden"></p>
+          <p id="yeast-note" class="yeast-note hidden"></p>
         </div>
 
         <div class="result-section">
@@ -299,9 +360,10 @@
   <script src="knowledge-data.js?v=2"></script>
   <script src="journal.js?v=2"></script>
   <script src="js/nav.js?v=3"></script>
+  <script src="js/premium.js?v=1"></script>
   <script src="js/user-profile.js?v=2"></script>
   <script src="scheduler-data.js?v=3"></script>
   <script src="js/pie-notifications.js"></script>
-  <script src="js/calculator.js?v=7"></script>
+  <script src="js/calculator.js?v=8"></script>
 </body>
 </html>

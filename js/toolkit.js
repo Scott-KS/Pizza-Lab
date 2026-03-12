@@ -11,6 +11,7 @@
   populateHydrationGuide();
   populateOvenGuide();
   populateTroubleshooting();
+  populateDDTCalculator();
 })();
 
 // ── Hydration Guide ──────────────────────────────────
@@ -339,5 +340,101 @@ function renderDiagnosticStep(problem, stepId, container) {
     container.querySelector(".diag-restart").addEventListener("click", () => {
       renderDiagnosticStep(problem, problem.initial, container);
     });
+  }
+}
+
+// ── DDT Water Temperature Calculator ─────────────────
+
+function populateDDTCalculator() {
+  const panel = document.getElementById("tool-ddt");
+  if (!panel) return;
+  if (typeof DDT_PRESETS === "undefined") return;
+
+  const presetOptions = Object.entries(DDT_PRESETS)
+    .map(([key, p]) => `<option value="${key}">${p.label}</option>`)
+    .join("");
+
+  panel.innerHTML = `
+    <p style="font-size:0.92rem;color:var(--clr-text-light);margin-bottom:1rem;line-height:1.5">
+      Calculate the ideal water temperature to hit your Desired Dough Temperature (DDT).
+      Consistent DDT leads to predictable fermentation.
+    </p>
+    <div class="ddt-tool-controls">
+      <div class="ddt-field">
+        <label for="ddt-preset">Style Preset</label>
+        <select id="ddt-preset">${presetOptions}</select>
+      </div>
+      <div class="ddt-field">
+        <label for="ddt-target">DDT Target (°F)</label>
+        <input type="number" id="ddt-target" value="76" min="65" max="90" step="1">
+        <div class="field-hint">Most doughs: 75–80°F</div>
+      </div>
+      <div class="ddt-field">
+        <label for="ddt-room">Room Temp (°F)</label>
+        <input type="number" id="ddt-room" value="72" min="50" max="100" step="1">
+      </div>
+      <div class="ddt-field">
+        <label for="ddt-flour">Flour Temp (°F)</label>
+        <input type="number" id="ddt-flour" value="70" min="40" max="100" step="1">
+      </div>
+      <div class="ddt-field">
+        <label for="ddt-friction">Friction Factor (°F)</label>
+        <input type="number" id="ddt-friction" value="28" min="0" max="60" step="1">
+        <div class="field-hint">Home mixer ≈ 25–30 · Commercial ≈ 35–45</div>
+      </div>
+    </div>
+    <div class="ddt-actions">
+      <button class="btn-ddt-calc" id="btn-ddt-calc" type="button">Calculate Water Temp</button>
+    </div>
+    <div id="ddt-result-area" class="hidden"></div>
+  `;
+
+  // Wire preset selector
+  const presetSelect = panel.querySelector("#ddt-preset");
+  const ddtTarget = panel.querySelector("#ddt-target");
+  const ddtFriction = panel.querySelector("#ddt-friction");
+
+  presetSelect.addEventListener("change", () => {
+    const p = DDT_PRESETS[presetSelect.value];
+    if (p) {
+      ddtTarget.value = p.ddt;
+      ddtFriction.value = p.friction;
+    }
+  });
+
+  // Wire calculate button
+  panel.querySelector("#btn-ddt-calc").addEventListener("click", () => {
+    if (typeof PieLabPremium !== "undefined") {
+      PieLabPremium.gate(() => computeDDT());
+    } else {
+      computeDDT();
+    }
+  });
+
+  function computeDDT() {
+    const ddt = parseFloat(ddtTarget.value) || 76;
+    const room = parseFloat(panel.querySelector("#ddt-room").value) || 72;
+    const flour = parseFloat(panel.querySelector("#ddt-flour").value) || 70;
+    const friction = parseFloat(ddtFriction.value) || 28;
+
+    const waterTemp = (ddt * 3) - room - flour - friction;
+    const resultArea = panel.querySelector("#ddt-result-area");
+
+    let warning = "";
+    if (waterTemp < 40) {
+      warning = `<p style="color:var(--clr-primary);font-size:0.85rem;margin-top:0.5rem">⚠️ Water temp is very cold. Consider using ice water and adjusting your target DDT.</p>`;
+    } else if (waterTemp > 110) {
+      warning = `<p style="color:var(--clr-primary);font-size:0.85rem;margin-top:0.5rem">⚠️ Water temp is very hot. This could kill yeast. Lower your DDT target or cool your environment.</p>`;
+    }
+
+    resultArea.className = "ddt-result";
+    resultArea.innerHTML = `
+      <div class="ddt-result-temp">${Math.round(waterTemp)}°F</div>
+      <div class="ddt-result-label">Required Water Temperature</div>
+      <div class="ddt-result-formula">
+        (${ddt}°F × 3) − ${room}°F room − ${flour}°F flour − ${friction}°F friction = ${Math.round(waterTemp)}°F
+      </div>
+      ${warning}
+    `;
   }
 }

@@ -9,8 +9,64 @@ let lastCalcContext = null;
 let lastDough = null;
 let lastSauce = null;
 let lastToppings = null;
+let lastPreferment = null;   // preferment ingredient split (if active)
 let currentUnit = "g";
 let currentMode = "quick"; // "quick" or "plan"
+
+// ── Preferment-eligible styles ──────────────────────
+const PREFERMENT_STYLES = ["neapolitan", "new-york", "sicilian", "grandma", "new-haven"];
+
+// ── Utility: round to 1 decimal ─────────────────────
+function round1(n) { return Math.round(n * 10) / 10; }
+
+// ── Preferment splitter ─────────────────────────────
+// Takes calculated dough array, splits flour/water/yeast into preferment + final dough.
+function splitPreferment(doughArr, prefType, flourFraction) {
+  // Find flour, water, yeast rows
+  const flourRow = doughArr.find(d => /flour/i.test(d.ingredient));
+  const waterRow = doughArr.find(d => /water/i.test(d.ingredient));
+  const yeastRow = doughArr.find(d => /yeast/i.test(d.ingredient));
+
+  if (!flourRow || !waterRow) return null;
+
+  const totalFlour = flourRow.amount;
+  const totalWater = waterRow.amount;
+  const totalYeast = yeastRow ? yeastRow.amount : 0;
+
+  const prefFlour = round1(totalFlour * flourFraction);
+  let prefWater, prefYeast;
+
+  if (prefType === "poolish") {
+    prefWater = round1(prefFlour); // 100% hydration
+    prefYeast = round1(prefFlour * 0.001); // tiny amount
+  } else {
+    // biga — 50% hydration
+    prefWater = round1(prefFlour * 0.50);
+    prefYeast = round1(prefFlour * 0.001);
+  }
+
+  // Build preferment ingredients
+  const preferment = [
+    { ingredient: flourRow.ingredient, amount: prefFlour, pct: round1((prefFlour / prefFlour) * 100) },
+    { ingredient: "Water", amount: prefWater, pct: round1((prefWater / prefFlour) * 100) },
+    { ingredient: yeastRow ? yeastRow.ingredient : "Instant Dry Yeast", amount: prefYeast, pct: round1((prefYeast / prefFlour) * 100) },
+  ];
+
+  // Adjust final dough — subtract preferment amounts
+  const finalDough = doughArr.map(d => {
+    const row = { ...d };
+    if (/flour/i.test(d.ingredient)) {
+      row.amount = round1(d.amount - prefFlour);
+    } else if (/water/i.test(d.ingredient)) {
+      row.amount = round1(d.amount - prefWater);
+    } else if (/yeast/i.test(d.ingredient)) {
+      row.amount = round1(Math.max(0, d.amount - prefYeast));
+    }
+    return row;
+  });
+
+  return { preferment, finalDough, type: prefType };
+}
 
 // ── Flour Substitution Data ─────────────────────────
 const FLOUR_ABSORPTION = {
@@ -203,6 +259,10 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     planFieldsEl.classList.toggle("hidden", mode !== "plan");
 
+    // Show/hide yeast scaling controls based on mode
+    const yeastControls = document.getElementById("yeast-scaling-controls");
+    if (yeastControls) yeastControls.classList.toggle("hidden", mode !== "plan");
+
     if (mode === "plan" && !eatTimeInput.value) {
       // Default to tomorrow 6:30 PM local
       const tomorrow = new Date();
@@ -315,7 +375,71 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Refresh ferment options when style changes in plan mode
     if (currentMode === "plan" && eatTimeInput.value) updateFermentOptions();
+
+    // Show/hide preferment controls based on style eligibility
+    const prefControls = document.getElementById("preferment-controls");
+    if (prefControls) {
+      const eligible = PREFERMENT_STYLES.includes(typeSelectEl.value);
+      prefControls.classList.toggle("hidden", !eligible);
+      // Reset preferment toggle when switching to ineligible style
+      if (!eligible) {
+        const prefToggle = document.getElementById("preferment-toggle");
+        if (prefToggle) prefToggle.checked = false;
+        const prefOptions = document.getElementById("preferment-options");
+        if (prefOptions) prefOptions.classList.add("hidden");
+      }
+    }
   });
+
+  // ── Preferment Toggle Handler ─────────────────────────
+  const prefermentToggle = document.getElementById("preferment-toggle");
+  const prefermentOptions = document.getElementById("preferment-options");
+  const prefermentPctSlider = document.getElementById("preferment-pct");
+  const prefermentPctLabel = document.getElementById("preferment-pct-label");
+
+  if (prefermentToggle) {
+    prefermentToggle.addEventListener("change", () => {
+      if (prefermentToggle.checked) {
+        PieLabPremium.gate(() => {
+          prefermentOptions.classList.remove("hidden");
+        });
+        // If gate denied, uncheck
+        if (!PieLabPremium.canUse()) {
+          prefermentToggle.checked = false;
+        }
+      } else {
+        prefermentOptions.classList.add("hidden");
+      }
+    });
+  }
+
+  if (prefermentPctSlider && prefermentPctLabel) {
+    prefermentPctSlider.addEventListener("input", () => {
+      prefermentPctLabel.textContent = prefermentPctSlider.value + "%";
+    });
+  }
+
+  // ── Yeast Scaling Slider Labels ──────────────────────
+  const fermentHoursSlider = document.getElementById("ferment-hours");
+  const fermentHoursLabel = document.getElementById("ferment-hours-label");
+  const fermentTempSlider = document.getElementById("ferment-temp");
+  const fermentTempLabel = document.getElementById("ferment-temp-label");
+  let yeastScalingGated = false;
+
+  if (fermentHoursSlider && fermentHoursLabel) {
+    fermentHoursSlider.addEventListener("input", () => {
+      fermentHoursLabel.textContent = fermentHoursSlider.value + " hours";
+      if (!yeastScalingGated) {
+        yeastScalingGated = true;
+        PieLabPremium.gate(() => { /* access granted */ });
+      }
+    });
+  }
+  if (fermentTempSlider && fermentTempLabel) {
+    fermentTempSlider.addEventListener("input", () => {
+      fermentTempLabel.textContent = fermentTempSlider.value + "°F";
+    });
+  }
 
   // ── Form Submit ──────────────────────────────────────
   document.getElementById("pizza-form").addEventListener("submit", (e) => {
@@ -357,11 +481,44 @@ document.addEventListener("DOMContentLoaded", () => {
         recipe.yeastPct * yeastMultiplier));
     }
 
+    // ── Dynamic Yeast Scaling (Lehmann Method, Plan mode + premium) ──
+    let dynamicYeastActive = false;
+    let fermentHoursVal = null;
+    let fermentTempVal = null;
+    if (currentMode === "plan" && PieLabPremium.canUse()) {
+      const fhSlider = document.getElementById("ferment-hours");
+      const ftSlider = document.getElementById("ferment-temp");
+      if (fhSlider && ftSlider && !document.getElementById("yeast-scaling-controls").classList.contains("hidden")) {
+        fermentHoursVal = parseFloat(fhSlider.value);
+        fermentTempVal = parseFloat(ftSlider.value);
+        const cf = fermentHoursVal / 17;
+        const tempFactor = 1 + (72 - fermentTempVal) * 0.03;
+        const dynamicYeastPct = Math.max(0.0005, Math.min(0.02, (0.005 / cf) * tempFactor));
+        adjustedRecipe.yeastPct = dynamicYeastPct;
+        dynamicYeastActive = true;
+      }
+    }
+
     // ── Calculate ──
     lastRecipe = adjustedRecipe;
     const dough    = calculateDough(adjustedRecipe, numPizzas, sizeKey);
     const sauce    = calculateSauce(adjustedRecipe, numPizzas, sizeKey);
     const toppings = calculateToppings(adjustedRecipe, numPizzas, sizeKey);
+
+    // ── Bowl Residue Compensation (+1.5%) ──
+    const residueOn = document.getElementById("bowl-residue-toggle")?.checked || false;
+    if (residueOn) {
+      dough.forEach(d => { d.amount = round1(d.amount * 1.015); });
+    }
+
+    // ── Preferment Split ──
+    const prefEnabled = prefermentToggle?.checked && PREFERMENT_STYLES.includes(type) && PieLabPremium.canUse();
+    lastPreferment = null;
+    if (prefEnabled) {
+      const prefType = document.getElementById("preferment-type")?.value || "poolish";
+      const prefPct = (parseInt(document.getElementById("preferment-pct")?.value || "25", 10)) / 100;
+      lastPreferment = splitPreferment(dough, prefType, prefPct);
+    }
     const ovenTempF  = adjustedRecipe.idealTemp.max;
     const bakingInfo = getBakingInfo(adjustedRecipe, ovenTempF);
 
@@ -427,7 +584,46 @@ document.addEventListener("DOMContentLoaded", () => {
     if (volumeNote) volumeNote.classList.add("hidden");
 
     // Render tables (unit-aware)
-    renderDoughTable(dough);
+    // If preferment active, render both preferment table and modified final dough
+    const prefResultEl = document.getElementById("preferment-result");
+    const doughTitle = document.getElementById("dough-section-title");
+    const prefTypeBadge = document.getElementById("preferment-type-badge");
+
+    if (lastPreferment) {
+      // Show preferment section
+      prefResultEl.classList.remove("hidden");
+      prefTypeBadge.textContent = lastPreferment.type === "poolish" ? "Poolish" : "Biga";
+      renderPrefermentTable(lastPreferment.preferment);
+
+      // Render final dough (with preferment subtracted)
+      doughTitle.textContent = "Final Dough";
+      lastDough = lastPreferment.finalDough;
+      renderDoughTable(lastPreferment.finalDough);
+    } else {
+      prefResultEl.classList.add("hidden");
+      doughTitle.textContent = "Dough";
+      renderDoughTable(dough);
+    }
+
+    // Bowl residue note
+    const residueNote = document.getElementById("residue-note");
+    if (residueNote) {
+      residueNote.textContent = "Includes +1.5% for bowl/mixer residue";
+      residueNote.classList.toggle("hidden", !residueOn);
+    }
+
+    // Yeast scaling note
+    const yeastNote = document.getElementById("yeast-note");
+    if (yeastNote) {
+      if (dynamicYeastActive) {
+        const pct = (adjustedRecipe.yeastPct * 100).toFixed(2);
+        yeastNote.textContent = `Yeast scaled to ${pct}% — ${fermentHoursVal}h at ${fermentTempVal}°F (Lehmann Method)`;
+        yeastNote.classList.remove("hidden");
+      } else {
+        yeastNote.classList.add("hidden");
+      }
+    }
+
     renderSimpleTable("sauce-table", sauce);
     renderSimpleTable("toppings-table", toppings);
 
@@ -478,6 +674,14 @@ document.addEventListener("DOMContentLoaded", () => {
       bakeTemp: recipe.idealTemp ? recipe.idealTemp.max : null,
       totalDoughWeight: Math.round(doughBallWeight * numPizzas),
       timestamp: Date.now(),
+      // Premium feature state
+      bowlResidue: residueOn,
+      prefermentEnabled: prefEnabled,
+      prefermentType: prefEnabled ? (document.getElementById("preferment-type")?.value || null) : null,
+      prefermentFlourPct: prefEnabled ? parseInt(document.getElementById("preferment-pct")?.value || "25", 10) : null,
+      dynamicYeast: dynamicYeastActive,
+      fermentHours: fermentHoursVal,
+      fermentTemp: fermentTempVal,
     };
 
     // Preserve derivedFromId if user arrived via "Use as Starting Point"
@@ -611,6 +815,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Re-render all tables from cached data
       if (lastDough) renderDoughTable(lastDough);
+      if (lastPreferment) renderPrefermentTable(lastPreferment.preferment);
       if (lastSauce) renderSimpleTable("sauce-table", lastSauce);
       if (lastToppings) renderSimpleTable("toppings-table", lastToppings);
     });
@@ -732,6 +937,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalGrams = dough.reduce((sum, d) => sum + d.amount, 0);
     const totalEl = document.getElementById("dough-total-amount");
     if (totalEl) totalEl.textContent = formatAmount(Math.round(totalGrams), "Total");
+  }
+
+  function renderPrefermentTable(prefIngredients) {
+    const th = document.querySelector("#preferment-table thead th:nth-child(2)");
+    if (th) th.textContent = unitColumnHeader();
+
+    fillTable("preferment-table",
+      prefIngredients.map((d) => [d.ingredient, formatAmount(d.amount, d.ingredient), `${d.pct}%`])
+    );
   }
 
   function renderSimpleTable(tableId, rows) {
