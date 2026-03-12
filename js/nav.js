@@ -3,6 +3,13 @@
    Loaded on every page before feature scripts.
    ══════════════════════════════════════════════════════ */
 
+// ── Register Service Worker (PWA offline support) ─────
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {/* SW unsupported */});
+  });
+}
+
 // ── Canonical Oven Types (6 types) ────────────────────
 const OVEN_TYPES = {
   steel:        "Home Oven + Pizza Steel",
