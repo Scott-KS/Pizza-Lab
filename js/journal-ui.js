@@ -820,7 +820,7 @@
           // Logo missing — skip watermark, still finish card
           finishCard(ctx, canvas, entry, profile, W, H, PHOTO_H, resolve);
         };
-        logo.src = "assets/logos/logo-watermark.png";
+        logo.src = "assets/logos/logo-transparent.svg";
       };
       img.onerror = () => reject(new Error("Failed to load bake photo"));
       img.src = photoSrc;
@@ -828,17 +828,18 @@
   }
 
   function drawLogoWatermark(ctx, logo, canvasW, photoH) {
-    const SIZE = 120, MARGIN = 15, PADDING = 8, RADIUS = 8;
-    const x = canvasW - SIZE - MARGIN;
-    const y = photoH - SIZE - MARGIN;
+    // Logo SVG is 600x300 (2:1 aspect) — render at 200x100 in bottom-right
+    const LOGO_W = 200, LOGO_H = 100, MARGIN = 15, PADDING = 10, RADIUS = 8;
+    const x = canvasW - LOGO_W - MARGIN;
+    const y = photoH - LOGO_H - MARGIN;
 
     // Semi-transparent white backing pill
     ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-    roundRect(ctx, x - PADDING, y - PADDING, SIZE + PADDING * 2, SIZE + PADDING * 2, RADIUS);
+    roundRect(ctx, x - PADDING, y - PADDING, LOGO_W + PADDING * 2, LOGO_H + PADDING * 2, RADIUS);
     ctx.fill();
 
     // Draw logo
-    ctx.drawImage(logo, x, y, SIZE, SIZE);
+    ctx.drawImage(logo, x, y, LOGO_W, LOGO_H);
   }
 
   function finishCard(ctx, canvas, entry, profile, W, H, PHOTO_H, resolve) {
