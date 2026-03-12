@@ -411,7 +411,8 @@
       derivedFromId: pendingDerivedFromId || null,
     };
 
-    PieLabJournal.addEntry(entry);
+    const isFirstBakeEver = PieLabJournal.getAllEntries().length === 0;
+    const saved = PieLabJournal.addEntry(entry);
     localStorage.removeItem("pielab-pending-bake");
 
     pendingDerivedFromId = null;
@@ -420,6 +421,8 @@
     renderStats();
     updateCompareButton();
     updateStorageDisplay();
+
+    if (isFirstBakeEver) showFirstBakeCelebration(saved);
   });
 
   // ── Empty state builder ──────────────────────────
@@ -876,6 +879,30 @@
       comparisonEl.classList.add("hidden");
     });
   });
+
+  // ── First Bake Celebration ─────────────────────────
+  function showFirstBakeCelebration(entry) {
+    const overlay = document.createElement("div");
+    overlay.className = "first-bake-overlay";
+    overlay.innerHTML = `
+      <div class="first-bake-card">
+        <span class="first-bake-emoji">🍕</span>
+        <h2 class="first-bake-title">Your First Bake!</h2>
+        <p class="first-bake-msg">You just logged <strong>${entry.styleName}</strong>. Your pizza journey starts now.</p>
+        <p class="first-bake-hint">Fill your Style Passport by baking all 13 styles.</p>
+        <button class="first-bake-dismiss">Let\u2019s Go</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add("first-bake--visible"));
+
+    const dismiss = () => {
+      overlay.classList.remove("first-bake--visible");
+      setTimeout(() => overlay.remove(), 400);
+    };
+    overlay.querySelector(".first-bake-dismiss").addEventListener("click", dismiss);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
+    setTimeout(dismiss, 8000);
+  }
 
   // ── Toast Notification ──────────────────────────────
   function showToast(message) {

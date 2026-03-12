@@ -1,5 +1,5 @@
 /*  The Pie Lab — Service Worker  */
-const CACHE_NAME = "pielab-v2";
+const CACHE_NAME = "pielab-v3";
 
 /* ── Shell assets (app skeleton — always cached) ── */
 const APP_SHELL = [
