@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=13" />
+  <link rel="stylesheet" href="style.css?v=14" />
 </head>
 <body data-page="kitchen">
 
@@ -129,6 +129,31 @@
         </div>
         <p id="export-status" class="save-confirm hidden"></p>
       </div>
+
+      <!-- Feedback -->
+      <div class="kitchen-feedback-section">
+        <h3>Send Feedback</h3>
+        <p class="kitchen-subtitle">Found a bug or have an idea? Let us know — we read every message.</p>
+
+        <div class="form-group">
+          <label for="fb-type">Type</label>
+          <select id="fb-type">
+            <option value="bug">🐛 Bug Report</option>
+            <option value="feature">💡 Feature Request</option>
+            <option value="general">💬 General Feedback</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="fb-message">Message</label>
+          <textarea id="fb-message" rows="4" placeholder="Tell us what happened or what you'd like to see…"></textarea>
+        </div>
+
+        <div class="feedback-actions">
+          <button id="btn-send-feedback" class="btn-feedback-send">Send Feedback</button>
+        </div>
+        <p id="feedback-status" class="save-confirm hidden"></p>
+      </div>
     </section>
   </main>
 
@@ -164,11 +189,11 @@
   <!-- Scripts: Capacitor init first, then data files, then shared, then page feature -->
   <script src="js/capacitor-init.js"></script>
   <script src="recipes.js?v=5"></script>
-  <script src="scheduler-data.js?v=3"></script>
+  <script src="scheduler-data.js?v=4"></script>
   <script src="knowledge-data.js?v=2"></script>
   <script src="journal.js?v=2"></script>
   <script src="js/user-profile.js?v=3"></script>
   <script src="js/nav.js?v=3"></script>
-  <script src="js/kitchen.js?v=4"></script>
+  <script src="js/kitchen.js?v=5"></script>
 </body>
 </html>

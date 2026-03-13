@@ -301,7 +301,7 @@ function buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWe
     const cureStartT = cureEndT - min(24 * 60); // 24h minimum cure
     const ballT = cureStartT - min(10);          // ball 10 min before cure begins
     const bulkStartT = ballT - min(60);         // 1hr bulk ferment (short — low hydration dough)
-    const mixT = bulkStartT;
+    const mixT = bulkStartT - min(10);          // mix takes ~10 min before bulk starts
     steps.push({
       ...SCHEDULE_STEP_TEMPLATES.mix,
       dateTime: new Date(mixT),
@@ -374,7 +374,7 @@ function buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWe
   if (method.isColdFerment) {
     pullT = preheatT - min(method.pullBeforePreheatMinutes);
     fridgeT = pullT - min(method.coldFermentHours * 60);
-    ballT = fridgeT;
+    ballT = fridgeT - min(10);           // balling takes ~10 min before fridge
     bulkStartT = ballT - min(method.bulkFermentMinutes);
   } else {
     pullT = null;
@@ -383,7 +383,7 @@ function buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWe
     bulkStartT = ballT - min(method.bulkFermentMinutes);
   }
 
-  mixT = bulkStartT;
+  mixT = bulkStartT - min(10);            // mix takes ~10 min before bulk starts
   stretchFoldT = bulkStartT + min(30);
   autolyseT = mixT - min(25);
 

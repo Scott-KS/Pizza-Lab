@@ -4752,6 +4752,70 @@ body[data-page="journal"] main {
   color: #fff;
 }
 
+/* ── Kitchen Feedback Section ────────────────────── */
+.kitchen-feedback-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--clr-border, #e0e0e0);
+}
+
+.kitchen-feedback-section h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  margin-bottom: 0.25rem;
+}
+
+.kitchen-feedback-section textarea {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--clr-border, #ddd);
+  border-radius: 8px;
+  font-family: var(--font-body, Inter, sans-serif);
+  font-size: 0.95rem;
+  resize: vertical;
+  min-height: 80px;
+  background: var(--clr-surface, #fff);
+  color: var(--clr-text, #222);
+  transition: border-color 0.2s;
+}
+
+.kitchen-feedback-section textarea:focus {
+  border-color: var(--clr-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.12);
+}
+
+.kitchen-feedback-section textarea.input-error {
+  border-color: var(--clr-primary);
+  animation: shake 0.35s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
+.feedback-actions {
+  margin-top: 0.75rem;
+}
+
+.btn-feedback-send {
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: var(--clr-primary);
+  color: #fff;
+  transition: background 0.2s;
+}
+
+.btn-feedback-send:hover {
+  background: var(--clr-primary-dark);
+}
+
 /* Kitchen page body spacing */
 body[data-page="kitchen"] main {
   padding-top: 2rem;

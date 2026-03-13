@@ -426,4 +426,61 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsText(file);
     e.target.value = "";
   });
+
+  // ── Feedback Form ─────────────────────────────────
+  const fbType    = document.getElementById("fb-type");
+  const fbMessage = document.getElementById("fb-message");
+  const fbSend    = document.getElementById("btn-send-feedback");
+  const fbStatus  = document.getElementById("feedback-status");
+
+  fbSend.addEventListener("click", () => {
+    const message = fbMessage.value.trim();
+    if (!message) {
+      fbMessage.focus();
+      fbMessage.classList.add("input-error");
+      setTimeout(() => fbMessage.classList.remove("input-error"), 1500);
+      return;
+    }
+
+    const type   = fbType.value;
+    const labels = { bug: "Bug Report", feature: "Feature Request", general: "General Feedback" };
+    const label  = labels[type] || "Feedback";
+
+    // Gather context automatically
+    const profile = PieLabProfile.getProfile();
+    const device  = navigator.userAgent;
+    const screen  = `${window.screen.width}x${window.screen.height}`;
+    const theme   = document.documentElement.dataset.theme || "light";
+
+    const subject = encodeURIComponent(`[Pie Lab] ${label}`);
+    const body    = encodeURIComponent(
+      `${message}\n\n` +
+      `--- App Context (auto-generated) ---\n` +
+      `Type: ${label}\n` +
+      `Name: ${profile.displayName || "—"}\n` +
+      `Location: ${profile.city || "—"}\n` +
+      `Units: ${profile.unitSystem || "standard"}\n` +
+      `Theme: ${theme}\n` +
+      `Screen: ${screen}\n` +
+      `Device: ${device}\n`
+    );
+
+    const mailto = `mailto:feedback@thepielab.app?subject=${subject}&body=${body}`;
+    window.location.href = mailto;
+
+    // Show confirmation + clear form
+    fbMessage.value = "";
+    fbStatus.textContent = "Thanks! Your email client should open with the feedback ready to send.";
+    fbStatus.classList.remove("hidden");
+    fbStatus.classList.remove("fade-out");
+
+    setTimeout(() => {
+      fbStatus.classList.add("fade-out");
+      fbStatus.addEventListener(
+        "transitionend",
+        () => fbStatus.classList.add("hidden"),
+        { once: true }
+      );
+    }, 5000);
+  });
 });
