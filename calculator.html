@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=10" />
+  <link rel="stylesheet" href="style.css?v=11" />
 </head>
 <body data-page="calculator">
 
@@ -316,10 +316,13 @@
         <span class="timer-time" id="timer-time">00:00</span>
       </div>
       <div class="timer-status" id="timer-status"></div>
-      <div class="timer-controls">
+      <div class="timer-controls" id="timer-running-controls">
         <button class="btn-timer-adjust" id="timer-minus" type="button">−30s</button>
         <button class="btn-timer-pause" id="timer-pause" type="button">Pause</button>
         <button class="btn-timer-adjust" id="timer-plus" type="button">+30s</button>
+      </div>
+      <div class="timer-controls hidden" id="timer-done-controls">
+        <button class="btn-timer-stop" id="timer-stop" type="button">Stop Alarm</button>
       </div>
     </div>
   </div>
@@ -364,6 +367,6 @@
   <script src="js/user-profile.js?v=2"></script>
   <script src="scheduler-data.js?v=3"></script>
   <script src="js/pie-notifications.js"></script>
-  <script src="js/calculator.js?v=8"></script>
+  <script src="js/calculator.js?v=9"></script>
 </body>
 </html>

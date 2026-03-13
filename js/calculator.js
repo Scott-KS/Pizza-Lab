@@ -1403,19 +1403,34 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.removeItem("pielab-bake-timer");
   }
 
-  function playTimerSound() {
+  /* ── Looping alarm sound ── */
+  let alarmCtx = null;
+  let alarmIntervalId = null;
+
+  function startAlarmSound() {
+    stopAlarmSound(); // clean up any previous
     try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      [0, 0.3, 0.6].forEach(offset => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
+      alarmCtx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch { return; }
+    function beepBurst() {
+      if (!alarmCtx) return;
+      [0, 0.25, 0.5].forEach(offset => {
+        const osc = alarmCtx.createOscillator();
+        const gain = alarmCtx.createGain();
+        osc.connect(gain); gain.connect(alarmCtx.destination);
         osc.frequency.value = 880;
-        gain.gain.value = 0.3;
-        osc.start(ctx.currentTime + offset);
-        osc.stop(ctx.currentTime + offset + 0.15);
+        gain.gain.value = 0.35;
+        osc.start(alarmCtx.currentTime + offset);
+        osc.stop(alarmCtx.currentTime + offset + 0.15);
       });
-    } catch { /* Web Audio not available */ }
+    }
+    beepBurst(); // play immediately
+    alarmIntervalId = setInterval(beepBurst, 1500); // repeat every 1.5s
+  }
+
+  function stopAlarmSound() {
+    if (alarmIntervalId) { clearInterval(alarmIntervalId); alarmIntervalId = null; }
+    if (alarmCtx) { try { alarmCtx.close(); } catch {} alarmCtx = null; }
   }
 
   function timerComplete() {
@@ -1424,9 +1439,13 @@ document.addEventListener("DOMContentLoaded", () => {
     timer.remaining = 0;
     updateTimerDisplay();
     clearTimerState();
-    timerPauseBtn.textContent = "Done!";
-    timerPauseBtn.disabled = true;
-    playTimerSound();
+    // Swap to done controls (Stop Alarm button)
+    document.getElementById("timer-running-controls").classList.add("hidden");
+    document.getElementById("timer-done-controls").classList.remove("hidden");
+    timerStatusEl.textContent = "Pizza is done! 🍕";
+    // Start looping alarm
+    startAlarmSound();
+    // Browser notification
     if (typeof PieNotifications !== "undefined") {
       PieNotifications.requestPermission().then(ok => {
         if (ok) PieNotifications.schedule({ id: 9999, title: "Pizza is done! 🍕", body: "Your bake timer has finished.", at: new Date(Date.now() + 100) });
@@ -1444,14 +1463,22 @@ document.addEventListener("DOMContentLoaded", () => {
     if (timer.remaining % 5 === 0) saveTimerState();
   }
 
+  function resetTimerControls() {
+    document.getElementById("timer-running-controls").classList.remove("hidden");
+    document.getElementById("timer-done-controls").classList.add("hidden");
+    timerPauseBtn.textContent = "Pause";
+    timerPauseBtn.disabled = false;
+  }
+
   function startTimer(seconds) {
+    stopAlarmSound();
+    resetTimerControls();
     timer.total = seconds;
     timer.remaining = seconds;
     timer.startedAt = Date.now();
     timer.pauseOffset = 0;
     timer.running = true;
     timer.paused = false;
-    timerPauseBtn.textContent = "Pause";
     timerPauseBtn.disabled = false;
     timerStatusEl.textContent = `Total: ${formatTime(seconds)}`;
     updateTimerDisplay();
@@ -1522,17 +1549,25 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!timer.running) return;
     timer.total = Math.max(timer.total - 30, 1);
     timerStatusEl.textContent = `Total: ${formatTime(timer.total)}`;
-    timerTick();
-    if (timer.remaining <= 0) timerComplete();
-    saveTimerState();
+    timerTick();                       // timerTick calls timerComplete() if remaining <= 0
+    if (timer.running) saveTimerState(); // only save if timer is still running
   });
 
-  // Cancel
+  // Cancel (X button)
   document.getElementById("timer-cancel").addEventListener("click", () => {
     timer.running = false;
     timer.paused = false;
     clearInterval(timer.intervalId);
+    stopAlarmSound();
     clearTimerState();
+    resetTimerControls();
+    timerOverlay.classList.add("hidden");
+  });
+
+  // Stop Alarm
+  document.getElementById("timer-stop").addEventListener("click", () => {
+    stopAlarmSound();
+    resetTimerControls();
     timerOverlay.classList.add("hidden");
   });
 
