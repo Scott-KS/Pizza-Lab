@@ -3,6 +3,12 @@
    Page: kitchen.html
    ══════════════════════════════════════════════════════ */
 document.addEventListener("DOMContentLoaded", () => {
+  // ── Welcome banner for new users ───────────────────
+  if (new URLSearchParams(window.location.search).has("welcome")) {
+    const banner = document.getElementById("welcome-banner");
+    if (banner) banner.classList.remove("hidden");
+  }
+
   // ── DOM refs ─────────────────────────────────────────
   const nameInput   = document.getElementById("k-display-name");
   const cityInput   = document.getElementById("k-city");

@@ -4690,6 +4690,26 @@ body[data-page="journal"] main {
   opacity: 0;
 }
 
+/* ── Kitchen Welcome Banner ──────────────────────── */
+.welcome-banner {
+  background: linear-gradient(135deg, #fff8e1, #fff3cd);
+  border: 1px solid #ffe082;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.welcome-banner p {
+  margin: 0;
+}
+
+[data-theme="dark"] .welcome-banner {
+  background: linear-gradient(135deg, #3e2c0a, #332508);
+  border-color: #5c4a1e;
+}
+
 /* ── Kitchen Data Backup ──────────────────────────── */
 .kitchen-data-section {
   margin-top: 2rem;

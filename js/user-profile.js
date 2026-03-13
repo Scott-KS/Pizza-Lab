@@ -6,8 +6,8 @@ const PieLabProfile = (() => {
   const STORAGE_KEY = "pielab-user-profile";
 
   const DEFAULTS = {
-    displayName: "Michael",
-    city: "Chicago, IL",
+    displayName: "",
+    city: "",
     elevation: null,
     humidity: "normal",
     favoriteStyle: "",
