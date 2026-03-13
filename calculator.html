@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=11" />
+  <link rel="stylesheet" href="style.css?v=12" />
 </head>
 <body data-page="calculator">
 
@@ -189,17 +189,6 @@
         <span class="badge" id="result-badge"></span>
       </div>
 
-      <div class="unit-toggle-row">
-        <div class="toggle-group" id="unit-toggle">
-          <button type="button" class="toggle-btn selected" data-unit="g">Grams</button>
-          <button type="button" class="toggle-btn" data-unit="oz">Ounces</button>
-          <button type="button" class="toggle-btn" data-unit="vol">Volume</button>
-        </div>
-      </div>
-      <p class="volume-note hidden" id="volume-note">
-        <em>Note: Volume measurements are approximate. Weights are always more accurate for baking.</em>
-      </p>
-
       <div class="results-grid">
         <!-- Preferment result (shown when preferment toggle is on) -->
         <div id="preferment-result" class="result-section preferment-section hidden">
@@ -364,9 +353,9 @@
   <script src="journal.js?v=2"></script>
   <script src="js/nav.js?v=3"></script>
   <script src="js/premium.js?v=1"></script>
-  <script src="js/user-profile.js?v=2"></script>
+  <script src="js/user-profile.js?v=3"></script>
   <script src="scheduler-data.js?v=3"></script>
   <script src="js/pie-notifications.js"></script>
-  <script src="js/calculator.js?v=9"></script>
+  <script src="js/calculator.js?v=10"></script>
 </body>
 </html>

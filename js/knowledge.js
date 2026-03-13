@@ -24,7 +24,7 @@ function activateTab(tabId) {
   });
 
   // Hash-based routing on load
-  const knowledgeTabs = ["styles", "cheese", "flour", "fermentation", "compare"];
+  const knowledgeTabs = ["styles", "cheese", "flour", "fermentation", "compare", "hydration", "oven", "troubleshoot", "ddt", "volume"];
   const hash = location.hash.replace("#", "");
   if (knowledgeTabs.includes(hash)) {
     activateTab(hash);

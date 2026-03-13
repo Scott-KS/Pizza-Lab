@@ -80,73 +80,6 @@ const FLOUR_ABSORPTION = {
 };
 
 // ── Volume Conversion Data ──────────────────────────
-// Maps ingredient name substrings to { unit, gPerUnit }.
-// Lookup uses longest-substring-first matching so
-// "Extra Virgin Olive Oil" matches before "Olive Oil".
-const VOLUME_DENSITIES = {
-  // Dough
-  "Flour":                    { unit: "cup",  gPerUnit: 125 },
-  "Water":                    { unit: "cup",  gPerUnit: 237 },
-  "Salt":                     { unit: "tsp",  gPerUnit: 6 },
-  "Sea Salt":                 { unit: "tsp",  gPerUnit: 5 },
-  "Extra Virgin Olive Oil":   { unit: "tbsp", gPerUnit: 14 },
-  "Olive Oil":                { unit: "tbsp", gPerUnit: 14 },
-  "Sugar":                    { unit: "tsp",  gPerUnit: 4 },
-  "Instant Dry Yeast":        { unit: "tsp",  gPerUnit: 3.1 },
-  "Active Dry Yeast":         { unit: "tsp",  gPerUnit: 3.1 },
-  "Fresh Yeast":              { unit: "tsp",  gPerUnit: 5 },
-  "Yeast":                    { unit: "tsp",  gPerUnit: 3.1 },
-  // Sauce
-  "San Marzano Tomatoes":     { unit: "cup",  gPerUnit: 240 },
-  "Crushed Tomatoes":         { unit: "cup",  gPerUnit: 240 },
-  "Tomato Paste":             { unit: "tbsp", gPerUnit: 16 },
-  "Dried Oregano":            { unit: "tsp",  gPerUnit: 1.8 },
-  "Dried Basil":              { unit: "tsp",  gPerUnit: 1.5 },
-  "Garlic Powder":            { unit: "tsp",  gPerUnit: 3.1 },
-  "Red Pepper Flakes":        { unit: "tsp",  gPerUnit: 1.5 },
-  "Anchovy Paste":            { unit: "tsp",  gPerUnit: 5 },
-  "Garlic":                   { unit: "tsp",  gPerUnit: 5 },
-  "Fresh Basil":              { unit: "tbsp", gPerUnit: 3 },
-  // Cheese
-  "Mozzarella":               { unit: "cup",  gPerUnit: 113 },
-  "Provolone":                { unit: "cup",  gPerUnit: 113 },
-  "Provel Cheese":            { unit: "cup",  gPerUnit: 113 },
-  "Brick Cheese":             { unit: "cup",  gPerUnit: 113 },
-  "Cheddar":                  { unit: "cup",  gPerUnit: 113 },
-  "Parmesan":                 { unit: "tbsp", gPerUnit: 5 },
-  "Pecorino Romano":          { unit: "tbsp", gPerUnit: 5 },
-  // Toppings
-  "Pepperoni":                { unit: "cup",  gPerUnit: 140 },
-  "Italian Sausage":          { unit: "cup",  gPerUnit: 135 },
-  "Breadcrumbs":              { unit: "cup",  gPerUnit: 108 },
-  "Butter":                   { unit: "tbsp", gPerUnit: 14 },
-  "Giardiniera":              { unit: "cup",  gPerUnit: 170 },
-};
-
-// Sorted keys (longest first) for substring matching
-const VOLUME_KEYS = Object.keys(VOLUME_DENSITIES)
-  .sort((a, b) => b.length - a.length);
-
-// Unicode fractions for clean volume display
-const FRACTIONS = [
-  { threshold: 0.125, display: "\u215B" },  // ⅛
-  { threshold: 0.25,  display: "\u00BC" },  // ¼
-  { threshold: 0.333, display: "\u2153" },  // ⅓
-  { threshold: 0.5,   display: "\u00BD" },  // ½
-  { threshold: 0.667, display: "\u2154" },  // ⅔
-  { threshold: 0.75,  display: "\u00BE" },  // ¾
-];
-
-function nearestFraction(decimal) {
-  let best = FRACTIONS[0];
-  let bestDist = Math.abs(decimal - best.threshold);
-  for (const f of FRACTIONS) {
-    const dist = Math.abs(decimal - f.threshold);
-    if (dist < bestDist) { best = f; bestDist = dist; }
-  }
-  return best.display;
-}
-
 function showScalingMemoryIndicator(styleName) {
   const el = document.getElementById("scaling-memory-indicator");
   if (!el) return;
@@ -159,48 +92,6 @@ function showScalingMemoryIndicator(styleName) {
   }, 3000);
 }
 
-function findVolumeDensity(name) {
-  if (VOLUME_DENSITIES[name]) return VOLUME_DENSITIES[name];
-  for (const key of VOLUME_KEYS) {
-    if (name.includes(key)) return VOLUME_DENSITIES[key];
-  }
-  return null;
-}
-
-function formatVolume(value, unit) {
-  const whole = Math.floor(value);
-  const frac = value - whole;
-  const plural = unit === "cup" && (whole > 1 || value > 1) ? "cups" : unit;
-
-  if (frac < 0.0625) {
-    if (whole === 0) return "< \u215B " + unit;          // < ⅛
-    return whole + " " + (unit === "cup" && whole > 1 ? "cups" : unit);
-  }
-  const fracStr = nearestFraction(frac);
-  if (whole === 0) return fracStr + " " + unit;
-  return whole + " " + fracStr + " " + (unit === "cup" && whole >= 1 ? "cups" : unit);
-}
-
-function gramsToVolume(grams, ingredientName) {
-  const density = findVolumeDensity(ingredientName);
-  if (!density) return null;
-
-  let rawUnits = grams / density.gPerUnit;
-  let displayUnit = density.unit;
-
-  // Promote tsp → tbsp → cups for readability
-  if (displayUnit === "tsp" && rawUnits >= 3) {
-    rawUnits = rawUnits / 3;
-    displayUnit = "tbsp";
-  }
-  if (displayUnit === "tbsp" && rawUnits >= 4) {
-    rawUnits = rawUnits / 16;
-    displayUnit = "cup";
-  }
-
-  return formatVolume(rawUnits, displayUnit);
-}
-
 function gramsToOz(grams) {
   const oz = grams / 28.3495;
   if (oz < 0.1) return "< 0.1 oz";
@@ -209,15 +100,11 @@ function gramsToOz(grams) {
 
 function formatAmount(grams, ingredientName) {
   if (currentUnit === "g") return grams + " g";
-  if (currentUnit === "oz") return gramsToOz(grams);
-  // Volume mode — fall back to oz for unmapped ingredients
-  return gramsToVolume(grams, ingredientName) || gramsToOz(grams);
+  return gramsToOz(grams);
 }
 
 function unitColumnHeader() {
-  if (currentUnit === "g") return "Grams";
-  if (currentUnit === "oz") return "Ounces";
-  return "Volume";
+  return currentUnit === "g" ? "Grams" : "Ounces";
 }
 
 // ── All DOM-dependent code runs after DOMContentLoaded ──
@@ -238,6 +125,16 @@ document.addEventListener("DOMContentLoaded", () => {
         ovenSelect.querySelector(`option[value="${kitchenProfile.preferredOven}"]`)) {
       ovenSelect.value = kitchenProfile.preferredOven;
     }
+
+    // Pre-select favorite style from Kitchen profile
+    if (kitchenProfile.favoriteStyle && typeSelectEl &&
+        typeSelectEl.querySelector(`option[value="${kitchenProfile.favoriteStyle}"]`)) {
+      typeSelectEl.value = kitchenProfile.favoriteStyle;
+      typeSelectEl.dispatchEvent(new Event("change"));
+    }
+
+    // Set measurement unit from Kitchen profile
+    currentUnit = PieLabProfile.isMetric() ? "g" : "oz";
   }
 
   // ── Mode Toggle (Quick Calculate / Plan My Bake) ───
@@ -436,9 +333,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   if (fermentTempSlider && fermentTempLabel) {
-    fermentTempSlider.addEventListener("input", () => {
-      fermentTempLabel.textContent = fermentTempSlider.value + "°F";
-    });
+    function updateFermentTempLabel() {
+      const valF = parseFloat(fermentTempSlider.value);
+      fermentTempLabel.textContent = currentUnit === "g"
+        ? fToC(valF) + "°C"
+        : valF + "°F";
+    }
+    fermentTempSlider.addEventListener("input", updateFermentTempLabel);
+    updateFermentTempLabel(); // set initial label
   }
 
   // ── Form Submit ──────────────────────────────────────
@@ -572,18 +474,7 @@ document.addEventListener("DOMContentLoaded", () => {
     lastSauce = sauce;
     lastToppings = toppings;
 
-    // Reset unit toggle to Grams on each new calculation
-    currentUnit = "g";
-    const unitToggle = document.getElementById("unit-toggle");
-    if (unitToggle) {
-      unitToggle.querySelectorAll(".toggle-btn").forEach((b) =>
-        b.classList.toggle("selected", b.dataset.unit === "g")
-      );
-    }
-    const volumeNote = document.getElementById("volume-note");
-    if (volumeNote) volumeNote.classList.add("hidden");
-
-    // Render tables (unit-aware)
+    // Render tables (unit-aware — driven by Kitchen measurement setting)
     // If preferment active, render both preferment table and modified final dough
     const prefResultEl = document.getElementById("preferment-result");
     const doughTitle = document.getElementById("dough-section-title");
@@ -617,7 +508,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (yeastNote) {
       if (dynamicYeastActive) {
         const pct = (adjustedRecipe.yeastPct * 100).toFixed(2);
-        yeastNote.textContent = `Yeast scaled to ${pct}% — ${fermentHoursVal}h at ${fermentTempVal}°F (Lehmann Method)`;
+        const tempStr = currentUnit === "g" ? `${fToC(fermentTempVal)}°C` : `${fermentTempVal}°F`;
+        yeastNote.textContent = `Yeast scaled to ${pct}% — ${fermentHoursVal}h at ${tempStr} (Lehmann Method)`;
         yeastNote.classList.remove("hidden");
       } else {
         yeastNote.classList.add("hidden");
@@ -634,8 +526,11 @@ document.addEventListener("DOMContentLoaded", () => {
       ? OVEN_PREHEAT_MINUTES[ovenType]
       : 45;
 
+    const tempDisplay = currentUnit === "g"
+      ? `${recTempC}°C`
+      : `${recTempF}°F`;
     document.getElementById("baking-instructions").innerHTML = `
-      <p><strong>Preheat oven to:</strong> ${recTempF}°F / ${recTempC}°C (preheat for at least ${preheatMinutes} minutes)</p>
+      <p><strong>Preheat oven to:</strong> ${tempDisplay} (preheat for at least ${preheatMinutes} minutes)</p>
       <p><strong>Bake time:</strong> ${bakingInfo.bakeTime}</p>
     `;
 
@@ -792,34 +687,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btn-log-bake").addEventListener("click", () => {
     window.location.href = "journal.html?prefill=1";
   });
-
-  // ── Unit Toggle Handler ───────────────────────────────
-  const unitToggleEl = document.getElementById("unit-toggle");
-  const volumeNoteEl = document.getElementById("volume-note");
-
-  if (unitToggleEl) {
-    unitToggleEl.addEventListener("click", (e) => {
-      const btn = e.target.closest(".toggle-btn");
-      if (!btn) return;
-
-      unitToggleEl.querySelectorAll(".toggle-btn").forEach((b) =>
-        b.classList.remove("selected")
-      );
-      btn.classList.add("selected");
-      currentUnit = btn.dataset.unit;
-
-      // Show/hide volume disclaimer
-      if (volumeNoteEl) {
-        volumeNoteEl.classList.toggle("hidden", currentUnit !== "vol");
-      }
-
-      // Re-render all tables from cached data
-      if (lastDough) renderDoughTable(lastDough);
-      if (lastPreferment) renderPrefermentTable(lastPreferment.preferment);
-      if (lastSauce) renderSimpleTable("sauce-table", lastSauce);
-      if (lastToppings) renderSimpleTable("toppings-table", lastToppings);
-    });
-  }
 
   // ── Flour Substitution Handler ───────────────────────
   document.getElementById("flour-sub-select").addEventListener("change", () => {

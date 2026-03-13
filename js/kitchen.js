@@ -40,6 +40,23 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedHumidity = btn.dataset.value;
   });
 
+  // ── Measurement System toggle ──────────────────────
+  const unitsGrp = document.getElementById("k-units");
+  let selectedUnits = profile.unitSystem || "standard";
+
+  unitsGrp.querySelectorAll(".toggle-btn").forEach((btn) => {
+    btn.classList.toggle("selected", btn.dataset.value === selectedUnits);
+  });
+
+  unitsGrp.addEventListener("click", (e) => {
+    const btn = e.target.closest(".toggle-btn");
+    if (!btn) return;
+
+    unitsGrp.querySelectorAll(".toggle-btn").forEach((b) => b.classList.remove("selected"));
+    btn.classList.add("selected");
+    selectedUnits = btn.dataset.value;
+  });
+
   // ── Location autocomplete & elevation ────────────────
   const suggestList = document.getElementById("k-city-suggestions");
   let storedCity         = profile.city || "";
@@ -238,6 +255,7 @@ document.addEventListener("DOMContentLoaded", () => {
       humidity:      selectedHumidity,
       preferredOven: ovenSelect.value,
       favoriteStyle: styleSelect.value,
+      unitSystem:    selectedUnits,
     };
 
     PieLabProfile.saveProfile(updates);

@@ -6026,3 +6026,51 @@ body[data-page="kitchen"] main {
   margin-top: 0.75rem;
   font-style: italic;
 }
+
+/* ── Volume Conversion Tool ─────────────────────────── */
+.vol-converter {
+  max-width: 500px;
+}
+.vol-input-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.vol-arrow {
+  font-size: 1.4rem;
+  color: var(--clr-text-light);
+  margin-top: 1.2rem;
+}
+.vol-result {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--clr-primary);
+  padding: 0.5rem 0;
+  min-height: 2.2rem;
+}
+.vol-ref-table {
+  margin-top: 1.5rem;
+}
+.vol-ref-table h4 {
+  margin-bottom: 0.5rem;
+}
+.vol-ref-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.vol-ref-table th,
+.vol-ref-table td {
+  padding: 0.35rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--clr-border);
+}
+.vol-ref-table th {
+  font-weight: 600;
+  background: var(--clr-section-bg);
+}
+@media (max-width: 500px) {
+  .vol-input-row { flex-direction: column; gap: 0.25rem; }
+  .vol-arrow { transform: rotate(90deg); margin-top: 0; }
+}

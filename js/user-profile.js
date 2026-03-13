@@ -6,12 +6,13 @@ const PieLabProfile = (() => {
   const STORAGE_KEY = "pielab-user-profile";
 
   const DEFAULTS = {
-    displayName: "",
-    city: "",
+    displayName: "Michael",
+    city: "Chicago, IL",
     elevation: null,
     humidity: "normal",
     favoriteStyle: "",
     preferredOven: "",
+    unitSystem: "standard",   // "standard" (oz/°F) or "metric" (g/°C)
     createdAt: null,
     updatedAt: null,
   };
@@ -173,10 +174,16 @@ const PieLabProfile = (() => {
     return "beginner";
   }
 
+  /** Convenience: true when user has chosen Metric (g / °C). */
+  function isMetric() {
+    return getProfile().unitSystem === "metric";
+  }
+
   return {
     getProfile,
     saveProfile,
     clearProfile,
+    isMetric,
     getElevationAdjustments,
     getHumidityAdjustments,
     resolveElevationFromCity,
