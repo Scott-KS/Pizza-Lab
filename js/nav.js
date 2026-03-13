@@ -14,7 +14,7 @@ if ("serviceWorker" in navigator) {
 const OVEN_TYPES = {
   steel:        "Home Oven + Pizza Steel",
   stone:        "Home Oven + Pizza Stone",
-  ooni:         "Ooni / Portable Pizza Oven",
+  ooni:         "Portable Pizza Oven",
   "wood-fired": "Wood-Fired Oven",
   "cast-iron":  "Cast Iron Skillet",
   pan:          "Sheet Pan / Home Oven",
