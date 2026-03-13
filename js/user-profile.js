@@ -12,7 +12,7 @@ const PieLabProfile = (() => {
     humidity: "normal",
     favoriteStyle: "",
     preferredOven: "",
-    unitSystem: "standard",   // "standard" (oz/°F) or "metric" (g/°C)
+    unitSystem: "standard",   // "standard" (oz/°F), "metric" (g/°C), or "hybrid" (g/°F)
     createdAt: null,
     updatedAt: null,
   };
@@ -179,11 +179,24 @@ const PieLabProfile = (() => {
     return getProfile().unitSystem === "metric";
   }
 
+  /** True when weight should display in grams (metric or hybrid). */
+  function isMetricWeight() {
+    const sys = getProfile().unitSystem;
+    return sys === "metric" || sys === "hybrid";
+  }
+
+  /** True when temperature should display in °C (metric only). */
+  function isMetricTemp() {
+    return getProfile().unitSystem === "metric";
+  }
+
   return {
     getProfile,
     saveProfile,
     clearProfile,
     isMetric,
+    isMetricWeight,
+    isMetricTemp,
     getElevationAdjustments,
     getHumidityAdjustments,
     resolveElevationFromCity,

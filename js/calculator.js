@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Set measurement unit from Kitchen profile
-    currentUnit = PieLabProfile.isMetric() ? "g" : "oz";
+    currentUnit = PieLabProfile.isMetricWeight() ? "g" : "oz";
   }
 
   // ── Mode Toggle (Quick Calculate / Plan My Bake) ───
@@ -232,7 +232,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof updateFermentTempLabel === "function") updateFermentTempLabel();
     else {
       const valF = parseFloat(fermentTempSlider.value);
-      fermentTempLabel.textContent = currentUnit === "g"
+      const metricTemp = typeof PieLabProfile !== "undefined" && PieLabProfile.isMetricTemp();
+      fermentTempLabel.textContent = metricTemp
         ? fToC(valF) + "°C"
         : valF + "°F";
     }
@@ -373,7 +374,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateFermentTempLabel() {
     if (!fermentTempSlider || !fermentTempLabel) return;
     const valF = parseFloat(fermentTempSlider.value);
-    fermentTempLabel.textContent = currentUnit === "g"
+    const metricTemp = typeof PieLabProfile !== "undefined" && PieLabProfile.isMetricTemp();
+    fermentTempLabel.textContent = metricTemp
       ? fToC(valF) + "°C"
       : valF + "°F";
   }
@@ -547,7 +549,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (yeastNote) {
       if (dynamicYeastActive) {
         const pct = (adjustedRecipe.yeastPct * 100).toFixed(2);
-        const tempStr = currentUnit === "g" ? `${fToC(fermentTempVal)}°C` : `${fermentTempVal}°F`;
+        const metricTempYeast = typeof PieLabProfile !== "undefined" && PieLabProfile.isMetricTemp();
+        const tempStr = metricTempYeast ? `${fToC(fermentTempVal)}°C` : `${fermentTempVal}°F`;
         yeastNote.textContent = `Yeast scaled to ${pct}% — ${fermentHoursVal}h at ${tempStr} (Lehmann Method)`;
         yeastNote.classList.remove("hidden");
       } else {
@@ -565,19 +568,34 @@ document.addEventListener("DOMContentLoaded", () => {
       ? OVEN_PREHEAT_MINUTES[ovenType]
       : 45;
 
-    const tempDisplay = currentUnit === "g"
+    const metricTempBake = typeof PieLabProfile !== "undefined" && PieLabProfile.isMetricTemp();
+    const tempDisplay = metricTempBake
       ? `${recTempC}°C`
       : `${recTempF}°F`;
+    // Oven temp
     document.getElementById("baking-instructions").innerHTML = `
       <p><strong>Preheat oven to:</strong> ${tempDisplay} (preheat for at least ${preheatMinutes} minutes)</p>
-      <p><strong>Bake time:</strong> ${bakingInfo.bakeTime}</p>
     `;
+
+    // Rack position
+    const rackEl = document.getElementById("baking-rack");
+    if (rackEl) {
+      rackEl.innerHTML = recipe.rackPosition
+        ? `<p><strong>Rack position:</strong> ${recipe.rackPosition}</p>`
+        : "";
+    }
 
     // Tiered tips — init slider for this style (sets level from profile/bakes), then render
     window._currentTips   = recipe.tips || [];
     window._currentStyleKey = type;
     if (window.initTipsSlider) window.initTipsSlider(type);
     if (window.renderTips)    window.renderTips();
+
+    // Bake time (below tips)
+    const bakeTimeEl = document.getElementById("baking-time");
+    if (bakeTimeEl) {
+      bakeTimeEl.innerHTML = `<p><strong>Bake time:</strong> ${bakingInfo.bakeTime}</p>`;
+    }
 
     // ── Contextual "Learn More" link (cross-page) ──
     const learnMoreEl = document.getElementById("results-learn-more");
@@ -1420,7 +1438,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Start button
   document.getElementById("btn-start-timer").addEventListener("click", () => {
-    const instrEl = document.getElementById("baking-instructions");
+    const instrEl = document.getElementById("baking-time");
     const bakeTimeText = instrEl ? instrEl.textContent : "";
     const seconds = parseBakeTimeString(bakeTimeText);
     startTimer(seconds);

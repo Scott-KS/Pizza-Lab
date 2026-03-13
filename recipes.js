@@ -35,6 +35,7 @@ const PIZZA_RECIPES = {
     ],
     idealTemp: { min: 800, max: 950 },
     bakeTime: { hot: "60–90 seconds", medium: "4–6 minutes", low: "8–12 minutes" },
+    rackPosition: "Upper third — place stone or steel on the top rack for maximum top heat",
     tips: [
       { level: "beginner", tip: "Use Tipo 00 flour — it creates a softer, more elastic dough that stretches without snapping back." },
       { level: "beginner", tip: "Keep your ingredient amounts minimal: flour, water, salt, and yeast only. No oil, no sugar." },
@@ -78,6 +79,7 @@ const PIZZA_RECIPES = {
     ],
     idealTemp: { min: 500, max: 550 },
     bakeTime: { hot: "8–10 minutes", medium: "12–15 minutes", low: "16–20 minutes" },
+    rackPosition: "Lower third — stone or steel on a low rack for crisp bottom and foldable crust",
     tips: [
       { level: "beginner", tip: "Use bread flour, not all-purpose — the higher protein content gives you that signature chewy bite." },
       { level: "beginner", tip: "Take the dough out of the fridge 2–3 hours before baking. Cold dough tears; relaxed dough stretches." },
@@ -122,6 +124,7 @@ const PIZZA_RECIPES = {
     ],
     idealTemp: { min: 475, max: 550 },
     bakeTime: { hot: "8–10 minutes", medium: "12–15 minutes", low: "16–20 minutes" },
+    rackPosition: "Lower third — directly on a stone or steel for a crisp, cracker-like bottom",
     tips: [
       { level: "beginner", tip: "Roll the dough paper-thin with a rolling pin — this style requires even thickness edge to edge, not hand-stretching." },
       { level: "beginner", tip: "Dock the entire dough surface with a fork before topping. This prevents bubbles that would make the crust uneven." },
@@ -166,6 +169,7 @@ const PIZZA_RECIPES = {
     ],
     idealTemp: { min: 500, max: 550 },
     bakeTime: { hot: "10–12 minutes", medium: "14–18 minutes", low: "20–25 minutes" },
+    rackPosition: "Lower third — low rack to fry the bottom crust in the oiled pan",
     tips: [
       { level: "beginner", tip: "Oil the pan very generously — this is what fries the bottom and sides into that signature crispy crust." },
       { level: "beginner", tip: "Cheese goes on first, spread edge-to-edge. The fat melts down the sides and caramelizes against the pan wall." },
@@ -208,6 +212,7 @@ const PIZZA_RECIPES = {
     ],
     idealTemp: { min: 475, max: 525 },
     bakeTime: { hot: "12–15 minutes", medium: "18–22 minutes", low: "25–30 minutes" },
+    rackPosition: "Lower third — bottom rack to crisp the oiled pan base evenly",
     tips: [
       { level: "beginner", tip: "Oil the pan generously — at least 3 tablespoons. The bottom should essentially fry in the oil during baking." },
       { level: "beginner", tip: "Press dough into the pan, then cover and let it rest 20 minutes before pressing again. Rushing tears it." },
@@ -249,6 +254,7 @@ const PIZZA_RECIPES = {
     ],
     idealTemp: { min: 450, max: 500 },
     bakeTime: { hot: "14–18 minutes", medium: "20–25 minutes", low: "28–35 minutes" },
+    rackPosition: "Lower third — low rack for even bottom heat on the thick slab",
     tips: [
       { level: "beginner", tip: "Oil the pan generously with olive oil — this is non-negotiable. The bottom should come out golden and slightly fried." },
       { level: "beginner", tip: "Lay provolone slices directly on the dough first, then dollop sauce on top. This is the classic Grandma assembly order." },
@@ -290,6 +296,7 @@ const PIZZA_RECIPES = {
     ],
     idealTemp: { min: 475, max: 525 },
     bakeTime: { hot: "6–8 minutes", medium: "10–13 minutes", low: "15–18 minutes" },
+    rackPosition: "Middle rack — stone or steel centered for even heat on thin crust",
     tips: [
       { level: "beginner", tip: "Use a rolling pin — this style requires even, flat thickness that hand-stretching cannot achieve." },
       { level: "beginner", tip: "Dock the entire crust surface with a fork before adding toppings to prevent it from puffing up in the oven." },
@@ -332,6 +339,7 @@ const PIZZA_RECIPES = {
     ],
     idealTemp: { min: 450, max: 500 },
     bakeTime: { hot: "12–15 minutes", medium: "18–22 minutes", low: "25–30 minutes" },
+    rackPosition: "Lower third — low rack to crisp the oiled pan bottom",
     tips: [
       { level: "beginner", tip: "Oil the pan generously — 2–3 tablespoons of olive oil minimum. This is what creates the crispy fried bottom." },
       { level: "beginner", tip: "If the dough springs back when you press it, cover it and wait 15 minutes before trying again." },
@@ -374,6 +382,7 @@ const PIZZA_RECIPES = {
     ],
     idealTemp: { min: 475, max: 525 },
     bakeTime: { hot: "7–9 minutes", medium: "10–13 minutes", low: "14–18 minutes" },
+    rackPosition: "Middle rack — even heat for the ultra-thin cracker crust",
     tips: [
       { level: "beginner", tip: "St. Louis dough uses baking powder, not yeast — add 1 tsp (4g) per 250g flour. Mix it in with the dry ingredients." },
       { level: "beginner", tip: "Provel cheese is non-negotiable for authenticity — it's a processed blend of provolone, Swiss, and cheddar that melts into a sticky, gooey layer." },
@@ -416,6 +425,7 @@ const PIZZA_RECIPES = {
     ],
     idealTemp: { min: 600, max: 800 },
     bakeTime: { hot: "3–5 minutes", medium: "8–12 minutes", low: "14–18 minutes" },
+    rackPosition: "Upper third — steel on top rack, use broiler to char the top",
     tips: [
       { level: "beginner", tip: "Crank your oven as high as it will go and preheat your stone or steel for at least 45 minutes. High heat is the whole game here." },
       { level: "beginner", tip: "Char is a feature, not a flaw. Black spots on the cornicione are exactly what you're after — don't pull it early." },
@@ -458,6 +468,7 @@ const PIZZA_RECIPES = {
     ],
     idealTemp: { min: 475, max: 525 },
     bakeTime: { hot: "8–10 minutes", medium: "12–15 minutes", low: "16–20 minutes" },
+    rackPosition: "Lower third — stone or steel on low rack, move up to finish if needed",
     tips: [
       { level: "beginner", tip: "The cold cheese step is the whole point — bake the pizza completely, pull it out, then pile on shredded provolone immediately." },
       { level: "beginner", tip: "Don't put the cheese in the oven. It doesn't fully melt and that's correct — the half-melted texture is the signature." },
@@ -498,6 +509,7 @@ const PIZZA_RECIPES = {
     ],
     idealTemp: { min: 475, max: 525 },
     bakeTime: { hot: "12–14 minutes", medium: "16–20 minutes", low: "22–26 minutes" },
+    rackPosition: "Lower third — bottom rack to fry the skillet base, move up to finish the top",
     tips: [
       { level: "beginner", tip: "Add butter or olive oil to the cold skillet, then press the dough in and let it rest 20–30 minutes before baking — this prevents tearing." },
       { level: "beginner", tip: "Use a well-seasoned 10–12 inch cast iron pan. Glass and non-stick pans don't conduct heat the same way and won't give you the right crust." },
@@ -540,6 +552,7 @@ const PIZZA_RECIPES = {
     ],
     idealTemp: { min: 475, max: 525 },
     bakeTime: { hot: "8–10 minutes", medium: "12–15 minutes", low: "16–20 minutes" },
+    rackPosition: "Middle rack — center for even heat on this quick bake",
     tips: [
       { level: "beginner", tip: "Mix, rest 10 minutes, shape, top, bake. That's the whole process — this is pizza without patience required." },
       { level: "beginner", tip: "Use a rolling pin or press by hand. With no fermentation, there's no gluten tension fighting you — the dough is cooperative." },

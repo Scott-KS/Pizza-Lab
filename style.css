@@ -94,7 +94,6 @@
 [data-theme="dark"] .journal-entry-card,
 [data-theme="dark"] .result-section,
 [data-theme="dark"] .instructions-section,
-[data-theme="dark"] .tips-section,
 [data-theme="dark"] .schedule-step,
 [data-theme="dark"] .kitchen-card {
   background: var(--clr-card);
@@ -712,16 +711,14 @@ main {
 }
 
 /* ── Instructions & Tips ─────────────────────────── */
-.instructions-section,
-.tips-section {
+.instructions-section {
   margin-top: 2rem;
   background: var(--clr-section-bg);
   border-radius: 8px;
   padding: 1.25rem;
 }
 
-.instructions-section h3,
-.tips-section h3 {
+.instructions-section h3 {
   font-family: var(--font-body);
   font-size: 1rem;
   color: var(--clr-text-light);
@@ -731,9 +728,33 @@ main {
   font-weight: 700;
 }
 
-#baking-instructions p {
+.tips-subsection {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--clr-border);
+}
+
+.tips-subsection h4 {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--clr-text-light);
+  margin-bottom: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+
+#baking-instructions p,
+#baking-rack p,
+#baking-time p {
   margin-bottom: 0.5rem;
   font-size: 0.95rem;
+}
+
+#baking-time {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--clr-border);
 }
 
 #pro-tips {
@@ -4659,6 +4680,19 @@ body[data-page="journal"] main {
   color: #fff;
 }
 
+/* Three-button toggle variant (measurement system) */
+.toggle-group--three {
+  flex-wrap: wrap;
+}
+
+.toggle-group--three .toggle-btn:last-child {
+  flex: 0 0 100%;
+  border-right: none;
+  border-top: 2px solid var(--clr-border);
+  text-align: center;
+  font-size: 0.88rem;
+}
+
 /* Save button */
 .btn-save-kitchen {
   width: 100%;
@@ -5017,7 +5051,8 @@ body[data-page="kitchen"] main {
   margin-bottom: 0.75rem;
 }
 
-.tips-header h3 {
+.tips-header h3,
+.tips-header h4 {
   margin-bottom: 0 !important;
   white-space: nowrap;
 }
@@ -5314,8 +5349,7 @@ body[data-page="kitchen"] main {
     grid-column: auto;
   }
   .result-section,
-  .instructions-section,
-  .tips-section {
+  .instructions-section {
     background: #fff;
     border: 1px solid #ccc;
     padding: 0.4rem 0.5rem;
@@ -5323,8 +5357,7 @@ body[data-page="kitchen"] main {
     break-inside: avoid;
   }
   .result-section h3,
-  .instructions-section h3,
-  .tips-section h3 {
+  .instructions-section h3 {
     color: #333;
     font-size: 10pt;
     margin-bottom: 0.2rem;
@@ -5349,13 +5382,12 @@ body[data-page="kitchen"] main {
     padding-top: 0.25rem;
   }
 
-  /* ── Instructions + Tips side by side below grid ─── */
-  .instructions-section,
-  .tips-section {
+  /* ── Instructions + Tips below grid ─── */
+  .instructions-section {
     font-size: 9pt;
   }
   .instructions-section p,
-  .tips-section li {
+  .tips-subsection li {
     margin-bottom: 0.15rem;
   }
 

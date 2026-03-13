@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=16" />
+  <link rel="stylesheet" href="style.css?v=17" />
 </head>
 <body data-page="calculator">
 
@@ -241,29 +241,32 @@
       <div class="instructions-section">
         <h3>Baking Instructions</h3>
         <div id="baking-instructions"></div>
-        <button class="btn-start-timer" id="btn-start-timer" type="button">⏱ Start Bake Timer</button>
-      </div>
+        <div id="baking-rack"></div>
 
-      <div class="tips-section">
-        <div class="tips-header">
-          <h3>Tips</h3>
-          <div class="tips-level-control" id="tips-level-control">
-            <div class="tips-slider-labels">
-              <span>Beginner</span>
-              <span>Intermediate</span>
-              <span>Pro</span>
+        <div class="tips-subsection">
+          <div class="tips-header">
+            <h4>Tips</h4>
+            <div class="tips-level-control" id="tips-level-control">
+              <div class="tips-slider-labels">
+                <span>Beginner</span>
+                <span>Intermediate</span>
+                <span>Pro</span>
+              </div>
+              <input
+                type="range"
+                id="tips-level-slider"
+                min="0" max="2" step="1"
+                value="0"
+                aria-label="Skill level"
+              />
+              <div class="tips-level-badge" id="tips-level-badge">Beginner</div>
             </div>
-            <input
-              type="range"
-              id="tips-level-slider"
-              min="0" max="2" step="1"
-              value="0"
-              aria-label="Skill level"
-            />
-            <div class="tips-level-badge" id="tips-level-badge">Beginner</div>
           </div>
+          <ul id="pro-tips"></ul>
         </div>
-        <ul id="pro-tips"></ul>
+
+        <div id="baking-time"></div>
+        <button class="btn-start-timer" id="btn-start-timer" type="button">⏱ Start Bake Timer</button>
       </div>
 
       <div class="results-learn-more" id="results-learn-more"></div>
@@ -348,14 +351,14 @@
 
   <!-- Scripts: Capacitor init first, then data files, then shared nav, then page features -->
   <script src="js/capacitor-init.js"></script>
-  <script src="recipes.js?v=5"></script>
+  <script src="recipes.js?v=6"></script>
   <script src="knowledge-data.js?v=2"></script>
   <script src="journal.js?v=2"></script>
   <script src="js/nav.js?v=3"></script>
   <script src="js/premium.js?v=1"></script>
-  <script src="js/user-profile.js?v=4"></script>
+  <script src="js/user-profile.js?v=5"></script>
   <script src="scheduler-data.js?v=4"></script>
   <script src="js/pie-notifications.js"></script>
-  <script src="js/calculator.js?v=12"></script>
+  <script src="js/calculator.js?v=14"></script>
 </body>
 </html>

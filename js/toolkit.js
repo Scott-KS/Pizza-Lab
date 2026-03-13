@@ -351,7 +351,7 @@ function populateDDTCalculator() {
   if (!panel) return;
   if (typeof DDT_PRESETS === "undefined") return;
 
-  const metric = typeof PieLabProfile !== "undefined" && PieLabProfile.isMetric();
+  const metric = typeof PieLabProfile !== "undefined" && PieLabProfile.isMetricTemp();
   const unit = metric ? "°C" : "°F";
 
   // Helper: convert °F default to user unit for display
