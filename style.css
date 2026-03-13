@@ -95,8 +95,24 @@
 [data-theme="dark"] .result-section,
 [data-theme="dark"] .instructions-section,
 [data-theme="dark"] .schedule-step,
-[data-theme="dark"] .kitchen-card {
+[data-theme="dark"] .kitchen-card,
+[data-theme="dark"] .legal-page {
   background: var(--clr-card);
+}
+
+[data-theme="dark"] .data-notice {
+  background: var(--clr-section-bg);
+  border-bottom-color: var(--clr-border);
+}
+
+[data-theme="dark"] .btn-delete-data {
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+[data-theme="dark"] .btn-delete-data:hover {
+  background: #e74c3c;
+  color: #fff;
 }
 
 [data-theme="dark"] .modal-content {
@@ -6288,4 +6304,261 @@ body[data-page="kitchen"] main {
 @media (max-width: 500px) {
   .vol-input-row { flex-direction: column; gap: 0.25rem; }
   .vol-arrow { transform: rotate(90deg); margin-top: 0; }
+}
+
+/* ══════════════════════════════════════════════════════
+   LEGAL PAGE
+   ══════════════════════════════════════════════════════ */
+
+.legal-page {
+  max-width: 720px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: var(--clr-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  line-height: 1.7;
+}
+
+.legal-page h1 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--clr-display);
+  margin-bottom: 0.5rem;
+}
+
+.legal-toc {
+  margin-bottom: 2.5rem;
+  font-size: 0.95rem;
+}
+
+.legal-toc a {
+  color: var(--clr-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.legal-toc a:hover {
+  text-decoration: underline;
+}
+
+.legal-toc-sep {
+  margin: 0 0.5rem;
+  color: var(--clr-text-light);
+}
+
+.legal-section {
+  scroll-margin-top: 5rem;
+}
+
+.legal-section h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--clr-display);
+  margin-bottom: 0.25rem;
+}
+
+.legal-section h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--clr-display);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.legal-section p {
+  margin-bottom: 0.75rem;
+  color: var(--clr-text);
+}
+
+.legal-section ul {
+  margin: 0.5rem 0 1rem 1.5rem;
+  color: var(--clr-text);
+}
+
+.legal-section ul li {
+  margin-bottom: 0.4rem;
+}
+
+.legal-section a {
+  color: var(--clr-primary);
+  text-decoration: none;
+}
+
+.legal-section a:hover {
+  text-decoration: underline;
+}
+
+.legal-updated {
+  font-size: 0.85rem;
+  color: var(--clr-text-light);
+  margin-bottom: 1.5rem;
+}
+
+.legal-divider {
+  border: none;
+  border-top: 1px solid var(--clr-border);
+  margin: 2.5rem 0;
+}
+
+@media (max-width: 600px) {
+  .legal-page {
+    margin: 1rem;
+    padding: 1.5rem 1.25rem;
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   FOOTER LEGAL LINKS
+   ══════════════════════════════════════════════════════ */
+
+.footer-legal-links {
+  margin-bottom: 0.35rem;
+  font-size: 0.8rem;
+}
+
+.footer-legal-links a {
+  color: var(--clr-text-light);
+  text-decoration: none;
+}
+
+.footer-legal-links a:hover {
+  text-decoration: underline;
+  color: var(--clr-primary);
+}
+
+.footer-sep {
+  margin: 0 0.4rem;
+  color: var(--clr-text-light);
+  opacity: 0.5;
+}
+
+/* ══════════════════════════════════════════════════════
+   DATA & PRIVACY SECTION (Kitchen)
+   ══════════════════════════════════════════════════════ */
+
+.kitchen-data-privacy-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--clr-border);
+}
+
+.kitchen-data-privacy-section h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--clr-display);
+  margin-bottom: 0.25rem;
+}
+
+.data-privacy-links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.data-privacy-links a {
+  color: var(--clr-primary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.data-privacy-links a:hover {
+  text-decoration: underline;
+}
+
+.btn-delete-data {
+  display: inline-block;
+  padding: 0.6rem 1.25rem;
+  border: 2px solid #c0392b;
+  border-radius: 8px;
+  background: none;
+  color: #c0392b;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 200ms ease, color 200ms ease;
+}
+
+.btn-delete-data:hover {
+  background: #c0392b;
+  color: #fff;
+}
+
+/* Narrow modal variant for delete confirmation */
+.modal-content--narrow {
+  max-width: 420px;
+}
+
+.modal-content--narrow h3 {
+  font-family: var(--font-display);
+  margin-bottom: 0.5rem;
+}
+
+.modal-content--narrow p {
+  font-size: 0.9rem;
+  color: var(--clr-text-light);
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+}
+
+.btn-modal-cancel {
+  flex: 1;
+  padding: 0.6rem 1.25rem;
+  border: 2px solid var(--clr-border);
+  border-radius: 8px;
+  background: none;
+  color: var(--clr-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+
+.btn-modal-cancel:hover {
+  background: var(--clr-section-bg);
+}
+
+/* ══════════════════════════════════════════════════════
+   FIRST-VISIT DATA NOTICE BANNER
+   ══════════════════════════════════════════════════════ */
+
+.data-notice {
+  position: relative;
+  background: var(--clr-section-bg);
+  border-bottom: 1px solid var(--clr-border);
+  padding: 0.6rem 2.5rem 0.6rem 1rem;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--clr-text-light);
+  line-height: 1.4;
+}
+
+.data-notice p {
+  margin: 0;
+}
+
+.data-notice a {
+  color: var(--clr-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.data-notice a:hover {
+  text-decoration: underline;
+}
+
+.data-notice-dismiss {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--clr-text-light);
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
 }

@@ -458,4 +458,30 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     }, 5000);
   });
+
+  // ── Delete All Data ─────────────────────────────────
+  const deleteBtn     = document.getElementById("k-delete-data");
+  const deleteModal   = document.getElementById("delete-data-modal");
+  const deleteCancel  = document.getElementById("delete-cancel");
+  const deleteConfirm = document.getElementById("delete-confirm");
+
+  if (deleteBtn && deleteModal) {
+    deleteBtn.addEventListener("click", () => {
+      deleteModal.classList.remove("hidden");
+    });
+
+    deleteCancel.addEventListener("click", () => {
+      deleteModal.classList.add("hidden");
+    });
+
+    deleteModal.addEventListener("click", (e) => {
+      if (e.target === deleteModal) deleteModal.classList.add("hidden");
+    });
+
+    deleteConfirm.addEventListener("click", () => {
+      const keys = Object.keys(localStorage).filter((k) => k.startsWith("pielab"));
+      keys.forEach((k) => localStorage.removeItem(k));
+      window.location.href = "index.html";
+    });
+  }
 });

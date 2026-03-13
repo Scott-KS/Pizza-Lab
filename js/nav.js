@@ -75,9 +75,10 @@ function populateOvenSelect(selectEl) {
     tab.classList.toggle("active", tab.dataset.page === page);
   });
 
-  // Schedule badge + session banner
+  // Schedule badge + session banner + data notice
   updateScheduleBadge();
   updateSessionBanner();
+  showDataNotice();
 })();
 
 function updateScheduleBadge() {
@@ -190,4 +191,27 @@ function updateSessionBanner() {
 
   // ── STATE 4: Nothing active ──
   banner.setAttribute("hidden", "");
+}
+
+// ── First-Visit Data Notice Banner ──────────────────
+function showDataNotice() {
+  if (localStorage.getItem("pielab-notice-dismissed")) return;
+
+  // Don't show on splash page
+  const page = document.body.dataset.page;
+  if (page === "welcome") return;
+
+  const notice = document.createElement("div");
+  notice.className = "data-notice";
+  notice.innerHTML =
+    '<p>The Pie Lab stores your data locally on this device. We don\u2019t collect or share your information. ' +
+    '<a href="legal.html#privacy">Privacy Policy</a></p>' +
+    '<button class="data-notice-dismiss" aria-label="Dismiss">\u00D7</button>';
+
+  document.body.prepend(notice);
+
+  notice.querySelector(".data-notice-dismiss").addEventListener("click", () => {
+    localStorage.setItem("pielab-notice-dismissed", "1");
+    notice.remove();
+  });
 }
