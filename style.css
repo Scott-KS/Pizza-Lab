@@ -3971,6 +3971,22 @@ footer {
   background: #2e7d32;
 }
 
+/* Sub-steps (Stretch & Fold, Ball) indent under Bulk Fermentation */
+.sched-sub-step {
+  margin-left: 20px;
+}
+.sched-sub-step .sched-step-dot {
+  width: 28px;
+  height: 28px;
+  font-size: 0.7rem;
+}
+.sched-sub-step .sched-step-marker {
+  width: 32px;
+}
+.sched-sub-step .sched-step-label {
+  font-size: 0.9rem;
+}
+
 .sched-step-content {
   flex: 1;
   min-width: 0;
@@ -4697,6 +4713,12 @@ body[data-page="journal"] main {
 .toggle-btn.selected {
   background: var(--clr-primary);
   color: #fff;
+}
+
+.toggle-sub {
+  font-size: 0.78rem;
+  font-weight: 400;
+  opacity: 0.75;
 }
 
 /* Three-button toggle variant (measurement system) */

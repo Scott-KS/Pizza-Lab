@@ -97,8 +97,8 @@ const SCHEDULE_STEP_TEMPLATES = {
   mix: {
     id: "mix",
     label: "Mix",
-    instruction: "Combine flour, water, salt, and yeast. Mix until smooth and no dry flour remains. Knead 8–12 minutes until the dough is elastic.",
-    why: "This is where your dough journey begins. Accurate weighing and thorough mixing set the foundation for everything that follows. Proper hydration and gluten development start here.",
+    instruction: "Add salt and yeast to your autolysed dough. Mix until fully incorporated, then knead 8–12 minutes until the dough is smooth and elastic.",
+    why: "Salt tightens the gluten network and controls fermentation. Adding it after autolyse means the flour is already hydrated and gluten has started forming — you get better structure with less work.",
     duration: "~10 min",
   },
   autolyse: {
@@ -400,6 +400,7 @@ function buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWe
   steps.push({
     ...SCHEDULE_STEP_TEMPLATES["stretch-fold"],
     dateTime: new Date(stretchFoldT),
+    subStep: true,
   });
 
   const bulkDurLabel = method.isColdFerment ? "~1.5 hours" : "~6 hours";
@@ -416,6 +417,7 @@ function buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWe
     ...SCHEDULE_STEP_TEMPLATES.ball,
     dateTime: new Date(ballT),
     instruction: `Divide dough into ${numPizzas} equal piece${numPizzas > 1 ? "s" : ""} of ~${doughBallWeight}g each. Shape into tight, smooth balls by tucking the edges underneath.`,
+    subStep: true,
   });
 
   if (method.isColdFerment) {

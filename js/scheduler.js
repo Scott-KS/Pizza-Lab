@@ -351,8 +351,10 @@
       else if (isPast) statusClass = "step-done";
       else statusClass = "step-upcoming";
 
+      const indentClass = step.subStep ? " sched-sub-step" : "";
+
       html += `
-        <div class="sched-timeline-step ${statusClass}" data-step-idx="${i}">
+        <div class="sched-timeline-step ${statusClass}${indentClass}" data-step-idx="${i}">
           <div class="sched-step-marker">
             <button class="sched-step-dot" data-idx="${i}"
               aria-label="${step.checked ? "Unmark" : "Mark"} ${step.label} as done"
