@@ -126,13 +126,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ovenSelect.value = kitchenProfile.preferredOven;
     }
 
-    // Pre-select favorite style from Kitchen profile
-    if (kitchenProfile.favoriteStyle && typeSelectEl &&
-        typeSelectEl.querySelector(`option[value="${kitchenProfile.favoriteStyle}"]`)) {
-      typeSelectEl.value = kitchenProfile.favoriteStyle;
-      typeSelectEl.dispatchEvent(new Event("change"));
-    }
-
     // Set measurement unit from Kitchen profile
     currentUnit = PieLabProfile.isMetric() ? "g" : "oz";
   }
@@ -248,13 +241,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Apply saved mode on load
   if (currentMode === "plan") setMode("plan");
 
-  // ── Auto-select style from splash page link ─────────
+  // ── URL params (used for style pre-select after handler is bound) ──
   const urlParams = new URLSearchParams(window.location.search);
-  const presetStyle = urlParams.get("style");
-  if (presetStyle && typeSelectEl) {
-    typeSelectEl.value = presetStyle;
-    typeSelectEl.dispatchEvent(new Event("change"));
-  }
 
   // ── Dynamic Size Selector ────────────────────────────
   const sizeSelect = document.getElementById("pizza-size");
@@ -321,6 +309,22 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
+
+  // ── Pre-select style (from URL or Kitchen profile) ────
+  // Must come AFTER the change handler is bound so sizes populate.
+  const presetStyle = urlParams.get("style");
+  if (presetStyle && typeSelectEl &&
+      typeSelectEl.querySelector(`option[value="${presetStyle}"]`)) {
+    typeSelectEl.value = presetStyle;
+    typeSelectEl.dispatchEvent(new Event("change"));
+  } else {
+    const kitchenProfile = (typeof PieLabProfile !== "undefined") ? PieLabProfile.getProfile() : {};
+    if (kitchenProfile.favoriteStyle && typeSelectEl &&
+        typeSelectEl.querySelector(`option[value="${kitchenProfile.favoriteStyle}"]`)) {
+      typeSelectEl.value = kitchenProfile.favoriteStyle;
+      typeSelectEl.dispatchEvent(new Event("change"));
+    }
+  }
 
   // ── Preferment Toggle Handler ─────────────────────────
   const prefermentToggle = document.getElementById("preferment-toggle");

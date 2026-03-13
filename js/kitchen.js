@@ -283,41 +283,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2500);
   });
 
-  // ── Theme Toggle ──────────────────────────────────
-  const themeGrp = document.getElementById("k-theme");
-  const savedTheme = localStorage.getItem("pielab-theme");
-
-  // Highlight active button: null → "system"
-  const activeTheme = savedTheme || "system";
-  themeGrp.querySelectorAll(".toggle-btn").forEach((btn) => {
-    btn.classList.toggle("selected", btn.dataset.value === activeTheme);
-  });
-
-  function applyTheme(choice) {
-    if (choice === "dark") {
-      document.documentElement.dataset.theme = "dark";
-    } else if (choice === "light") {
-      document.documentElement.dataset.theme = "light";
-    } else {
-      // System preference
-      const prefersDark = matchMedia("(prefers-color-scheme:dark)").matches;
-      document.documentElement.dataset.theme = prefersDark ? "dark" : "light";
-    }
-  }
-
-  themeGrp.addEventListener("click", (e) => {
-    const btn = e.target.closest(".toggle-btn");
-    if (!btn) return;
-    themeGrp.querySelectorAll(".toggle-btn").forEach((b) => b.classList.remove("selected"));
-    btn.classList.add("selected");
-    const value = btn.dataset.value;
-    if (value === "system") {
-      localStorage.removeItem("pielab-theme");
-    } else {
-      localStorage.setItem("pielab-theme", value);
-    }
-    applyTheme(value);
-  });
+  // ── Clear any saved theme override — always use system preference ──
+  localStorage.removeItem("pielab-theme");
+  const prefersDark = matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.dataset.theme = prefersDark ? "dark" : "light";
 
   // ── Style Passport ──────────────────────────────
   renderPassport();
