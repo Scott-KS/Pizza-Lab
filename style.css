@@ -2951,7 +2951,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1100;
   padding: 1rem;
   animation: fadeIn 0.2s ease-out;
 }
@@ -3126,7 +3126,9 @@ main {
 
 .modal-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 .btn-modal-iterate {
@@ -3177,6 +3179,23 @@ main {
 .btn-modal-share:hover {
   background: var(--clr-primary);
   color: #fff;
+}
+
+.btn-modal-save-photo {
+  flex: 1;
+  padding: 0.6rem 1.25rem;
+  border: 2px solid var(--clr-gold);
+  border-radius: 8px;
+  background: none;
+  color: var(--clr-gold);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-modal-save-photo:hover {
+  background: var(--clr-gold);
+  color: #1a1a1a;
 }
 
 /* ── First Bake Celebration ────────────────────── */

@@ -730,15 +730,16 @@
       html += `<div class="modal-notes"><h4>Notes</h4><p>${escapeHtml(entry.notes)}</p></div>`;
     }
 
-    // Share button — only if entry has a photo
+    // Share / Save buttons — only if entry has a photo
     const hasPhoto = (entry.photos && entry.photos.length) || entry.photo;
-    const shareBtnHtml = hasPhoto
-      ? `<button class="btn-modal-share" data-id="${entry.id}">Share This Bake</button>`
+    const shareButtons = hasPhoto
+      ? `<button class="btn-modal-share" data-id="${entry.id}">Share This Bake</button>
+         <button class="btn-modal-save-photo" data-id="${entry.id}">Save to Photos</button>`
       : "";
 
     html += `
       <div class="modal-actions">
-        ${shareBtnHtml}
+        ${shareButtons}
         <button class="btn-modal-iterate" data-id="${entry.id}">
           Bake Again ↻
         </button>
@@ -793,9 +794,13 @@
       }
     });
 
-    // Share handler
+    // Share handler — copies caption to clipboard, then opens share sheet
     const shareBtn = modalBody.querySelector(".btn-modal-share");
     if (shareBtn) shareBtn.addEventListener("click", () => shareThisBake(entry));
+
+    // Save to Photos handler — generates + downloads watermarked images
+    const saveBtn = modalBody.querySelector(".btn-modal-save-photo");
+    if (saveBtn) saveBtn.addEventListener("click", () => savePhotosToDevice(entry));
   }
 
   modalClose.addEventListener("click", () => modalOverlay.classList.add("hidden"));
@@ -954,9 +959,11 @@
       return;
     }
 
-    // 2. Get photo
-    const photoSrc = (entry.photos && entry.photos.length) ? entry.photos[0] : entry.photo;
-    if (!photoSrc) {
+    // 2. Collect all photos
+    const photos = (entry.photos && entry.photos.length)
+      ? entry.photos
+      : (entry.photo ? [entry.photo] : []);
+    if (!photos.length) {
       showToast("Add a photo to share this bake");
       return;
     }
@@ -964,24 +971,33 @@
     // 3. Get skill level from entry-stamped badge
     const skillLevel = entry.skillBadge || null;
 
-    // 4. Generate Polaroid card
+    // 4. Generate one share image per saved photo:
+    //    - Photo 1: polaroid card (stats + watermark)
+    //    - Photos 2+: watermarked photo only (no stats frame)
     showToast("Generating share image\u2026");
-    let blob;
+    const files = [];
     try {
-      blob = await generatePolaroidCard(entry, { name, location, skillLevel });
+      // First photo → polaroid with stats
+      const polaroidBlob = await generatePolaroidCard(
+        { ...entry, photos: [photos[0]] },
+        { name, location, skillLevel }
+      );
+      files.push(new File([polaroidBlob], "my-bake-1.png", { type: "image/png" }));
+
+      // Additional photos → watermark only
+      for (let i = 1; i < photos.length; i++) {
+        const wmBlob = await generateWatermarkedPhoto(photos[i]);
+        files.push(new File([wmBlob], `my-bake-${i + 1}.png`, { type: "image/png" }));
+      }
     } catch (err) {
-      console.error("Polaroid generation failed:", err);
+      console.error("Share image generation failed:", err);
       showToast("Could not generate share image");
       return;
     }
 
-    // 5. Build file list — Polaroid card + all bake photos
-    const files = [new File([blob], "my-bake.png", { type: "image/png" })];
-    const photos = (entry.photos && entry.photos.length) ? entry.photos : (entry.photo ? [entry.photo] : []);
-    photos.forEach((dataUri, i) => {
-      const photoFile = dataUriToFile(dataUri, `bake-photo-${i + 1}.jpg`);
-      if (photoFile) files.push(photoFile);
-    });
+    // 5. Copy caption to clipboard for easy paste into Reddit/Instagram
+    const caption = buildShareCaption(entry, { name, location, skillLevel });
+    try { await navigator.clipboard.writeText(caption); } catch {}
 
     // 6. Share or download
     try {
@@ -989,16 +1005,79 @@
         await navigator.share({
           files,
           title: "Check out my bake on The Pie Lab",
+          text: caption,
         });
       } else {
-        // Fallback: download Polaroid card + all photos
         files.forEach((f) => downloadBlob(f, f.name));
+        showToast("Caption copied — paste into your post");
       }
     } catch (err) {
       if (err.name !== "AbortError") {
         files.forEach((f) => downloadBlob(f, f.name));
+        showToast("Caption copied — paste into your post");
       }
     }
+  }
+
+  /** Save watermarked images directly to device (for Instagram feed posting). */
+  async function savePhotosToDevice(entry) {
+    if (typeof PieLabProfile === "undefined") return;
+    const profile = PieLabProfile.getProfile();
+    const name = (profile.displayName || "").trim();
+    const location = (profile.city || "").trim();
+    const skillLevel = entry.skillBadge || null;
+
+    const photos = (entry.photos && entry.photos.length)
+      ? entry.photos
+      : (entry.photo ? [entry.photo] : []);
+    if (!photos.length) {
+      showToast("No photos to save");
+      return;
+    }
+
+    showToast("Saving to photos\u2026");
+    try {
+      // First photo → polaroid with stats
+      const polaroidBlob = await generatePolaroidCard(
+        { ...entry, photos: [photos[0]] },
+        { name, location, skillLevel }
+      );
+      downloadBlob(polaroidBlob, "my-bake-1.png");
+
+      // Additional photos → watermark only
+      for (let i = 1; i < photos.length; i++) {
+        const wmBlob = await generateWatermarkedPhoto(photos[i]);
+        downloadBlob(wmBlob, `my-bake-${i + 1}.png`);
+      }
+
+      // Copy caption for easy paste
+      const caption = buildShareCaption(entry, { name, location, skillLevel });
+      try { await navigator.clipboard.writeText(caption); } catch {}
+      showToast("Saved! Caption copied — paste into your post");
+    } catch (err) {
+      console.error("Save photos failed:", err);
+      showToast("Could not save photos");
+    }
+  }
+
+  /** Build a ready-to-paste caption for Reddit / Instagram. */
+  function buildShareCaption(entry, profile) {
+    const styleName = entry.styleName || entry.styleKey || "";
+    const parts = [];
+    if (styleName) parts.push(styleName);
+    if (profile.location) parts.push(profile.location);
+    const headline = parts.length ? parts.join(" · ") : "Homemade Pizza";
+    const badge = profile.skillLevel ? `${profile.skillLevel}` : "";
+
+    let caption = headline;
+    if (badge) caption += ` — ${badge}`;
+    caption += "\n\nMade with The Pie Lab 🍕\nThePieLab.app";
+    caption += "\n\n#ThePieLab #HomemadePizza #PizzaMaking";
+    if (styleName) {
+      const tag = "#" + styleName.replace(/[^a-zA-Z0-9]/g, "");
+      caption += ` ${tag}`;
+    }
+    return caption;
   }
 
   function dataUriToFile(dataUri, filename) {
@@ -1062,6 +1141,39 @@
       };
       img.onerror = () => reject(new Error("Failed to load bake photo"));
       img.src = photoSrc;
+    });
+  }
+
+  /** Generate a square watermarked photo (no polaroid frame / stats). */
+  function generateWatermarkedPhoto(photoDataUri) {
+    return new Promise((resolve, reject) => {
+      const SIZE = 1080;
+      const canvas = document.createElement("canvas");
+      canvas.width = SIZE;
+      canvas.height = SIZE;
+      const ctx = canvas.getContext("2d");
+
+      const img = new Image();
+      img.onload = () => {
+        // Crop/center to fill 1080×1080
+        const scale = Math.max(SIZE / img.width, SIZE / img.height);
+        const drawW = img.width * scale, drawH = img.height * scale;
+        const dx = (SIZE - drawW) / 2, dy = (SIZE - drawH) / 2;
+        ctx.drawImage(img, dx, dy, drawW, drawH);
+
+        // Watermark
+        const logo = new Image();
+        logo.onload = () => {
+          drawLogoWatermark(ctx, logo, SIZE, SIZE);
+          canvas.toBlob((blob) => resolve(blob), "image/png");
+        };
+        logo.onerror = () => {
+          canvas.toBlob((blob) => resolve(blob), "image/png");
+        };
+        logo.src = "assets/logos/logo-transparent.svg";
+      };
+      img.onerror = () => reject(new Error("Failed to load photo for watermark"));
+      img.src = photoDataUri;
     });
   }
 

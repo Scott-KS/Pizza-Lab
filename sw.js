@@ -1,5 +1,5 @@
 /*  The Pie Lab — Service Worker  */
-const CACHE_NAME = "pielab-v15";
+const CACHE_NAME = "pielab-v16";
 
 /* ── Derive base path so caching works on both localhost and /Pizza-Lab/ ── */
 const BASE = self.registration.scope;
