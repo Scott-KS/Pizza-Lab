@@ -211,6 +211,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
   eatTimeInput.addEventListener("change", updateFermentOptions);
 
+  // ── Sync Fermentation Tuning sliders when method dropdown changes ──
+  fermentSelect.addEventListener("change", () => {
+    const methodId = fermentSelect.value;
+    if (!fermentHoursSlider || !fermentTempSlider) return;
+
+    // Map method to default hours and temp
+    const methodDefaults = {
+      "cold-72": { hours: 72, tempF: 38 },
+      "cold-48": { hours: 48, tempF: 38 },
+      "cold-24": { hours: 24, tempF: 38 },
+      "same-day": { hours: 6,  tempF: 72 },
+      "cure-24":  { hours: 24, tempF: 38 },
+    };
+    const defaults = methodDefaults[methodId];
+    if (!defaults) return;
+
+    // Snap hours to nearest step of 3
+    const snapped = Math.round(defaults.hours / 3) * 3;
+    fermentHoursSlider.value = Math.max(
+      parseInt(fermentHoursSlider.min),
+      Math.min(parseInt(fermentHoursSlider.max), snapped)
+    );
+    fermentHoursLabel.textContent = fermentHoursSlider.value + " hours";
+
+    fermentTempSlider.value = defaults.tempF;
+    if (typeof updateFermentTempLabel === "function") updateFermentTempLabel();
+    else {
+      const valF = parseFloat(fermentTempSlider.value);
+      fermentTempLabel.textContent = currentUnit === "g"
+        ? fToC(valF) + "°C"
+        : valF + "°F";
+    }
+  });
+
   // Apply saved mode on load
   if (currentMode === "plan") setMode("plan");
 
@@ -332,13 +366,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+  function updateFermentTempLabel() {
+    if (!fermentTempSlider || !fermentTempLabel) return;
+    const valF = parseFloat(fermentTempSlider.value);
+    fermentTempLabel.textContent = currentUnit === "g"
+      ? fToC(valF) + "°C"
+      : valF + "°F";
+  }
   if (fermentTempSlider && fermentTempLabel) {
-    function updateFermentTempLabel() {
-      const valF = parseFloat(fermentTempSlider.value);
-      fermentTempLabel.textContent = currentUnit === "g"
-        ? fToC(valF) + "°C"
-        : valF + "°F";
-    }
     fermentTempSlider.addEventListener("input", updateFermentTempLabel);
     updateFermentTempLabel(); // set initial label
   }
@@ -793,10 +828,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     fillTable("dough-table",
       dough.map((d) => {
-        const pctCell = d.ingredient === "Water"
-          ? `${d.pct}% <button class="hydration-info-btn" type="button" aria-label="Hydration guide">\u24D8</button>`
-          : `${d.pct}%`;
-        return [d.ingredient, formatAmount(d.amount, d.ingredient), pctCell];
+        const nameCell = d.ingredient === "Water"
+          ? `Water <button class="hydration-info-btn" type="button" aria-label="Hydration guide">\u24D8</button>`
+          : d.ingredient;
+        return [nameCell, formatAmount(d.amount, d.ingredient), `${d.pct}%`];
       })
     );
 
