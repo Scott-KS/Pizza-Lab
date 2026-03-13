@@ -3147,16 +3147,22 @@ main {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
-.btn-modal-iterate {
+.btn-modal-iterate,
+.btn-modal-share,
+.btn-modal-save-photo {
   flex: 1;
   padding: 0.6rem 1.25rem;
-  border: 2px solid var(--clr-accent);
   border-radius: 8px;
   background: none;
-  color: var(--clr-accent);
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.btn-modal-iterate {
+  border: 2px solid var(--clr-accent);
+  color: var(--clr-accent);
 }
 
 .btn-modal-iterate:hover {
@@ -3169,8 +3175,9 @@ main {
   border: 2px solid #c0392b;
   border-radius: 8px;
   background: none;
-  color: #c0392b;
+  font-size: 0.9rem;
   font-weight: 600;
+  color: #c0392b;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -3181,15 +3188,8 @@ main {
 }
 
 .btn-modal-share {
-  flex: 1;
-  padding: 0.6rem 1.25rem;
   border: 2px solid var(--clr-primary);
-  border-radius: 8px;
-  background: none;
   color: var(--clr-primary);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
 }
 
 .btn-modal-share:hover {
@@ -3198,15 +3198,8 @@ main {
 }
 
 .btn-modal-save-photo {
-  flex: 1;
-  padding: 0.6rem 1.25rem;
   border: 2px solid var(--clr-gold);
-  border-radius: 8px;
-  background: none;
   color: var(--clr-gold);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
 }
 
 .btn-modal-save-photo:hover {

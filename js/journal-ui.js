@@ -954,8 +954,8 @@
     const name = (profile.displayName || "").trim();
     const location = (profile.city || "").trim();
 
-    if (!name || !location) {
-      showToast("Complete your profile in the Kitchen tab to share your bakes");
+    if (!name) {
+      showToast("Set your name in My Kitchen to share bakes");
       return;
     }
 
@@ -1000,8 +1000,15 @@
     try { await navigator.clipboard.writeText(caption); } catch {}
 
     // 6. Share or download
+    let canShareFiles = false;
     try {
-      if (navigator.share && navigator.canShare && navigator.canShare({ files })) {
+      canShareFiles = navigator.share && navigator.canShare && navigator.canShare({ files });
+    } catch {
+      canShareFiles = false;
+    }
+
+    try {
+      if (canShareFiles) {
         await navigator.share({
           files,
           title: "Check out my bake on The Pie Lab",
@@ -1165,10 +1172,10 @@
         const logo = new Image();
         logo.onload = () => {
           drawLogoWatermark(ctx, logo, SIZE, SIZE);
-          canvas.toBlob((blob) => resolve(blob), "image/png");
+          canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("toBlob null")), "image/png");
         };
         logo.onerror = () => {
-          canvas.toBlob((blob) => resolve(blob), "image/png");
+          canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("toBlob null")), "image/png");
         };
         logo.src = "assets/logos/logo-transparent.svg";
       };
@@ -1214,7 +1221,8 @@
     ctx.fillStyle = "#555555";
     ctx.font = "400 22px Inter, sans-serif";
     const styleName = entry.styleName || entry.styleKey || "";
-    ctx.fillText(`${profile.location} \u00B7 ${styleName}`, LEFT, 1178);
+    const subtitle = profile.location ? `${profile.location} \u00B7 ${styleName}` : styleName;
+    ctx.fillText(subtitle, LEFT, 1178);
 
     // Skill badge pill
     if (profile.skillLevel) {
@@ -1246,7 +1254,10 @@
     ctx.textAlign = "left"; // reset
 
     // Export
-    canvas.toBlob((blob) => resolve(blob), "image/png");
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error("Canvas toBlob returned null"));
+    }, "image/png");
   }
 
   function roundRect(ctx, x, y, w, h, r) {
