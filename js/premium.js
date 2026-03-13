@@ -5,7 +5,7 @@
 
 window.PieLabPremium = (function () {
   const STORAGE_KEY = "pielab-premium";
-  const TRIAL_DAYS = 7;
+  const TRIAL_DAYS = 14;
 
   // ── Persistence helpers ──────────────────────────────
   function load() {
@@ -75,8 +75,8 @@ window.PieLabPremium = (function () {
           Get access to preferment calculations, dynamic yeast scaling,
           DDT water temperature tools, and more.
         </p>
-        <button class="btn-start-trial" id="btn-premium-trial">Start 7-Day Free Trial</button>
-        <p class="premium-modal-footer">No credit card required. Full pricing coming soon.</p>
+        <button class="btn-start-trial" id="btn-premium-trial">Start 14-Day Free Trial</button>
+        <p class="premium-modal-footer">No credit card required. $4.99 one-time purchase after trial.</p>
         <button class="premium-modal-close" aria-label="Close">&times;</button>
       </div>
     `;
@@ -107,7 +107,7 @@ window.PieLabPremium = (function () {
     // Update button text based on state
     const btn = modalOverlay.querySelector("#btn-premium-trial");
     if (isExpired()) {
-      btn.textContent = "Trial Expired — Coming Soon";
+      btn.textContent = "Unlock Pro — $4.99";
       btn.disabled = true;
       btn.classList.add("btn-disabled");
     } else if (canUse()) {
@@ -116,7 +116,7 @@ window.PieLabPremium = (function () {
       btn.disabled = false;
       btn.classList.remove("btn-disabled");
     } else {
-      btn.textContent = "Start 7-Day Free Trial";
+      btn.textContent = "Start 14-Day Free Trial";
       btn.disabled = false;
       btn.classList.remove("btn-disabled");
     }
