@@ -1215,56 +1215,40 @@
     // Text area starts below the photo with some padding
     const textTop = photoBottom + 28;
 
-    // Baker's first name in bold
-    const firstName = (profile.name || "").split(" ")[0];
+    // Line 1: Display Name (left justified)
+    const displayName = (profile.name || "").trim();
     ctx.fillStyle = "#1a1a1a";
     ctx.font = "bold 28px Inter, sans-serif";
     ctx.textBaseline = "alphabetic";
-    ctx.fillText(firstName, LEFT, textTop);
+    ctx.fillText(displayName, LEFT, textTop);
 
-    // Location · Style
-    ctx.fillStyle = "#555555";
-    ctx.font = "400 22px Inter, sans-serif";
-    const styleName = entry.styleName || entry.styleKey || "";
-    const subtitle = profile.location ? `${profile.location} \u00B7 ${styleName}` : styleName;
-    ctx.fillText(subtitle, LEFT, textTop + 34);
-
-    // Skill badge pill + www.pielab.app on same line
-    const badgeLineY = textTop + 56;
-
-    if (profile.skillLevel) {
-      ctx.font = "500 18px Inter, sans-serif";
-      const badgeText = profile.skillLevel;
-      const textW = ctx.measureText(badgeText).width;
-      const pillPadH = 12, pillPadV = 6;
-      const pillW = textW + pillPadH * 2;
-      const pillH = 18 + pillPadV * 2;
-
-      // Rounded rect background
-      ctx.fillStyle = "#c9622a";
-      roundRect(ctx, LEFT, badgeLineY, pillW, pillH, 6);
-      ctx.fill();
-
-      // Badge text
-      ctx.fillStyle = "#ffffff";
-      ctx.textBaseline = "middle";
-      ctx.fillText(badgeText, LEFT + pillPadH, badgeLineY + pillH / 2);
-
-      // www.pielab.app right-aligned on same line as badge
-      ctx.fillStyle = "#9a9690";
-      ctx.font = "400 18px Inter, sans-serif";
-      ctx.textAlign = "right";
-      ctx.fillText("www.pielab.app", RIGHT, badgeLineY + pillH / 2);
-      ctx.textAlign = "left";
-    } else {
-      // No badge — still show URL on that line
-      ctx.fillStyle = "#9a9690";
-      ctx.font = "400 18px Inter, sans-serif";
-      ctx.textBaseline = "alphabetic";
-      ctx.textAlign = "right";
-      ctx.fillText("www.pielab.app", RIGHT, badgeLineY + 18);
-      ctx.textAlign = "left";
+    // Line 2: Location (left justified)
+    const location = (profile.location || "").trim();
+    if (location) {
+      ctx.fillStyle = "#555555";
+      ctx.font = "400 22px Inter, sans-serif";
+      ctx.fillText(location, LEFT, textTop + 34);
     }
+
+    // Line 3: "Pizza Style, Badge" left + "www.pielab.app" right
+    const line3Y = textTop + 64;
+    const styleName = entry.styleName || entry.styleKey || "";
+    const badgeText = profile.skillLevel || "";
+    const line3Left = styleName && badgeText
+      ? `${styleName}, ${badgeText}`
+      : styleName || badgeText;
+
+    ctx.fillStyle = "#555555";
+    ctx.font = "400 20px Inter, sans-serif";
+    ctx.textBaseline = "alphabetic";
+    if (line3Left) ctx.fillText(line3Left, LEFT, line3Y);
+
+    // www.pielab.app right-aligned
+    ctx.fillStyle = "#9a9690";
+    ctx.font = "400 18px Inter, sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText("www.pielab.app", RIGHT, line3Y);
+    ctx.textAlign = "left";
 
     // Export
     canvas.toBlob((blob) => {
