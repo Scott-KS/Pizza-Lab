@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=20" />
+  <link rel="stylesheet" href="style.css?v=22" />
 </head>
 <body data-page="journal">
 
@@ -78,6 +78,14 @@
           <span class="stats-toggle-arrow" id="stats-toggle-arrow">▼</span>
         </button>
         <div class="stats-grid" id="stats-grid"></div>
+      </div>
+
+      <!-- Style Passport -->
+      <div class="passport-section" id="passport-section">
+        <h3>Style Passport</h3>
+        <p class="kitchen-subtitle">Log a bake in every style to fill your passport.</p>
+        <div class="passport-progress" id="passport-progress"><span id="passport-count">0</span> of 13 unlocked</div>
+        <div class="passport-grid" id="passport-grid"></div>
       </div>
 
       <div class="journal-form-wrapper hidden" id="journal-form-wrapper">
@@ -220,6 +228,6 @@
   <script src="js/nav.js?v=5"></script>
   <script src="js/user-profile.js?v=5"></script>
   <script src="js/premium.js?v=3"></script>
-  <script src="js/journal-ui.js?v=11"></script>
+  <script src="js/journal-ui.js?v=12"></script>
 </body>
 </html>

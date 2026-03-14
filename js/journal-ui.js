@@ -422,6 +422,7 @@
     hideForm();
     renderEntries();
     renderStats();
+    renderPassport();
     updateCompareButton();
     updateStorageDisplay();
 
@@ -793,6 +794,7 @@
         modalOverlay.classList.add("hidden");
         renderEntries();
         renderStats();
+        renderPassport();
         updateCompareButton();
         updateStorageDisplay();
       }
@@ -1105,14 +1107,21 @@
   // ── Polaroid Card Generator ────────────────────────
   function generatePolaroidCard(entry, profile) {
     return new Promise((resolve, reject) => {
-      const W = 1080, H = 1360, PHOTO_H = 1080;
+      // Polaroid-style: thin equal borders top/left/right, thicker bottom for text
+      const BORDER = 40;                    // top, left, right border
+      const PHOTO_SIZE = 1080;              // square photo area
+      const BOTTOM_H = 180;                 // white text area below photo
+      const W = BORDER + PHOTO_SIZE + BORDER;           // 1160
+      const H = BORDER + PHOTO_SIZE + BOTTOM_H + BORDER; // 1340
+      const PHOTO_X = BORDER;
+      const PHOTO_Y = BORDER;
 
       const canvas = document.createElement("canvas");
       canvas.width = W;
       canvas.height = H;
       const ctx = canvas.getContext("2d");
 
-      // White background
+      // White background (forms the Polaroid frame)
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, W, H);
 
@@ -1120,22 +1129,29 @@
       const photoSrc = (entry.photos && entry.photos.length) ? entry.photos[0] : entry.photo;
       const img = new Image();
       img.onload = () => {
-        // Draw cropped/centered to fill 1080x1080
+        // Draw cropped/centered to fill photo area
         const srcW = img.width, srcH = img.height;
-        const scale = Math.max(PHOTO_H / srcW, PHOTO_H / srcH);
+        const scale = Math.max(PHOTO_SIZE / srcW, PHOTO_SIZE / srcH);
         const drawW = srcW * scale, drawH = srcH * scale;
-        const dx = (W - drawW) / 2, dy = (PHOTO_H - drawH) / 2;
+        const dx = PHOTO_X + (PHOTO_SIZE - drawW) / 2;
+        const dy = PHOTO_Y + (PHOTO_SIZE - drawH) / 2;
+        // Clip to photo area
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(PHOTO_X, PHOTO_Y, PHOTO_SIZE, PHOTO_SIZE);
+        ctx.clip();
         ctx.drawImage(img, dx, dy, drawW, drawH);
+        ctx.restore();
 
         // Load logo watermark (may fail — graceful)
         const logo = new Image();
+        const photoBottom = PHOTO_Y + PHOTO_SIZE;
         logo.onload = () => {
-          drawLogoWatermark(ctx, logo, W, PHOTO_H);
-          finishCard(ctx, canvas, entry, profile, W, H, PHOTO_H, resolve);
+          drawLogoWatermark(ctx, logo, PHOTO_X + PHOTO_SIZE, photoBottom);
+          finishCard(ctx, canvas, entry, profile, W, H, PHOTO_X, photoBottom, resolve);
         };
         logo.onerror = () => {
-          // Logo missing — skip watermark, still finish card
-          finishCard(ctx, canvas, entry, profile, W, H, PHOTO_H, resolve);
+          finishCard(ctx, canvas, entry, profile, W, H, PHOTO_X, photoBottom, resolve);
         };
         logo.src = "assets/logos/logo-transparent.svg";
       };
@@ -1192,59 +1208,47 @@
     ctx.drawImage(logo, x, y, LOGO_W, LOGO_H);
   }
 
-  function finishCard(ctx, canvas, entry, profile, W, H, PHOTO_H, resolve) {
-    // Separator line
-    ctx.strokeStyle = "#e0ddd8";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(0, PHOTO_H);
-    ctx.lineTo(W, PHOTO_H);
-    ctx.stroke();
+  function finishCard(ctx, canvas, entry, profile, W, H, LEFT, photoBottom, resolve) {
+    // Polaroid border is already white from initial fill — no separator line needed
+    const RIGHT = W - LEFT;
 
-    // Polaroid border is already white from initial fill
-    const LEFT = 40;
+    // Text area starts below the photo with some padding
+    const textTop = photoBottom + 28;
 
-    // Username
+    // Line 1: Display Name (left justified)
+    const displayName = (profile.name || "").trim();
     ctx.fillStyle = "#1a1a1a";
-    ctx.font = "600 28px Inter, sans-serif";
+    ctx.font = "bold 28px Inter, sans-serif";
     ctx.textBaseline = "alphabetic";
-    ctx.fillText(profile.name, LEFT, 1138);
+    ctx.fillText(displayName, LEFT, textTop);
 
-    // Location · Style
-    ctx.fillStyle = "#555555";
-    ctx.font = "400 22px Inter, sans-serif";
-    const styleName = entry.styleName || entry.styleKey || "";
-    const subtitle = profile.location ? `${profile.location} \u00B7 ${styleName}` : styleName;
-    ctx.fillText(subtitle, LEFT, 1178);
-
-    // Skill badge pill
-    if (profile.skillLevel) {
-      ctx.font = "500 18px Inter, sans-serif";
-      const badgeText = profile.skillLevel;
-      const textW = ctx.measureText(badgeText).width;
-      const pillPadH = 12, pillPadV = 6;
-      const pillW = textW + pillPadH * 2;
-      const pillH = 18 + pillPadV * 2;
-      const pillX = LEFT, pillY = 1205;
-
-      // Rounded rect background
-      ctx.fillStyle = "#c9622a";
-      roundRect(ctx, pillX, pillY, pillW, pillH, 6);
-      ctx.fill();
-
-      // Badge text
-      ctx.fillStyle = "#ffffff";
-      ctx.textBaseline = "middle";
-      ctx.fillText(badgeText, pillX + pillPadH, pillY + pillH / 2);
+    // Line 2: Location (left justified)
+    const location = (profile.location || "").trim();
+    if (location) {
+      ctx.fillStyle = "#555555";
+      ctx.font = "400 22px Inter, sans-serif";
+      ctx.fillText(location, LEFT, textTop + 34);
     }
 
-    // ThePieLab.app branding
-    ctx.fillStyle = "#9a9690";
-    ctx.font = "400 16px Inter, sans-serif";
+    // Line 3: "Pizza Style, Badge" left + "www.pielab.app" right
+    const line3Y = textTop + 64;
+    const styleName = entry.styleName || entry.styleKey || "";
+    const badgeText = profile.skillLevel || "";
+    const line3Left = styleName && badgeText
+      ? `${styleName}, ${badgeText}`
+      : styleName || badgeText;
+
+    ctx.fillStyle = "#555555";
+    ctx.font = "400 20px Inter, sans-serif";
     ctx.textBaseline = "alphabetic";
+    if (line3Left) ctx.fillText(line3Left, LEFT, line3Y);
+
+    // www.pielab.app right-aligned
+    ctx.fillStyle = "#9a9690";
+    ctx.font = "400 18px Inter, sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("ThePieLab.app", 1040, 1335);
-    ctx.textAlign = "left"; // reset
+    ctx.fillText("www.pielab.app", RIGHT, line3Y);
+    ctx.textAlign = "left";
 
     // Export
     canvas.toBlob((blob) => {
@@ -1267,11 +1271,216 @@
     ctx.closePath();
   }
 
+  // ── Style Passport ──────────────────────────────────
+  function renderPassport() {
+    const grid = document.getElementById("passport-grid");
+    const countEl = document.getElementById("passport-count");
+    const progressEl = document.getElementById("passport-progress");
+    if (!grid) return;
+    if (typeof PIZZA_RECIPES === "undefined" || typeof PieLabJournal === "undefined") return;
+
+    const styleKeys = Object.keys(PIZZA_RECIPES);
+    let unlocked = 0;
+
+    grid.innerHTML = styleKeys
+      .map((key) => {
+        const recipe = PIZZA_RECIPES[key];
+        const count = PieLabJournal.getBakesCountByStyle(key);
+        const isUnlocked = count > 0;
+        if (isUnlocked) unlocked++;
+
+        if (isUnlocked) {
+          const badge = PieLabJournal.getSkillBadge(count);
+          return `<button type="button" class="passport-card unlocked" data-style="${key}">
+            <span class="passport-badge">${badge.split(" ")[0]}</span>
+            <span class="passport-style-name">${recipe.name}</span>
+            <span class="passport-bake-count">${count} bake${count !== 1 ? "s" : ""}</span>
+          </button>`;
+        }
+
+        return `<div class="passport-card locked">
+          <span class="passport-badge">\uD83D\uDD12</span>
+          <span class="passport-style-name">${recipe.name}</span>
+          <span class="passport-bake-count">Not yet baked</span>
+        </div>`;
+      })
+      .join("");
+
+    if (countEl) countEl.textContent = unlocked;
+    if (progressEl && unlocked === styleKeys.length) {
+      progressEl.innerHTML = "\uD83C\uDF89 All styles unlocked!";
+    }
+
+    // Clicking an unlocked card filters the journal to that style
+    grid.querySelectorAll(".passport-card.unlocked").forEach((card) => {
+      card.addEventListener("click", () => {
+        const style = card.dataset.style;
+        if (filterSelect) {
+          filterSelect.value = style;
+          filterSelect.dispatchEvent(new Event("change"));
+        }
+      });
+    });
+  }
+
+  // ── Journal Guide (post-first-bake) ──────────────
+  // Shown once after the first-bake calculator guide completes and user navigates
+  // to the journal. Teaches logging a bake, then viewing & sharing.
+
+  const JOURNAL_GUIDE_KEY = "pielab-journal-guide-pending";
+  const JOURNAL_GUIDE_DONE_KEY = "pielab-journal-guide-done";
+
+  const journalGuideSteps = [
+    {
+      title: "Log Your Bake",
+      body: "Your recipe is already filled in from the calculator. Add a rating, some photos, and any notes about how it turned out \u2014 then hit Save Entry.",
+      target: "#journal-form-wrapper",
+      waitFor: { selector: "#journal-form", event: "submit" },
+    },
+    {
+      title: "Your Bake Is Saved!",
+      body: "Tap the bake card below to open the full details \u2014 your recipe, photos, notes, and sharing options.",
+      target: "#journal-entries",
+      delay: 800,
+      waitFor: { selector: "#journal-entries", event: "click" },
+    },
+    {
+      title: "Share Your Bake",
+      body: "From here you can Share This Bake to send it to friends, or Save to Photos to post it on Instagram or Reddit. A caption is auto-copied to your clipboard.",
+      target: ".modal-content",
+      delay: 500,
+      nextLabel: "Got It!",
+    },
+  ];
+
+  let jgOverlay = null;
+  let jgHighlight = null;
+  let jgStep = 0;
+  let jgCleanup = null;
+
+  function shouldShowJournalGuide() {
+    if (localStorage.getItem(JOURNAL_GUIDE_DONE_KEY) === "1") return false;
+    if (localStorage.getItem(JOURNAL_GUIDE_KEY) !== "1") return false;
+    // Only show when form is prefilled (user came from calculator)
+    const params = new URLSearchParams(window.location.search);
+    return params.get("prefill") === "1";
+  }
+
+  function startJournalGuide() {
+    jgStep = 0;
+    jgOverlay = document.createElement("div");
+    jgOverlay.className = "firstbake-overlay";
+    jgOverlay.innerHTML = `
+      <div class="firstbake-card">
+        <button class="firstbake-skip" id="jg-skip" aria-label="Close guide">Skip</button>
+        <div class="firstbake-step-count" id="jg-step-count"></div>
+        <h3 class="firstbake-title" id="jg-title"></h3>
+        <p class="firstbake-body" id="jg-body"></p>
+        <div class="firstbake-actions">
+          <button class="firstbake-btn firstbake-btn--next" id="jg-next">Next</button>
+        </div>
+      </div>
+    `;
+
+    jgHighlight = document.createElement("div");
+    jgHighlight.className = "firstbake-highlight hidden";
+    document.body.appendChild(jgHighlight);
+    document.body.appendChild(jgOverlay);
+
+    document.getElementById("jg-next").addEventListener("click", jgNextStep);
+    document.getElementById("jg-skip").addEventListener("click", jgClose);
+
+    requestAnimationFrame(() => jgOverlay.classList.add("firstbake-overlay--visible"));
+    jgRenderStep();
+  }
+
+  function jgRenderStep() {
+    jgCleanupWait();
+    const step = journalGuideSteps[jgStep];
+    const total = journalGuideSteps.length;
+
+    document.getElementById("jg-step-count").textContent =
+      `Step ${jgStep + 1} of ${total}`;
+    document.getElementById("jg-title").textContent = step.title;
+    document.getElementById("jg-body").textContent = step.body;
+
+    const nextBtn = document.getElementById("jg-next");
+    nextBtn.classList.remove("hidden");
+    nextBtn.textContent = step.nextLabel || (jgStep === total - 1 ? "Done" : "Next");
+
+    // Highlight
+    if (jgHighlight) jgHighlight.classList.add("hidden");
+    if (step.target) {
+      setTimeout(() => {
+        const el = document.querySelector(step.target);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          setTimeout(() => {
+            if (!jgHighlight) return;
+            const rect = el.getBoundingClientRect();
+            const pad = 6;
+            jgHighlight.style.top = (rect.top + window.scrollY - pad) + "px";
+            jgHighlight.style.left = (rect.left - pad) + "px";
+            jgHighlight.style.width = (rect.width + pad * 2) + "px";
+            jgHighlight.style.height = (rect.height + pad * 2) + "px";
+            jgHighlight.classList.remove("hidden");
+          }, 350);
+        }
+      }, step.delay || 50);
+    }
+
+    // waitFor
+    if (step.waitFor) {
+      const { selector, event } = step.waitFor;
+      const el = document.querySelector(selector);
+      if (el) {
+        const stepWhenRegistered = jgStep;
+        const handler = () => {
+          setTimeout(() => {
+            if (jgStep === stepWhenRegistered) jgNextStep();
+          }, 600);
+        };
+        el.addEventListener(event, handler, { once: true });
+        jgCleanup = () => el.removeEventListener(event, handler);
+      }
+    }
+  }
+
+  function jgCleanupWait() {
+    if (jgCleanup) { jgCleanup(); jgCleanup = null; }
+  }
+
+  function jgNextStep() {
+    if (jgStep < journalGuideSteps.length - 1) {
+      jgStep++;
+      jgRenderStep();
+    } else {
+      jgClose();
+    }
+  }
+
+  function jgClose() {
+    jgCleanupWait();
+    localStorage.setItem(JOURNAL_GUIDE_DONE_KEY, "1");
+    localStorage.removeItem(JOURNAL_GUIDE_KEY);
+    if (jgHighlight) { jgHighlight.remove(); jgHighlight = null; }
+    if (jgOverlay) {
+      jgOverlay.classList.remove("firstbake-overlay--visible");
+      setTimeout(() => { if (jgOverlay) { jgOverlay.remove(); jgOverlay = null; } }, 300);
+    }
+  }
+
   // ── Initialize ────────────────────────────────────
   populateDropdowns();
   populateOvenDropdown();
   renderEntries();
   renderStats();
+  renderPassport();
   updateCompareButton();
   updateStorageDisplay();
+
+  // Start journal guide if flagged by the first-bake guide
+  if (shouldShowJournalGuide()) {
+    setTimeout(() => startJournalGuide(), 800);
+  }
 })();

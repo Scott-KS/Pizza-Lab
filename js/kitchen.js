@@ -301,49 +301,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const prefersDark = matchMedia("(prefers-color-scheme:dark)").matches;
   document.documentElement.dataset.theme = prefersDark ? "dark" : "light";
 
-  // ── Style Passport ──────────────────────────────
-  renderPassport();
-
-  function renderPassport() {
-    const grid = document.getElementById("passport-grid");
-    const countEl = document.getElementById("passport-count");
-    const progressEl = document.getElementById("passport-progress");
-    if (!grid) return;
-    if (typeof PIZZA_RECIPES === "undefined" || typeof PieLabJournal === "undefined") return;
-
-    const styleKeys = Object.keys(PIZZA_RECIPES);
-    let unlocked = 0;
-
-    grid.innerHTML = styleKeys
-      .map((key) => {
-        const recipe = PIZZA_RECIPES[key];
-        const count = PieLabJournal.getBakesCountByStyle(key);
-        const isUnlocked = count > 0;
-        if (isUnlocked) unlocked++;
-
-        if (isUnlocked) {
-          const badge = PieLabJournal.getSkillBadge(count);
-          return `<a href="journal.html?style=${key}" class="passport-card unlocked">
-            <span class="passport-badge">${badge.split(" ")[0]}</span>
-            <span class="passport-style-name">${recipe.name}</span>
-            <span class="passport-bake-count">${count} bake${count !== 1 ? "s" : ""}</span>
-          </a>`;
-        }
-
-        return `<div class="passport-card locked">
-          <span class="passport-badge">\uD83D\uDD12</span>
-          <span class="passport-style-name">${recipe.name}</span>
-          <span class="passport-bake-count">Not yet baked</span>
-        </div>`;
-      })
-      .join("");
-
-    if (countEl) countEl.textContent = unlocked;
-    if (progressEl && unlocked === styleKeys.length) {
-      progressEl.innerHTML = "\uD83C\uDF89 All styles unlocked!";
-    }
-  }
-
   // ── Data Export / Import ──────────────────────────
   const BACKUP_KEYS = [
     "pielab-journal",
