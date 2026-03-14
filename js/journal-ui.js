@@ -735,12 +735,8 @@
       html += `<div class="modal-notes"><h4>Notes</h4><p>${escapeHtml(entry.notes)}</p></div>`;
     }
 
-    // Share / Save buttons — only if entry has a photo
-    const hasPhoto = (entry.photos && entry.photos.length) || entry.photo;
-    const shareButtons = hasPhoto
-      ? `<button class="btn-modal-share" data-id="${entry.id}">Share This Bake</button>
-         <button class="btn-modal-save-photo" data-id="${entry.id}">Save to Photos</button>`
-      : "";
+    const shareButtons = `<button class="btn-modal-share" data-id="${entry.id}">Share This Bake</button>
+         <button class="btn-modal-save-photo" data-id="${entry.id}">Save to Photos</button>`;
 
     html += `
       <div class="modal-actions">
