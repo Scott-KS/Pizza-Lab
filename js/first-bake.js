@@ -30,9 +30,8 @@ const PieLabFirstBake = (() => {
 
   // ── First Bake Guide Steps ──────────────────────────
   // Each step can define:
-  //   waitFor: { selector, event } — pause until user interacts
+  //   waitFor: { selector, event } — auto-advance when user interacts (Next always visible as fallback)
   //   nextLabel: custom text for the Next button
-  //   hideNext: true — hide the Next button (step advances via waitFor only)
 
   const firstBakeSteps = [
     {
@@ -45,7 +44,6 @@ const PieLabFirstBake = (() => {
       title: "Pick a Style",
       body: "Start by choosing a pizza style. We recommend New York \u2014 it\u2019s forgiving, uses common ingredients, and bakes in a regular home oven.",
       target: "#pizza-type",
-      hideNext: true,
       waitFor: { selector: "#pizza-type", event: "change" },
     },
     {
@@ -58,7 +56,6 @@ const PieLabFirstBake = (() => {
       title: "Hit Calculate!",
       body: "Everything\u2019s set. Tap the Calculate Recipe button to see your exact ingredient amounts.",
       target: ".btn-calculate",
-      hideNext: true,
       waitFor: { selector: ".btn-calculate", event: "click" },
     },
     {
@@ -92,7 +89,6 @@ const PieLabFirstBake = (() => {
       title: "The My Style Toggle",
       body: "See the Recommended / My Style toggle above the form? Flip it to My Style to unlock custom dough settings for any pizza style.",
       target: ".settings-toggle-row",
-      hideNext: true,
       waitFor: { selector: "#settings-mode-toggle", event: "change" },
     },
     {
@@ -172,16 +168,11 @@ const PieLabFirstBake = (() => {
     const backBtn = document.getElementById("firstbake-back");
     backBtn.classList.toggle("hidden", currentStep === 0);
 
-    // Next button text and visibility
+    // Next button text
     const nextBtn = document.getElementById("firstbake-next");
     const isLast = currentStep === total - 1;
-
-    if (step.hideNext) {
-      nextBtn.classList.add("hidden");
-    } else {
-      nextBtn.classList.remove("hidden");
-      nextBtn.textContent = step.nextLabel || (isLast ? "Done" : "Next");
-    }
+    nextBtn.classList.remove("hidden");
+    nextBtn.textContent = step.nextLabel || (isLast ? "Done" : "Next");
 
     // Highlight target element
     clearHighlight();
@@ -200,9 +191,13 @@ const PieLabFirstBake = (() => {
       const { selector, event } = step.waitFor;
       const el = document.querySelector(selector);
       if (el) {
+        const stepWhenRegistered = currentStep;
         const handler = () => {
-          // Small delay so the user sees their action take effect
-          setTimeout(() => nextStep(), 400);
+          // Only auto-advance if still on the same step (prevents double-advance
+          // if user clicks Next while the waitFor delay is pending)
+          setTimeout(() => {
+            if (currentStep === stepWhenRegistered) nextStep();
+          }, 400);
         };
         el.addEventListener(event, handler, { once: true });
         activeCleanup = () => el.removeEventListener(event, handler);

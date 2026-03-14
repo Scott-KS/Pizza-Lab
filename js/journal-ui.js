@@ -1352,15 +1352,13 @@
       body: "Your recipe is already filled in from the calculator. Add a rating, some photos, and any notes about how it turned out \u2014 then hit Save Entry.",
       target: "#journal-form-wrapper",
       waitFor: { selector: "#journal-form", event: "submit" },
-      hideNext: true,
     },
     {
       title: "Your Bake Is Saved!",
       body: "Tap the bake card below to open the full details \u2014 your recipe, photos, notes, and sharing options.",
       target: "#journal-entries",
       delay: 800,
-      waitFor: { selector: "#journal-detail-modal", event: "transitionend" },
-      hideNext: true,
+      waitFor: { selector: "#journal-entries", event: "click" },
     },
     {
       title: "Share Your Bake",
@@ -1423,12 +1421,8 @@
     document.getElementById("jg-body").textContent = step.body;
 
     const nextBtn = document.getElementById("jg-next");
-    if (step.hideNext) {
-      nextBtn.classList.add("hidden");
-    } else {
-      nextBtn.classList.remove("hidden");
-      nextBtn.textContent = step.nextLabel || (jgStep === total - 1 ? "Done" : "Next");
-    }
+    nextBtn.classList.remove("hidden");
+    nextBtn.textContent = step.nextLabel || (jgStep === total - 1 ? "Done" : "Next");
 
     // Highlight
     if (jgHighlight) jgHighlight.classList.add("hidden");
@@ -1456,7 +1450,12 @@
       const { selector, event } = step.waitFor;
       const el = document.querySelector(selector);
       if (el) {
-        const handler = () => setTimeout(() => jgNextStep(), 600);
+        const stepWhenRegistered = jgStep;
+        const handler = () => {
+          setTimeout(() => {
+            if (jgStep === stepWhenRegistered) jgNextStep();
+          }, 600);
+        };
         el.addEventListener(event, handler, { once: true });
         jgCleanup = () => el.removeEventListener(event, handler);
       }
