@@ -3152,20 +3152,19 @@ main {
 .btn-modal-save-photo {
   flex: 1;
   padding: 0.6rem 1.25rem;
+  border: 2px solid var(--clr-accent);
   border-radius: 8px;
   background: none;
   font-size: 0.9rem;
   font-weight: 600;
+  color: var(--clr-accent);
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.btn-modal-iterate {
-  border: 2px solid var(--clr-accent);
-  color: var(--clr-accent);
-}
-
-.btn-modal-iterate:hover {
+.btn-modal-iterate:hover,
+.btn-modal-share:hover,
+.btn-modal-save-photo:hover {
   background: var(--clr-accent);
   color: #fff;
 }
@@ -3184,26 +3183,6 @@ main {
 
 .btn-modal-delete:hover {
   background: #c0392b;
-  color: #fff;
-}
-
-.btn-modal-share {
-  border: 2px solid var(--clr-primary);
-  color: var(--clr-primary);
-}
-
-.btn-modal-share:hover {
-  background: var(--clr-primary);
-  color: #fff;
-}
-
-.btn-modal-save-photo {
-  border: 2px solid var(--clr-accent);
-  color: var(--clr-accent);
-}
-
-.btn-modal-save-photo:hover {
-  background: var(--clr-accent);
   color: #fff;
 }
 
