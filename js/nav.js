@@ -10,14 +10,13 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-// ── Canonical Oven Types (6 types) ────────────────────
+// ── Canonical Oven Types (5 types) ────────────────────
 const OVEN_TYPES = {
-  steel:        "Home Oven + Pizza Steel",
-  stone:        "Home Oven + Pizza Stone",
-  ooni:         "Portable Pizza Oven",
-  "wood-fired": "Wood-Fired Oven",
-  "cast-iron":  "Cast Iron Skillet",
-  pan:          "Sheet Pan / Home Oven",
+  steel:        "Home Oven \u2014 Pizza Steel",
+  stone:        "Home Oven \u2014 Pizza Stone",
+  rack:         "Home Oven \u2014 Rack Only",
+  portable:     "Portable Pizza Oven (Gas)",
+  "wood-fired": "Wood-Fired Pizza Oven",
 };
 
 // ── Populate any <select> with pizza styles ───────────

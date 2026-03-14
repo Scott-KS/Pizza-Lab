@@ -465,11 +465,15 @@
       const shortTime = step.dateTime.toLocaleTimeString(undefined, {
         hour: "numeric", minute: "2-digit",
       });
+      // Show short date on visual bar for multi-day bakes
+      const shortDate = step.dateTime.toLocaleDateString(undefined, {
+        weekday: "short", month: "short", day: "numeric",
+      });
       const shortLabel = step.label.length > 14 ? step.label.slice(0, 13) + "\u2026" : step.label;
 
       blocksHtml += `<div class="bar-block ${statusClass}" style="flex:${widths[i].toFixed(2)};" data-step-idx="${i}">
         <span class="bar-block-label">${shortLabel}</span>
-        <span class="bar-block-time">${shortTime}</span>
+        <span class="bar-block-time">${shortDate} ${shortTime}</span>
       </div>`;
     });
 
@@ -686,7 +690,12 @@
         minute: "2-digit",
         hour12: true,
       });
-      bannerNextStep.textContent = `Next: ${nextStep.label} at ${time}`;
+      const dateStr = nextStep.dateTime.toLocaleDateString(undefined, {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      });
+      bannerNextStep.textContent = `Next: ${nextStep.label} \u2014 ${dateStr} at ${time}`;
     } else {
       const unchecked = data.steps.find((s) => !s.checked);
       if (unchecked) {

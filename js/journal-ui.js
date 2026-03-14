@@ -735,12 +735,8 @@
       html += `<div class="modal-notes"><h4>Notes</h4><p>${escapeHtml(entry.notes)}</p></div>`;
     }
 
-    // Share / Save buttons — only if entry has a photo
-    const hasPhoto = (entry.photos && entry.photos.length) || entry.photo;
-    const shareButtons = hasPhoto
-      ? `<button class="btn-modal-share" data-id="${entry.id}">Share This Bake</button>
-         <button class="btn-modal-save-photo" data-id="${entry.id}">Save to Photos</button>`
-      : "";
+    const shareButtons = `<button class="btn-modal-share" data-id="${entry.id}">Share This Bake</button>
+         <button class="btn-modal-save-photo" data-id="${entry.id}">Save to Photos</button>`;
 
     html += `
       <div class="modal-actions">
@@ -1311,16 +1307,80 @@
       progressEl.innerHTML = "\uD83C\uDF89 All styles unlocked!";
     }
 
-    // Clicking an unlocked card filters the journal to that style
+    // Clicking an unlocked card shows bake history below the grid
     grid.querySelectorAll(".passport-card.unlocked").forEach((card) => {
       card.addEventListener("click", () => {
-        const style = card.dataset.style;
-        if (filterSelect) {
-          filterSelect.value = style;
-          filterSelect.dispatchEvent(new Event("change"));
-        }
+        const styleKey = card.dataset.style;
+        togglePassportBakeList(styleKey, card);
       });
     });
+  }
+
+  function togglePassportBakeList(styleKey, card) {
+    const section = document.getElementById("passport-section");
+    const existing = document.getElementById("passport-bake-list");
+
+    // If already showing this style, collapse it
+    if (existing && existing.dataset.style === styleKey) {
+      existing.remove();
+      card.classList.remove("passport-card--active");
+      return;
+    }
+
+    // Remove any existing list
+    if (existing) existing.remove();
+    document.querySelectorAll(".passport-card--active").forEach((c) => c.classList.remove("passport-card--active"));
+
+    const entries = PieLabJournal.getEntriesByStyle(styleKey);
+    if (!entries || entries.length === 0) return;
+
+    // Sort most recent first
+    entries.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+
+    const recipe = (typeof PIZZA_RECIPES !== "undefined") ? PIZZA_RECIPES[styleKey] : null;
+    const styleName = recipe ? recipe.name : styleKey;
+
+    let html = `<div class="passport-bake-list" id="passport-bake-list" data-style="${styleKey}">
+      <h4 class="passport-bake-list-title">${escapeHtml(styleName)} Bakes</h4>
+      <div class="passport-bake-items">`;
+
+    entries.forEach((entry) => {
+      const thumbSrc = (entry.photos && entry.photos.length) ? entry.photos[0] : entry.photo;
+      const thumbHtml = thumbSrc
+        ? `<img class="passport-bake-thumb" src="${thumbSrc}" alt="Bake photo" />`
+        : `<div class="passport-bake-thumb-placeholder">\uD83C\uDF55</div>`;
+
+      const stars = entry.rating ? renderStars(entry.rating) : "";
+
+      html += `
+        <button type="button" class="passport-bake-item" data-entry-id="${entry.id}">
+          ${thumbHtml}
+          <div class="passport-bake-info">
+            <span class="passport-bake-date">${formatDate(entry.date)}</span>
+            ${entry.bakeName ? `<span class="passport-bake-name">${escapeHtml(entry.bakeName)}</span>` : ""}
+            ${stars ? `<span class="passport-bake-stars">${stars}</span>` : ""}
+            ${entry.skillBadge ? `<span class="passport-bake-badge">${entry.skillBadge}</span>` : ""}
+          </div>
+        </button>`;
+    });
+
+    html += "</div></div>";
+
+    section.insertAdjacentHTML("beforeend", html);
+    card.classList.add("passport-card--active");
+
+    // Click handler to open detail modal
+    const list = document.getElementById("passport-bake-list");
+    list.querySelectorAll(".passport-bake-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const entryId = item.dataset.entryId;
+        const entry = entries.find((e) => e.id === entryId);
+        if (entry) openDetailModal(entry);
+      });
+    });
+
+    // Scroll list into view
+    list.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   // ── Journal Guide (post-first-bake) ──────────────
