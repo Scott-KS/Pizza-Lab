@@ -6742,7 +6742,7 @@ body[data-page="kitchen"] main {
 .firstbake-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
   z-index: 10500;
   opacity: 0;
   pointer-events: none;
@@ -6763,9 +6763,8 @@ body[data-page="kitchen"] main {
   border-radius: var(--radius);
   max-width: 440px;
   width: calc(100% - 2rem);
-  padding: 1.5rem 1.5rem 1.25rem;
+  padding: 2.5rem 2rem 2rem;
   box-shadow: var(--shadow-lg);
-  border-top: 3px solid var(--clr-primary);
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -6775,21 +6774,22 @@ body[data-page="kitchen"] main {
 
 .firstbake-skip {
   position: absolute;
-  top: 0.6rem;
-  right: 0.75rem;
+  top: 0.75rem;
+  right: 1rem;
   background: none;
   border: none;
   color: var(--clr-text-light);
   font-family: var(--font-body);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   cursor: pointer;
-  padding: 0.2rem 0.5rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 4px;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, background 0.2s ease;
 }
 
 .firstbake-skip:hover {
   color: var(--clr-text);
+  background: var(--clr-section-bg);
 }
 
 .firstbake-step-count {
@@ -6804,16 +6804,17 @@ body[data-page="kitchen"] main {
 
 .firstbake-title {
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: 1.5rem;
   color: var(--clr-display);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
 }
 
 .firstbake-body {
   font-family: var(--font-body);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--clr-text);
-  line-height: 1.55;
+  line-height: 1.6;
   margin-bottom: 1rem;
 }
 
@@ -6825,13 +6826,17 @@ body[data-page="kitchen"] main {
 
 .firstbake-btn {
   font-family: var(--font-body);
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  padding: 0.5rem 1.25rem;
+  padding: 0.65rem 1.75rem;
   border-radius: var(--radius);
   border: none;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.firstbake-btn:active {
+  transform: scale(0.97);
 }
 
 .firstbake-btn--next {
@@ -6897,6 +6902,14 @@ body[data-page="kitchen"] main {
 
   .firstbake-card {
     bottom: 1rem;
-    padding: 1.25rem 1.25rem 1rem;
+    padding: 2rem 1.25rem 1.5rem;
+  }
+
+  .firstbake-title {
+    font-size: 1.25rem;
+  }
+
+  .firstbake-body {
+    font-size: 0.88rem;
   }
 }
