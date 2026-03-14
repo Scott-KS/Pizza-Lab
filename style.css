@@ -3198,12 +3198,12 @@ main {
 }
 
 .btn-modal-save-photo {
-  border: 2px solid var(--clr-gold);
-  color: var(--clr-gold);
+  border: 2px solid var(--clr-gold, #c9a84c);
+  color: var(--clr-gold, #c9a84c);
 }
 
 .btn-modal-save-photo:hover {
-  background: var(--clr-gold);
+  background: var(--clr-gold, #c9a84c);
   color: #1a1a1a;
 }
 
