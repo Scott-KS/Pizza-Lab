@@ -5877,6 +5877,92 @@ body[data-page="kitchen"] main {
   color: var(--clr-muted);
 }
 
+/* Active passport card (expanded) */
+.passport-card--active {
+  border-color: var(--clr-accent);
+  box-shadow: 0 0 0 2px var(--clr-accent);
+}
+
+/* Passport Bake List (expanded below grid) */
+.passport-bake-list {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  background: var(--clr-card-bg);
+}
+.passport-bake-list-title {
+  font-family: "Playfair Display", serif;
+  font-size: 1.05rem;
+  margin-bottom: 0.75rem;
+}
+.passport-bake-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.passport-bake-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--clr-border);
+  border-radius: 6px;
+  background: var(--clr-section-bg);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  transition: background 200ms ease, border-color 200ms ease;
+}
+.passport-bake-item:hover {
+  background: var(--clr-card-bg);
+  border-color: var(--clr-accent);
+}
+.passport-bake-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.passport-bake-thumb-placeholder {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  background: var(--clr-border);
+  flex-shrink: 0;
+}
+.passport-bake-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.passport-bake-date {
+  font-size: 0.78rem;
+  color: var(--clr-muted);
+}
+.passport-bake-name {
+  font-weight: 600;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.passport-bake-stars {
+  font-size: 0.78rem;
+  color: var(--clr-gold);
+}
+.passport-bake-badge {
+  font-size: 0.72rem;
+  color: var(--clr-muted);
+}
+
 /* ═══════════════════════════════════════════════════════
    Premium / Trial System
    ═══════════════════════════════════════════════════════ */
