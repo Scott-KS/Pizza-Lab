@@ -230,7 +230,7 @@ function buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWe
   const min = (m) => m * 60000; // minutes to ms
 
   const preheatMinutes = OVEN_PREHEAT_MINUTES[ovenType] || 60;
-  const ovenLabel = OVEN_TYPES[ovenType] || ovenType;
+  const ovenLabel = (typeof OVEN_TYPES !== "undefined" && OVEN_TYPES[ovenType]) || ovenType;
   const isNoRise = NO_RISE_STYLES.includes(styleKey);
   const isCuring = CURING_STYLES.includes(styleKey);
 
@@ -250,7 +250,7 @@ function buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWe
     steps.push({
       ...SCHEDULE_STEP_TEMPLATES.mix,
       dateTime: new Date(mixT),
-      instruction: "Combine flour, water, salt, oil, and yeast. Mix until smooth — about 3–5 minutes. This is a no-rise dough, so just get it to a uniform, slightly tacky consistency.",
+      instruction: "Combine flour, water, salt, and oil. Mix until smooth — about 3–5 minutes. This is a no-rise dough, so just get it to a uniform, slightly tacky consistency.",
     });
     steps.push({
       ...SCHEDULE_STEP_TEMPLATES["rest-no-rise"],

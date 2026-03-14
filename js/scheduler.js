@@ -116,6 +116,7 @@
     const eatTime = new Date(datetimeInput.value);
     const styleKey = styleSelect.value;
     const recipe = PIZZA_RECIPES[styleKey];
+    if (!recipe) return;
     const sizeKeys = Object.keys(recipe.sizes);
     const defaultSize = recipe.defaultSize || (sizeKeys.includes("12") ? "12" : sizeKeys[0]);
     const doughBallWeight = recipe.sizes[defaultSize].doughWeight;
@@ -233,6 +234,7 @@
     const eatTime = new Date(datetimeInput.value);
     const styleKey = styleSelect.value;
     const recipe = PIZZA_RECIPES[styleKey];
+    if (!recipe) return;
     const sizeKeys = Object.keys(recipe.sizes);
     const defaultSize = recipe.defaultSize || (sizeKeys.includes("12") ? "12" : sizeKeys[0]);
     const doughBallWeight = recipe.sizes[defaultSize].doughWeight;

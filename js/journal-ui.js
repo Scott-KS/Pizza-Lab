@@ -4,6 +4,10 @@
    ══════════════════════════════════════════════════════ */
 
 (() => {
+  const _metricTemp = typeof PieLabProfile !== "undefined" && PieLabProfile.isMetricTemp();
+  function formatTemp(f) {
+    return _metricTemp ? `${fToC(f)}\u00B0C` : `${f}\u00B0F`;
+  }
   const formWrapper = document.getElementById("journal-form-wrapper");
   const form = document.getElementById("journal-form");
   const entriesContainer = document.getElementById("journal-entries");
@@ -25,7 +29,7 @@
   // Star rating state
   let currentRating = 0;
   const starContainer = document.getElementById("j-star-rating");
-  const stars = starContainer.querySelectorAll(".star");
+  const stars = starContainer ? starContainer.querySelectorAll(".star") : [];
 
   // Multi-photo state (replaces single-photo)
   let currentPhotos = []; // array of data-URL strings, max 4
@@ -75,7 +79,7 @@
 
     label.textContent = `Storage: ${usedMB} MB of ~5 MB used`;
     fill.style.width = `${pct}%`;
-    fill.className = "storage-bar-fill" + (pct > 80 ? " storage-warning" : pct > 95 ? " storage-critical" : "");
+    fill.className = "storage-bar-fill" + (pct > 95 ? " storage-critical" : pct > 80 ? " storage-warning" : "");
   }
 
   // ── Populate dropdowns ────────────────────────────
@@ -533,7 +537,7 @@
         : `<div class="entry-thumb-placeholder">\uD83C\uDF55</div>`;
 
       const detailParts = [];
-      if (entry.bakeTemp) detailParts.push(`${entry.bakeTemp}\u00B0F`);
+      if (entry.bakeTemp) detailParts.push(formatTemp(entry.bakeTemp));
       if (entry.bakeTime) detailParts.push(`${entry.bakeTime} min`);
       if (entry.ovenType && OVEN_TYPES[entry.ovenType]) {
         detailParts.push(OVEN_TYPES[entry.ovenType]);
@@ -676,7 +680,7 @@
 
     // Details grid
     const details = [];
-    if (entry.bakeTemp) details.push({ label: "Bake Temp", value: `${entry.bakeTemp}\u00B0F` });
+    if (entry.bakeTemp) details.push({ label: "Bake Temp", value: formatTemp(entry.bakeTemp) });
     if (entry.bakeTime) details.push({ label: "Bake Time", value: `${entry.bakeTime} min` });
     if (entry.ovenType) {
       const label = OVEN_TYPES[entry.ovenType] || escapeHtml(entry.ovenType);
@@ -869,7 +873,7 @@
       html += `<tr>
         <td>${formatDate(entry.date)}</td>
         <td class="${hClass}">${hydration != null ? hydration + "%" : "\u2014"}</td>
-        <td class="${tClass}">${entry.bakeTemp ? entry.bakeTemp + "\u00B0F" : "\u2014"}</td>
+        <td class="${tClass}">${entry.bakeTemp ? formatTemp(entry.bakeTemp) : "\u2014"}</td>
         <td>${entry.bakeTime ? entry.bakeTime + " min" : "\u2014"}</td>
         <td>${ovenLabel}</td>
         <td class="stars-cell">${entry.rating ? renderStars(entry.rating) : "\u2014"}</td>
@@ -1085,17 +1089,6 @@
       caption += ` ${tag}`;
     }
     return caption;
-  }
-
-  function dataUriToFile(dataUri, filename) {
-    try {
-      const [header, b64] = dataUri.split(",");
-      const mime = header.match(/:(.*?);/)[1];
-      const bytes = atob(b64);
-      const arr = new Uint8Array(bytes.length);
-      for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
-      return new File([arr], filename, { type: mime });
-    } catch { return null; }
   }
 
   function downloadBlob(blobOrFile, filename) {

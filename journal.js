@@ -59,6 +59,7 @@ const PieLabJournal = (() => {
    * style, overlays those values on top of the base recipe.
    */
   function getEffectiveRecipe(styleKey, usePersonal) {
+    if (typeof PIZZA_RECIPES === "undefined") return null;
     const base = PIZZA_RECIPES[styleKey];
     if (!base) return null;
     if (!usePersonal) return base;
@@ -123,7 +124,7 @@ const PieLabJournal = (() => {
 
   function deleteEntry(id) {
     const entries = getAllEntries().filter((e) => e.id !== id);
-    saveAllEntries(entries);
+    return saveAllEntries(entries);
   }
 
   function getEntriesByStyle(styleKey) {

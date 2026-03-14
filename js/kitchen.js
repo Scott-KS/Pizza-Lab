@@ -296,6 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const countEl = document.getElementById("passport-count");
     const progressEl = document.getElementById("passport-progress");
     if (!grid) return;
+    if (typeof PIZZA_RECIPES === "undefined" || typeof PieLabJournal === "undefined") return;
 
     const styleKeys = Object.keys(PIZZA_RECIPES);
     let unlocked = 0;
@@ -342,7 +343,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const backup = { _version: 1, _exportedAt: new Date().toISOString() };
     BACKUP_KEYS.forEach((key) => {
       const raw = localStorage.getItem(key);
-      backup[key] = raw ? JSON.parse(raw) : null;
+      try { backup[key] = raw ? JSON.parse(raw) : null; } catch { backup[key] = raw; }
     });
 
     const json = JSON.stringify(backup, null, 2);
@@ -470,7 +471,7 @@ document.addEventListener("DOMContentLoaded", () => {
       deleteModal.classList.remove("hidden");
     });
 
-    deleteCancel.addEventListener("click", () => {
+    if (deleteCancel) deleteCancel.addEventListener("click", () => {
       deleteModal.classList.add("hidden");
     });
 
@@ -478,7 +479,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.target === deleteModal) deleteModal.classList.add("hidden");
     });
 
-    deleteConfirm.addEventListener("click", () => {
+    if (deleteConfirm) deleteConfirm.addEventListener("click", () => {
       const keys = Object.keys(localStorage).filter((k) => k.startsWith("pielab"));
       keys.forEach((k) => localStorage.removeItem(k));
       window.location.href = "index.html";
