@@ -25,7 +25,17 @@
     }
   });
 
-  // Handle Android back button
+  // Handle Android back button (Capacitor API + Cordova fallback)
+  try {
+    const { App } = Capacitor.Plugins;
+    App.addListener("backButton", () => {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        App.exitApp();
+      }
+    });
+  } catch { /* Capacitor not available */ }
   document.addEventListener("backbutton", () => {
     if (window.history.length > 1) {
       window.history.back();

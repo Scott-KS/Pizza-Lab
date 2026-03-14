@@ -4,9 +4,15 @@
    ══════════════════════════════════════════════════════ */
 document.addEventListener("DOMContentLoaded", () => {
   // ── Welcome banner for new users ───────────────────
-  if (new URLSearchParams(window.location.search).has("welcome")) {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has("welcome")) {
     const banner = document.getElementById("welcome-banner");
-    if (banner) banner.classList.remove("hidden");
+    if (banner) {
+      banner.classList.remove("hidden");
+      if (urlParams.get("onboarding") === "1") {
+        banner.innerHTML = '<p>👨‍🍳 <strong>Almost there!</strong> Fill out your kitchen profile below and hit <em>Save My Kitchen</em>. Then we\'ll guide you through your first bake.</p>';
+      }
+    }
   }
 
   // ── DOM refs ─────────────────────────────────────────
@@ -269,6 +275,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update stored city so subsequent edits compare to latest save
     storedCity = currentCity;
 
+    // If this is part of onboarding, redirect to first bake guide
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("onboarding") === "1" && updates.displayName) {
+      window.location.href = "calculator.html?firstbake=1";
+      return;
+    }
+
     // Show confirmation with fade-out
     saveConfirm.classList.remove("hidden");
     saveConfirm.classList.remove("fade-out");
@@ -296,6 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const countEl = document.getElementById("passport-count");
     const progressEl = document.getElementById("passport-progress");
     if (!grid) return;
+    if (typeof PIZZA_RECIPES === "undefined" || typeof PieLabJournal === "undefined") return;
 
     const styleKeys = Object.keys(PIZZA_RECIPES);
     let unlocked = 0;
@@ -342,7 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const backup = { _version: 1, _exportedAt: new Date().toISOString() };
     BACKUP_KEYS.forEach((key) => {
       const raw = localStorage.getItem(key);
-      backup[key] = raw ? JSON.parse(raw) : null;
+      try { backup[key] = raw ? JSON.parse(raw) : null; } catch { backup[key] = raw; }
     });
 
     const json = JSON.stringify(backup, null, 2);
@@ -470,7 +484,7 @@ document.addEventListener("DOMContentLoaded", () => {
       deleteModal.classList.remove("hidden");
     });
 
-    deleteCancel.addEventListener("click", () => {
+    if (deleteCancel) deleteCancel.addEventListener("click", () => {
       deleteModal.classList.add("hidden");
     });
 
@@ -478,7 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.target === deleteModal) deleteModal.classList.add("hidden");
     });
 
-    deleteConfirm.addEventListener("click", () => {
+    if (deleteConfirm) deleteConfirm.addEventListener("click", () => {
       const keys = Object.keys(localStorage).filter((k) => k.startsWith("pielab"));
       keys.forEach((k) => localStorage.removeItem(k));
       window.location.href = "index.html";

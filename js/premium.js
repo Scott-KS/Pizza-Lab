@@ -108,8 +108,8 @@ window.PieLabPremium = (function () {
     const btn = modalOverlay.querySelector("#btn-premium-trial");
     if (isExpired()) {
       btn.textContent = "Unlock Pro — $4.99";
-      btn.disabled = true;
-      btn.classList.add("btn-disabled");
+      btn.disabled = false;
+      btn.classList.remove("btn-disabled");
     } else if (canUse()) {
       // Trial active — shouldn't see modal, but just in case
       btn.textContent = "Continue with Trial";

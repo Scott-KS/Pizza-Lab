@@ -442,7 +442,7 @@ function populateFermentationChart() {
 
     const roomTemp = hasFridge ? "1\u20132 hrs" : sched.totalTime;
     const fridgeTemp = hasFridge
-      ? sched.totalTime.replace(/\d+\s*[-–]\s*\d+\s*hours?/i, (m) => m)
+      ? sched.totalTime
       : "\u2014";
 
     rows += `

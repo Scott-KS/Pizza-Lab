@@ -462,7 +462,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const prefPct = (parseInt(document.getElementById("preferment-pct")?.value || "25", 10)) / 100;
       lastPreferment = splitPreferment(dough, prefType, prefPct);
     }
-    const ovenTempF  = adjustedRecipe.idealTemp.max;
+    const ovenTempF  = adjustedRecipe.idealTemp ? adjustedRecipe.idealTemp.max : 500;
     const bakingInfo = getBakingInfo(adjustedRecipe, ovenTempF);
 
     // ── Render title ──
