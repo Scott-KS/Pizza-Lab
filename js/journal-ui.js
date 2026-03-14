@@ -1107,14 +1107,21 @@
   // ── Polaroid Card Generator ────────────────────────
   function generatePolaroidCard(entry, profile) {
     return new Promise((resolve, reject) => {
-      const W = 1080, H = 1360, PHOTO_H = 1080;
+      // Polaroid-style: thin equal borders top/left/right, thicker bottom for text
+      const BORDER = 40;                    // top, left, right border
+      const PHOTO_SIZE = 1080;              // square photo area
+      const BOTTOM_H = 180;                 // white text area below photo
+      const W = BORDER + PHOTO_SIZE + BORDER;           // 1160
+      const H = BORDER + PHOTO_SIZE + BOTTOM_H + BORDER; // 1340
+      const PHOTO_X = BORDER;
+      const PHOTO_Y = BORDER;
 
       const canvas = document.createElement("canvas");
       canvas.width = W;
       canvas.height = H;
       const ctx = canvas.getContext("2d");
 
-      // White background
+      // White background (forms the Polaroid frame)
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, W, H);
 
@@ -1122,22 +1129,29 @@
       const photoSrc = (entry.photos && entry.photos.length) ? entry.photos[0] : entry.photo;
       const img = new Image();
       img.onload = () => {
-        // Draw cropped/centered to fill 1080x1080
+        // Draw cropped/centered to fill photo area
         const srcW = img.width, srcH = img.height;
-        const scale = Math.max(PHOTO_H / srcW, PHOTO_H / srcH);
+        const scale = Math.max(PHOTO_SIZE / srcW, PHOTO_SIZE / srcH);
         const drawW = srcW * scale, drawH = srcH * scale;
-        const dx = (W - drawW) / 2, dy = (PHOTO_H - drawH) / 2;
+        const dx = PHOTO_X + (PHOTO_SIZE - drawW) / 2;
+        const dy = PHOTO_Y + (PHOTO_SIZE - drawH) / 2;
+        // Clip to photo area
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(PHOTO_X, PHOTO_Y, PHOTO_SIZE, PHOTO_SIZE);
+        ctx.clip();
         ctx.drawImage(img, dx, dy, drawW, drawH);
+        ctx.restore();
 
         // Load logo watermark (may fail — graceful)
         const logo = new Image();
+        const photoBottom = PHOTO_Y + PHOTO_SIZE;
         logo.onload = () => {
-          drawLogoWatermark(ctx, logo, W, PHOTO_H);
-          finishCard(ctx, canvas, entry, profile, W, H, PHOTO_H, resolve);
+          drawLogoWatermark(ctx, logo, PHOTO_X + PHOTO_SIZE, photoBottom);
+          finishCard(ctx, canvas, entry, profile, W, H, PHOTO_X, photoBottom, resolve);
         };
         logo.onerror = () => {
-          // Logo missing — skip watermark, still finish card
-          finishCard(ctx, canvas, entry, profile, W, H, PHOTO_H, resolve);
+          finishCard(ctx, canvas, entry, profile, W, H, PHOTO_X, photoBottom, resolve);
         };
         logo.src = "assets/logos/logo-transparent.svg";
       };
@@ -1194,35 +1208,29 @@
     ctx.drawImage(logo, x, y, LOGO_W, LOGO_H);
   }
 
-  function finishCard(ctx, canvas, entry, profile, W, H, PHOTO_H, resolve) {
-    // Separator line
-    ctx.strokeStyle = "#e0ddd8";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(0, PHOTO_H);
-    ctx.lineTo(W, PHOTO_H);
-    ctx.stroke();
+  function finishCard(ctx, canvas, entry, profile, W, H, LEFT, photoBottom, resolve) {
+    // Polaroid border is already white from initial fill — no separator line needed
+    const RIGHT = W - LEFT;
 
-    // Polaroid border is already white from initial fill
-    const LEFT = 40;
-    const RIGHT = W - 40;
+    // Text area starts below the photo with some padding
+    const textTop = photoBottom + 28;
 
     // Baker's first name in bold
     const firstName = (profile.name || "").split(" ")[0];
     ctx.fillStyle = "#1a1a1a";
     ctx.font = "bold 28px Inter, sans-serif";
     ctx.textBaseline = "alphabetic";
-    ctx.fillText(firstName, LEFT, 1138);
+    ctx.fillText(firstName, LEFT, textTop);
 
     // Location · Style
     ctx.fillStyle = "#555555";
     ctx.font = "400 22px Inter, sans-serif";
     const styleName = entry.styleName || entry.styleKey || "";
     const subtitle = profile.location ? `${profile.location} \u00B7 ${styleName}` : styleName;
-    ctx.fillText(subtitle, LEFT, 1178);
+    ctx.fillText(subtitle, LEFT, textTop + 34);
 
     // Skill badge pill + www.pielab.app on same line
-    const badgeLineY = 1205;
+    const badgeLineY = textTop + 56;
 
     if (profile.skillLevel) {
       ctx.font = "500 18px Inter, sans-serif";
