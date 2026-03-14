@@ -3198,13 +3198,13 @@ main {
 }
 
 .btn-modal-save-photo {
-  border: 2px solid var(--clr-gold, #c9a84c);
-  color: var(--clr-gold, #c9a84c);
+  border: 2px solid var(--clr-accent);
+  color: var(--clr-accent);
 }
 
 .btn-modal-save-photo:hover {
-  background: var(--clr-gold, #c9a84c);
-  color: #1a1a1a;
+  background: var(--clr-accent);
+  color: #fff;
 }
 
 /* ── First Bake Celebration ────────────────────── */
