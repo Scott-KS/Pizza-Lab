@@ -26,9 +26,9 @@ const PieLabFirstBake = (() => {
     {
       title: "Pick a Style",
       body: "For your first bake, we recommend New York Style. It's forgiving, uses common ingredients, and bakes in a regular home oven.",
-      target: "#style-select",
+      target: "#pizza-type",
       action: function () {
-        const select = document.getElementById("style-select");
+        const select = document.getElementById("pizza-type");
         if (select) {
           select.value = "new-york";
           select.dispatchEvent(new Event("change", { bubbles: true }));
@@ -38,9 +38,9 @@ const PieLabFirstBake = (() => {
     {
       title: "Choose Your Size",
       body: "A 14-inch pizza is the classic New York size — big, foldable slices. Let's make 2 pizzas so you have plenty to share (or save for later).",
-      target: "#size-select",
+      target: "#pizza-size",
       action: function () {
-        const sizeSelect = document.getElementById("size-select");
+        const sizeSelect = document.getElementById("pizza-size");
         const countInput = document.getElementById("num-pizzas");
         if (sizeSelect) {
           sizeSelect.value = "14";
@@ -55,25 +55,25 @@ const PieLabFirstBake = (() => {
     {
       title: "Calculate Your Recipe",
       body: "Hit the Calculate Recipe button below. We'll figure out the exact amounts of flour, water, salt, yeast, and everything else you need.",
-      target: "#btn-calculate",
+      target: ".btn-calculate",
       action: null,
     },
     {
       title: "Check Your Ingredients",
       body: "Scroll down to see your complete recipe — dough ingredients, sauce, and toppings. Everything is measured precisely for your pizza count.",
-      target: null,
+      target: "#dough-section",
+      delay: 500,
       action: function () {
-        const btn = document.getElementById("btn-calculate");
-        if (btn) btn.click();
+        const form = document.getElementById("pizza-form");
+        if (form) form.requestSubmit();
       },
-      delay: 400,
     },
     {
       title: "Read the Baking Tips",
       body: "Below the recipe you'll find step-by-step baking instructions and tips. The skill slider lets you toggle between Beginner, Intermediate, and Pro-level guidance.",
-      target: "#tips-card",
+      target: "#tips-level-control",
       action: function () {
-        const tips = document.getElementById("tips-card");
+        const tips = document.getElementById("tips-level-control");
         if (tips) tips.scrollIntoView({ behavior: "smooth", block: "center" });
       },
     },
@@ -152,23 +152,21 @@ const PieLabFirstBake = (() => {
       nextBtn.textContent = "Next";
     }
 
-    // Highlight target element
-    clearHighlight();
-    if (step.target) {
-      const el = document.querySelector(step.target);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-        setTimeout(() => positionHighlight(el), 300);
-      }
+    // Run step action first (may change DOM visibility)
+    if (step.action) {
+      step.action();
     }
 
-    // Run step action
-    if (step.action) {
-      if (step.delay) {
-        setTimeout(() => step.action(), step.delay);
-      } else {
-        step.action();
-      }
+    // Highlight target element (after action, with delay for DOM updates)
+    clearHighlight();
+    if (step.target) {
+      setTimeout(() => {
+        const el = document.querySelector(step.target);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          setTimeout(() => positionHighlight(el), 350);
+        }
+      }, step.delay || 50);
     }
   }
 

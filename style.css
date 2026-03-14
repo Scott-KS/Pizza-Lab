@@ -6860,8 +6860,14 @@ body[data-page="kitchen"] main {
   border-radius: var(--radius);
   pointer-events: none;
   z-index: 10600;
-  box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
+  box-shadow: 0 0 12px rgba(140, 53, 36, 0.5);
+  animation: firstbakePulse 1.5s ease-in-out infinite;
+  transition: top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease;
+}
+
+@keyframes firstbakePulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(140, 53, 36, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(140, 53, 36, 0.7); }
 }
 
 .firstbake-highlight.hidden {
