@@ -422,6 +422,7 @@
     hideForm();
     renderEntries();
     renderStats();
+    renderPassport();
     updateCompareButton();
     updateStorageDisplay();
 
@@ -793,6 +794,7 @@
         modalOverlay.classList.add("hidden");
         renderEntries();
         renderStats();
+        renderPassport();
         updateCompareButton();
         updateStorageDisplay();
       }
@@ -1267,11 +1269,64 @@
     ctx.closePath();
   }
 
+  // ── Style Passport ──────────────────────────────────
+  function renderPassport() {
+    const grid = document.getElementById("passport-grid");
+    const countEl = document.getElementById("passport-count");
+    const progressEl = document.getElementById("passport-progress");
+    if (!grid) return;
+    if (typeof PIZZA_RECIPES === "undefined" || typeof PieLabJournal === "undefined") return;
+
+    const styleKeys = Object.keys(PIZZA_RECIPES);
+    let unlocked = 0;
+
+    grid.innerHTML = styleKeys
+      .map((key) => {
+        const recipe = PIZZA_RECIPES[key];
+        const count = PieLabJournal.getBakesCountByStyle(key);
+        const isUnlocked = count > 0;
+        if (isUnlocked) unlocked++;
+
+        if (isUnlocked) {
+          const badge = PieLabJournal.getSkillBadge(count);
+          return `<button type="button" class="passport-card unlocked" data-style="${key}">
+            <span class="passport-badge">${badge.split(" ")[0]}</span>
+            <span class="passport-style-name">${recipe.name}</span>
+            <span class="passport-bake-count">${count} bake${count !== 1 ? "s" : ""}</span>
+          </button>`;
+        }
+
+        return `<div class="passport-card locked">
+          <span class="passport-badge">\uD83D\uDD12</span>
+          <span class="passport-style-name">${recipe.name}</span>
+          <span class="passport-bake-count">Not yet baked</span>
+        </div>`;
+      })
+      .join("");
+
+    if (countEl) countEl.textContent = unlocked;
+    if (progressEl && unlocked === styleKeys.length) {
+      progressEl.innerHTML = "\uD83C\uDF89 All styles unlocked!";
+    }
+
+    // Clicking an unlocked card filters the journal to that style
+    grid.querySelectorAll(".passport-card.unlocked").forEach((card) => {
+      card.addEventListener("click", () => {
+        const style = card.dataset.style;
+        if (filterSelect) {
+          filterSelect.value = style;
+          filterSelect.dispatchEvent(new Event("change"));
+        }
+      });
+    });
+  }
+
   // ── Initialize ────────────────────────────────────
   populateDropdowns();
   populateOvenDropdown();
   renderEntries();
   renderStats();
+  renderPassport();
   updateCompareButton();
   updateStorageDisplay();
 })();

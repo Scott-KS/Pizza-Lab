@@ -5807,7 +5807,7 @@ body[data-page="kitchen"] main {
 }
 
 /* ═══════════════════════════════════════════════════════
-   Style Passport — My Kitchen achievement grid
+   Style Passport — Journal achievement grid
    ═══════════════════════════════════════════════════════ */
 .passport-section {
   margin-top: 2rem;
@@ -5850,6 +5850,8 @@ body[data-page="kitchen"] main {
   transition: transform 0.15s, box-shadow 0.15s;
   text-decoration: none;
   color: inherit;
+  font: inherit;
+  cursor: pointer;
   min-height: 120px;
 }
 
