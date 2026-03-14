@@ -1,5 +1,5 @@
 /*  The Pie Lab — Service Worker  */
-const CACHE_NAME = "pielab-v20";
+const CACHE_NAME = "pielab-v21";
 
 /* ── Derive base path so caching works on both localhost and /Pizza-Lab/ ── */
 const BASE = self.registration.scope;
@@ -24,6 +24,8 @@ const APP_SHELL_PATHS = [
   "js/knowledge.js",
   "js/nav.js",
   "js/carousel.js",
+  "js/onboarding.js",
+  "js/first-bake.js",
   "js/user-profile.js",
   "js/pie-notifications.js",
   "js/capacitor-init.js",

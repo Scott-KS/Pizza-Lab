@@ -6555,3 +6555,340 @@ body[data-page="kitchen"] main {
   padding: 0.25rem;
   line-height: 1;
 }
+
+/* ── Onboarding Wizard ──────────────────────────────── */
+
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 11000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  padding: 1rem;
+}
+
+.onboarding-overlay--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.onboarding-card {
+  position: relative;
+  background: var(--clr-card);
+  border-radius: var(--radius);
+  max-width: 480px;
+  width: 100%;
+  padding: 2.5rem 2rem 2rem;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  transform: scale(0.92) translateY(20px);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.onboarding-overlay--visible .onboarding-card {
+  transform: scale(1) translateY(0);
+}
+
+.onboarding-card--enter {
+  animation: onboardFadeIn 0.3s ease;
+}
+
+@keyframes onboardFadeIn {
+  0% { opacity: 0.5; transform: scale(0.97); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.onboarding-skip {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--clr-text-light);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.onboarding-skip:hover {
+  color: var(--clr-text);
+  background: var(--clr-section-bg);
+}
+
+.onboarding-icon {
+  font-size: 3.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1;
+}
+
+.onboarding-page-badge {
+  display: inline-block;
+  background: var(--clr-primary);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.2rem 0.75rem;
+  border-radius: 20px;
+  margin-bottom: 0.75rem;
+}
+
+.onboarding-page-badge.hidden {
+  display: none;
+}
+
+.onboarding-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--clr-display);
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.onboarding-body {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--clr-text);
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+}
+
+.onboarding-detail {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--clr-text-light);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
+.onboarding-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.onboarding-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--clr-border);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.onboarding-dot.active {
+  background: var(--clr-primary);
+  transform: scale(1.3);
+}
+
+.onboarding-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.onboarding-btn {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.65rem 1.75rem;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.onboarding-btn:active {
+  transform: scale(0.97);
+}
+
+.onboarding-btn--next {
+  background: var(--clr-primary);
+  color: #fff;
+}
+
+.onboarding-btn--next:hover {
+  background: var(--clr-primary-dark);
+}
+
+.onboarding-btn--back {
+  background: var(--clr-section-bg);
+  color: var(--clr-text);
+}
+
+.onboarding-btn--back:hover {
+  background: var(--clr-border);
+}
+
+.onboarding-btn.hidden {
+  display: none;
+}
+
+/* ── First Bake Guide ───────────────────────────────── */
+
+.firstbake-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.firstbake-overlay--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.firstbake-card {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--clr-card);
+  border-radius: var(--radius);
+  max-width: 440px;
+  width: calc(100% - 2rem);
+  padding: 1.5rem 1.5rem 1.25rem;
+  box-shadow: var(--shadow-lg);
+  border-top: 3px solid var(--clr-primary);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.firstbake-overlay--visible .firstbake-card {
+  transform: translateX(-50%) translateY(0);
+}
+
+.firstbake-skip {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: var(--clr-text-light);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  transition: color 0.2s ease;
+}
+
+.firstbake-skip:hover {
+  color: var(--clr-text);
+}
+
+.firstbake-step-count {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--clr-primary);
+  margin-bottom: 0.4rem;
+}
+
+.firstbake-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--clr-display);
+  margin-bottom: 0.5rem;
+}
+
+.firstbake-body {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--clr-text);
+  line-height: 1.55;
+  margin-bottom: 1rem;
+}
+
+.firstbake-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.firstbake-btn {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.firstbake-btn--next {
+  background: var(--clr-primary);
+  color: #fff;
+}
+
+.firstbake-btn--next:hover {
+  background: var(--clr-primary-dark);
+}
+
+.firstbake-btn--back {
+  background: var(--clr-section-bg);
+  color: var(--clr-text);
+}
+
+.firstbake-btn--back:hover {
+  background: var(--clr-border);
+}
+
+.firstbake-btn.hidden {
+  display: none;
+}
+
+.firstbake-highlight {
+  position: absolute;
+  border: 2px solid var(--clr-primary);
+  border-radius: var(--radius);
+  pointer-events: none;
+  z-index: 10600;
+  box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.firstbake-highlight.hidden {
+  display: none;
+}
+
+/* ── Onboarding responsive ──────────────────────────── */
+
+@media (max-width: 480px) {
+  .onboarding-card {
+    padding: 2rem 1.25rem 1.5rem;
+  }
+
+  .onboarding-icon {
+    font-size: 2.75rem;
+  }
+
+  .onboarding-title {
+    font-size: 1.25rem;
+  }
+
+  .onboarding-body {
+    font-size: 0.88rem;
+  }
+
+  .firstbake-card {
+    bottom: 1rem;
+    padding: 1.25rem 1.25rem 1rem;
+  }
+}

@@ -60,16 +60,23 @@
 
   <script src="js/capacitor-init.js"></script>
   <script src="js/carousel.js"></script>
+  <script src="js/onboarding.js"></script>
   <script>if("serviceWorker"in navigator)window.addEventListener("load",()=>{navigator.serviceWorker.register("/sw.js").catch(()=>{})})</script>
   <script>
-    // Route new users to Kitchen setup, returning users to Calculator
+    // Route new users through onboarding, returning users to Calculator
     document.getElementById("btn-start").addEventListener("click", function(e) {
       e.preventDefault();
       try {
         var raw = localStorage.getItem("pielab-user-profile");
         var profile = raw ? JSON.parse(raw) : null;
         var hasProfile = profile && profile.displayName && profile.displayName.trim() !== "";
-        window.location.href = hasProfile ? "calculator.html" : "kitchen.html?welcome=1";
+        if (hasProfile) {
+          window.location.href = "calculator.html";
+        } else if (PieLabOnboarding.shouldShow()) {
+          PieLabOnboarding.start();
+        } else {
+          window.location.href = "kitchen.html?welcome=1";
+        }
       } catch(err) {
         window.location.href = "calculator.html";
       }
