@@ -1205,12 +1205,14 @@
 
     // Polaroid border is already white from initial fill
     const LEFT = 40;
+    const RIGHT = W - 40;
 
-    // Username
+    // Baker's first name in bold
+    const firstName = (profile.name || "").split(" ")[0];
     ctx.fillStyle = "#1a1a1a";
-    ctx.font = "600 28px Inter, sans-serif";
+    ctx.font = "bold 28px Inter, sans-serif";
     ctx.textBaseline = "alphabetic";
-    ctx.fillText(profile.name, LEFT, 1138);
+    ctx.fillText(firstName, LEFT, 1138);
 
     // Location · Style
     ctx.fillStyle = "#555555";
@@ -1219,7 +1221,9 @@
     const subtitle = profile.location ? `${profile.location} \u00B7 ${styleName}` : styleName;
     ctx.fillText(subtitle, LEFT, 1178);
 
-    // Skill badge pill
+    // Skill badge pill + www.pielab.app on same line
+    const badgeLineY = 1205;
+
     if (profile.skillLevel) {
       ctx.font = "500 18px Inter, sans-serif";
       const badgeText = profile.skillLevel;
@@ -1227,26 +1231,32 @@
       const pillPadH = 12, pillPadV = 6;
       const pillW = textW + pillPadH * 2;
       const pillH = 18 + pillPadV * 2;
-      const pillX = LEFT, pillY = 1205;
 
       // Rounded rect background
       ctx.fillStyle = "#c9622a";
-      roundRect(ctx, pillX, pillY, pillW, pillH, 6);
+      roundRect(ctx, LEFT, badgeLineY, pillW, pillH, 6);
       ctx.fill();
 
       // Badge text
       ctx.fillStyle = "#ffffff";
       ctx.textBaseline = "middle";
-      ctx.fillText(badgeText, pillX + pillPadH, pillY + pillH / 2);
-    }
+      ctx.fillText(badgeText, LEFT + pillPadH, badgeLineY + pillH / 2);
 
-    // ThePieLab.app branding
-    ctx.fillStyle = "#9a9690";
-    ctx.font = "400 16px Inter, sans-serif";
-    ctx.textBaseline = "alphabetic";
-    ctx.textAlign = "right";
-    ctx.fillText("ThePieLab.app", 1040, 1335);
-    ctx.textAlign = "left"; // reset
+      // www.pielab.app right-aligned on same line as badge
+      ctx.fillStyle = "#9a9690";
+      ctx.font = "400 18px Inter, sans-serif";
+      ctx.textAlign = "right";
+      ctx.fillText("www.pielab.app", RIGHT, badgeLineY + pillH / 2);
+      ctx.textAlign = "left";
+    } else {
+      // No badge — still show URL on that line
+      ctx.fillStyle = "#9a9690";
+      ctx.font = "400 18px Inter, sans-serif";
+      ctx.textBaseline = "alphabetic";
+      ctx.textAlign = "right";
+      ctx.fillText("www.pielab.app", RIGHT, badgeLineY + 18);
+      ctx.textAlign = "left";
+    }
 
     // Export
     canvas.toBlob((blob) => {
