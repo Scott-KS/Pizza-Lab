@@ -1339,6 +1339,154 @@
     });
   }
 
+  // ── Journal Guide (post-first-bake) ──────────────
+  // Shown once after the first-bake calculator guide completes and user navigates
+  // to the journal. Teaches logging a bake, then viewing & sharing.
+
+  const JOURNAL_GUIDE_KEY = "pielab-journal-guide-pending";
+  const JOURNAL_GUIDE_DONE_KEY = "pielab-journal-guide-done";
+
+  const journalGuideSteps = [
+    {
+      title: "Log Your Bake",
+      body: "Your recipe is already filled in from the calculator. Add a rating, some photos, and any notes about how it turned out \u2014 then hit Save Entry.",
+      target: "#journal-form-wrapper",
+      waitFor: { selector: "#journal-form", event: "submit" },
+      hideNext: true,
+    },
+    {
+      title: "Your Bake Is Saved!",
+      body: "Tap the bake card below to open the full details \u2014 your recipe, photos, notes, and sharing options.",
+      target: "#journal-entries",
+      delay: 800,
+      waitFor: { selector: "#journal-detail-modal", event: "transitionend" },
+      hideNext: true,
+    },
+    {
+      title: "Share Your Bake",
+      body: "From here you can Share This Bake to send it to friends, or Save to Photos to post it on Instagram or Reddit. A caption is auto-copied to your clipboard.",
+      target: ".modal-content",
+      delay: 500,
+      nextLabel: "Got It!",
+    },
+  ];
+
+  let jgOverlay = null;
+  let jgHighlight = null;
+  let jgStep = 0;
+  let jgCleanup = null;
+
+  function shouldShowJournalGuide() {
+    if (localStorage.getItem(JOURNAL_GUIDE_DONE_KEY) === "1") return false;
+    if (localStorage.getItem(JOURNAL_GUIDE_KEY) !== "1") return false;
+    // Only show when form is prefilled (user came from calculator)
+    const params = new URLSearchParams(window.location.search);
+    return params.get("prefill") === "1";
+  }
+
+  function startJournalGuide() {
+    jgStep = 0;
+    jgOverlay = document.createElement("div");
+    jgOverlay.className = "firstbake-overlay";
+    jgOverlay.innerHTML = `
+      <div class="firstbake-card">
+        <button class="firstbake-skip" id="jg-skip" aria-label="Close guide">Skip</button>
+        <div class="firstbake-step-count" id="jg-step-count"></div>
+        <h3 class="firstbake-title" id="jg-title"></h3>
+        <p class="firstbake-body" id="jg-body"></p>
+        <div class="firstbake-actions">
+          <button class="firstbake-btn firstbake-btn--next" id="jg-next">Next</button>
+        </div>
+      </div>
+    `;
+
+    jgHighlight = document.createElement("div");
+    jgHighlight.className = "firstbake-highlight hidden";
+    document.body.appendChild(jgHighlight);
+    document.body.appendChild(jgOverlay);
+
+    document.getElementById("jg-next").addEventListener("click", jgNextStep);
+    document.getElementById("jg-skip").addEventListener("click", jgClose);
+
+    requestAnimationFrame(() => jgOverlay.classList.add("firstbake-overlay--visible"));
+    jgRenderStep();
+  }
+
+  function jgRenderStep() {
+    jgCleanupWait();
+    const step = journalGuideSteps[jgStep];
+    const total = journalGuideSteps.length;
+
+    document.getElementById("jg-step-count").textContent =
+      `Step ${jgStep + 1} of ${total}`;
+    document.getElementById("jg-title").textContent = step.title;
+    document.getElementById("jg-body").textContent = step.body;
+
+    const nextBtn = document.getElementById("jg-next");
+    if (step.hideNext) {
+      nextBtn.classList.add("hidden");
+    } else {
+      nextBtn.classList.remove("hidden");
+      nextBtn.textContent = step.nextLabel || (jgStep === total - 1 ? "Done" : "Next");
+    }
+
+    // Highlight
+    if (jgHighlight) jgHighlight.classList.add("hidden");
+    if (step.target) {
+      setTimeout(() => {
+        const el = document.querySelector(step.target);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          setTimeout(() => {
+            if (!jgHighlight) return;
+            const rect = el.getBoundingClientRect();
+            const pad = 6;
+            jgHighlight.style.top = (rect.top + window.scrollY - pad) + "px";
+            jgHighlight.style.left = (rect.left - pad) + "px";
+            jgHighlight.style.width = (rect.width + pad * 2) + "px";
+            jgHighlight.style.height = (rect.height + pad * 2) + "px";
+            jgHighlight.classList.remove("hidden");
+          }, 350);
+        }
+      }, step.delay || 50);
+    }
+
+    // waitFor
+    if (step.waitFor) {
+      const { selector, event } = step.waitFor;
+      const el = document.querySelector(selector);
+      if (el) {
+        const handler = () => setTimeout(() => jgNextStep(), 600);
+        el.addEventListener(event, handler, { once: true });
+        jgCleanup = () => el.removeEventListener(event, handler);
+      }
+    }
+  }
+
+  function jgCleanupWait() {
+    if (jgCleanup) { jgCleanup(); jgCleanup = null; }
+  }
+
+  function jgNextStep() {
+    if (jgStep < journalGuideSteps.length - 1) {
+      jgStep++;
+      jgRenderStep();
+    } else {
+      jgClose();
+    }
+  }
+
+  function jgClose() {
+    jgCleanupWait();
+    localStorage.setItem(JOURNAL_GUIDE_DONE_KEY, "1");
+    localStorage.removeItem(JOURNAL_GUIDE_KEY);
+    if (jgHighlight) { jgHighlight.remove(); jgHighlight = null; }
+    if (jgOverlay) {
+      jgOverlay.classList.remove("firstbake-overlay--visible");
+      setTimeout(() => { if (jgOverlay) { jgOverlay.remove(); jgOverlay = null; } }, 300);
+    }
+  }
+
   // ── Initialize ────────────────────────────────────
   populateDropdowns();
   populateOvenDropdown();
@@ -1347,4 +1495,9 @@
   renderPassport();
   updateCompareButton();
   updateStorageDisplay();
+
+  // Start journal guide if flagged by the first-bake guide
+  if (shouldShowJournalGuide()) {
+    setTimeout(() => startJournalGuide(), 800);
+  }
 })();

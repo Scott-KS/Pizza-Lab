@@ -1,100 +1,133 @@
 /* ══════════════════════════════════════════════════════
    The Pie Lab — First Bake Beginner Guide
    Loaded on: calculator.html
-   Shows a step-by-step overlay teaching new users
-   how to make their first pizza.
+   Interactive step-by-step guide that lets users interact
+   with the form while popups guide each step.
    ══════════════════════════════════════════════════════ */
 
 const PieLabFirstBake = (() => {
   const STORAGE_KEY = "pielab-first-bake-shown";
+  const SECOND_BAKE_KEY = "pielab-second-bake-guide-shown";
+  const JOURNAL_GUIDE_KEY = "pielab-journal-guide-pending";
 
-  function isShown() {
+  // ── Storage helpers ──────────────────────────────────
+
+  function isFirstBakeShown() {
     return localStorage.getItem(STORAGE_KEY) === "1";
   }
 
-  function markShown() {
+  function markFirstBakeShown() {
     localStorage.setItem(STORAGE_KEY, "1");
   }
 
-  const guideSteps = [
+  function isSecondBakeShown() {
+    return localStorage.getItem(SECOND_BAKE_KEY) === "1";
+  }
+
+  function markSecondBakeShown() {
+    localStorage.setItem(SECOND_BAKE_KEY, "1");
+  }
+
+  // ── First Bake Guide Steps ──────────────────────────
+  // Each step can define:
+  //   waitFor: { selector, event } — pause until user interacts
+  //   nextLabel: custom text for the Next button
+  //   hideNext: true — hide the Next button (step advances via waitFor only)
+
+  const firstBakeSteps = [
     {
-      title: "Let's Make Your First Pizza!",
-      body: "We'll walk you through a simple beginner-friendly bake. Don't worry — we'll keep it easy and fun.",
+      title: "Let\u2019s Make Your First Pizza!",
+      body: "We\u2019ll walk you through a simple beginner-friendly bake step by step. You\u2019ll fill in each field as we go \u2014 don\u2019t worry, we\u2019ll keep it easy.",
       target: null,
-      action: null,
+      nextLabel: "Let\u2019s Go",
     },
     {
       title: "Pick a Style",
-      body: "For your first bake, we recommend New York Style. It's forgiving, uses common ingredients, and bakes in a regular home oven.",
+      body: "Start by choosing a pizza style. We recommend New York \u2014 it\u2019s forgiving, uses common ingredients, and bakes in a regular home oven.",
       target: "#pizza-type",
-      action: function () {
-        const select = document.getElementById("pizza-type");
-        if (select) {
-          select.value = "new-york";
-          select.dispatchEvent(new Event("change", { bubbles: true }));
-        }
-      },
+      hideNext: true,
+      waitFor: { selector: "#pizza-type", event: "change" },
     },
     {
       title: "Choose Your Size",
-      body: "A 14-inch pizza is the classic New York size — big, foldable slices. Let's make 2 pizzas so you have plenty to share (or save for later).",
+      body: "Now pick a pizza size and how many you want to make. For your first time, 2 pizzas is a great starting point \u2014 enough to share or save leftovers.",
       target: "#pizza-size",
-      action: function () {
-        const sizeSelect = document.getElementById("pizza-size");
-        const countInput = document.getElementById("num-pizzas");
-        if (sizeSelect) {
-          sizeSelect.value = "14";
-          sizeSelect.dispatchEvent(new Event("change", { bubbles: true }));
-        }
-        if (countInput) {
-          countInput.value = "2";
-          countInput.dispatchEvent(new Event("input", { bubbles: true }));
-        }
-      },
+      waitFor: { selector: "#pizza-size", event: "change" },
     },
     {
-      title: "Calculate Your Recipe",
-      body: "Hit the Calculate Recipe button below. We'll figure out the exact amounts of flour, water, salt, yeast, and everything else you need.",
+      title: "Hit Calculate!",
+      body: "Everything\u2019s set. Tap the Calculate Recipe button to see your exact ingredient amounts.",
       target: ".btn-calculate",
-      action: null,
+      hideNext: true,
+      waitFor: { selector: ".btn-calculate", event: "click" },
     },
     {
-      title: "Check Your Ingredients",
-      body: "Scroll down to see your complete recipe — dough ingredients, sauce, and toppings. Everything is measured precisely for your pizza count.",
+      title: "Your Recipe",
+      body: "Here are your ingredients \u2014 dough, sauce, and toppings, all measured precisely. Scroll through and take note of what you need.",
       target: "#dough-section",
-      delay: 500,
-      action: function () {
-        const form = document.getElementById("pizza-form");
-        if (form) form.requestSubmit();
-      },
+      delay: 600,
     },
     {
-      title: "Read the Baking Tips",
-      body: "Below the recipe you'll find step-by-step baking instructions and tips. The skill slider lets you toggle between Beginner, Intermediate, and Pro-level guidance.",
+      title: "Baking Tips",
+      body: "Below the recipe you\u2019ll find step-by-step instructions and tips. Use the skill slider to toggle between Beginner, Intermediate, and Pro guidance.",
       target: "#tips-level-control",
-      action: function () {
-        const tips = document.getElementById("tips-level-control");
-        if (tips) tips.scrollIntoView({ behavior: "smooth", block: "center" });
-      },
     },
     {
-      title: "You're All Set!",
-      body: "When you finish baking, come back and hit \"Log This Bake\" to save it to your journal. Your first bake unlocks the trial and starts your pizza journey. Happy baking!",
-      target: null,
-      action: null,
+      title: "Log Your Bake",
+      body: "When you\u2019re done baking, come back here and hit this button. It\u2019ll save your bake to your journal so you can track your progress and share it.",
+      target: "#btn-log-bake",
+      nextLabel: "Got It \u2014 Let\u2019s Bake!",
     },
   ];
 
+  // ── Second Bake Guide Steps ─────────────────────────
+
+  const secondBakeSteps = [
+    {
+      title: "Welcome Back, Baker!",
+      body: "Nice work on your first bake! This time, let\u2019s explore a powerful feature \u2014 My Style \u2014 that lets you customize your dough recipe.",
+      target: null,
+    },
+    {
+      title: "The My Style Toggle",
+      body: "See the Recommended / My Style toggle above the form? Flip it to My Style to unlock custom dough settings for any pizza style.",
+      target: ".settings-toggle-row",
+      hideNext: true,
+      waitFor: { selector: "#settings-mode-toggle", event: "change" },
+    },
+    {
+      title: "Your Custom Settings",
+      body: "Now you can tweak hydration, salt, oil, sugar, yeast, and dough ball weight. These settings are saved per style \u2014 experiment and find what you love.",
+      target: "#custom-settings-editor",
+      delay: 300,
+    },
+    {
+      title: "Make It Yours",
+      body: "Every time you calculate with My Style active, your custom percentages are used instead of the defaults. Hit Reset to go back to the original recipe anytime.",
+      target: "#btn-reset-custom",
+    },
+    {
+      title: "Keep Exploring",
+      body: "Try different styles, dial in your preferences, and log each bake. Over time you\u2019ll build a journal of your pizza journey. Happy baking!",
+      target: null,
+      nextLabel: "Let\u2019s Go!",
+    },
+  ];
+
+  // ── Guide Engine ────────────────────────────────────
+
   let overlay = null;
-  let currentStep = 0;
   let highlightEl = null;
+  let currentStep = 0;
+  let activeSteps = [];
+  let activeCleanup = null; // cleanup function for current waitFor listener
 
   function createOverlay() {
     overlay = document.createElement("div");
     overlay.className = "firstbake-overlay";
     overlay.innerHTML = `
       <div class="firstbake-card">
-        <button class="firstbake-skip" id="firstbake-skip" aria-label="Close guide">Got it, thanks</button>
+        <button class="firstbake-skip" id="firstbake-skip" aria-label="Close guide">Skip</button>
         <div class="firstbake-step-count" id="firstbake-step-count"></div>
         <h3 class="firstbake-title" id="firstbake-title"></h3>
         <p class="firstbake-body" id="firstbake-body"></p>
@@ -105,7 +138,6 @@ const PieLabFirstBake = (() => {
       </div>
     `;
 
-    // Create highlight ring element
     highlightEl = document.createElement("div");
     highlightEl.className = "firstbake-highlight hidden";
     document.body.appendChild(highlightEl);
@@ -114,7 +146,6 @@ const PieLabFirstBake = (() => {
     document.getElementById("firstbake-next").addEventListener("click", nextStep);
     document.getElementById("firstbake-back").addEventListener("click", prevStep);
     document.getElementById("firstbake-skip").addEventListener("click", close);
-
     document.addEventListener("keydown", handleKey);
 
     requestAnimationFrame(() => overlay.classList.add("firstbake-overlay--visible"));
@@ -124,40 +155,35 @@ const PieLabFirstBake = (() => {
   function handleKey(e) {
     if (!overlay) return;
     if (e.key === "Escape") close();
-    if (e.key === "ArrowRight" || e.key === "Enter") nextStep();
-    if (e.key === "ArrowLeft") prevStep();
   }
 
   function renderStep() {
-    const step = guideSteps[currentStep];
+    cleanupWaitFor();
+
+    const step = activeSteps[currentStep];
+    const total = activeSteps.length;
 
     document.getElementById("firstbake-step-count").textContent =
-      `Step ${currentStep + 1} of ${guideSteps.length}`;
+      `Step ${currentStep + 1} of ${total}`;
     document.getElementById("firstbake-title").textContent = step.title;
     document.getElementById("firstbake-body").textContent = step.body;
 
-    // Back button
+    // Back button visibility
     const backBtn = document.getElementById("firstbake-back");
-    if (currentStep === 0) {
-      backBtn.classList.add("hidden");
-    } else {
-      backBtn.classList.remove("hidden");
-    }
+    backBtn.classList.toggle("hidden", currentStep === 0);
 
-    // Next button text
+    // Next button text and visibility
     const nextBtn = document.getElementById("firstbake-next");
-    if (currentStep === guideSteps.length - 1) {
-      nextBtn.textContent = "Start Baking!";
+    const isLast = currentStep === total - 1;
+
+    if (step.hideNext) {
+      nextBtn.classList.add("hidden");
     } else {
-      nextBtn.textContent = "Next";
+      nextBtn.classList.remove("hidden");
+      nextBtn.textContent = step.nextLabel || (isLast ? "Done" : "Next");
     }
 
-    // Run step action first (may change DOM visibility)
-    if (step.action) {
-      step.action();
-    }
-
-    // Highlight target element (after action, with delay for DOM updates)
+    // Highlight target element
     clearHighlight();
     if (step.target) {
       setTimeout(() => {
@@ -167,6 +193,27 @@ const PieLabFirstBake = (() => {
           setTimeout(() => positionHighlight(el), 350);
         }
       }, step.delay || 50);
+    }
+
+    // Set up waitFor listener (auto-advance on user interaction)
+    if (step.waitFor) {
+      const { selector, event } = step.waitFor;
+      const el = document.querySelector(selector);
+      if (el) {
+        const handler = () => {
+          // Small delay so the user sees their action take effect
+          setTimeout(() => nextStep(), 400);
+        };
+        el.addEventListener(event, handler, { once: true });
+        activeCleanup = () => el.removeEventListener(event, handler);
+      }
+    }
+  }
+
+  function cleanupWaitFor() {
+    if (activeCleanup) {
+      activeCleanup();
+      activeCleanup = null;
     }
   }
 
@@ -186,7 +233,7 @@ const PieLabFirstBake = (() => {
   }
 
   function nextStep() {
-    if (currentStep < guideSteps.length - 1) {
+    if (currentStep < activeSteps.length - 1) {
       currentStep++;
       renderStep();
     } else {
@@ -202,34 +249,75 @@ const PieLabFirstBake = (() => {
   }
 
   function close() {
-    markShown();
+    cleanupWaitFor();
+    // Mark the appropriate guide as shown
+    if (activeSteps === firstBakeSteps) {
+      markFirstBakeShown();
+      // Flag journal guide for next visit to journal
+      localStorage.setItem(JOURNAL_GUIDE_KEY, "1");
+    } else if (activeSteps === secondBakeSteps) {
+      markSecondBakeShown();
+    }
+
     document.removeEventListener("keydown", handleKey);
     clearHighlight();
     if (highlightEl) { highlightEl.remove(); highlightEl = null; }
-    overlay.classList.remove("firstbake-overlay--visible");
-    setTimeout(() => {
-      overlay.remove();
-      overlay = null;
-    }, 300);
+    if (overlay) {
+      overlay.classList.remove("firstbake-overlay--visible");
+      setTimeout(() => {
+        if (overlay) { overlay.remove(); overlay = null; }
+      }, 300);
+    }
   }
 
-  function shouldShow() {
+  // ── Public API ──────────────────────────────────────
+
+  function shouldShowFirstBake() {
     const params = new URLSearchParams(window.location.search);
-    return params.get("firstbake") === "1" && !isShown();
+    return params.get("firstbake") === "1" && !isFirstBakeShown();
   }
 
-  function start() {
+  function shouldShowSecondBake() {
+    if (isSecondBakeShown() || !isFirstBakeShown()) return false;
+    // Show on second visit (user has exactly 1 bake logged)
+    if (typeof PieLabJournal === "undefined") return false;
+    try {
+      const entries = PieLabJournal.getAllEntries();
+      return entries && entries.length === 1;
+    } catch { return false; }
+  }
+
+  function startFirstBake() {
     if (overlay) return;
+    activeSteps = firstBakeSteps;
     currentStep = 0;
     createOverlay();
   }
 
-  return { shouldShow, start };
+  function startSecondBake() {
+    if (overlay) return;
+    activeSteps = secondBakeSteps;
+    currentStep = 0;
+    createOverlay();
+  }
+
+  return {
+    shouldShowFirstBake,
+    shouldShowSecondBake,
+    startFirstBake,
+    startSecondBake,
+    // Legacy compat
+    shouldShow: shouldShowFirstBake,
+    start: startFirstBake,
+    JOURNAL_GUIDE_KEY,
+  };
 })();
 
-// Auto-start if conditions met
+// Auto-start the appropriate guide
 document.addEventListener("DOMContentLoaded", () => {
-  if (PieLabFirstBake.shouldShow()) {
-    setTimeout(() => PieLabFirstBake.start(), 600);
+  if (PieLabFirstBake.shouldShowFirstBake()) {
+    setTimeout(() => PieLabFirstBake.startFirstBake(), 600);
+  } else if (PieLabFirstBake.shouldShowSecondBake()) {
+    setTimeout(() => PieLabFirstBake.startSecondBake(), 600);
   }
 });
