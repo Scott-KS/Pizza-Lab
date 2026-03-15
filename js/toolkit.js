@@ -44,6 +44,14 @@ function populateHydrationGuide() {
   select.addEventListener("change", () => {
     const range = HYDRATION_RANGES[select.value];
     if (!range) return;
+    if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
+      PieLabPremium.gate(() => {
+        renderHydrationGuide(range, select.value, content);
+        content.classList.remove("hidden");
+      });
+      select.value = "";
+      return;
+    }
     renderHydrationGuide(range, select.value, content);
     content.classList.remove("hidden");
   });
@@ -275,6 +283,10 @@ function populateTroubleshooting() {
 
   panel.querySelectorAll(".symptom-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
+      if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
+        PieLabPremium.gate(() => btn.click());
+        return;
+      }
       // Highlight selected
       panel.querySelectorAll(".symptom-btn").forEach((b) => b.classList.remove("selected"));
       btn.classList.add("selected");

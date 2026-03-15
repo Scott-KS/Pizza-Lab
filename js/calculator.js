@@ -199,6 +199,10 @@ document.addEventListener("DOMContentLoaded", () => {
   modeToggleEl.addEventListener("click", (e) => {
     const btn = e.target.closest(".mode-btn");
     if (!btn) return;
+    if (btn.dataset.mode === "plan" && typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
+      PieLabPremium.gate(() => setMode("plan"));
+      return;
+    }
     setMode(btn.dataset.mode);
   });
 
@@ -237,8 +241,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Apply saved mode on load
-  if (currentMode === "plan") setMode("plan");
+  // Apply saved mode on load (only if user has premium access)
+  if (currentMode === "plan") {
+    if (typeof PieLabPremium === "undefined" || PieLabPremium.canUse()) {
+      setMode("plan");
+    } else {
+      currentMode = "quick";
+    }
+  }
 
   // ── URL params (used for style pre-select after handler is bound) ──
   const urlParams = new URLSearchParams(window.location.search);

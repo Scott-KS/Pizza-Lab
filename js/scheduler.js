@@ -141,6 +141,12 @@
   btnNext1.addEventListener("click", () => {
     if (!validateStep1()) return;
 
+    // Dough Scheduler is a Pro feature
+    if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
+      PieLabPremium.gate(() => btnNext1.click());
+      return;
+    }
+
     const eatTime = new Date(datetimeInput.value);
     const now = new Date();
     const availableHours = (eatTime - now) / 3600000;
