@@ -237,11 +237,8 @@ function applyProLockState() {
     '.toolkit-tab[data-tool="compare"]',
     '.toolkit-tab[data-tool="ddt"]',
     '.mode-btn[data-mode="plan"]',
-    '#yeast-scaling-controls',
-    '#preferment-controls',
     '#btn-save-profile',
-    '#profile-loader',
-    '#analytics-section .analytics-toggle',
+    '#analytics-toggle',
   ];
 
   lockableSelectors.forEach(sel => {
