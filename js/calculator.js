@@ -1080,6 +1080,85 @@ document.addEventListener("DOMContentLoaded", () => {
     updateToggleLabels();
   })();
 
+  // ── Custom Dough Profiles (Pro) ────────────────────
+  (() => {
+    const saveBtn = document.getElementById("btn-save-profile");
+    const loaderEl = document.getElementById("profile-loader");
+    const profileSelect = document.getElementById("profile-select");
+    const deleteBtn = document.getElementById("btn-delete-profile");
+    const styleSelect = document.getElementById("pizza-type");
+    if (!saveBtn || !loaderEl || !profileSelect) return;
+
+    function refreshProfileList() {
+      const styleKey = styleSelect.value;
+      if (!styleKey) { loaderEl.classList.add("hidden"); return; }
+      const profiles = PieLabJournal.getProfilesByStyle(styleKey);
+      if (profiles.length === 0) { loaderEl.classList.add("hidden"); return; }
+      profileSelect.innerHTML = '<option value="" disabled selected>Select a saved profile\u2026</option>';
+      profiles.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = p.name + " (" + new Date(p.createdAt).toLocaleDateString() + ")";
+        profileSelect.appendChild(opt);
+      });
+      loaderEl.classList.remove("hidden");
+    }
+
+    // Refresh when style changes
+    styleSelect.addEventListener("change", refreshProfileList);
+
+    // Save profile
+    saveBtn.addEventListener("click", () => {
+      PieLabPremium.gate(() => {
+        const styleKey = styleSelect.value;
+        if (!styleKey) return;
+        const name = prompt("Name this profile:");
+        if (!name || !name.trim()) return;
+        const fields = {
+          hydration: parseFloat(document.getElementById("ps-hydration").value) / 100,
+          saltPct: parseFloat(document.getElementById("ps-salt").value) / 100,
+          oilPct: parseFloat(document.getElementById("ps-oil").value) / 100,
+          sugarPct: parseFloat(document.getElementById("ps-sugar").value) / 100,
+          yeastPct: parseFloat(document.getElementById("ps-yeast").value) / 100,
+          doughBallWeight: parseFloat(document.getElementById("ps-dough-weight").value),
+        };
+        PieLabJournal.saveProfile({ name: name.trim(), styleKey, settings: fields });
+        refreshProfileList();
+      });
+    });
+
+    // Load profile
+    profileSelect.addEventListener("change", () => {
+      PieLabPremium.gate(() => {
+        const id = profileSelect.value;
+        if (!id) return;
+        const profiles = PieLabJournal.getAllProfiles();
+        const profile = profiles.find(p => p.id === id);
+        if (!profile || !profile.settings) return;
+        const s = profile.settings;
+        if (s.hydration != null) document.getElementById("ps-hydration").value = (s.hydration * 100).toFixed(1);
+        if (s.saltPct != null) document.getElementById("ps-salt").value = (s.saltPct * 100).toFixed(1);
+        if (s.oilPct != null) document.getElementById("ps-oil").value = (s.oilPct * 100).toFixed(1);
+        if (s.sugarPct != null) document.getElementById("ps-sugar").value = (s.sugarPct * 100).toFixed(1);
+        if (s.yeastPct != null) document.getElementById("ps-yeast").value = (s.yeastPct * 100).toFixed(2);
+        if (s.doughBallWeight != null) document.getElementById("ps-dough-weight").value = s.doughBallWeight;
+        // Auto-save as current personal settings
+        PieLabJournal.savePersonalSettings(profile.styleKey, s);
+      });
+    });
+
+    // Delete profile
+    deleteBtn.addEventListener("click", () => {
+      const id = profileSelect.value;
+      if (!id) return;
+      PieLabJournal.deleteProfile(id);
+      refreshProfileList();
+    });
+
+    // Initial render
+    refreshProfileList();
+  })();
+
   // ── "Cook This Again" / "Use as Starting Point" loader (?load=1) ──
   (() => {
     const params = new URLSearchParams(window.location.search);

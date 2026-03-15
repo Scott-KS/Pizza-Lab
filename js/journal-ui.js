@@ -162,6 +162,121 @@
     });
   }
 
+  // ── Bake Analytics (Pro) ────────────────────────────
+  const analyticsSection = document.getElementById("analytics-section");
+  const analyticsBody = document.getElementById("analytics-body");
+  const analyticsToggle = document.getElementById("analytics-toggle");
+  const analyticsArrow = document.getElementById("analytics-toggle-arrow");
+
+  function renderAnalytics() {
+    if (!analyticsSection || !analyticsBody) return;
+    const entries = PieLabJournal.getAllEntries();
+    if (entries.length < 3) { analyticsSection.classList.add("hidden"); return; }
+    analyticsSection.classList.remove("hidden");
+
+    // Gate: show locked state if not premium
+    if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
+      analyticsBody.innerHTML = '<p class="analytics-locked">Start a free trial to unlock Bake Analytics.</p>';
+      return;
+    }
+
+    // ── Monthly bake timeline (last 6 months) ──
+    const monthMap = {};
+    const now = new Date();
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      monthMap[key] = { count: 0, label: d.toLocaleDateString(undefined, { month: "short" }) };
+    }
+    entries.forEach(e => {
+      if (e.date) {
+        const key = e.date.slice(0, 7);
+        if (monthMap[key]) monthMap[key].count++;
+      }
+    });
+    const maxCount = Math.max(1, ...Object.values(monthMap).map(m => m.count));
+    const timelineHtml = Object.entries(monthMap).map(([, m]) => {
+      const pct = Math.round((m.count / maxCount) * 100);
+      return `<div class="timeline-bar-col">
+        <div class="timeline-bar" style="height:${Math.max(4, pct)}%"><span class="timeline-count">${m.count}</span></div>
+        <span class="timeline-month">${m.label}</span>
+      </div>`;
+    }).join("");
+
+    const timelineEl = document.getElementById("analytics-timeline");
+    if (timelineEl) {
+      timelineEl.innerHTML = `<h4>Bakes Per Month</h4><div class="timeline-chart">${timelineHtml}</div>`;
+    }
+
+    // ── Per-style breakdown ──
+    const styleMap = {};
+    entries.forEach(e => {
+      if (!styleMap[e.styleKey]) styleMap[e.styleKey] = { count: 0, ratingSum: 0, ratedCount: 0 };
+      styleMap[e.styleKey].count++;
+      if (e.rating > 0) {
+        styleMap[e.styleKey].ratingSum += e.rating;
+        styleMap[e.styleKey].ratedCount++;
+      }
+    });
+    const styleRows = Object.entries(styleMap)
+      .sort((a, b) => b[1].count - a[1].count)
+      .map(([key, data]) => {
+        const name = (typeof PIZZA_RECIPES !== "undefined" && PIZZA_RECIPES[key]) ? PIZZA_RECIPES[key].name : key;
+        const avg = data.ratedCount ? (data.ratingSum / data.ratedCount).toFixed(1) : "\u2014";
+        return `<tr><td>${name}</td><td>${data.count}</td><td>${avg}</td></tr>`;
+      }).join("");
+
+    // ── Sweet spots from analyzeEntries ──
+    const analysis = PieLabJournal.analyzeEntries(entries);
+    let sweetHtml = "";
+    if (!analysis.insufficient) {
+      if (analysis.bestHydration) {
+        sweetHtml += `<div class="sweet-card"><div class="sweet-value">${analysis.bestHydration.value}%</div><div class="sweet-label">Best Hydration (${analysis.bestHydration.avg}\u2605 avg, ${analysis.bestHydration.count} bakes)</div></div>`;
+      }
+      if (analysis.bestBakeTemp) {
+        const metricTemp = typeof PieLabProfile !== "undefined" && PieLabProfile.isMetricTemp();
+        const tempVal = metricTemp ? fToC(analysis.bestBakeTemp.value) + "\u00B0C" : analysis.bestBakeTemp.value + "\u00B0F";
+        sweetHtml += `<div class="sweet-card"><div class="sweet-value">${tempVal}</div><div class="sweet-label">Best Bake Temp (${analysis.bestBakeTemp.avg}\u2605 avg, ${analysis.bestBakeTemp.count} bakes)</div></div>`;
+      }
+    }
+
+    // ── Unique styles tried ──
+    const uniqueStyles = Object.keys(styleMap).length;
+    const totalStyles = typeof PIZZA_RECIPES !== "undefined" ? Object.keys(PIZZA_RECIPES).length : 13;
+
+    const gridEl = document.getElementById("analytics-grid");
+    if (gridEl) {
+      gridEl.innerHTML = `
+        <div class="analytics-card">
+          <h4>Style Breakdown</h4>
+          <table class="analytics-table"><thead><tr><th>Style</th><th>Bakes</th><th>Avg \u2605</th></tr></thead><tbody>${styleRows}</tbody></table>
+        </div>
+        ${sweetHtml ? `<div class="analytics-card"><h4>Your Sweet Spots</h4><div class="sweet-grid">${sweetHtml}</div></div>` : ""}
+        <div class="analytics-card analytics-card-small">
+          <div class="sweet-value">${uniqueStyles} / ${totalStyles}</div>
+          <div class="sweet-label">Styles Explored</div>
+        </div>
+      `;
+    }
+
+    // Restore collapse state
+    const collapsed = localStorage.getItem("pielab-analytics-open") === "0";
+    analyticsBody.classList.toggle("collapsed", collapsed);
+    if (analyticsArrow) analyticsArrow.style.transform = collapsed ? "rotate(0deg)" : "rotate(180deg)";
+  }
+
+  if (analyticsToggle) {
+    analyticsToggle.addEventListener("click", () => {
+      if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
+        PieLabPremium.gate(() => renderAnalytics());
+        return;
+      }
+      const isCollapsed = analyticsBody.classList.toggle("collapsed");
+      if (analyticsArrow) analyticsArrow.style.transform = isCollapsed ? "rotate(0deg)" : "rotate(180deg)";
+      localStorage.setItem("pielab-analytics-open", isCollapsed ? "0" : "1");
+    });
+  }
+
   // ── Star rating — click to set, hover to preview ──
   stars.forEach((star) => {
     star.addEventListener("click", () => {
@@ -422,6 +537,7 @@
     hideForm();
     renderEntries();
     renderStats();
+    renderAnalytics();
     renderPassport();
     updateCompareButton();
     updateStorageDisplay();
@@ -790,6 +906,7 @@
         modalOverlay.classList.add("hidden");
         renderEntries();
         renderStats();
+        renderAnalytics();
         renderPassport();
         updateCompareButton();
         updateStorageDisplay();
@@ -1535,6 +1652,7 @@
   populateOvenDropdown();
   renderEntries();
   renderStats();
+  renderAnalytics();
   renderPassport();
   updateCompareButton();
   updateStorageDisplay();

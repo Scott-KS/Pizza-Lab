@@ -150,6 +150,16 @@
           </div>
           <div class="settings-actions">
             <button type="button" class="btn-reset-settings" id="btn-reset-custom">Reset to Default</button>
+            <button type="button" class="btn-save-profile" id="btn-save-profile">Save as Profile <span class="premium-tag">PRO</span></button>
+          </div>
+          <div class="profile-loader hidden" id="profile-loader">
+            <label for="profile-select">Load Profile</label>
+            <div class="profile-select-row">
+              <select id="profile-select">
+                <option value="" disabled selected>Select a saved profile&hellip;</option>
+              </select>
+              <button type="button" class="btn-delete-profile" id="btn-delete-profile" title="Delete selected profile">&times;</button>
+            </div>
           </div>
 
           <!-- Preferment Controls (premium, eligible styles only) -->

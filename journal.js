@@ -194,6 +194,30 @@ const PieLabJournal = (() => {
     });
   }
 
+  // ── Custom Dough Profiles ────────────────────────
+  const PROFILES_KEY = "pielab-dough-profiles";
+
+  function getAllProfiles() {
+    return loadJSON(PROFILES_KEY) || [];
+  }
+
+  function saveProfile(profile) {
+    const profiles = getAllProfiles();
+    profile.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    profile.createdAt = new Date().toISOString();
+    profiles.unshift(profile);
+    return saveJSON(PROFILES_KEY, profiles) ? profile : null;
+  }
+
+  function deleteProfile(id) {
+    const profiles = getAllProfiles().filter(p => p.id !== id);
+    return saveJSON(PROFILES_KEY, profiles);
+  }
+
+  function getProfilesByStyle(styleKey) {
+    return getAllProfiles().filter(p => p.styleKey === styleKey);
+  }
+
   // ── Comparison Analysis ───────────────────────────
   function analyzeEntries(entries) {
     if (entries.length < 2) return { insufficient: true };
@@ -265,5 +289,9 @@ const PieLabJournal = (() => {
     analyzeEntries,
     getStyleBakeCount,
     getSkillBadge,
+    getAllProfiles,
+    saveProfile,
+    deleteProfile,
+    getProfilesByStyle,
   };
 })();
