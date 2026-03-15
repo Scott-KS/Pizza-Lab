@@ -220,11 +220,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const defaults = methodDefaults[methodId];
     if (!defaults) return;
 
-    // Snap hours to nearest step of 3
-    const snapped = Math.round(defaults.hours / 3) * 3;
     fermentHoursSlider.value = Math.max(
       parseInt(fermentHoursSlider.min),
-      Math.min(parseInt(fermentHoursSlider.max), snapped)
+      Math.min(parseInt(fermentHoursSlider.max), defaults.hours)
     );
     fermentHoursLabel.textContent = fermentHoursSlider.value + " hours";
 
@@ -446,7 +444,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const tempExponent = (refTempF - fermentTempVal) / q10DeltaF;
         const tempFactor = Math.pow(2, tempExponent);
         const timeFactor = fermentHoursVal / refHours;
-        const idyPct = Math.max(0.0005, Math.min(0.03, (refYeastPct / timeFactor) * tempFactor));
+        const rawIdyPct = (refYeastPct / timeFactor) * tempFactor;
 
         // Yeast type conversion: ADY has ~75% activity, Fresh ~40% vs IDY
         const yeastType = ytSelect ? ytSelect.value : "idy";
@@ -455,7 +453,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const yeastTypeLabels = { idy: "Instant Dry Yeast", ady: "Active Dry Yeast", fresh: "Fresh Yeast" };
         yeastTypeLabel = yeastTypeLabels[yeastType] || "Instant Dry Yeast";
 
-        adjustedRecipe.yeastPct = idyPct * multiplier;
+        // Clamp after multiplier with per-type maximums
+        const maxPct = { idy: 0.02, ady: 0.027, fresh: 0.05 };
+        const clampMax = maxPct[yeastType] || 0.02;
+        adjustedRecipe.yeastPct = Math.max(0.0005, Math.min(clampMax, rawIdyPct * multiplier));
         dynamicYeastActive = true;
       }
     }
