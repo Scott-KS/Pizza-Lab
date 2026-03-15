@@ -93,6 +93,19 @@ function migrateOvenKeys() {
       }
     }
   } catch { /* ignore */ }
+
+  // Migrate active schedule ovenType
+  try {
+    const raw = localStorage.getItem("pielab-active-schedule");
+    if (raw) {
+      const sched = JSON.parse(raw);
+      const mapped = OVEN_KEY_MIGRATION[sched.ovenType];
+      if (mapped) {
+        sched.ovenType = mapped;
+        localStorage.setItem("pielab-active-schedule", JSON.stringify(sched));
+      }
+    }
+  } catch { /* ignore */ }
 }
 
 migrateOvenKeys();
