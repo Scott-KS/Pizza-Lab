@@ -192,6 +192,71 @@ function updateSessionBanner() {
   banner.setAttribute("hidden", "");
 }
 
+// ── Pro Feature Lock State ───────────────────────────
+// Adds PRO badge to Schedule nav links and applies .pro-locked
+// class to all Pro-gated elements when trial is expired / not started.
+function applyProLockState() {
+  const premium = typeof PieLabPremium !== "undefined" ? PieLabPremium : null;
+  const locked = premium ? !premium.canUse() : false;
+
+  // Inject PRO tag into Schedule nav links (desktop + mobile)
+  document.querySelectorAll('.nav-link[data-page="schedule"], .tab-item[data-page="schedule"]').forEach(link => {
+    if (!link.querySelector(".premium-tag")) {
+      const tag = document.createElement("span");
+      tag.className = "premium-tag";
+      tag.textContent = "PRO";
+      // For mobile tab bar, append to .tab-label; for desktop, append to link
+      const label = link.querySelector(".tab-label");
+      if (label) {
+        label.appendChild(document.createTextNode(" "));
+        label.appendChild(tag);
+      } else {
+        // Desktop nav — insert before the schedule-badge span
+        const badge = link.querySelector(".schedule-badge");
+        if (badge) link.insertBefore(tag, badge);
+        else link.appendChild(tag);
+      }
+    }
+  });
+
+  // Inject PRO tag into Scheduler page heading
+  const schedHeading = document.querySelector(".dough-scheduler > h2");
+  if (schedHeading && !schedHeading.querySelector(".premium-tag")) {
+    const tag = document.createElement("span");
+    tag.className = "premium-tag";
+    tag.textContent = "PRO";
+    schedHeading.appendChild(document.createTextNode(" "));
+    schedHeading.appendChild(tag);
+  }
+
+  // Apply or remove .pro-locked class on lockable elements
+  // Selectors for elements that should show locked state
+  const lockableSelectors = [
+    '.toolkit-tab[data-tool="hydration"]',
+    '.toolkit-tab[data-tool="troubleshoot"]',
+    '.toolkit-tab[data-tool="compare"]',
+    '.toolkit-tab[data-tool="ddt"]',
+    '.mode-btn[data-mode="plan"]',
+    '#yeast-scaling-controls',
+    '#preferment-controls',
+    '#btn-save-profile',
+    '#profile-loader',
+    '#analytics-section .analytics-toggle',
+  ];
+
+  lockableSelectors.forEach(sel => {
+    const el = document.querySelector(sel);
+    if (el) el.classList.toggle("pro-locked", locked);
+  });
+
+  // Lock the scheduler wizard when expired
+  const schedWizard = document.getElementById("scheduler-progress");
+  if (schedWizard) schedWizard.classList.toggle("pro-locked", locked);
+}
+
+// Run after DOMContentLoaded so premium.js is loaded
+document.addEventListener("DOMContentLoaded", applyProLockState);
+
 // ── First-Visit Data Notice Banner ──────────────────
 function showDataNotice() {
   if (localStorage.getItem("pielab-notice-dismissed")) return;
