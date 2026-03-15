@@ -1328,41 +1328,53 @@
     // Text area starts below the photo with some padding
     const textTop = photoBottom + 28;
 
-    // Line 1: Display Name (left justified)
+    // Line 1: Display Name (30px)
     const displayName = (profile.name || "").trim();
     ctx.fillStyle = "#1a1a1a";
-    ctx.font = "bold 29px Inter, sans-serif";
+    ctx.font = "bold 30px Inter, sans-serif";
     ctx.textBaseline = "alphabetic";
     ctx.fillText(displayName, LEFT, textTop);
 
-    // Line 2: Location (left justified)
+    // Line 2: Location (24px)
     const location = (profile.location || "").trim();
     if (location) {
       ctx.fillStyle = "#555555";
-      ctx.font = "400 23px Inter, sans-serif";
+      ctx.font = "400 24px Inter, sans-serif";
       ctx.fillText(location, LEFT, textTop + 34);
     }
 
-    // Line 3: "Pizza Style, Oven Type, Badge" left + "www.pielab.app" right
+    // Line 3: "Pizza Style, Oven Type" left (22px)
     const line3Y = textTop + 64;
     const styleName = entry.styleName || entry.styleKey || "";
     const ovenLabel = (typeof OVEN_TYPES !== "undefined" && entry.ovenType && OVEN_TYPES[entry.ovenType])
       ? OVEN_TYPES[entry.ovenType]
       : (entry.ovenType || "");
-    const badgeText = entry.skillBadge || "";
-    const line3Parts = [styleName, ovenLabel, badgeText].filter(Boolean);
+    const line3Parts = [styleName, ovenLabel].filter(Boolean);
     const line3Left = line3Parts.join(", ");
 
     ctx.fillStyle = "#555555";
-    ctx.font = "400 21px Inter, sans-serif";
+    ctx.font = "400 22px Inter, sans-serif";
     ctx.textBaseline = "alphabetic";
     if (line3Left) ctx.fillText(line3Left, LEFT, line3Y);
 
-    // www.pielab.app right-aligned
+    // Line 4: Star rating + badge left, www.pielab.app right (20px)
+    const line4Y = line3Y + 30;
+    const rating = entry.rating || 0;
+    const starStr = rating > 0 ? "★".repeat(rating) + "☆".repeat(5 - rating) : "";
+    const badgeText = entry.skillBadge || "";
+    const line4Parts = [starStr, badgeText].filter(Boolean);
+    const line4Left = line4Parts.join(", ");
+
+    ctx.fillStyle = "#555555";
+    ctx.font = "400 20px Inter, sans-serif";
+    ctx.textBaseline = "alphabetic";
+    if (line4Left) ctx.fillText(line4Left, LEFT, line4Y);
+
+    // www.pielab.app right-aligned on line 4
     ctx.fillStyle = "#9a9690";
-    ctx.font = "400 19px Inter, sans-serif";
+    ctx.font = "italic 20px Inter, sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("www.pielab.app", RIGHT, line3Y);
+    ctx.fillText("www.pielab.app", RIGHT, line4Y);
     ctx.textAlign = "left";
 
     // Export
