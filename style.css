@@ -4563,6 +4563,14 @@ footer {
     right: calc(50% - 16px);
   }
 
+  /* PRO badge centered under tab label */
+  .tab-item .premium-tag {
+    margin-left: 0;
+    font-size: 0.45rem;
+    padding: 0.05rem 0.25rem;
+    line-height: 1.2;
+  }
+
   /* Give main content clearance above the tab bar */
   main {
     padding-bottom: 72px !important;
