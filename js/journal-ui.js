@@ -544,9 +544,14 @@
 
     // Celebrate milestone tier achievements (1, 4, 9, 16, 26 bakes per style)
     const MILESTONE_COUNTS = [1, 4, 9, 16, 26];
-    if (MILESTONE_COUNTS.includes(saved.skillCount)) {
+    const hasMilestone = MILESTONE_COUNTS.includes(saved.skillCount);
+    if (hasMilestone) {
       showMilestoneCelebration(saved);
     }
+
+    // Show share guide after first bake with a photo (delayed if milestone is showing)
+    const shareGuideDelay = hasMilestone ? 4500 : 600;
+    setTimeout(() => showShareGuide(saved), shareGuideDelay);
   });
 
   // ── Empty state builder ──────────────────────────
@@ -1044,6 +1049,60 @@
     overlay.querySelector(".first-bake-dismiss").addEventListener("click", dismiss);
     overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
     setTimeout(dismiss, 8000);
+  }
+
+  // ── Share Guide Popup (after saving a bake with photo) ──
+  const SHARE_GUIDE_KEY = "pielab-share-guide-shown";
+
+  function showShareGuide(entry) {
+    // Only show once
+    if (localStorage.getItem(SHARE_GUIDE_KEY)) return;
+
+    const hasPhotos = (entry.photos && entry.photos.length) || entry.photo;
+    if (!hasPhotos) return;
+
+    localStorage.setItem(SHARE_GUIDE_KEY, "1");
+
+    const overlay = document.createElement("div");
+    overlay.className = "share-guide-overlay";
+    overlay.innerHTML = `
+      <div class="share-guide-card">
+        <h2 class="share-guide-title">Nice Shot!</h2>
+        <p class="share-guide-subtitle">Your bake is saved. Here's how to show it off:</p>
+        <div class="share-guide-options">
+          <div class="share-guide-option">
+            <span class="share-guide-icon">&#128172;</span>
+            <div>
+              <strong>Text it to friends</strong>
+              <p>Open your bake, tap <em>Share This Bake</em>, and send the image in any messaging app.</p>
+            </div>
+          </div>
+          <div class="share-guide-option">
+            <span class="share-guide-icon">&#127758;</span>
+            <div>
+              <strong>Post to r/Pizza</strong>
+              <p>Tap <em>Save to Photos</em>, then upload to Reddit. A caption with your stats is auto-copied.</p>
+            </div>
+          </div>
+          <div class="share-guide-option">
+            <span class="share-guide-icon">&#128247;</span>
+            <div>
+              <strong>Submit to our Instagram</strong>
+              <p>Tap <em>Save to Photos</em> and DM the image to <strong>@ThePieLab</strong> on Instagram. The best bakes get featured in our weekly feed.</p>
+            </div>
+          </div>
+        </div>
+        <button class="share-guide-dismiss">Got It</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add("share-guide--visible"));
+
+    const dismiss = () => {
+      overlay.classList.remove("share-guide--visible");
+      setTimeout(() => overlay.remove(), 400);
+    };
+    overlay.querySelector(".share-guide-dismiss").addEventListener("click", dismiss);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
   }
 
   // ── Toast Notification ──────────────────────────────
