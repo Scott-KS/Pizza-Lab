@@ -3170,6 +3170,7 @@ main {
 }
 
 .btn-modal-delete {
+  width: 100%;
   padding: 0.6rem 1.25rem;
   border: 2px solid #c0392b;
   border-radius: 8px;
@@ -3179,6 +3180,7 @@ main {
   color: #c0392b;
   cursor: pointer;
   transition: all 0.2s;
+  text-align: center;
 }
 
 .btn-modal-delete:hover {
