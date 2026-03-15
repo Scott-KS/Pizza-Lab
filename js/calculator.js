@@ -1115,7 +1115,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!styleKey) { loaderEl.classList.add("hidden"); return; }
       const profiles = PieLabJournal.getProfilesByStyle(styleKey);
       if (profiles.length === 0) { loaderEl.classList.add("hidden"); return; }
-      profileSelect.innerHTML = '<option value="" disabled selected>Select a saved profile\u2026</option>';
+      profileSelect.innerHTML = '<option value="" disabled selected>Select a saved dough\u2026</option>';
       profiles.forEach(p => {
         const opt = document.createElement("option");
         opt.value = p.id;
@@ -1133,7 +1133,7 @@ document.addEventListener("DOMContentLoaded", () => {
       PieLabPremium.gate(() => {
         const styleKey = styleSelect.value;
         if (!styleKey) return;
-        const name = prompt("Name this profile:");
+        const name = prompt("Name this dough:");
         if (!name || !name.trim()) return;
         const fields = {
           hydration: parseFloat(document.getElementById("ps-hydration").value) / 100,

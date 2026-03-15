@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=25" />
+  <link rel="stylesheet" href="style.css?v=26" />
 </head>
 <body data-page="calculator">
 
@@ -150,13 +150,13 @@
           </div>
           <div class="settings-actions">
             <button type="button" class="btn-reset-settings" id="btn-reset-custom">Reset to Default</button>
-            <button type="button" class="btn-save-profile" id="btn-save-profile">Save as Profile <span class="premium-tag">PRO</span></button>
+            <button type="button" class="btn-save-profile" id="btn-save-profile">Save Dough <span class="premium-tag">PRO</span></button>
           </div>
           <div class="profile-loader hidden" id="profile-loader">
-            <label for="profile-select">Load Profile</label>
+            <label for="profile-select">Load Saved Dough</label>
             <div class="profile-select-row">
               <select id="profile-select">
-                <option value="" disabled selected>Select a saved profile&hellip;</option>
+                <option value="" disabled selected>Select a saved dough&hellip;</option>
               </select>
               <button type="button" class="btn-delete-profile" id="btn-delete-profile" title="Delete selected profile">&times;</button>
             </div>
@@ -385,7 +385,7 @@
   <script src="scheduler-data.js?v=5"></script>
   <script src="tools-data.js?v=1"></script>
   <script src="js/pie-notifications.js"></script>
-  <script src="js/calculator.js?v=15"></script>
+  <script src="js/calculator.js?v=16"></script>
   <script src="js/first-bake.js"></script>
 </body>
 </html>

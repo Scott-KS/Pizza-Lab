@@ -1724,6 +1724,117 @@
     }
   }
 
+  // ── Dough Library ──────────────────────────────────
+  const doughLibSection = document.getElementById("dough-library-section");
+  const doughLibToggle = document.getElementById("dough-library-toggle");
+  const doughLibArrow = document.getElementById("dough-library-arrow");
+  const doughLibBody = document.getElementById("dough-library-body");
+  const doughLibGrid = document.getElementById("dough-library-grid");
+  const doughLibEmpty = document.getElementById("dough-library-empty");
+  const doughLibFilter = document.getElementById("dough-library-style-filter");
+
+  function renderDoughLibrary() {
+    if (!doughLibSection) return;
+    const allDoughs = PieLabJournal.getAllProfiles();
+    if (allDoughs.length === 0) {
+      doughLibSection.classList.add("hidden");
+      return;
+    }
+    doughLibSection.classList.remove("hidden");
+
+    // Populate style filter
+    const styles = [...new Set(allDoughs.map(d => d.styleKey))];
+    const currentFilter = doughLibFilter ? doughLibFilter.value : "all";
+    if (doughLibFilter) {
+      doughLibFilter.innerHTML = '<option value="all">All Styles</option>';
+      styles.forEach(key => {
+        const name = (typeof PIZZA_RECIPES !== "undefined" && PIZZA_RECIPES[key])
+          ? PIZZA_RECIPES[key].name : key;
+        const opt = document.createElement("option");
+        opt.value = key;
+        opt.textContent = name;
+        doughLibFilter.appendChild(opt);
+      });
+      doughLibFilter.value = currentFilter;
+    }
+
+    const filtered = currentFilter === "all"
+      ? allDoughs
+      : allDoughs.filter(d => d.styleKey === currentFilter);
+
+    if (filtered.length === 0) {
+      doughLibGrid.innerHTML = "";
+      doughLibEmpty.classList.remove("hidden");
+      return;
+    }
+    doughLibEmpty.classList.add("hidden");
+
+    doughLibGrid.innerHTML = filtered.map(d => {
+      const s = d.settings || {};
+      const styleName = (typeof PIZZA_RECIPES !== "undefined" && PIZZA_RECIPES[d.styleKey])
+        ? PIZZA_RECIPES[d.styleKey].name : d.styleKey;
+      const date = new Date(d.createdAt).toLocaleDateString();
+      return `
+        <div class="dough-library-card" data-id="${d.id}">
+          <div class="dough-card-header">
+            <span class="dough-card-name">${escapeHtml(d.name)}</span>
+            <button type="button" class="dough-card-delete" data-id="${d.id}" title="Delete dough">&times;</button>
+          </div>
+          <span class="dough-card-style">${escapeHtml(styleName)}</span>
+          <div class="dough-card-details">
+            <span>Hydration: ${(s.hydration * 100).toFixed(1)}%</span>
+            <span>Salt: ${(s.saltPct * 100).toFixed(1)}%</span>
+            <span>Yeast: ${(s.yeastPct * 100).toFixed(2)}%</span>
+            <span>Ball: ${s.doughBallWeight}g</span>
+          </div>
+          <span class="dough-card-date">Saved ${date}</span>
+          <button type="button" class="btn-load-dough" data-id="${d.id}">Use in Calculator</button>
+        </div>`;
+    }).join("");
+
+    // Delete handlers
+    doughLibGrid.querySelectorAll(".dough-card-delete").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (confirm("Delete this saved dough?")) {
+          PieLabJournal.deleteProfile(btn.dataset.id);
+          renderDoughLibrary();
+        }
+      });
+    });
+
+    // Load into calculator handlers
+    doughLibGrid.querySelectorAll(".btn-load-dough").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const dough = allDoughs.find(d => d.id === btn.dataset.id);
+        if (!dough) return;
+        const calcData = {
+          styleKey: dough.styleKey,
+          styleName: (typeof PIZZA_RECIPES !== "undefined" && PIZZA_RECIPES[dough.styleKey])
+            ? PIZZA_RECIPES[dough.styleKey].name : dough.styleKey,
+          sizeKey: null,
+          numPizzas: 1,
+          ovenType: "",
+          useCustom: true,
+          doughSnapshot: dough.settings,
+        };
+        localStorage.setItem("pielab-last-calc", JSON.stringify(calcData));
+        window.location.href = "calculator.html?load=1";
+      });
+    });
+  }
+
+  if (doughLibToggle) {
+    doughLibToggle.addEventListener("click", () => {
+      doughLibBody.classList.toggle("hidden");
+      doughLibArrow.textContent = doughLibBody.classList.contains("hidden") ? "\u25BC" : "\u25B2";
+    });
+  }
+
+  if (doughLibFilter) {
+    doughLibFilter.addEventListener("change", renderDoughLibrary);
+  }
+
   // ── Initialize ────────────────────────────────────
   populateDropdowns();
   populateOvenDropdown();
@@ -1731,6 +1842,7 @@
   renderStats();
   renderAnalytics();
   renderPassport();
+  renderDoughLibrary();
   updateCompareButton();
   updateStorageDisplay();
 

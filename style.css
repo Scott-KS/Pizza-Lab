@@ -6268,6 +6268,126 @@ body[data-page="kitchen"] main {
   color: var(--clr-muted);
 }
 
+/* ── Dough Library ────────────────────────────────────── */
+.dough-library-section {
+  margin: 1rem 0;
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.dough-library-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--clr-surface, #252525);
+  border: none;
+  color: var(--clr-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.dough-library-arrow {
+  transition: transform 200ms ease;
+  font-size: 0.75rem;
+}
+.dough-library-body {
+  padding: 1rem;
+}
+.dough-library-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+.dough-library-filter label {
+  color: var(--clr-text-light);
+  white-space: nowrap;
+}
+.dough-library-filter select {
+  flex: 1;
+  max-width: 200px;
+}
+.dough-library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.75rem;
+}
+.dough-library-card {
+  background: var(--clr-surface-2, #2e2e2e);
+  border: 1px solid var(--clr-border);
+  border-radius: 2px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.dough-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dough-card-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--clr-text);
+}
+.dough-card-delete {
+  background: none;
+  border: none;
+  color: var(--clr-text-light);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  line-height: 1;
+  transition: color 200ms ease;
+}
+.dough-card-delete:hover {
+  color: var(--clr-accent);
+}
+.dough-card-style {
+  font-size: 0.8rem;
+  color: var(--clr-text-light);
+  font-style: italic;
+}
+.dough-card-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  color: var(--clr-text-light);
+  margin-top: 0.25rem;
+}
+.dough-card-date {
+  font-size: 0.72rem;
+  color: var(--clr-muted);
+  margin-top: 0.15rem;
+}
+.btn-load-dough {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: var(--clr-accent);
+  color: #fff;
+  border: none;
+  border-radius: 2px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 200ms ease;
+  align-self: flex-start;
+}
+.btn-load-dough:hover {
+  opacity: 0.85;
+}
+.dough-library-empty {
+  color: var(--clr-text-light);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1rem 0;
+}
+
 /* ═══════════════════════════════════════════════════════
    Premium / Trial System
    ═══════════════════════════════════════════════════════ */
