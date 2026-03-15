@@ -532,6 +532,10 @@ function populateCompareTab() {
   btn.addEventListener("click", () => {
     const keys = [...new Set(getSelectedKeys())];
     if (keys.length < 2) return;
+    if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
+      PieLabPremium.gate(() => renderComparison(keys, resultEl));
+      return;
+    }
     renderComparison(keys, resultEl);
   });
 }

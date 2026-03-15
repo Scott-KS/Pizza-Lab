@@ -12,12 +12,103 @@ if ("serviceWorker" in navigator) {
 
 // ── Canonical Oven Types (5 types) ────────────────────
 const OVEN_TYPES = {
-  steel:        "Home Oven \u2014 Pizza Steel",
-  stone:        "Home Oven \u2014 Pizza Stone",
-  rack:         "Home Oven \u2014 Rack Only",
-  portable:     "Portable Pizza Oven (Gas)",
-  "wood-fired": "Wood-Fired Pizza Oven",
+  home:       "Home Oven",
+  "wood-fired": "Pizza Oven \u2014 Wood-Fired",
+  gas:        "Pizza Oven \u2014 Gas",
+  portable:   "Countertop \u2014 Portable",
+  electric:   "Countertop \u2014 Electric",
 };
+
+// ── Migrate legacy oven keys ─────────────────────────
+// One-time migration for users with old oven values stored
+// in localStorage (steel/stone/rack → home, portable → gas).
+const OVEN_KEY_MIGRATION = {
+  steel: "home",
+  stone: "home",
+  rack:  "home",
+  portable: "gas",
+};
+
+function migrateOvenKeys() {
+  // Migrate profile.preferredOven
+  try {
+    const raw = localStorage.getItem("pielab-profile");
+    if (raw) {
+      const profile = JSON.parse(raw);
+      const mapped = OVEN_KEY_MIGRATION[profile.preferredOven];
+      if (mapped) {
+        profile.preferredOven = mapped;
+        localStorage.setItem("pielab-profile", JSON.stringify(profile));
+      }
+    }
+  } catch { /* ignore */ }
+
+  // Migrate journal entries' ovenType
+  try {
+    const raw = localStorage.getItem("pielab_journal_entries");
+    if (raw) {
+      const entries = JSON.parse(raw);
+      let changed = false;
+      for (const entry of entries) {
+        const mapped = OVEN_KEY_MIGRATION[entry.ovenType];
+        if (mapped) {
+          entry.ovenType = mapped;
+          changed = true;
+        }
+      }
+      if (changed) {
+        localStorage.setItem("pielab_journal_entries", JSON.stringify(entries));
+      }
+    }
+  } catch { /* ignore */ }
+
+  // Migrate scaling memory ovenType values
+  try {
+    const raw = localStorage.getItem("pielab-scaling-memory");
+    if (raw) {
+      const mem = JSON.parse(raw);
+      let changed = false;
+      for (const key of Object.keys(mem)) {
+        const mapped = OVEN_KEY_MIGRATION[mem[key].ovenType];
+        if (mapped) {
+          mem[key].ovenType = mapped;
+          changed = true;
+        }
+      }
+      if (changed) {
+        localStorage.setItem("pielab-scaling-memory", JSON.stringify(mem));
+      }
+    }
+  } catch { /* ignore */ }
+
+  // Migrate last-calc ovenType
+  try {
+    const raw = localStorage.getItem("pielab-last-calc");
+    if (raw) {
+      const calc = JSON.parse(raw);
+      const mapped = OVEN_KEY_MIGRATION[calc.ovenType];
+      if (mapped) {
+        calc.ovenType = mapped;
+        localStorage.setItem("pielab-last-calc", JSON.stringify(calc));
+      }
+    }
+  } catch { /* ignore */ }
+
+  // Migrate active schedule ovenType
+  try {
+    const raw = localStorage.getItem("pielab-active-schedule");
+    if (raw) {
+      const sched = JSON.parse(raw);
+      const mapped = OVEN_KEY_MIGRATION[sched.ovenType];
+      if (mapped) {
+        sched.ovenType = mapped;
+        localStorage.setItem("pielab-active-schedule", JSON.stringify(sched));
+      }
+    }
+  } catch { /* ignore */ }
+}
+
+migrateOvenKeys();
 
 // ── Populate any <select> with pizza styles ───────────
 function populateStyleSelect(selectEl, options = {}) {
@@ -191,6 +282,68 @@ function updateSessionBanner() {
   // ── STATE 4: Nothing active ──
   banner.setAttribute("hidden", "");
 }
+
+// ── Pro Feature Lock State ───────────────────────────
+// Adds PRO badge to Schedule nav links and applies .pro-locked
+// class to all Pro-gated elements when trial is expired / not started.
+function applyProLockState() {
+  const premium = typeof PieLabPremium !== "undefined" ? PieLabPremium : null;
+  const locked = premium ? !premium.canUse() : false;
+
+  // Inject PRO tag into Schedule nav links (desktop + mobile)
+  document.querySelectorAll('.nav-link[data-page="schedule"], .tab-item[data-page="schedule"]').forEach(link => {
+    if (!link.querySelector(".premium-tag")) {
+      const tag = document.createElement("span");
+      tag.className = "premium-tag";
+      tag.textContent = "PRO";
+      // For mobile tab bar, append to .tab-label; for desktop, append to link
+      const label = link.querySelector(".tab-label");
+      if (label) {
+        label.appendChild(document.createTextNode(" "));
+        label.appendChild(tag);
+      } else {
+        // Desktop nav — insert before the schedule-badge span
+        const badge = link.querySelector(".schedule-badge");
+        if (badge) link.insertBefore(tag, badge);
+        else link.appendChild(tag);
+      }
+    }
+  });
+
+  // Inject PRO tag into Scheduler page heading
+  const schedHeading = document.querySelector(".dough-scheduler > h2");
+  if (schedHeading && !schedHeading.querySelector(".premium-tag")) {
+    const tag = document.createElement("span");
+    tag.className = "premium-tag";
+    tag.textContent = "PRO";
+    schedHeading.appendChild(document.createTextNode(" "));
+    schedHeading.appendChild(tag);
+  }
+
+  // Apply or remove .pro-locked class on lockable elements
+  // Selectors for elements that should show locked state
+  const lockableSelectors = [
+    '.toolkit-tab[data-tool="hydration"]',
+    '.toolkit-tab[data-tool="troubleshoot"]',
+    '.toolkit-tab[data-tool="compare"]',
+    '.toolkit-tab[data-tool="ddt"]',
+    '.mode-btn[data-mode="plan"]',
+    '#btn-save-profile',
+    '#analytics-toggle',
+  ];
+
+  lockableSelectors.forEach(sel => {
+    const el = document.querySelector(sel);
+    if (el) el.classList.toggle("pro-locked", locked);
+  });
+
+  // Lock the scheduler wizard when expired
+  const schedWizard = document.getElementById("scheduler-progress");
+  if (schedWizard) schedWizard.classList.toggle("pro-locked", locked);
+}
+
+// Run after DOMContentLoaded so premium.js is loaded
+document.addEventListener("DOMContentLoaded", applyProLockState);
 
 // ── First-Visit Data Notice Banner ──────────────────
 function showDataNotice() {

@@ -3170,6 +3170,7 @@ main {
 }
 
 .btn-modal-delete {
+  width: 100%;
   padding: 0.6rem 1.25rem;
   border: 2px solid #c0392b;
   border-radius: 8px;
@@ -3179,6 +3180,7 @@ main {
   color: #c0392b;
   cursor: pointer;
   transition: all 0.2s;
+  text-align: center;
 }
 
 .btn-modal-delete:hover {
@@ -4650,6 +4652,7 @@ body[data-page="journal"] main {
   background: var(--clr-warm-bg, #f5f0eb);
 }
 .autocomplete-list li .ac-city {
+  color: var(--clr-text-light);
   font-weight: 600;
 }
 .autocomplete-list li .ac-region {
@@ -5511,6 +5514,210 @@ body[data-page="kitchen"] main {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* ── Bake Analytics ───────────────────────────────── */
+.analytics-section {
+  margin: 1rem 0;
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.analytics-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--clr-surface, #252525);
+  border: none;
+  color: var(--clr-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.analytics-toggle-arrow {
+  transition: transform 0.2s;
+  font-size: 0.75rem;
+}
+.analytics-body {
+  padding: 1rem;
+}
+.analytics-body.collapsed { display: none; }
+.analytics-locked {
+  text-align: center;
+  color: var(--clr-text-light);
+  padding: 1.5rem 0;
+  font-size: 0.9rem;
+}
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.analytics-card {
+  background: var(--clr-card);
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+.analytics-card h4 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--clr-text-light);
+  margin-bottom: 0.75rem;
+}
+.analytics-card-small {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.analytics-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.analytics-table th {
+  text-align: left;
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--clr-border);
+  color: var(--clr-text-light);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+.analytics-table td {
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--clr-border);
+}
+.sweet-grid {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.sweet-card {
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+  padding: 0.75rem;
+  background: var(--clr-surface, #252525);
+  border-radius: 8px;
+}
+.sweet-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--clr-primary);
+  font-family: var(--font-display);
+}
+.sweet-label {
+  font-size: 0.72rem;
+  color: var(--clr-text-light);
+  margin-top: 0.25rem;
+}
+/* Timeline chart */
+.analytics-timeline h4 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--clr-text-light);
+  margin-bottom: 0.5rem;
+}
+.timeline-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  height: 120px;
+  padding: 0.5rem 0;
+}
+.timeline-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+.timeline-bar {
+  width: 100%;
+  max-width: 48px;
+  background: var(--clr-primary);
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 4px;
+  transition: height 0.3s ease;
+}
+.timeline-count {
+  font-size: 0.7rem;
+  color: #fff;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.timeline-month {
+  font-size: 0.7rem;
+  color: var(--clr-text-light);
+  margin-top: 0.25rem;
+}
+@media (max-width: 600px) {
+  .analytics-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Custom Dough Profiles ───────────────────────── */
+.btn-save-profile {
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--clr-border);
+  border-radius: 6px;
+  background: none;
+  color: var(--clr-text-light);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: 0.5rem;
+}
+.btn-save-profile:hover {
+  border-color: var(--clr-primary);
+  color: var(--clr-primary);
+}
+.profile-loader {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--clr-border);
+}
+.profile-loader label {
+  font-size: 0.82rem;
+  color: var(--clr-text-light);
+  margin-bottom: 0.35rem;
+  display: block;
+}
+.profile-select-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.profile-select-row select {
+  flex: 1;
+}
+.btn-delete-profile {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--clr-border);
+  border-radius: 6px;
+  background: none;
+  color: var(--clr-text-light);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.btn-delete-profile:hover {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
 /* ── Bake Timer ───────────────────────────────────── */
 .btn-start-timer {
   margin-top: 1rem;
@@ -6012,6 +6219,11 @@ body[data-page="kitchen"] main {
   line-height: 1.3;
 }
 
+/* ── Pro Locked State ─────────────────────────────────── */
+.pro-locked {
+  opacity: 0.45;
+}
+
 /* ── Paywall Modal ────────────────────────────────────── */
 .premium-modal-overlay {
   position: fixed;
@@ -6202,6 +6414,21 @@ body[data-page="kitchen"] main {
   font-weight: 500;
   display: block;
   margin-bottom: 0.25rem;
+}
+.yeast-scaling-controls .setting-field select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--clr-border);
+  border-radius: 2px;
+  font-size: 0.9rem;
+  color: var(--clr-text);
+  background: var(--clr-surface-2, #2e2e2e);
+  transition: border-color 200ms ease;
+  cursor: pointer;
+}
+.yeast-scaling-controls .setting-field select:focus {
+  outline: none;
+  border-color: var(--clr-accent, #c9622a);
 }
 .yeast-scaling-controls .setting-field input[type="range"] {
   -webkit-appearance: none;

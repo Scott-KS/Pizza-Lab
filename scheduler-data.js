@@ -11,11 +11,11 @@
 // ══════════════════════════════════════════════════════
 
 const OVEN_PREHEAT_MINUTES = {
-  steel:        55,  // 45–60 min, 55 for safety
-  stone:        60,  // 60 min minimum
-  rack:         30,  // standard home oven, no thermal mass
-  portable:     20,  // gas portable oven, 15–20 min
+  home:         45,  // 30–60 min depending on stone/steel/rack
   "wood-fired": 90,  // 1–2 hours fire management
+  gas:          20,  // gas pizza oven, 15–20 min
+  portable:     15,  // countertop portable, 10–15 min
+  electric:     20,  // countertop electric, 15–20 min
 };
 
 

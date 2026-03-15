@@ -43,7 +43,7 @@
 
       <div class="mode-toggle" id="mode-toggle">
         <button type="button" class="mode-btn active" data-mode="quick">Quick Calculate</button>
-        <button type="button" class="mode-btn" data-mode="plan">Plan My Bake</button>
+        <button type="button" class="mode-btn" data-mode="plan">Plan My Bake <span class="premium-tag">PRO</span></button>
       </div>
 
       <div id="plan-fields" class="plan-fields hidden">
@@ -62,8 +62,16 @@
         <div id="yeast-scaling-controls" class="yeast-scaling-controls hidden">
           <h4>Fermentation Tuning <span class="premium-tag">PRO</span></h4>
           <div class="setting-field">
+            <label for="yeast-type">Yeast Type</label>
+            <select id="yeast-type">
+              <option value="idy" selected>Instant Dry Yeast</option>
+              <option value="ady">Active Dry Yeast</option>
+              <option value="fresh">Fresh Yeast</option>
+            </select>
+          </div>
+          <div class="setting-field">
             <label for="ferment-hours">Fermentation Time</label>
-            <input type="range" id="ferment-hours" min="3" max="72" value="24" step="3">
+            <input type="range" id="ferment-hours" min="2" max="72" value="24" step="1">
             <span id="ferment-hours-label">24 hours</span>
           </div>
           <div class="setting-field">
@@ -142,6 +150,16 @@
           </div>
           <div class="settings-actions">
             <button type="button" class="btn-reset-settings" id="btn-reset-custom">Reset to Default</button>
+            <button type="button" class="btn-save-profile" id="btn-save-profile">Save as Profile <span class="premium-tag">PRO</span></button>
+          </div>
+          <div class="profile-loader hidden" id="profile-loader">
+            <label for="profile-select">Load Profile</label>
+            <div class="profile-select-row">
+              <select id="profile-select">
+                <option value="" disabled selected>Select a saved profile&hellip;</option>
+              </select>
+              <button type="button" class="btn-delete-profile" id="btn-delete-profile" title="Delete selected profile">&times;</button>
+            </div>
           </div>
 
           <!-- Preferment Controls (premium, eligible styles only) -->

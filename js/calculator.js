@@ -199,6 +199,10 @@ document.addEventListener("DOMContentLoaded", () => {
   modeToggleEl.addEventListener("click", (e) => {
     const btn = e.target.closest(".mode-btn");
     if (!btn) return;
+    if (btn.dataset.mode === "plan" && typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
+      PieLabPremium.gate(() => setMode("plan"));
+      return;
+    }
     setMode(btn.dataset.mode);
   });
 
@@ -220,11 +224,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const defaults = methodDefaults[methodId];
     if (!defaults) return;
 
-    // Snap hours to nearest step of 3
-    const snapped = Math.round(defaults.hours / 3) * 3;
     fermentHoursSlider.value = Math.max(
       parseInt(fermentHoursSlider.min),
-      Math.min(parseInt(fermentHoursSlider.max), snapped)
+      Math.min(parseInt(fermentHoursSlider.max), defaults.hours)
     );
     fermentHoursLabel.textContent = fermentHoursSlider.value + " hours";
 
@@ -239,8 +241,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Apply saved mode on load
-  if (currentMode === "plan") setMode("plan");
+  // Apply saved mode on load (only if user has premium access)
+  if (currentMode === "plan") {
+    if (typeof PieLabPremium === "undefined" || PieLabPremium.canUse()) {
+      setMode("plan");
+    } else {
+      currentMode = "quick";
+    }
+  }
 
   // ── URL params (used for style pre-select after handler is bound) ──
   const urlParams = new URLSearchParams(window.location.search);
@@ -391,7 +399,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const type = document.getElementById("pizza-type").value;
     const sizeKey = sizeSelect.value;
     const numPizzas = parseInt(document.getElementById("num-pizzas").value, 10);
-    const ovenType = ovenSelect ? ovenSelect.value : "stone";
+    const ovenType = ovenSelect ? ovenSelect.value : "home";
 
     // Inline validation
     const errType = document.getElementById("err-pizza-type");
@@ -424,20 +432,41 @@ document.addEventListener("DOMContentLoaded", () => {
         recipe.yeastPct * yeastMultiplier));
     }
 
-    // ── Dynamic Yeast Scaling (Lehmann Method, Plan mode + premium) ──
+    // ── Dynamic Yeast Scaling (Exponential Q10 model, Plan mode + premium) ──
     let dynamicYeastActive = false;
     let fermentHoursVal = null;
     let fermentTempVal = null;
+    let yeastTypeLabel = "Instant Dry Yeast";
     if (currentMode === "plan" && PieLabPremium.canUse()) {
       const fhSlider = document.getElementById("ferment-hours");
       const ftSlider = document.getElementById("ferment-temp");
+      const ytSelect = document.getElementById("yeast-type");
       if (fhSlider && ftSlider && !document.getElementById("yeast-scaling-controls").classList.contains("hidden")) {
         fermentHoursVal = parseFloat(fhSlider.value);
         fermentTempVal = parseFloat(ftSlider.value);
-        const cf = fermentHoursVal / 17;
-        const tempFactor = 1 + (72 - fermentTempVal) * 0.03;
-        const dynamicYeastPct = Math.max(0.0005, Math.min(0.02, (0.005 / cf) * tempFactor));
-        adjustedRecipe.yeastPct = dynamicYeastPct;
+
+        // Exponential Q10 model: fermentation rate doubles every 15°F (8.3°C)
+        // Reference: 0.5% IDY at 24h / 72°F as baseline
+        const refYeastPct = 0.005;
+        const refHours = 24;
+        const refTempF = 72;
+        const q10DeltaF = 15; // rate doubles per this many °F
+        const tempExponent = (refTempF - fermentTempVal) / q10DeltaF;
+        const tempFactor = Math.pow(2, tempExponent);
+        const timeFactor = fermentHoursVal / refHours;
+        const rawIdyPct = (refYeastPct / timeFactor) * tempFactor;
+
+        // Yeast type conversion: ADY has ~75% activity, Fresh ~40% vs IDY
+        const yeastType = ytSelect ? ytSelect.value : "idy";
+        const yeastMultiplier = { idy: 1, ady: 1.33, fresh: 2.5 };
+        const multiplier = yeastMultiplier[yeastType] || 1;
+        const yeastTypeLabels = { idy: "Instant Dry Yeast", ady: "Active Dry Yeast", fresh: "Fresh Yeast" };
+        yeastTypeLabel = yeastTypeLabels[yeastType] || "Instant Dry Yeast";
+
+        // Clamp after multiplier with per-type maximums
+        const maxPct = { idy: 0.02, ady: 0.027, fresh: 0.05 };
+        const clampMax = maxPct[yeastType] || 0.02;
+        adjustedRecipe.yeastPct = Math.max(0.0005, Math.min(clampMax, rawIdyPct * multiplier));
         dynamicYeastActive = true;
       }
     }
@@ -551,7 +580,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const pct = (adjustedRecipe.yeastPct * 100).toFixed(2);
         const metricTempYeast = typeof PieLabProfile !== "undefined" && PieLabProfile.isMetricTemp();
         const tempStr = metricTempYeast ? `${fToC(fermentTempVal)}°C` : `${fermentTempVal}°F`;
-        yeastNote.textContent = `Yeast scaled to ${pct}% — ${fermentHoursVal}h at ${tempStr} (Lehmann Method)`;
+        yeastNote.textContent = `${yeastTypeLabel} scaled to ${pct}% — ${fermentHoursVal}h at ${tempStr}`;
         yeastNote.classList.remove("hidden");
       } else {
         yeastNote.classList.add("hidden");
@@ -572,10 +601,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const tempDisplay = metricTempBake
       ? `${recTempC}°C`
       : `${recTempF}°F`;
-    // Oven temp
-    document.getElementById("baking-instructions").innerHTML = `
-      <p><strong>Preheat oven to:</strong> ${tempDisplay} (preheat for at least ${preheatMinutes} minutes)</p>
-    `;
+    // Oven recommendation + temp
+    const preferredLabel = (typeof OVEN_TYPES !== "undefined" && recipe.preferredOven) ? OVEN_TYPES[recipe.preferredOven] : "";
+    const secondaryLabel = (typeof OVEN_TYPES !== "undefined" && recipe.secondaryOven) ? OVEN_TYPES[recipe.secondaryOven] : "";
+    const ovenRecHtml = preferredLabel
+      ? `<p><strong>Best oven:</strong> ${preferredLabel}${secondaryLabel ? ` · Also works well: ${secondaryLabel}` : ""}</p>`
+      : "";
+    document.getElementById("baking-instructions").innerHTML =
+      ovenRecHtml +
+      `<p><strong>Preheat oven to:</strong> ${tempDisplay} (preheat for at least ${preheatMinutes} minutes)</p>`;
 
     // Rack position
     const rackEl = document.getElementById("baking-rack");
@@ -634,6 +668,7 @@ document.addEventListener("DOMContentLoaded", () => {
       dynamicYeast: dynamicYeastActive,
       fermentHours: fermentHoursVal,
       fermentTemp: fermentTempVal,
+      yeastType: dynamicYeastActive ? (document.getElementById("yeast-type")?.value || "idy") : null,
     };
 
     // Preserve derivedFromId if user arrived via "Use as Starting Point"
@@ -666,7 +701,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const methodKey = fermentSelect.value || "same-day";
       const method = (typeof FERMENT_METHODS !== "undefined") ? FERMENT_METHODS[methodKey] : null;
       const doughBallWeight = adjustedRecipe.sizes[sizeKey].doughWeight;
-      const ovenType = ovenSelect ? ovenSelect.value : "stone";
+      const ovenType = ovenSelect ? ovenSelect.value : "home";
 
       if (method && typeof buildScheduleBackward === "function") {
         const schedule = buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWeight, type);
@@ -1048,6 +1083,85 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Init labels
     updateToggleLabels();
+  })();
+
+  // ── Custom Dough Profiles (Pro) ────────────────────
+  (() => {
+    const saveBtn = document.getElementById("btn-save-profile");
+    const loaderEl = document.getElementById("profile-loader");
+    const profileSelect = document.getElementById("profile-select");
+    const deleteBtn = document.getElementById("btn-delete-profile");
+    const styleSelect = document.getElementById("pizza-type");
+    if (!saveBtn || !loaderEl || !profileSelect) return;
+
+    function refreshProfileList() {
+      const styleKey = styleSelect.value;
+      if (!styleKey) { loaderEl.classList.add("hidden"); return; }
+      const profiles = PieLabJournal.getProfilesByStyle(styleKey);
+      if (profiles.length === 0) { loaderEl.classList.add("hidden"); return; }
+      profileSelect.innerHTML = '<option value="" disabled selected>Select a saved profile\u2026</option>';
+      profiles.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = p.name + " (" + new Date(p.createdAt).toLocaleDateString() + ")";
+        profileSelect.appendChild(opt);
+      });
+      loaderEl.classList.remove("hidden");
+    }
+
+    // Refresh when style changes
+    styleSelect.addEventListener("change", refreshProfileList);
+
+    // Save profile
+    saveBtn.addEventListener("click", () => {
+      PieLabPremium.gate(() => {
+        const styleKey = styleSelect.value;
+        if (!styleKey) return;
+        const name = prompt("Name this profile:");
+        if (!name || !name.trim()) return;
+        const fields = {
+          hydration: parseFloat(document.getElementById("ps-hydration").value) / 100,
+          saltPct: parseFloat(document.getElementById("ps-salt").value) / 100,
+          oilPct: parseFloat(document.getElementById("ps-oil").value) / 100,
+          sugarPct: parseFloat(document.getElementById("ps-sugar").value) / 100,
+          yeastPct: parseFloat(document.getElementById("ps-yeast").value) / 100,
+          doughBallWeight: parseFloat(document.getElementById("ps-dough-weight").value),
+        };
+        PieLabJournal.saveProfile({ name: name.trim(), styleKey, settings: fields });
+        refreshProfileList();
+      });
+    });
+
+    // Load profile
+    profileSelect.addEventListener("change", () => {
+      PieLabPremium.gate(() => {
+        const id = profileSelect.value;
+        if (!id) return;
+        const profiles = PieLabJournal.getAllProfiles();
+        const profile = profiles.find(p => p.id === id);
+        if (!profile || !profile.settings) return;
+        const s = profile.settings;
+        if (s.hydration != null) document.getElementById("ps-hydration").value = (s.hydration * 100).toFixed(1);
+        if (s.saltPct != null) document.getElementById("ps-salt").value = (s.saltPct * 100).toFixed(1);
+        if (s.oilPct != null) document.getElementById("ps-oil").value = (s.oilPct * 100).toFixed(1);
+        if (s.sugarPct != null) document.getElementById("ps-sugar").value = (s.sugarPct * 100).toFixed(1);
+        if (s.yeastPct != null) document.getElementById("ps-yeast").value = (s.yeastPct * 100).toFixed(2);
+        if (s.doughBallWeight != null) document.getElementById("ps-dough-weight").value = s.doughBallWeight;
+        // Auto-save as current personal settings
+        PieLabJournal.savePersonalSettings(profile.styleKey, s);
+      });
+    });
+
+    // Delete profile
+    deleteBtn.addEventListener("click", () => {
+      const id = profileSelect.value;
+      if (!id) return;
+      PieLabJournal.deleteProfile(id);
+      refreshProfileList();
+    });
+
+    // Initial render
+    refreshProfileList();
   })();
 
   // ── "Cook This Again" / "Use as Starting Point" loader (?load=1) ──
