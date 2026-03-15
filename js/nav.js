@@ -339,11 +339,6 @@ function applyProLockState() {
   // Lock the scheduler wizard when expired
   const schedWizard = document.getElementById("scheduler-progress");
   if (schedWizard) schedWizard.classList.toggle("pro-locked", locked);
-
-  // Hide PRO badges when user has access so features look fully unlocked
-  document.querySelectorAll(".premium-tag").forEach(tag => {
-    tag.classList.toggle("hidden", !locked);
-  });
 }
 
 // Run after DOMContentLoaded so premium.js is loaded
