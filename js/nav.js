@@ -296,11 +296,10 @@ function applyProLockState() {
       const tag = document.createElement("span");
       tag.className = "premium-tag";
       tag.textContent = "PRO";
-      // For mobile tab bar, append to .tab-label; for desktop, append to link
+      // For mobile tab bar, append after .tab-label as sibling; for desktop, append to link
       const label = link.querySelector(".tab-label");
       if (label) {
-        label.appendChild(document.createTextNode(" "));
-        label.appendChild(tag);
+        link.appendChild(tag);
       } else {
         // Desktop nav — insert before the schedule-badge span
         const badge = link.querySelector(".schedule-badge");

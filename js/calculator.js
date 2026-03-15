@@ -625,10 +625,26 @@ document.addEventListener("DOMContentLoaded", () => {
     if (window.initTipsSlider) window.initTipsSlider(type);
     if (window.renderTips)    window.renderTips();
 
-    // Bake time (below tips)
+    // Bake time — prefer oven-specific times from OVEN_SETUPS (Oven Guide)
     const bakeTimeEl = document.getElementById("baking-time");
     if (bakeTimeEl) {
-      bakeTimeEl.innerHTML = `<p><strong>Bake time:</strong> ${bakingInfo.bakeTime}</p>`;
+      let bakeTimeHTML = "";
+      const ovenSetup = typeof OVEN_SETUPS !== "undefined"
+        ? OVEN_SETUPS.find(o => o.id === ovenType)
+        : null;
+      const ovenBake = ovenSetup && ovenSetup.styleBakeTimes
+        ? ovenSetup.styleBakeTimes[type]
+        : null;
+
+      if (ovenBake) {
+        bakeTimeHTML = `<p><strong>Bake time:</strong> ${ovenBake.time}</p>`;
+        if (ovenBake.note) {
+          bakeTimeHTML += `<p class="bake-time-note">${ovenBake.note}</p>`;
+        }
+      } else {
+        bakeTimeHTML = `<p><strong>Bake time:</strong> ${bakingInfo.bakeTime}</p>`;
+      }
+      bakeTimeEl.innerHTML = bakeTimeHTML;
     }
 
     // ── Contextual "Learn More" link (cross-page) ──
@@ -1099,7 +1115,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!styleKey) { loaderEl.classList.add("hidden"); return; }
       const profiles = PieLabJournal.getProfilesByStyle(styleKey);
       if (profiles.length === 0) { loaderEl.classList.add("hidden"); return; }
-      profileSelect.innerHTML = '<option value="" disabled selected>Select a saved profile\u2026</option>';
+      profileSelect.innerHTML = '<option value="" disabled selected>Select a saved dough\u2026</option>';
       profiles.forEach(p => {
         const opt = document.createElement("option");
         opt.value = p.id;
@@ -1117,7 +1133,7 @@ document.addEventListener("DOMContentLoaded", () => {
       PieLabPremium.gate(() => {
         const styleKey = styleSelect.value;
         if (!styleKey) return;
-        const name = prompt("Name this profile:");
+        const name = prompt("Name this dough:");
         if (!name || !name.trim()) return;
         const fields = {
           hydration: parseFloat(document.getElementById("ps-hydration").value) / 100,

@@ -544,9 +544,14 @@
 
     // Celebrate milestone tier achievements (1, 4, 9, 16, 26 bakes per style)
     const MILESTONE_COUNTS = [1, 4, 9, 16, 26];
-    if (MILESTONE_COUNTS.includes(saved.skillCount)) {
+    const hasMilestone = MILESTONE_COUNTS.includes(saved.skillCount);
+    if (hasMilestone) {
       showMilestoneCelebration(saved);
     }
+
+    // Show share guide after first bake with a photo (delayed if milestone is showing)
+    const shareGuideDelay = hasMilestone ? 4500 : 600;
+    setTimeout(() => showShareGuide(saved), shareGuideDelay);
   });
 
   // ── Empty state builder ──────────────────────────
@@ -1046,6 +1051,60 @@
     setTimeout(dismiss, 8000);
   }
 
+  // ── Share Guide Popup (after saving a bake with photo) ──
+  const SHARE_GUIDE_KEY = "pielab-share-guide-shown";
+
+  function showShareGuide(entry) {
+    // Only show once
+    if (localStorage.getItem(SHARE_GUIDE_KEY)) return;
+
+    const hasPhotos = (entry.photos && entry.photos.length) || entry.photo;
+    if (!hasPhotos) return;
+
+    localStorage.setItem(SHARE_GUIDE_KEY, "1");
+
+    const overlay = document.createElement("div");
+    overlay.className = "share-guide-overlay";
+    overlay.innerHTML = `
+      <div class="share-guide-card">
+        <h2 class="share-guide-title">Nice Shot!</h2>
+        <p class="share-guide-subtitle">Your bake is saved. Here's how to show it off:</p>
+        <div class="share-guide-options">
+          <div class="share-guide-option">
+            <span class="share-guide-icon">&#128172;</span>
+            <div>
+              <strong>Text it to friends</strong>
+              <p>Open your bake, tap <em>Share This Bake</em>, and send the image in any messaging app.</p>
+            </div>
+          </div>
+          <div class="share-guide-option">
+            <span class="share-guide-icon">&#127758;</span>
+            <div>
+              <strong>Post to r/Pizza</strong>
+              <p>Tap <em>Save to Photos</em>, then upload to Reddit. A caption with your stats is auto-copied.</p>
+            </div>
+          </div>
+          <div class="share-guide-option">
+            <span class="share-guide-icon">&#128247;</span>
+            <div>
+              <strong>Submit to our Instagram</strong>
+              <p>Tap <em>Save to Photos</em> and DM the image to <strong>@ThePieLab</strong> on Instagram. The best bakes get featured in our weekly feed.</p>
+            </div>
+          </div>
+        </div>
+        <button class="share-guide-dismiss">Got It</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add("share-guide--visible"));
+
+    const dismiss = () => {
+      overlay.classList.remove("share-guide--visible");
+      setTimeout(() => overlay.remove(), 400);
+    };
+    overlay.querySelector(".share-guide-dismiss").addEventListener("click", dismiss);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
+  }
+
   // ── Toast Notification ──────────────────────────────
   function showToast(message) {
     const existing = document.querySelector(".toast");
@@ -1308,17 +1367,21 @@
 
   function drawLogoWatermark(ctx, logo, canvasW, photoH) {
     // Logo SVG is 600x300 (2:1 aspect) — render at 200x100 in bottom-right
-    const LOGO_W = 200, LOGO_H = 100, MARGIN = 15, PADDING = 10, RADIUS = 8;
+    const LOGO_W = 200, LOGO_H = 100, MARGIN = 15;
     const x = canvasW - LOGO_W - MARGIN;
     const y = photoH - LOGO_H - MARGIN;
 
-    // Semi-transparent white backing pill
-    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-    roundRect(ctx, x - PADDING, y - PADDING, LOGO_W + PADDING * 2, LOGO_H + PADDING * 2, RADIUS);
-    ctx.fill();
+    // Draw logo tinted black using off-screen canvas
+    const offscreen = document.createElement("canvas");
+    offscreen.width = LOGO_W;
+    offscreen.height = LOGO_H;
+    const offCtx = offscreen.getContext("2d");
+    offCtx.drawImage(logo, 0, 0, LOGO_W, LOGO_H);
+    offCtx.globalCompositeOperation = "source-in";
+    offCtx.fillStyle = "#000000";
+    offCtx.fillRect(0, 0, LOGO_W, LOGO_H);
 
-    // Draw logo
-    ctx.drawImage(logo, x, y, LOGO_W, LOGO_H);
+    ctx.drawImage(offscreen, x, y);
   }
 
   function finishCard(ctx, canvas, entry, profile, W, H, LEFT, photoBottom, resolve) {
@@ -1328,39 +1391,53 @@
     // Text area starts below the photo with some padding
     const textTop = photoBottom + 28;
 
-    // Line 1: Display Name (left justified)
+    // Line 1: Display Name (30px)
     const displayName = (profile.name || "").trim();
     ctx.fillStyle = "#1a1a1a";
-    ctx.font = "bold 28px Inter, sans-serif";
+    ctx.font = "bold 30px Inter, sans-serif";
     ctx.textBaseline = "alphabetic";
     ctx.fillText(displayName, LEFT, textTop);
 
-    // Line 2: Location (left justified)
+    // Line 2: Location (24px)
     const location = (profile.location || "").trim();
     if (location) {
       ctx.fillStyle = "#555555";
-      ctx.font = "400 22px Inter, sans-serif";
+      ctx.font = "400 24px Inter, sans-serif";
       ctx.fillText(location, LEFT, textTop + 34);
     }
 
-    // Line 3: "Pizza Style, Badge" left + "www.pielab.app" right
+    // Line 3: "Pizza Style, Oven Type" left (22px)
     const line3Y = textTop + 64;
     const styleName = entry.styleName || entry.styleKey || "";
-    const badgeText = profile.skillLevel || "";
-    const line3Left = styleName && badgeText
-      ? `${styleName}, ${badgeText}`
-      : styleName || badgeText;
+    const ovenLabel = (typeof OVEN_TYPES !== "undefined" && entry.ovenType && OVEN_TYPES[entry.ovenType])
+      ? OVEN_TYPES[entry.ovenType]
+      : (entry.ovenType || "");
+    const line3Parts = [styleName, ovenLabel].filter(Boolean);
+    const line3Left = line3Parts.join(", ");
+
+    ctx.fillStyle = "#555555";
+    ctx.font = "400 22px Inter, sans-serif";
+    ctx.textBaseline = "alphabetic";
+    if (line3Left) ctx.fillText(line3Left, LEFT, line3Y);
+
+    // Line 4: Star rating + badge left, www.pielab.app right (20px)
+    const line4Y = line3Y + 30;
+    const rating = entry.rating || 0;
+    const starStr = rating > 0 ? "★".repeat(rating) + "☆".repeat(5 - rating) : "";
+    const badgeText = entry.skillBadge || "";
+    const line4Parts = [starStr, badgeText].filter(Boolean);
+    const line4Left = line4Parts.join(", ");
 
     ctx.fillStyle = "#555555";
     ctx.font = "400 20px Inter, sans-serif";
     ctx.textBaseline = "alphabetic";
-    if (line3Left) ctx.fillText(line3Left, LEFT, line3Y);
+    if (line4Left) ctx.fillText(line4Left, LEFT, line4Y);
 
-    // www.pielab.app right-aligned
+    // www.pielab.app right-aligned on line 4
     ctx.fillStyle = "#9a9690";
-    ctx.font = "400 18px Inter, sans-serif";
+    ctx.font = "italic 20px Inter, sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("www.pielab.app", RIGHT, line3Y);
+    ctx.fillText("www.pielab.app", RIGHT, line4Y);
     ctx.textAlign = "left";
 
     // Export
@@ -1647,6 +1724,117 @@
     }
   }
 
+  // ── Dough Library ──────────────────────────────────
+  const doughLibSection = document.getElementById("dough-library-section");
+  const doughLibToggle = document.getElementById("dough-library-toggle");
+  const doughLibArrow = document.getElementById("dough-library-arrow");
+  const doughLibBody = document.getElementById("dough-library-body");
+  const doughLibGrid = document.getElementById("dough-library-grid");
+  const doughLibEmpty = document.getElementById("dough-library-empty");
+  const doughLibFilter = document.getElementById("dough-library-style-filter");
+
+  function renderDoughLibrary() {
+    if (!doughLibSection) return;
+    const allDoughs = PieLabJournal.getAllProfiles();
+    if (allDoughs.length === 0) {
+      doughLibSection.classList.add("hidden");
+      return;
+    }
+    doughLibSection.classList.remove("hidden");
+
+    // Populate style filter
+    const styles = [...new Set(allDoughs.map(d => d.styleKey))];
+    const currentFilter = doughLibFilter ? doughLibFilter.value : "all";
+    if (doughLibFilter) {
+      doughLibFilter.innerHTML = '<option value="all">All Styles</option>';
+      styles.forEach(key => {
+        const name = (typeof PIZZA_RECIPES !== "undefined" && PIZZA_RECIPES[key])
+          ? PIZZA_RECIPES[key].name : key;
+        const opt = document.createElement("option");
+        opt.value = key;
+        opt.textContent = name;
+        doughLibFilter.appendChild(opt);
+      });
+      doughLibFilter.value = currentFilter;
+    }
+
+    const filtered = currentFilter === "all"
+      ? allDoughs
+      : allDoughs.filter(d => d.styleKey === currentFilter);
+
+    if (filtered.length === 0) {
+      doughLibGrid.innerHTML = "";
+      doughLibEmpty.classList.remove("hidden");
+      return;
+    }
+    doughLibEmpty.classList.add("hidden");
+
+    doughLibGrid.innerHTML = filtered.map(d => {
+      const s = d.settings || {};
+      const styleName = (typeof PIZZA_RECIPES !== "undefined" && PIZZA_RECIPES[d.styleKey])
+        ? PIZZA_RECIPES[d.styleKey].name : d.styleKey;
+      const date = new Date(d.createdAt).toLocaleDateString();
+      return `
+        <div class="dough-library-card" data-id="${d.id}">
+          <div class="dough-card-header">
+            <span class="dough-card-name">${escapeHtml(d.name)}</span>
+            <button type="button" class="dough-card-delete" data-id="${d.id}" title="Delete dough">&times;</button>
+          </div>
+          <span class="dough-card-style">${escapeHtml(styleName)}</span>
+          <div class="dough-card-details">
+            <span>Hydration: ${(s.hydration * 100).toFixed(1)}%</span>
+            <span>Salt: ${(s.saltPct * 100).toFixed(1)}%</span>
+            <span>Yeast: ${(s.yeastPct * 100).toFixed(2)}%</span>
+            <span>Ball: ${s.doughBallWeight}g</span>
+          </div>
+          <span class="dough-card-date">Saved ${date}</span>
+          <button type="button" class="btn-load-dough" data-id="${d.id}">Use in Calculator</button>
+        </div>`;
+    }).join("");
+
+    // Delete handlers
+    doughLibGrid.querySelectorAll(".dough-card-delete").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (confirm("Delete this saved dough?")) {
+          PieLabJournal.deleteProfile(btn.dataset.id);
+          renderDoughLibrary();
+        }
+      });
+    });
+
+    // Load into calculator handlers
+    doughLibGrid.querySelectorAll(".btn-load-dough").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const dough = allDoughs.find(d => d.id === btn.dataset.id);
+        if (!dough) return;
+        const calcData = {
+          styleKey: dough.styleKey,
+          styleName: (typeof PIZZA_RECIPES !== "undefined" && PIZZA_RECIPES[dough.styleKey])
+            ? PIZZA_RECIPES[dough.styleKey].name : dough.styleKey,
+          sizeKey: null,
+          numPizzas: 1,
+          ovenType: "",
+          useCustom: true,
+          doughSnapshot: dough.settings,
+        };
+        localStorage.setItem("pielab-last-calc", JSON.stringify(calcData));
+        window.location.href = "calculator.html?load=1";
+      });
+    });
+  }
+
+  if (doughLibToggle) {
+    doughLibToggle.addEventListener("click", () => {
+      doughLibBody.classList.toggle("hidden");
+      doughLibArrow.textContent = doughLibBody.classList.contains("hidden") ? "\u25BC" : "\u25B2";
+    });
+  }
+
+  if (doughLibFilter) {
+    doughLibFilter.addEventListener("change", renderDoughLibrary);
+  }
+
   // ── Initialize ────────────────────────────────────
   populateDropdowns();
   populateOvenDropdown();
@@ -1654,6 +1842,7 @@
   renderStats();
   renderAnalytics();
   renderPassport();
+  renderDoughLibrary();
   updateCompareButton();
   updateStorageDisplay();
 
