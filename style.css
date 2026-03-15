@@ -6816,6 +6816,18 @@ body[data-page="kitchen"] main {
   font-weight: 600;
   background: var(--clr-section-bg);
 }
+.vol-ref-group td {
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--clr-muted);
+  padding-top: 0.75rem;
+  border-bottom: 1px solid var(--clr-border);
+}
+.vol-ref-indent {
+  padding-left: 1.5rem !important;
+}
 @media (max-width: 500px) {
   .vol-input-row { flex-direction: column; gap: 0.25rem; }
   .vol-arrow { transform: rotate(90deg); margin-top: 0; }
