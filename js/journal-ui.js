@@ -133,7 +133,7 @@
     const ovenCounts = {};
     entries.forEach(e => { if (e.ovenType) ovenCounts[e.ovenType] = (ovenCounts[e.ovenType] || 0) + 1; });
     const topOven = Object.keys(ovenCounts).sort((a, b) => ovenCounts[b] - ovenCounts[a])[0] || "";
-    const ovenLabel = (typeof OVEN_TYPES !== "undefined" && OVEN_TYPES[topOven]) ? OVEN_TYPES[topOven].replace("Home Oven + ", "") : topOven;
+    const ovenLabel = (typeof OVEN_TYPES !== "undefined" && OVEN_TYPES[topOven]) ? OVEN_TYPES[topOven] : topOven;
 
     const cards = [
       { value: total, label: "Total Bakes" },

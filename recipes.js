@@ -10,6 +10,8 @@ const PIZZA_RECIPES = {
   neapolitan: {
     name: "Neapolitan",
     isSheet: false,
+    preferredOven: "wood-fired",
+    secondaryOven: "gas",
     sizes: {
       '10': { label: '10″ round', doughWeight: 210 },
       '12': { label: '12″ round', doughWeight: 250 },
@@ -52,6 +54,8 @@ const PIZZA_RECIPES = {
   "new-york": {
     name: "New York Style",
     isSheet: false,
+    preferredOven: "home",
+    secondaryOven: "gas",
     sizes: {
       '10': { label: '10″ round', doughWeight: 230 },
       '12': { label: '12″ round', doughWeight: 290 },
@@ -96,6 +100,8 @@ const PIZZA_RECIPES = {
   "chicago-tavern": {
     name: "Chicago Tavern",
     isSheet: false,
+    preferredOven: "home",
+    secondaryOven: "gas",
     sizes: {
       '10': { label: '10″ round', doughWeight: 200 },
       '12': { label: '12″ round', doughWeight: 250 },
@@ -141,6 +147,8 @@ const PIZZA_RECIPES = {
   detroit: {
     name: "Detroit Deep Dish",
     isSheet: false,
+    preferredOven: "home",
+    secondaryOven: "wood-fired",
     sizes: {
       '8x10':  { label: '8×10″ Pan', doughWeight: 450, slices: 6, description: "Feeds 1–2" },
       '10x14': { label: '10×14″ Pan', doughWeight: 800, slices: 8, description: "Feeds 3–4" },
@@ -186,6 +194,8 @@ const PIZZA_RECIPES = {
   sicilian: {
     name: "Sicilian",
     isSheet: true,
+    preferredOven: "home",
+    secondaryOven: "wood-fired",
     sizes: {
       'quarter': { label: '9.5×13″ (quarter sheet)', doughWeight: 500 },
       'half':    { label: '13×18″ (half sheet)', doughWeight: 950 },
@@ -229,6 +239,8 @@ const PIZZA_RECIPES = {
   grandma: {
     name: "Grandma",
     isSheet: true,
+    preferredOven: "home",
+    secondaryOven: "wood-fired",
     sizes: {
       'quarter': { label: '9.5×13″ (quarter sheet)', doughWeight: 350 },
       'half':    { label: '13×18″ (half sheet)', doughWeight: 700 },
@@ -271,6 +283,8 @@ const PIZZA_RECIPES = {
   "thin-crust": {
     name: "Thin & Crispy",
     isSheet: false,
+    preferredOven: "home",
+    secondaryOven: "gas",
     sizes: {
       '10': { label: '10″ round', doughWeight: 165 },
       '12': { label: '12″ round', doughWeight: 200 },
@@ -313,6 +327,8 @@ const PIZZA_RECIPES = {
   pan: {
     name: "Pan Pizza",
     isSheet: false,
+    preferredOven: "home",
+    secondaryOven: "wood-fired",
     sizes: {
       '10': { label: '10″ cast iron / cake pan', doughWeight: 290 },
       '12': { label: '12″ cast iron / cake pan', doughWeight: 380 },
@@ -356,6 +372,8 @@ const PIZZA_RECIPES = {
   "st-louis": {
     name: "St. Louis",
     isSheet: false,
+    preferredOven: "home",
+    secondaryOven: "gas",
     sizes: {
       '10': { label: '10″ round', doughWeight: 140 },
       '12': { label: '12″ round', doughWeight: 175 },
@@ -400,6 +418,8 @@ const PIZZA_RECIPES = {
   "new-haven": {
     name: "New Haven Apizza",
     isSheet: false,
+    preferredOven: "gas",
+    secondaryOven: "home",
     sizes: {
       '12': { label: '12″ round', doughWeight: 270 },
       '14': { label: '14″ round', doughWeight: 350 },
@@ -442,6 +462,8 @@ const PIZZA_RECIPES = {
   "ohio-valley": {
     name: "Ohio Valley",
     isSheet: true,
+    preferredOven: "home",
+    secondaryOven: "gas",
     sizes: {
       'quarter': { label: 'Quarter sheet (9×13″)', doughWeight: 260 },
       'half': { label: 'Half sheet (13×18″)', doughWeight: 480 },
@@ -485,6 +507,8 @@ const PIZZA_RECIPES = {
   "cast-iron": {
     name: "Cast Iron",
     isSheet: false,
+    preferredOven: "home",
+    secondaryOven: "wood-fired",
     sizes: {
       '10': { label: '10″ cast iron skillet', doughWeight: 240 },
       '12': { label: '12″ cast iron skillet', doughWeight: 320 },
@@ -526,6 +550,8 @@ const PIZZA_RECIPES = {
   "school-night": {
     name: "School Night (No Rise)",
     isSheet: false,
+    preferredOven: "home",
+    secondaryOven: "electric",
     sizes: {
       '10': { label: '10″ round', doughWeight: 200 },
       '12': { label: '12″ round', doughWeight: 260 },

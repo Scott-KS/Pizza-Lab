@@ -399,7 +399,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const type = document.getElementById("pizza-type").value;
     const sizeKey = sizeSelect.value;
     const numPizzas = parseInt(document.getElementById("num-pizzas").value, 10);
-    const ovenType = ovenSelect ? ovenSelect.value : "stone";
+    const ovenType = ovenSelect ? ovenSelect.value : "home";
 
     // Inline validation
     const errType = document.getElementById("err-pizza-type");
@@ -601,10 +601,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const tempDisplay = metricTempBake
       ? `${recTempC}°C`
       : `${recTempF}°F`;
-    // Oven temp
-    document.getElementById("baking-instructions").innerHTML = `
-      <p><strong>Preheat oven to:</strong> ${tempDisplay} (preheat for at least ${preheatMinutes} minutes)</p>
-    `;
+    // Oven recommendation + temp
+    const preferredLabel = (typeof OVEN_TYPES !== "undefined" && recipe.preferredOven) ? OVEN_TYPES[recipe.preferredOven] : "";
+    const secondaryLabel = (typeof OVEN_TYPES !== "undefined" && recipe.secondaryOven) ? OVEN_TYPES[recipe.secondaryOven] : "";
+    const ovenRecHtml = preferredLabel
+      ? `<p><strong>Best oven:</strong> ${preferredLabel}${secondaryLabel ? ` · Also works well: ${secondaryLabel}` : ""}</p>`
+      : "";
+    document.getElementById("baking-instructions").innerHTML =
+      ovenRecHtml +
+      `<p><strong>Preheat oven to:</strong> ${tempDisplay} (preheat for at least ${preheatMinutes} minutes)</p>`;
 
     // Rack position
     const rackEl = document.getElementById("baking-rack");
@@ -696,7 +701,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const methodKey = fermentSelect.value || "same-day";
       const method = (typeof FERMENT_METHODS !== "undefined") ? FERMENT_METHODS[methodKey] : null;
       const doughBallWeight = adjustedRecipe.sizes[sizeKey].doughWeight;
-      const ovenType = ovenSelect ? ovenSelect.value : "stone";
+      const ovenType = ovenSelect ? ovenSelect.value : "home";
 
       if (method && typeof buildScheduleBackward === "function") {
         const schedule = buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWeight, type);

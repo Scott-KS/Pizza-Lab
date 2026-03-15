@@ -12,12 +12,90 @@ if ("serviceWorker" in navigator) {
 
 // ── Canonical Oven Types (5 types) ────────────────────
 const OVEN_TYPES = {
-  steel:        "Home Oven \u2014 Pizza Steel",
-  stone:        "Home Oven \u2014 Pizza Stone",
-  rack:         "Home Oven \u2014 Rack Only",
-  portable:     "Portable Pizza Oven (Gas)",
-  "wood-fired": "Wood-Fired Pizza Oven",
+  home:       "Home Oven",
+  "wood-fired": "Pizza Oven \u2014 Wood-Fired",
+  gas:        "Pizza Oven \u2014 Gas",
+  portable:   "Countertop \u2014 Portable",
+  electric:   "Countertop \u2014 Electric",
 };
+
+// ── Migrate legacy oven keys ─────────────────────────
+// One-time migration for users with old oven values stored
+// in localStorage (steel/stone/rack → home, portable → gas).
+const OVEN_KEY_MIGRATION = {
+  steel: "home",
+  stone: "home",
+  rack:  "home",
+  portable: "gas",
+};
+
+function migrateOvenKeys() {
+  // Migrate profile.preferredOven
+  try {
+    const raw = localStorage.getItem("pielab-profile");
+    if (raw) {
+      const profile = JSON.parse(raw);
+      const mapped = OVEN_KEY_MIGRATION[profile.preferredOven];
+      if (mapped) {
+        profile.preferredOven = mapped;
+        localStorage.setItem("pielab-profile", JSON.stringify(profile));
+      }
+    }
+  } catch { /* ignore */ }
+
+  // Migrate journal entries' ovenType
+  try {
+    const raw = localStorage.getItem("pielab_journal_entries");
+    if (raw) {
+      const entries = JSON.parse(raw);
+      let changed = false;
+      for (const entry of entries) {
+        const mapped = OVEN_KEY_MIGRATION[entry.ovenType];
+        if (mapped) {
+          entry.ovenType = mapped;
+          changed = true;
+        }
+      }
+      if (changed) {
+        localStorage.setItem("pielab_journal_entries", JSON.stringify(entries));
+      }
+    }
+  } catch { /* ignore */ }
+
+  // Migrate scaling memory ovenType values
+  try {
+    const raw = localStorage.getItem("pielab-scaling-memory");
+    if (raw) {
+      const mem = JSON.parse(raw);
+      let changed = false;
+      for (const key of Object.keys(mem)) {
+        const mapped = OVEN_KEY_MIGRATION[mem[key].ovenType];
+        if (mapped) {
+          mem[key].ovenType = mapped;
+          changed = true;
+        }
+      }
+      if (changed) {
+        localStorage.setItem("pielab-scaling-memory", JSON.stringify(mem));
+      }
+    }
+  } catch { /* ignore */ }
+
+  // Migrate last-calc ovenType
+  try {
+    const raw = localStorage.getItem("pielab-last-calc");
+    if (raw) {
+      const calc = JSON.parse(raw);
+      const mapped = OVEN_KEY_MIGRATION[calc.ovenType];
+      if (mapped) {
+        calc.ovenType = mapped;
+        localStorage.setItem("pielab-last-calc", JSON.stringify(calc));
+      }
+    }
+  } catch { /* ignore */ }
+}
+
+migrateOvenKeys();
 
 // ── Populate any <select> with pizza styles ───────────
 function populateStyleSelect(selectEl, options = {}) {

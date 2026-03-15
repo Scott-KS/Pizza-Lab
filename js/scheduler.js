@@ -822,9 +822,9 @@
     const cleanUrl = window.location.pathname + window.location.hash;
     window.history.replaceState(null, "", cleanUrl);
 
-    // Read oven type from user profile, default "stone"
+    // Read oven type from user profile, default "home"
     const profile = (typeof PieLabProfile !== "undefined") ? PieLabProfile.getProfile() : {};
-    const ovenType = profile.preferredOven || "stone";
+    const ovenType = profile.preferredOven || "home";
 
     // Validate eat time is in the future
     const eatTime = new Date(prefill.eatTime);
