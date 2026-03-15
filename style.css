@@ -773,6 +773,13 @@ main {
   border-top: 1px solid var(--clr-border);
 }
 
+#baking-time .bake-time-note {
+  color: var(--clr-text-light);
+  font-size: 0.85rem;
+  font-style: italic;
+  margin-top: -0.25rem;
+}
+
 #pro-tips {
   list-style: none;
 }

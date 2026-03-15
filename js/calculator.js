@@ -625,10 +625,26 @@ document.addEventListener("DOMContentLoaded", () => {
     if (window.initTipsSlider) window.initTipsSlider(type);
     if (window.renderTips)    window.renderTips();
 
-    // Bake time (below tips)
+    // Bake time — prefer oven-specific times from OVEN_SETUPS (Oven Guide)
     const bakeTimeEl = document.getElementById("baking-time");
     if (bakeTimeEl) {
-      bakeTimeEl.innerHTML = `<p><strong>Bake time:</strong> ${bakingInfo.bakeTime}</p>`;
+      let bakeTimeHTML = "";
+      const ovenSetup = typeof OVEN_SETUPS !== "undefined"
+        ? OVEN_SETUPS.find(o => o.id === ovenType)
+        : null;
+      const ovenBake = ovenSetup && ovenSetup.styleBakeTimes
+        ? ovenSetup.styleBakeTimes[type]
+        : null;
+
+      if (ovenBake) {
+        bakeTimeHTML = `<p><strong>Bake time:</strong> ${ovenBake.time}</p>`;
+        if (ovenBake.note) {
+          bakeTimeHTML += `<p class="bake-time-note">${ovenBake.note}</p>`;
+        }
+      } else {
+        bakeTimeHTML = `<p><strong>Bake time:</strong> ${bakingInfo.bakeTime}</p>`;
+      }
+      bakeTimeEl.innerHTML = bakeTimeHTML;
     }
 
     // ── Contextual "Learn More" link (cross-page) ──
