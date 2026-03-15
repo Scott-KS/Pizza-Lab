@@ -1308,17 +1308,21 @@
 
   function drawLogoWatermark(ctx, logo, canvasW, photoH) {
     // Logo SVG is 600x300 (2:1 aspect) — render at 200x100 in bottom-right
-    const LOGO_W = 200, LOGO_H = 100, MARGIN = 15, PADDING = 10, RADIUS = 8;
+    const LOGO_W = 200, LOGO_H = 100, MARGIN = 15;
     const x = canvasW - LOGO_W - MARGIN;
     const y = photoH - LOGO_H - MARGIN;
 
-    // Semi-transparent white backing pill
-    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-    roundRect(ctx, x - PADDING, y - PADDING, LOGO_W + PADDING * 2, LOGO_H + PADDING * 2, RADIUS);
-    ctx.fill();
+    // Draw logo tinted black using off-screen canvas
+    const offscreen = document.createElement("canvas");
+    offscreen.width = LOGO_W;
+    offscreen.height = LOGO_H;
+    const offCtx = offscreen.getContext("2d");
+    offCtx.drawImage(logo, 0, 0, LOGO_W, LOGO_H);
+    offCtx.globalCompositeOperation = "source-in";
+    offCtx.fillStyle = "#000000";
+    offCtx.fillRect(0, 0, LOGO_W, LOGO_H);
 
-    // Draw logo
-    ctx.drawImage(logo, x, y, LOGO_W, LOGO_H);
+    ctx.drawImage(offscreen, x, y);
   }
 
   function finishCard(ctx, canvas, entry, profile, W, H, LEFT, photoBottom, resolve) {
