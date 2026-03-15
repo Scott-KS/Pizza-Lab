@@ -4652,6 +4652,7 @@ body[data-page="journal"] main {
   background: var(--clr-warm-bg, #f5f0eb);
 }
 .autocomplete-list li .ac-city {
+  color: var(--clr-text-light);
   font-weight: 600;
 }
 .autocomplete-list li .ac-region {
