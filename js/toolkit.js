@@ -475,7 +475,12 @@ function populateVolumeConversion() {
 
   // Self-contained volume density data
   const VOLUME_DENSITIES = {
-    "Flour":                    { unit: "cup",  gPerUnit: 125 },
+    "All-Purpose Flour":        { unit: "cup",  gPerUnit: 125 },
+    "Bread Flour":              { unit: "cup",  gPerUnit: 130 },
+    "00 Flour":                 { unit: "cup",  gPerUnit: 125 },
+    "Whole Wheat Flour":        { unit: "cup",  gPerUnit: 128 },
+    "Semolina Flour":           { unit: "cup",  gPerUnit: 167 },
+    "Rye Flour":                { unit: "cup",  gPerUnit: 102 },
     "Water":                    { unit: "cup",  gPerUnit: 237 },
     "Salt":                     { unit: "tsp",  gPerUnit: 6 },
     "Sea Salt":                 { unit: "tsp",  gPerUnit: 5 },
@@ -483,9 +488,8 @@ function populateVolumeConversion() {
     "Olive Oil":                { unit: "tbsp", gPerUnit: 14 },
     "Sugar":                    { unit: "tsp",  gPerUnit: 4 },
     "Instant Dry Yeast":        { unit: "tsp",  gPerUnit: 3.1 },
-    "Active Dry Yeast":         { unit: "tsp",  gPerUnit: 3.1 },
+    "Active Dry Yeast":         { unit: "tsp",  gPerUnit: 4 },
     "Fresh Yeast":              { unit: "tsp",  gPerUnit: 5 },
-    "Yeast":                    { unit: "tsp",  gPerUnit: 3.1 },
     "San Marzano Tomatoes":     { unit: "cup",  gPerUnit: 240 },
     "Crushed Tomatoes":         { unit: "cup",  gPerUnit: 240 },
     "Tomato Paste":             { unit: "tbsp", gPerUnit: 16 },
