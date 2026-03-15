@@ -6205,6 +6205,21 @@ body[data-page="kitchen"] main {
   display: block;
   margin-bottom: 0.25rem;
 }
+.yeast-scaling-controls .setting-field select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--clr-border);
+  border-radius: 2px;
+  font-size: 0.9rem;
+  color: var(--clr-text);
+  background: var(--clr-surface-2, #2e2e2e);
+  transition: border-color 200ms ease;
+  cursor: pointer;
+}
+.yeast-scaling-controls .setting-field select:focus {
+  outline: none;
+  border-color: var(--clr-accent, #c9622a);
+}
 .yeast-scaling-controls .setting-field input[type="range"] {
   -webkit-appearance: none;
   appearance: none;

@@ -424,20 +424,38 @@ document.addEventListener("DOMContentLoaded", () => {
         recipe.yeastPct * yeastMultiplier));
     }
 
-    // ── Dynamic Yeast Scaling (Lehmann Method, Plan mode + premium) ──
+    // ── Dynamic Yeast Scaling (Exponential Q10 model, Plan mode + premium) ──
     let dynamicYeastActive = false;
     let fermentHoursVal = null;
     let fermentTempVal = null;
+    let yeastTypeLabel = "Instant Dry Yeast";
     if (currentMode === "plan" && PieLabPremium.canUse()) {
       const fhSlider = document.getElementById("ferment-hours");
       const ftSlider = document.getElementById("ferment-temp");
+      const ytSelect = document.getElementById("yeast-type");
       if (fhSlider && ftSlider && !document.getElementById("yeast-scaling-controls").classList.contains("hidden")) {
         fermentHoursVal = parseFloat(fhSlider.value);
         fermentTempVal = parseFloat(ftSlider.value);
-        const cf = fermentHoursVal / 17;
-        const tempFactor = 1 + (72 - fermentTempVal) * 0.03;
-        const dynamicYeastPct = Math.max(0.0005, Math.min(0.02, (0.005 / cf) * tempFactor));
-        adjustedRecipe.yeastPct = dynamicYeastPct;
+
+        // Exponential Q10 model: fermentation rate doubles every 15°F (8.3°C)
+        // Reference: 0.5% IDY at 24h / 72°F as baseline
+        const refYeastPct = 0.005;
+        const refHours = 24;
+        const refTempF = 72;
+        const q10DeltaF = 15; // rate doubles per this many °F
+        const tempExponent = (refTempF - fermentTempVal) / q10DeltaF;
+        const tempFactor = Math.pow(2, tempExponent);
+        const timeFactor = fermentHoursVal / refHours;
+        const idyPct = Math.max(0.0005, Math.min(0.03, (refYeastPct / timeFactor) * tempFactor));
+
+        // Yeast type conversion: ADY has ~75% activity, Fresh ~40% vs IDY
+        const yeastType = ytSelect ? ytSelect.value : "idy";
+        const yeastMultiplier = { idy: 1, ady: 1.33, fresh: 2.5 };
+        const multiplier = yeastMultiplier[yeastType] || 1;
+        const yeastTypeLabels = { idy: "Instant Dry Yeast", ady: "Active Dry Yeast", fresh: "Fresh Yeast" };
+        yeastTypeLabel = yeastTypeLabels[yeastType] || "Instant Dry Yeast";
+
+        adjustedRecipe.yeastPct = idyPct * multiplier;
         dynamicYeastActive = true;
       }
     }
@@ -551,7 +569,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const pct = (adjustedRecipe.yeastPct * 100).toFixed(2);
         const metricTempYeast = typeof PieLabProfile !== "undefined" && PieLabProfile.isMetricTemp();
         const tempStr = metricTempYeast ? `${fToC(fermentTempVal)}°C` : `${fermentTempVal}°F`;
-        yeastNote.textContent = `Yeast scaled to ${pct}% — ${fermentHoursVal}h at ${tempStr} (Lehmann Method)`;
+        yeastNote.textContent = `${yeastTypeLabel} scaled to ${pct}% — ${fermentHoursVal}h at ${tempStr}`;
         yeastNote.classList.remove("hidden");
       } else {
         yeastNote.classList.add("hidden");
@@ -634,6 +652,7 @@ document.addEventListener("DOMContentLoaded", () => {
       dynamicYeast: dynamicYeastActive,
       fermentHours: fermentHoursVal,
       fermentTemp: fermentTempVal,
+      yeastType: dynamicYeastActive ? (document.getElementById("yeast-type")?.value || "idy") : null,
     };
 
     // Preserve derivedFromId if user arrived via "Use as Starting Point"

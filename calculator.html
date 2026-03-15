@@ -62,6 +62,14 @@
         <div id="yeast-scaling-controls" class="yeast-scaling-controls hidden">
           <h4>Fermentation Tuning <span class="premium-tag">PRO</span></h4>
           <div class="setting-field">
+            <label for="yeast-type">Yeast Type</label>
+            <select id="yeast-type">
+              <option value="idy" selected>Instant Dry Yeast</option>
+              <option value="ady">Active Dry Yeast</option>
+              <option value="fresh">Fresh Yeast</option>
+            </select>
+          </div>
+          <div class="setting-field">
             <label for="ferment-hours">Fermentation Time</label>
             <input type="range" id="ferment-hours" min="3" max="72" value="24" step="3">
             <span id="ferment-hours-label">24 hours</span>
