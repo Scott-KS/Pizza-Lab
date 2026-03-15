@@ -4653,11 +4653,11 @@ body[data-page="journal"] main {
 }
 .autocomplete-list li .ac-city {
   color: var(--clr-text-light);
-  font-weight: 600;
+  font-weight: 500;
 }
 .autocomplete-list li .ac-region {
   color: var(--clr-text-light);
-  font-weight: 400;
+  font-weight: 500;
 }
 
 /* City status feedback */
