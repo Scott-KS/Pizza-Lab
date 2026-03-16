@@ -288,7 +288,7 @@ function updateSessionBanner() {
 // class to all Pro-gated elements when trial is expired / not started.
 function applyProLockState() {
   const premium = typeof PieLabPremium !== "undefined" ? PieLabPremium : null;
-  const locked = premium ? !premium.canUse() : false;
+  const locked = premium ? premium.isExpired() : false;
 
   // Inject PRO tag into Schedule nav links (desktop + mobile)
   document.querySelectorAll('.nav-link[data-page="schedule"], .tab-item[data-page="schedule"]').forEach(link => {
