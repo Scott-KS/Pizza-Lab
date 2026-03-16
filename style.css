@@ -3193,6 +3193,19 @@ main {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
+.share-stats-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0;
+}
+
+.share-stats-label {
+  font-size: 0.85rem;
+  color: var(--clr-muted);
+}
+
 .btn-modal-iterate,
 .btn-modal-share,
 .btn-modal-save-photo {
