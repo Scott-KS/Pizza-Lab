@@ -197,16 +197,16 @@ function populateOvenGuide() {
         bakeRows = setup.bestStyles.map((key) => {
           const bt = setup.styleBakeTimes[key];
           const name = PIZZA_RECIPES[key] ? PIZZA_RECIPES[key].name : key;
-          return `<tr><td>${name}</td><td>${bt.time}</td><td class="bake-note">${bt.note}</td></tr>`;
+          return `<tr><td>${name}<div class="bake-note">${bt.note}</div></td><td>${bt.time}</td></tr>`;
         }).join("");
       } else {
         // Show just the selected style
         const bt = setup.styleBakeTimes[filterStyle];
         const name = PIZZA_RECIPES[filterStyle] ? PIZZA_RECIPES[filterStyle].name : filterStyle;
         if (bt) {
-          bakeRows = `<tr><td>${name}</td><td>${bt.time}</td><td class="bake-note">${bt.note}</td></tr>`;
+          bakeRows = `<tr><td>${name}<div class="bake-note">${bt.note}</div></td><td>${bt.time}</td></tr>`;
         } else {
-          bakeRows = `<tr><td colspan="3">No data for this style</td></tr>`;
+          bakeRows = `<tr><td colspan="2">No data for this style</td></tr>`;
         }
       }
 
@@ -239,7 +239,7 @@ function populateOvenGuide() {
             <h4>Bake Times</h4>
             <div class="oven-bake-table-wrapper">
               <table class="oven-bake-table">
-                <thead><tr><th>Style</th><th>Time</th><th>Notes</th></tr></thead>
+                <thead><tr><th>Style</th><th>Time</th></tr></thead>
                 <tbody>${bakeRows}</tbody>
               </table>
             </div>

@@ -2084,13 +2084,14 @@ main {
 
 .oven-bake-table td:first-child {
   font-weight: 600;
-  white-space: nowrap;
 }
 
 .bake-note {
-  font-size: 0.78rem;
-  color: var(--clr-text-light);
+  font-size: 0.75rem;
+  color: var(--clr-muted);
+  font-weight: 400;
   font-style: italic;
+  margin-top: 2px;
 }
 
 .oven-tips {
