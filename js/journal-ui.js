@@ -470,17 +470,30 @@
     localStorage.removeItem("pielab-pending-bake");
   }
 
+  const YEAST_LABELS = { idy: "Instant Dry", ady: "Active Dry", fresh: "Fresh" };
+
   function renderSnapshot(snap) {
     if (!snap) return;
-    snapshotEl.innerHTML = `
+    let chips = `
       <span class="snapshot-label">Dough Snapshot:</span>
       <span class="snapshot-chip"><strong>${(snap.hydration * 100).toFixed(1)}%</strong> hydration</span>
       <span class="snapshot-chip"><strong>${(snap.saltPct * 100).toFixed(1)}%</strong> salt</span>
       <span class="snapshot-chip"><strong>${(snap.oilPct * 100).toFixed(1)}%</strong> oil</span>
       <span class="snapshot-chip"><strong>${(snap.sugarPct * 100).toFixed(1)}%</strong> sugar</span>
       <span class="snapshot-chip"><strong>${(snap.yeastPct * 100).toFixed(2)}%</strong> yeast</span>
-      <span class="snapshot-chip"><strong>${snap.doughBallWeight}g</strong> per ball</span>
-    `;
+      <span class="snapshot-chip"><strong>${snap.doughBallWeight}g</strong> per ball</span>`;
+    if (snap.flourType) {
+      chips += `\n      <span class="snapshot-chip"><strong>${escapeHtml(snap.flourType)}</strong></span>`;
+    }
+    if (snap.yeastType) {
+      const label = YEAST_LABELS[snap.yeastType] || snap.yeastType;
+      chips += `\n      <span class="snapshot-chip"><strong>${escapeHtml(label)}</strong> yeast</span>`;
+    }
+    if (snap.fermentHours) {
+      const tempStr = snap.fermentTemp ? ` @ ${formatTemp(snap.fermentTemp)}` : "";
+      chips += `\n      <span class="snapshot-chip"><strong>${snap.fermentHours}h</strong> ferment${tempStr}</span>`;
+    }
+    snapshotEl.innerHTML = chips;
   }
 
   btnNewEntry.addEventListener("click", () => showForm(false));
@@ -811,12 +824,21 @@
 
     if (entry.doughSnapshot) {
       const s = entry.doughSnapshot;
+      if (s.flourType) details.push({ label: "Flour", value: escapeHtml(s.flourType) });
       details.push({ label: "Hydration", value: `${(s.hydration * 100).toFixed(1)}%` });
       details.push({ label: "Salt", value: `${(s.saltPct * 100).toFixed(1)}%` });
       details.push({ label: "Oil", value: `${(s.oilPct * 100).toFixed(1)}%` });
       details.push({ label: "Sugar", value: `${(s.sugarPct * 100).toFixed(1)}%` });
       details.push({ label: "Yeast", value: `${(s.yeastPct * 100).toFixed(2)}%` });
+      if (s.yeastType) {
+        const ytLabel = YEAST_LABELS[s.yeastType] || s.yeastType;
+        details.push({ label: "Yeast Type", value: escapeHtml(ytLabel) });
+      }
       details.push({ label: "Dough Ball", value: `${s.doughBallWeight}g` });
+      if (s.fermentHours) {
+        const tempStr = s.fermentTemp ? ` @ ${formatTemp(s.fermentTemp)}` : "";
+        details.push({ label: "Ferment", value: `${s.fermentHours}h${tempStr}` });
+      }
     }
 
     if (details.length) {
@@ -832,13 +854,15 @@
       const s = entry.doughSnapshot;
       const totalPct = 1 + (s.hydration || 0) + (s.saltPct || 0) + (s.oilPct || 0) + (s.sugarPct || 0) + (s.yeastPct || 0);
       const flourG = s.doughBallWeight / totalPct;
+      const flourName = s.flourType || "Flour";
+      const yeastName = s.yeastType ? (YEAST_LABELS[s.yeastType] || s.yeastType) + " Yeast" : "Yeast";
       const ingredients = [
-        { name: "Flour", grams: flourG, pct: 100 },
+        { name: flourName, grams: flourG, pct: 100 },
         { name: "Water", grams: flourG * (s.hydration || 0), pct: (s.hydration || 0) * 100 },
         { name: "Salt", grams: flourG * (s.saltPct || 0), pct: (s.saltPct || 0) * 100 },
         { name: "Oil", grams: flourG * (s.oilPct || 0), pct: (s.oilPct || 0) * 100 },
         { name: "Sugar", grams: flourG * (s.sugarPct || 0), pct: (s.sugarPct || 0) * 100 },
-        { name: "Yeast", grams: flourG * (s.yeastPct || 0), pct: (s.yeastPct || 0) * 100 },
+        { name: yeastName, grams: flourG * (s.yeastPct || 0), pct: (s.yeastPct || 0) * 100 },
       ].filter((ing) => Math.round(ing.grams) > 0);
       const totalG = ingredients.reduce((sum, ing) => sum + ing.grams, 0);
 
@@ -856,8 +880,17 @@
       html += `<div class="modal-notes"><h4>Notes</h4><p>${escapeHtml(entry.notes)}</p></div>`;
     }
 
-    const shareButtons = `<button class="btn-modal-share" data-id="${entry.id}">Share This Bake</button>
-         <button class="btn-modal-save-photo" data-id="${entry.id}">Save to Photos</button>`;
+    const statsChecked = localStorage.getItem("pielab-share-stats") !== "false";
+    const shareButtons = `
+      <div class="share-stats-toggle">
+        <label class="toggle-switch">
+          <input type="checkbox" id="share-stats-toggle" ${statsChecked ? "checked" : ""}>
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="share-stats-label">Include Bake Stats in Caption</span>
+      </div>
+      <button class="btn-modal-share" data-id="${entry.id}">Share This Bake</button>
+      <button class="btn-modal-save-photo" data-id="${entry.id}">Save to Photos</button>`;
 
     html += `
       <div class="modal-actions">
@@ -917,6 +950,14 @@
         updateStorageDisplay();
       }
     });
+
+    // Share stats toggle — persist preference
+    const statsToggle = document.getElementById("share-stats-toggle");
+    if (statsToggle) {
+      statsToggle.addEventListener("change", () => {
+        localStorage.setItem("pielab-share-stats", statsToggle.checked ? "true" : "false");
+      });
+    }
 
     // Share handler — copies caption to clipboard, then opens share sheet
     const shareBtn = modalBody.querySelector(".btn-modal-share");
@@ -1081,14 +1122,14 @@
             <span class="share-guide-icon">&#127758;</span>
             <div>
               <strong>Post to Social Media</strong>
-              <p>Tap <em>Save to Photos</em>, then upload to your social media account. A caption with your stats is auto-copied.</p>
+              <p>Open your bake, then upload to your social media account. A caption with your bake stats is auto-copied.</p>
             </div>
           </div>
           <div class="share-guide-option">
             <span class="share-guide-icon">&#128247;</span>
             <div>
               <strong>Submit to our Instagram</strong>
-              <p>Tap <em>Save to Photos</em> and DM the image to <strong>@ThePieLab</strong> on Instagram. The best bakes get featured in our weekly feed.</p>
+              <p>DM the image to <strong>@ThePieLab</strong> on Instagram. The best bakes get featured in our feed.</p>
             </div>
           </div>
         </div>
@@ -1174,7 +1215,8 @@
     }
 
     // 5. Copy caption to clipboard for easy paste into Reddit/Instagram
-    const caption = buildShareCaption(entry, { name, location, skillLevel });
+    const includeStats = localStorage.getItem("pielab-share-stats") !== "false";
+    const caption = buildShareCaption(entry, { name, location, skillLevel }, includeStats);
     try { await navigator.clipboard.writeText(caption); } catch {}
 
     // 6. Share or download
@@ -1236,7 +1278,8 @@
       }
 
       // Copy caption for easy paste
-      const caption = buildShareCaption(entry, { name, location, skillLevel });
+      const includeStats = localStorage.getItem("pielab-share-stats") !== "false";
+      const caption = buildShareCaption(entry, { name, location, skillLevel }, includeStats);
       try { await navigator.clipboard.writeText(caption); } catch {}
       showToast("Saved! Caption copied — paste into your post");
     } catch (err) {
@@ -1246,7 +1289,7 @@
   }
 
   /** Build a ready-to-paste caption for Reddit / Instagram. */
-  function buildShareCaption(entry, profile) {
+  function buildShareCaption(entry, profile, includeStats) {
     const styleName = entry.styleName || entry.styleKey || "";
     const parts = [];
     if (styleName) parts.push(styleName);
@@ -1256,6 +1299,25 @@
 
     let caption = headline;
     if (badge) caption += ` — ${badge}`;
+
+    if (includeStats) {
+      const statLines = [];
+      const s = entry.doughSnapshot;
+      if (s && s.flourType) statLines.push(`Flour: ${s.flourType}`);
+      if (s && s.hydration) statLines.push(`Hydration: ${(s.hydration * 100).toFixed(0)}%`);
+      if (s && s.doughBallWeight) statLines.push(`Dough Ball: ${s.doughBallWeight}g`);
+      if (s && s.fermentHours) statLines.push(`Ferment: ${s.fermentHours}h`);
+      if (entry.bakeTemp) statLines.push(`Temp: ${formatTemp(entry.bakeTemp)}`);
+      if (entry.bakeTime) statLines.push(`Time: ${entry.bakeTime} min`);
+      if (entry.ovenType) {
+        const ovenLabel = (typeof OVEN_TYPES !== "undefined" && OVEN_TYPES[entry.ovenType])
+          ? OVEN_TYPES[entry.ovenType] : entry.ovenType;
+        statLines.push(`Oven: ${ovenLabel}`);
+      }
+      if (entry.rating) statLines.push(`Rating: ${"★".repeat(entry.rating)}${"☆".repeat(5 - entry.rating)}`);
+      if (statLines.length) caption += "\n\n" + statLines.join(" · ");
+    }
+
     caption += "\n\nMade with The Pie Lab 🍕\nThePieLab.app";
     caption += "\n\n#ThePieLab #HomemadePizza #PizzaMaking";
     if (styleName) {
@@ -1785,6 +1847,9 @@
             <span>Salt: ${(s.saltPct * 100).toFixed(1)}%</span>
             <span>Yeast: ${(s.yeastPct * 100).toFixed(2)}%</span>
             <span>Ball: ${s.doughBallWeight}g</span>
+            ${s.flourType ? `<span>Flour: ${escapeHtml(s.flourType)}</span>` : ""}
+            ${s.yeastType ? `<span>Yeast: ${escapeHtml(YEAST_LABELS[s.yeastType] || s.yeastType)}</span>` : ""}
+            ${s.fermentHours ? `<span>Ferment: ${s.fermentHours}h</span>` : ""}
           </div>
           <span class="dough-card-date">Saved ${date}</span>
           <button type="button" class="btn-load-dough" data-id="${d.id}">Use in Calculator</button>
@@ -1807,6 +1872,7 @@
       btn.addEventListener("click", () => {
         const dough = allDoughs.find(d => d.id === btn.dataset.id);
         if (!dough) return;
+        const settings = dough.settings || {};
         const calcData = {
           styleKey: dough.styleKey,
           styleName: (typeof PIZZA_RECIPES !== "undefined" && PIZZA_RECIPES[dough.styleKey])
@@ -1815,7 +1881,11 @@
           numPizzas: 1,
           ovenType: "",
           useCustom: true,
-          doughSnapshot: dough.settings,
+          doughSnapshot: settings,
+          // Carry ferment data from profile so calculator can restore Plan My Bake state
+          fermentHours: settings.fermentHours || null,
+          fermentTemp: settings.fermentTemp || null,
+          yeastType: settings.yeastType || null,
         };
         localStorage.setItem("pielab-last-calc", JSON.stringify(calcData));
         window.location.href = "calculator.html?load=1";

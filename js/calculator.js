@@ -672,6 +672,10 @@ document.addEventListener("DOMContentLoaded", () => {
         sugarPct: adjustedRecipe.sugarPct,
         yeastPct: adjustedRecipe.yeastPct,
         doughBallWeight,
+        flourType: adjustedRecipe.flour || null,
+        yeastType: dynamicYeastActive ? (document.getElementById("yeast-type")?.value || "idy") : null,
+        fermentHours: fermentHoursVal || null,
+        fermentTemp: fermentTempVal || null,
       },
       bakeTemp: recipe.idealTemp ? recipe.idealTemp.max : null,
       totalDoughWeight: Math.round(doughBallWeight * numPizzas),
@@ -820,6 +824,15 @@ document.addEventListener("DOMContentLoaded", () => {
       renderDoughTable(dough);
       noteEl.className = "flour-sub-note hidden";
       noteEl.innerHTML = "";
+      // Restore original flour type in stored data
+      try {
+        const stored = JSON.parse(localStorage.getItem("pielab-last-calc") || "{}");
+        if (stored.doughSnapshot) {
+          stored.doughSnapshot.flourType = adjustedRecipe.flour || null;
+          stored.doughSnapshot.hydration = adjustedRecipe.hydration;
+          localStorage.setItem("pielab-last-calc", JSON.stringify(stored));
+        }
+      } catch { /* ignore */ }
       return;
     }
 
@@ -843,6 +856,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const dough = calculateDough(subRecipe, numPizzas, sizeKey);
     lastDough = dough;
     renderDoughTable(dough);
+
+    // Update stored flour type in lastCalcData so journal prefill gets the substitute
+    try {
+      const stored = JSON.parse(localStorage.getItem("pielab-last-calc") || "{}");
+      if (stored.doughSnapshot) {
+        stored.doughSnapshot.flourType = selectedFlour;
+        stored.doughSnapshot.hydration = subRecipe.hydration;
+        localStorage.setItem("pielab-last-calc", JSON.stringify(stored));
+      }
+    } catch { /* ignore */ }
 
     // If Custom mode is active, update the hydration field and save
     const toggle = document.getElementById("settings-mode-toggle");
@@ -1055,9 +1078,12 @@ document.addEventListener("DOMContentLoaded", () => {
       fields.yeastPct.value = personal?.yeastPct != null
         ? (personal.yeastPct * 100).toFixed(2)
         : (recipe.yeastPct * 100).toFixed(2);
-      fields.doughBallWeight.value = personal?.doughBallWeight != null
-        ? personal.doughBallWeight
-        : defaultDoughWeight;
+      fields.doughBallWeight.placeholder = `${defaultDoughWeight}g (default)`;
+      if (personal?.doughBallWeight != null) {
+        fields.doughBallWeight.value = personal.doughBallWeight;
+      } else {
+        fields.doughBallWeight.value = "";
+      }
 
       editor.classList.remove("hidden");
     }
@@ -1066,14 +1092,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const styleKey = styleSelect.value;
       if (!styleKey || !toggle.checked) return;
 
-      PieLabJournal.savePersonalSettings(styleKey, {
+      const settings = {
         hydration: parseFloat(fields.hydration.value) / 100,
         saltPct: parseFloat(fields.saltPct.value) / 100,
         oilPct: parseFloat(fields.oilPct.value) / 100,
         sugarPct: parseFloat(fields.sugarPct.value) / 100,
         yeastPct: parseFloat(fields.yeastPct.value) / 100,
-        doughBallWeight: parseFloat(fields.doughBallWeight.value),
-      });
+      };
+      const dbwVal = fields.doughBallWeight.value.trim();
+      if (dbwVal !== "") settings.doughBallWeight = parseFloat(dbwVal);
+      PieLabJournal.savePersonalSettings(styleKey, settings);
     }
 
     // Events
@@ -1083,6 +1111,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     styleSelect.addEventListener("change", showEditor);
+
+    // Update dough ball placeholder when pizza size changes
+    const sizeSelectForPlaceholder = document.getElementById("pizza-size");
+    if (sizeSelectForPlaceholder) {
+      sizeSelectForPlaceholder.addEventListener("change", () => {
+        const sk = styleSelect.value;
+        const recipe = sk ? PIZZA_RECIPES[sk] : null;
+        if (recipe && recipe.sizes[sizeSelectForPlaceholder.value]) {
+          fields.doughBallWeight.placeholder = `${recipe.sizes[sizeSelectForPlaceholder.value].doughWeight}g (default)`;
+        }
+      });
+    }
 
     Object.values(fields).forEach((input) => {
       input.addEventListener("blur", saveCurrentSettings);
@@ -1135,14 +1175,31 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!styleKey) return;
         const name = prompt("Name this dough:");
         if (!name || !name.trim()) return;
+        const dbwRaw = document.getElementById("ps-dough-weight").value.trim();
+        const recipe = PIZZA_RECIPES[styleKey];
+        const sizeKey = document.getElementById("pizza-size")?.value;
+        const defaultDbw = (recipe && sizeKey && recipe.sizes[sizeKey])
+          ? recipe.sizes[sizeKey].doughWeight
+          : (recipe ? recipe.sizes[Object.keys(recipe.sizes)[0]].doughWeight : 250);
         const fields = {
           hydration: parseFloat(document.getElementById("ps-hydration").value) / 100,
           saltPct: parseFloat(document.getElementById("ps-salt").value) / 100,
           oilPct: parseFloat(document.getElementById("ps-oil").value) / 100,
           sugarPct: parseFloat(document.getElementById("ps-sugar").value) / 100,
           yeastPct: parseFloat(document.getElementById("ps-yeast").value) / 100,
-          doughBallWeight: parseFloat(document.getElementById("ps-dough-weight").value),
+          doughBallWeight: dbwRaw !== "" ? parseFloat(dbwRaw) : defaultDbw,
         };
+        // Capture flour, yeast type, and ferment data from current calculation
+        try {
+          const stored = JSON.parse(localStorage.getItem("pielab-last-calc") || "{}");
+          const snap = stored.doughSnapshot;
+          if (snap) {
+            if (snap.flourType) fields.flourType = snap.flourType;
+            if (snap.yeastType) fields.yeastType = snap.yeastType;
+            if (snap.fermentHours) fields.fermentHours = snap.fermentHours;
+            if (snap.fermentTemp) fields.fermentTemp = snap.fermentTemp;
+          }
+        } catch { /* ignore */ }
         PieLabJournal.saveProfile({ name: name.trim(), styleKey, settings: fields });
         refreshProfileList();
       });
@@ -1277,6 +1334,18 @@ document.addEventListener("DOMContentLoaded", () => {
       const calcCard = document.querySelector(".calculator-card");
       if (calcCard) {
         setTimeout(() => calcCard.scrollIntoView({ behavior: "smooth", block: "start" }), 150);
+      }
+
+      // 6. If ferment data present, switch to Plan My Bake mode and populate
+      if (data.fermentHours || data.yeastType || (data.doughSnapshot && data.doughSnapshot.yeastType)) {
+        const yeastTypeVal = data.yeastType || (data.doughSnapshot && data.doughSnapshot.yeastType) || null;
+        if (typeof setMode === "function") setMode("plan");
+        if (yeastTypeVal) {
+          const ytSelect = document.getElementById("yeast-type");
+          if (ytSelect && ytSelect.querySelector(`option[value="${yeastTypeVal}"]`)) {
+            ytSelect.value = yeastTypeVal;
+          }
+        }
       }
 
       // Clean URL so reload doesn't re-trigger
@@ -1426,9 +1495,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const m = str.match(/(\d+)[–\u2013-](\d+)\s*(seconds?|minutes?)/i);
     if (!m) return 300; // fallback 5 min
     const lo = parseInt(m[1], 10);
-    const hi = parseInt(m[2], 10);
     const multiplier = m[3].toLowerCase().startsWith("minute") ? 60 : 1;
-    return Math.round(((lo + hi) / 2) * multiplier);
+    return lo * multiplier;
   }
 
   function formatTime(secs) {
