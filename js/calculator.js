@@ -153,6 +153,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const yeastControls = document.getElementById("yeast-scaling-controls");
     if (yeastControls) yeastControls.classList.toggle("hidden", mode !== "plan");
 
+    // Show tools info button only in Quick Calculate mode
+    const toolsBtn = document.getElementById("tools-info-btn");
+    const toolsLabel = document.querySelector(".tools-info-label");
+    if (toolsBtn) toolsBtn.classList.toggle("hidden", mode !== "quick");
+    if (toolsLabel) toolsLabel.classList.toggle("hidden", mode !== "quick");
+
     if (mode === "plan" && !eatTimeInput.value) {
       // Default to tomorrow 6:30 PM local
       const tomorrow = new Date();
@@ -1100,9 +1106,9 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
-    const header = document.querySelector(".results-header");
-    header.style.position = "relative";
-    header.appendChild(popover);
+    const anchor = document.getElementById("tools-info-btn").closest(".form-group");
+    anchor.style.position = "relative";
+    anchor.appendChild(popover);
 
     popover.querySelector(".popover-close").addEventListener("click", (ev) => {
       ev.stopPropagation();
