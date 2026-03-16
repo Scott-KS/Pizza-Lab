@@ -323,6 +323,112 @@
       font-size: 15px;
     }
 
+    /* ── APP SCREENSHOTS ── */
+    .screenshots-section {
+      overflow: hidden;
+    }
+
+    .screenshots-scroll {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      align-items: flex-start;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .screenshot-item {
+      flex: 0 0 auto;
+      text-align: center;
+      max-width: 240px;
+    }
+
+    .phone-frame {
+      position: relative;
+      width: 220px;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 3px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      background: var(--card);
+      aspect-ratio: 9 / 19.5;
+    }
+
+    .phone-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    .phone-frame .placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-light);
+      font-size: 13px;
+      text-align: center;
+      padding: 20px;
+      background: var(--bg-alt);
+    }
+
+    .screenshot-caption {
+      margin-top: 16px;
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .screenshot-caption-sub {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+
+    /* ── PHOTO BANNER ── */
+    .photo-banner {
+      width: 100%;
+      height: 360px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .photo-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+    }
+
+    .photo-banner .placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-alt);
+      color: var(--text-light);
+      font-size: 14px;
+    }
+
+    .photo-banner::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(28, 22, 20, 0.3) 0%,
+        transparent 30%,
+        transparent 70%,
+        rgba(28, 22, 20, 0.3) 100%
+      );
+      pointer-events: none;
+    }
+
     /* ── FEATURES ── */
     .features-grid {
       display: grid;
@@ -591,6 +697,28 @@
         gap: 12px;
       }
 
+      .screenshots-scroll {
+        gap: 20px;
+        justify-content: flex-start;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        padding: 0 20px;
+      }
+
+      .screenshot-item {
+        scroll-snap-align: center;
+      }
+
+      .phone-frame {
+        width: 180px;
+        border-radius: 24px;
+      }
+
+      .photo-banner {
+        height: 240px;
+      }
+
       .pricing-card {
         padding: 36px 24px;
       }
@@ -678,6 +806,67 @@
     </div>
     <p class="styles-note">Plus Detroit, Thin &amp; Crispy, Pan, St. Louis, New Haven, and Cast Iron.</p>
   </section>
+
+  <!-- ── APP SCREENSHOTS ── -->
+  <section class="screenshots-section">
+    <div class="section-header">
+      <p class="section-label">See It In Action</p>
+      <h2 class="section-title">Designed for your kitchen counter.</h2>
+      <p class="section-subtitle">
+        Clean, focused, flour-friendly. Every screen built for mid-bake use.
+      </p>
+    </div>
+    <div class="screenshots-scroll">
+
+      <!-- SLOT 1: Calculator form — use your "Build Your Recipe" screenshot (Quick Calculate, Neapolitan selected) -->
+      <div class="screenshot-item">
+        <div class="phone-frame">
+          <!-- TODO: Replace placeholder with: <img src="screenshots/calculator.png" alt="Recipe Calculator"> -->
+          <div class="placeholder">screenshot:<br>calculator.png<br><br>Calculator form with style & size selected</div>
+        </div>
+        <p class="screenshot-caption">Build Your Recipe</p>
+        <p class="screenshot-caption-sub">Select style, size &amp; count</p>
+      </div>
+
+      <!-- SLOT 2: Bake journal entry — use your "Sunday" Neapolitan bake detail (950°F, 5 stars, dough snapshot) -->
+      <div class="screenshot-item">
+        <div class="phone-frame">
+          <!-- TODO: Replace placeholder with: <img src="screenshots/journal-entry.png" alt="Bake Journal Entry"> -->
+          <div class="placeholder">screenshot:<br>journal-entry.png<br><br>Neapolitan bake detail with dough stats</div>
+        </div>
+        <p class="screenshot-caption">Track Every Bake</p>
+        <p class="screenshot-caption-sub">Photos, ratings &amp; dough data</p>
+      </div>
+
+      <!-- SLOT 3: Baking tips — use your "Baking Instructions" screenshot (oven guide + beginner tips) -->
+      <div class="screenshot-item">
+        <div class="phone-frame">
+          <!-- TODO: Replace placeholder with: <img src="screenshots/baking-tips.png" alt="Baking Instructions & Tips"> -->
+          <div class="placeholder">screenshot:<br>baking-tips.png<br><br>Baking instructions with beginner tips slider</div>
+        </div>
+        <p class="screenshot-caption">Expert Guidance</p>
+        <p class="screenshot-caption-sub">Tips for every skill level</p>
+      </div>
+
+      <!-- SLOT 4: Style Passport — use your "3 of 13 unlocked" passport screenshot -->
+      <div class="screenshot-item">
+        <div class="phone-frame">
+          <!-- TODO: Replace placeholder with: <img src="screenshots/passport.png" alt="Style Passport"> -->
+          <div class="placeholder">screenshot:<br>passport.png<br><br>Style Passport with badges unlocked</div>
+        </div>
+        <p class="screenshot-caption">Collect Badges</p>
+        <p class="screenshot-caption-sub">Master every pizza style</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── PHOTO BANNER ── -->
+  <!-- Best photo: Your Detroit pepperoni in the blue steel pan — gorgeous, moody, high-impact -->
+  <div class="photo-banner">
+    <!-- TODO: Replace placeholder with: <img src="screenshots/detroit-hero.jpg" alt="Detroit-style pepperoni pizza"> -->
+    <div class="placeholder">photo: detroit-hero.jpg — Your Detroit pepperoni pan shot</div>
+  </div>
 
   <!-- ── FEATURES ── -->
   <section class="features-section">
