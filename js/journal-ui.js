@@ -880,17 +880,8 @@
       html += `<div class="modal-notes"><h4>Notes</h4><p>${escapeHtml(entry.notes)}</p></div>`;
     }
 
-    const statsChecked = localStorage.getItem("pielab-share-stats") !== "false";
-    const shareButtons = `
-      <div class="share-stats-toggle">
-        <label class="toggle-switch">
-          <input type="checkbox" id="share-stats-toggle" ${statsChecked ? "checked" : ""}>
-          <span class="toggle-slider"></span>
-        </label>
-        <span class="share-stats-label">Include Bake Stats in Caption</span>
-      </div>
-      <button class="btn-modal-share" data-id="${entry.id}">Share This Bake</button>
-      <button class="btn-modal-save-photo" data-id="${entry.id}">Save to Photos</button>`;
+    const shareButtons = `<button class="btn-modal-share" data-id="${entry.id}">Share This Bake</button>
+         <button class="btn-modal-save-photo" data-id="${entry.id}">Save to Photos</button>`;
 
     html += `
       <div class="modal-actions">
@@ -950,14 +941,6 @@
         updateStorageDisplay();
       }
     });
-
-    // Share stats toggle — persist preference
-    const statsToggle = document.getElementById("share-stats-toggle");
-    if (statsToggle) {
-      statsToggle.addEventListener("change", () => {
-        localStorage.setItem("pielab-share-stats", statsToggle.checked ? "true" : "false");
-      });
-    }
 
     // Share handler — copies caption to clipboard, then opens share sheet
     const shareBtn = modalBody.querySelector(".btn-modal-share");
@@ -1215,8 +1198,7 @@
     }
 
     // 5. Copy caption to clipboard for easy paste into Reddit/Instagram
-    const includeStats = localStorage.getItem("pielab-share-stats") !== "false";
-    const caption = buildShareCaption(entry, { name, location, skillLevel }, includeStats);
+    const caption = buildShareCaption(entry, { name, location, skillLevel });
     try { await navigator.clipboard.writeText(caption); } catch {}
 
     // 6. Share or download
@@ -1278,8 +1260,7 @@
       }
 
       // Copy caption for easy paste
-      const includeStats = localStorage.getItem("pielab-share-stats") !== "false";
-      const caption = buildShareCaption(entry, { name, location, skillLevel }, includeStats);
+      const caption = buildShareCaption(entry, { name, location, skillLevel });
       try { await navigator.clipboard.writeText(caption); } catch {}
       showToast("Saved! Caption copied — paste into your post");
     } catch (err) {
@@ -1289,7 +1270,7 @@
   }
 
   /** Build a ready-to-paste caption for Reddit / Instagram. */
-  function buildShareCaption(entry, profile, includeStats) {
+  function buildShareCaption(entry, profile) {
     const styleName = entry.styleName || entry.styleKey || "";
     const parts = [];
     if (styleName) parts.push(styleName);
@@ -1299,24 +1280,6 @@
 
     let caption = headline;
     if (badge) caption += ` — ${badge}`;
-
-    if (includeStats) {
-      const statLines = [];
-      const s = entry.doughSnapshot;
-      if (s && s.flourType) statLines.push(`Flour: ${s.flourType}`);
-      if (s && s.hydration) statLines.push(`Hydration: ${(s.hydration * 100).toFixed(0)}%`);
-      if (s && s.doughBallWeight) statLines.push(`Dough Ball: ${s.doughBallWeight}g`);
-      if (s && s.fermentHours) statLines.push(`Ferment: ${s.fermentHours}h`);
-      if (entry.bakeTemp) statLines.push(`Temp: ${formatTemp(entry.bakeTemp)}`);
-      if (entry.bakeTime) statLines.push(`Time: ${entry.bakeTime} min`);
-      if (entry.ovenType) {
-        const ovenLabel = (typeof OVEN_TYPES !== "undefined" && OVEN_TYPES[entry.ovenType])
-          ? OVEN_TYPES[entry.ovenType] : entry.ovenType;
-        statLines.push(`Oven: ${ovenLabel}`);
-      }
-      if (entry.rating) statLines.push(`Rating: ${"★".repeat(entry.rating)}${"☆".repeat(5 - entry.rating)}`);
-      if (statLines.length) caption += "\n\n" + statLines.join(" · ");
-    }
 
     caption += "\n\nMade with The Pie Lab 🍕\nThePieLab.app";
     caption += "\n\n#ThePieLab #HomemadePizza #PizzaMaking";
