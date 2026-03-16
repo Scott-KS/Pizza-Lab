@@ -5817,18 +5817,22 @@ body[data-page="kitchen"] main {
 /* ── Custom Dough Profiles ───────────────────────── */
 .btn-save-profile {
   padding: 0.4rem 1rem;
-  border: 1px solid var(--clr-border);
+  border: 1px solid var(--clr-accent);
   border-radius: 6px;
-  background: none;
-  color: var(--clr-text-light);
+  background: var(--clr-accent);
+  color: #fff;
   font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
   margin-left: 0.5rem;
 }
 .btn-save-profile:hover {
-  border-color: var(--clr-primary);
-  color: var(--clr-primary);
+  background: #b55524;
+  border-color: #b55524;
+}
+.btn-save-profile .premium-tag {
+  background: rgba(255, 255, 255, 0.25);
 }
 .profile-loader {
   margin-top: 0.75rem;
