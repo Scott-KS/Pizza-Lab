@@ -4,68 +4,70 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Pie Lab — The Only Pizza App You'll Ever Need</title>
-  <meta name="description" content="The Pie Lab is the most complete pizza-making app ever built. Recipe calculator, dough scheduler, bake journal, and a full knowledge hub — all in one app. Available on iOS and Android.">
+  <meta name="description" content="The Pie Lab is the most complete pizza-making app ever built. Precision dough calculator, smart scheduling, bake journal, and a full knowledge hub — all in one app.">
   <meta name="keywords" content="pizza app, pizza dough calculator, pizza recipe, dough scheduler, Neapolitan pizza, New York pizza, Detroit pizza, homemade pizza, pizza making">
-
-  <!-- Open Graph -->
   <meta property="og:title" content="The Pie Lab — The Only Pizza App You'll Ever Need">
-  <meta property="og:description" content="Recipe calculator, dough scheduler, bake journal, and a full knowledge hub. Master every pizza style from Neapolitan to Detroit.">
+  <meta property="og:description" content="Precision dough calculator, smart scheduling, bake journal, and a full knowledge hub. Master every pizza style.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.pielab.app">
-
-  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="assets/logos/favicon-32.svg">
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    *, *::before, *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #1c1614;
-      --bg-alt: #241e1b;
-      --card: #2a2220;
+      --bg: #0e0b0a;
+      --bg-alt: #161211;
+      --card: #1e1916;
       --primary: #c4604b;
       --primary-dark: #a34535;
       --accent: #d9a85a;
-      --text: #e8ddd4;
-      --text-light: #9a8e85;
-      --border: #3d332e;
+      --text: #cdc4bb;
+      --text-muted: #7a716a;
       --white: #f5f0eb;
+      --border: rgba(245, 240, 235, 0.06);
       --font-display: 'Playfair Display', Georgia, serif;
       --font-body: 'Inter', system-ui, sans-serif;
-      --radius: 12px;
-      --shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-      --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.3);
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: var(--font-body);
       background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.7;
+      font-size: 17px;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
-    a {
-      color: var(--accent);
-      text-decoration: none;
-      transition: color 200ms ease;
+    /* Noise texture overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
 
-    a:hover {
-      color: var(--white);
+    a { color: var(--accent); text-decoration: none; }
+
+    /* ── SCROLL ANIMATIONS ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     /* ── HEADER ── */
@@ -75,42 +77,36 @@
       left: 0;
       right: 0;
       z-index: 100;
-      padding: 16px 24px;
-      background: rgba(28, 22, 20, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      padding: 18px 32px;
+      background: rgba(14, 11, 10, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .site-header .logo {
-      height: 36px;
-      width: auto;
-    }
+    .site-header .logo { height: 32px; width: auto; }
 
     .header-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 24px;
-      background: var(--primary);
-      color: var(--white);
+      padding: 10px 28px;
+      background: var(--white);
+      color: var(--bg);
       font-family: var(--font-body);
       font-size: 14px;
       font-weight: 600;
       border: none;
-      border-radius: 8px;
+      border-radius: 100px;
       cursor: pointer;
-      transition: background 200ms ease, transform 200ms ease;
+      transition: transform 200ms ease, box-shadow 200ms ease;
       text-decoration: none;
     }
 
     .header-cta:hover {
-      background: var(--primary-dark);
-      color: var(--white);
       transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(245, 240, 235, 0.15);
+      color: var(--bg);
     }
 
     /* ── HERO ── */
@@ -121,7 +117,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 120px 24px 80px;
+      padding: 140px 32px 100px;
       position: relative;
       overflow: hidden;
     }
@@ -129,52 +125,62 @@
     .hero::before {
       content: '';
       position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse at 30% 20%, rgba(196, 96, 75, 0.12) 0%, transparent 60%),
-        radial-gradient(ellipse at 70% 80%, rgba(217, 168, 90, 0.08) 0%, transparent 60%);
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(196, 96, 75, 0.08) 0%, transparent 70%);
       pointer-events: none;
     }
 
     .hero-logo {
-      width: clamp(280px, 40vw, 440px);
+      width: clamp(260px, 35vw, 400px);
       height: auto;
-      margin-bottom: 32px;
+      margin-bottom: 48px;
+      filter: invert(1);
     }
 
     .hero-tagline {
       font-family: var(--font-display);
-      font-size: clamp(18px, 3vw, 24px);
+      font-size: clamp(16px, 2vw, 20px);
       font-style: italic;
-      color: var(--text-light);
-      margin-bottom: 16px;
-      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      letter-spacing: 2px;
     }
 
     .hero-headline {
       font-family: var(--font-display);
-      font-size: clamp(32px, 5vw, 56px);
+      font-size: clamp(36px, 5.5vw, 64px);
       font-weight: 700;
-      line-height: 1.15;
+      line-height: 1.1;
       color: var(--white);
-      max-width: 720px;
-      margin-bottom: 24px;
+      max-width: 700px;
+      margin-bottom: 28px;
     }
 
     .hero-sub {
-      font-size: clamp(16px, 2vw, 20px);
-      color: var(--text-light);
-      max-width: 560px;
-      margin-bottom: 48px;
+      font-size: clamp(16px, 1.8vw, 19px);
+      color: var(--text-muted);
+      max-width: 480px;
+      margin-bottom: 56px;
       line-height: 1.7;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
     }
 
     .store-badges {
       display: flex;
-      gap: 16px;
+      gap: 14px;
       flex-wrap: wrap;
       justify-content: center;
-      margin-bottom: 48px;
     }
 
     .store-badge {
@@ -182,125 +188,249 @@
       align-items: center;
       gap: 12px;
       padding: 14px 28px;
-      background: var(--card);
+      background: rgba(245, 240, 235, 0.05);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: 100px;
       color: var(--white);
       font-weight: 600;
-      font-size: 16px;
-      transition: border-color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+      transition: background 200ms ease, transform 200ms ease;
       text-decoration: none;
     }
 
     .store-badge:hover {
-      border-color: var(--accent);
+      background: rgba(245, 240, 235, 0.1);
       transform: translateY(-2px);
-      box-shadow: var(--shadow);
       color: var(--white);
     }
 
-    .store-badge svg {
-      width: 28px;
-      height: 28px;
-      flex-shrink: 0;
-    }
+    .store-badge svg { width: 24px; height: 24px; flex-shrink: 0; }
 
-    .store-badge-text {
-      display: flex;
-      flex-direction: column;
-      text-align: left;
-    }
+    .store-badge-text { display: flex; flex-direction: column; text-align: left; }
+    .store-badge-text small { font-size: 10px; font-weight: 400; color: var(--text-muted); line-height: 1; }
+    .store-badge-text span { font-size: 16px; font-weight: 600; line-height: 1.3; }
 
-    .store-badge-text small {
-      font-size: 11px;
-      font-weight: 400;
-      color: var(--text-light);
-      line-height: 1;
-    }
-
-    .store-badge-text span {
-      font-size: 17px;
-      font-weight: 600;
-      line-height: 1.2;
-    }
-
-    .hero-price {
+    .hero-note {
       font-size: 14px;
-      color: var(--text-light);
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
     }
 
-    .hero-price strong {
+    .hero-note strong {
       color: var(--accent);
       font-weight: 600;
     }
 
-    /* ── SECTION COMMON ── */
-    section {
-      padding: 100px 24px;
+    /* ── SHARED ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
     }
 
-    .section-label {
+    .eyebrow {
       font-family: var(--font-body);
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       letter-spacing: 3px;
       text-transform: uppercase;
       color: var(--primary);
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
 
     .section-title {
       font-family: var(--font-display);
-      font-size: clamp(28px, 4vw, 44px);
+      font-size: clamp(30px, 4.5vw, 48px);
       font-weight: 700;
       color: var(--white);
-      margin-bottom: 16px;
-      line-height: 1.2;
+      line-height: 1.15;
+      margin-bottom: 20px;
     }
 
-    .section-subtitle {
-      font-size: clamp(16px, 2vw, 18px);
-      color: var(--text-light);
-      max-width: 600px;
+    .section-sub {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 520px;
       line-height: 1.7;
     }
 
-    .section-header {
-      text-align: center;
-      max-width: 720px;
-      margin: 0 auto 64px;
+    /* ── FULL-BLEED PHOTO ── */
+    .photo-break {
+      width: 100%;
+      height: 50vh;
+      min-height: 320px;
+      max-height: 500px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .photo-break img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+    }
+
+    .photo-break::before,
+    .photo-break::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 120px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .photo-break::before {
+      top: 0;
+      background: linear-gradient(to bottom, var(--bg), transparent);
+    }
+
+    .photo-break::after {
+      bottom: 0;
+      background: linear-gradient(to top, var(--bg), transparent);
+    }
+
+    /* ── FEATURE SECTIONS (one per viewport) ── */
+    .feature-section {
+      padding: 160px 0;
+    }
+
+    .feature-row {
+      display: flex;
+      align-items: center;
+      gap: 80px;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    .feature-row.reverse { flex-direction: row-reverse; }
+
+    .feature-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .feature-text h2 {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 3.5vw, 40px);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .feature-text p {
+      color: var(--text);
+      font-size: 17px;
+      line-height: 1.75;
+      margin-bottom: 16px;
+    }
+
+    .feature-text .pro-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(217, 168, 90, 0.12);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border-radius: 4px;
+    }
+
+    .feature-device {
+      flex: 0 0 auto;
+      position: relative;
+    }
+
+    .phone-mockup {
+      width: 260px;
+      border-radius: 32px;
+      overflow: hidden;
+      border: 3px solid rgba(245, 240, 235, 0.08);
+      aspect-ratio: 9 / 19.5;
+      box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(245, 240, 235, 0.03);
+      transform: perspective(1200px) rotateY(-4deg) rotateX(1deg);
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      z-index: 1;
+    }
+
+    .phone-mockup:hover {
+      transform: perspective(1200px) rotateY(0deg) rotateX(0deg);
+    }
+
+    .phone-mockup img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    /* Glow behind device */
+    .feature-device::before {
+      content: '';
+      position: absolute;
+      top: 10%;
+      left: -20%;
+      right: -20%;
+      bottom: 10%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(196, 96, 75, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .phone-mockup.tilt-right {
+      transform: perspective(1200px) rotateY(4deg) rotateX(1deg);
+    }
+
+    .phone-mockup.tilt-right:hover {
+      transform: perspective(1200px) rotateY(0deg) rotateX(0deg);
     }
 
     /* ── STYLES SHOWCASE ── */
     .styles-section {
-      background: var(--bg-alt);
+      padding: 160px 0;
+      text-align: center;
+    }
+
+    .styles-header {
+      max-width: 600px;
+      margin: 0 auto 72px;
+      padding: 0 32px;
     }
 
     .styles-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 16px;
-      max-width: 900px;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+      max-width: 1100px;
       margin: 0 auto;
+      padding: 0 32px;
     }
 
     .style-card {
       position: relative;
-      border-radius: var(--radius);
       overflow: hidden;
       aspect-ratio: 1;
-      cursor: default;
     }
 
     .style-card img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 400ms ease;
+      transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+      filter: brightness(0.7);
     }
 
     .style-card:hover img {
-      transform: scale(1.05);
+      transform: scale(1.08);
+      filter: brightness(1);
     }
 
     .style-card-label {
@@ -308,156 +438,68 @@
       bottom: 0;
       left: 0;
       right: 0;
-      padding: 12px;
-      background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+      padding: 16px 12px 12px;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
       font-family: var(--font-display);
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--white);
+      letter-spacing: 0.5px;
+      opacity: 0;
+      transition: opacity 300ms ease;
     }
+
+    .style-card:hover .style-card-label { opacity: 1; }
 
     .styles-note {
-      text-align: center;
-      margin-top: 32px;
-      color: var(--text-light);
+      margin-top: 40px;
+      color: var(--text-muted);
       font-size: 15px;
+      padding: 0 32px;
     }
 
-    /* ── APP SCREENSHOTS ── */
-    .screenshots-section {
-      overflow: hidden;
-    }
-
-    .screenshots-scroll {
-      display: flex;
-      gap: 32px;
-      justify-content: center;
-      align-items: flex-start;
-      max-width: 1200px;
+    /* ── PULL QUOTE ── */
+    .pull-quote {
+      padding: 120px 32px;
+      text-align: center;
+      max-width: 800px;
       margin: 0 auto;
-      padding: 0 24px;
     }
 
-    .screenshot-item {
-      flex: 0 0 auto;
-      text-align: center;
-      max-width: 240px;
-    }
-
-    .phone-frame {
-      position: relative;
-      width: 220px;
-      border-radius: 28px;
-      overflow: hidden;
-      border: 3px solid var(--border);
-      box-shadow: var(--shadow-lg);
-      background: var(--card);
-      aspect-ratio: 9 / 19.5;
-    }
-
-    .phone-frame img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: top;
-    }
-
-    .phone-frame .placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-light);
-      font-size: 13px;
-      text-align: center;
-      padding: 20px;
-      background: var(--bg-alt);
-    }
-
-    .screenshot-caption {
-      margin-top: 16px;
+    .pull-quote blockquote {
       font-family: var(--font-display);
-      font-size: 16px;
-      font-weight: 700;
+      font-size: clamp(24px, 3.5vw, 36px);
+      font-style: italic;
       color: var(--white);
+      line-height: 1.4;
+      margin-bottom: 24px;
     }
 
-    .screenshot-caption-sub {
-      font-size: 13px;
-      color: var(--text-light);
-      margin-top: 4px;
-    }
-
-    /* ── PHOTO BANNER ── */
-    .photo-banner {
-      width: 100%;
-      height: 360px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .photo-banner img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center 40%;
-    }
-
-    .photo-banner .placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--bg-alt);
-      color: var(--text-light);
+    .pull-quote cite {
+      font-style: normal;
       font-size: 14px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
     }
 
-    .photo-banner::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        to bottom,
-        rgba(28, 22, 20, 0.3) 0%,
-        transparent 30%,
-        transparent 70%,
-        rgba(28, 22, 20, 0.3) 100%
-      );
-      pointer-events: none;
+    /* ── VALUE PROPS (compact row) ── */
+    .values-section {
+      padding: 120px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
 
-    /* ── FEATURES ── */
-    .features-grid {
+    .values-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 32px;
-      max-width: 1000px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 48px;
+      max-width: 900px;
       margin: 0 auto;
+      padding: 0 32px;
+      text-align: center;
     }
 
-    .feature-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 36px 28px;
-      transition: border-color 200ms ease, transform 200ms ease;
-    }
-
-    .feature-card:hover {
-      border-color: var(--primary);
-      transform: translateY(-4px);
-    }
-
-    .feature-icon {
-      font-size: 36px;
-      margin-bottom: 20px;
-      display: block;
-    }
-
-    .feature-card h3 {
+    .value-item h3 {
       font-family: var(--font-display);
       font-size: 22px;
       font-weight: 700;
@@ -465,100 +507,48 @@
       margin-bottom: 12px;
     }
 
-    .feature-card p {
-      color: var(--text-light);
+    .value-item p {
+      color: var(--text-muted);
       font-size: 15px;
-      line-height: 1.65;
-    }
-
-    .feature-card .pro-tag {
-      display: inline-block;
-      padding: 3px 10px;
-      background: rgba(217, 168, 90, 0.15);
-      color: var(--accent);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      border-radius: 4px;
-      margin-top: 16px;
-    }
-
-    /* ── WHY SECTION ── */
-    .why-section {
-      background: var(--bg-alt);
-    }
-
-    .why-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 32px;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    .why-item {
-      text-align: center;
-      padding: 32px 24px;
-    }
-
-    .why-icon {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 20px;
-      background: rgba(196, 96, 75, 0.12);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-    }
-
-    .why-item h3 {
-      font-family: var(--font-display);
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--white);
-      margin-bottom: 10px;
-    }
-
-    .why-item p {
-      color: var(--text-light);
-      font-size: 15px;
-      line-height: 1.65;
+      line-height: 1.7;
     }
 
     /* ── PRICING ── */
     .pricing-section {
+      padding: 160px 0;
       text-align: center;
     }
 
-    .pricing-card {
-      max-width: 440px;
-      margin: 0 auto;
-      background: var(--card);
-      border: 2px solid var(--accent);
-      border-radius: var(--radius);
-      padding: 48px 36px;
-      box-shadow: 0 0 60px rgba(217, 168, 90, 0.08);
+    .pricing-header {
+      max-width: 500px;
+      margin: 0 auto 64px;
+      padding: 0 32px;
     }
 
-    .pricing-badge {
-      display: inline-block;
-      padding: 4px 14px;
-      background: rgba(217, 168, 90, 0.15);
-      color: var(--accent);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      border-radius: 4px;
-      margin-bottom: 24px;
+    .pricing-card {
+      max-width: 420px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 56px 40px;
+      position: relative;
+    }
+
+    .pricing-card::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 30%;
+      right: 30%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      border-radius: 2px;
     }
 
     .pricing-price {
       font-family: var(--font-display);
-      font-size: 56px;
+      font-size: 64px;
       font-weight: 700;
       color: var(--white);
       line-height: 1;
@@ -566,61 +556,87 @@
     }
 
     .pricing-price-note {
-      color: var(--text-light);
+      color: var(--text-muted);
       font-size: 16px;
-      margin-bottom: 32px;
+      margin-bottom: 40px;
     }
 
     .pricing-features {
       list-style: none;
       text-align: left;
-      margin-bottom: 36px;
+      margin-bottom: 40px;
     }
 
     .pricing-features li {
-      padding: 10px 0;
+      padding: 12px 0;
       border-bottom: 1px solid var(--border);
       color: var(--text);
-      font-size: 15px;
+      font-size: 16px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
-    .pricing-features li:last-child {
-      border-bottom: none;
-    }
+    .pricing-features li:last-child { border-bottom: none; }
 
     .pricing-check {
       color: var(--accent);
       font-weight: 700;
-      font-size: 16px;
+      font-size: 14px;
       flex-shrink: 0;
+    }
+
+    .pricing-cta {
+      display: inline-block;
+      padding: 16px 48px;
+      background: var(--white);
+      color: var(--bg);
+      font-family: var(--font-body);
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 100px;
+      transition: transform 200ms ease, box-shadow 200ms ease;
+      text-decoration: none;
+    }
+
+    .pricing-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(245, 240, 235, 0.12);
+      color: var(--bg);
     }
 
     .pricing-trial {
       margin-top: 20px;
-      color: var(--text-light);
+      color: var(--text-muted);
       font-size: 14px;
     }
 
-    /* ── CTA SECTION ── */
+    /* ── FINAL CTA ── */
     .cta-section {
-      background: var(--bg-alt);
+      padding: 160px 0;
       text-align: center;
+      position: relative;
     }
 
-    .cta-section .section-title {
-      margin-bottom: 24px;
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(217, 168, 90, 0.06) 0%, transparent 70%);
+      pointer-events: none;
     }
 
-    .cta-section .section-subtitle {
-      margin: 0 auto 48px;
-    }
+    .cta-section .section-title { margin-bottom: 16px; }
+    .cta-section .section-sub { margin: 0 auto 48px; text-align: center; }
 
     .cta-stores {
       display: flex;
-      gap: 16px;
+      gap: 14px;
       flex-wrap: wrap;
       justify-content: center;
     }
@@ -628,54 +644,71 @@
     /* ── FOOTER ── */
     .site-footer {
       border-top: 1px solid var(--border);
-      padding: 40px 24px;
+      padding: 48px 32px;
       text-align: center;
     }
 
     .footer-links {
       display: flex;
-      gap: 24px;
+      gap: 32px;
       justify-content: center;
       flex-wrap: wrap;
       margin-bottom: 20px;
     }
 
     .footer-links a {
-      color: var(--text-light);
-      font-size: 14px;
+      color: var(--text-muted);
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      transition: color 200ms ease;
     }
 
-    .footer-links a:hover {
-      color: var(--white);
-    }
+    .footer-links a:hover { color: var(--white); }
 
     .footer-copy {
-      color: var(--text-light);
-      font-size: 13px;
+      color: var(--text-muted);
+      font-size: 12px;
+      letter-spacing: 0.5px;
     }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 600px) {
-      .site-header {
-        padding: 12px 16px;
+    @media (max-width: 768px) {
+      .feature-row,
+      .feature-row.reverse {
+        flex-direction: column;
+        gap: 48px;
+        text-align: center;
       }
 
-      .site-header .logo {
-        height: 28px;
+      .feature-device { order: -1; }
+
+      .phone-mockup {
+        width: 220px;
+        transform: none;
       }
 
-      .header-cta {
-        padding: 8px 16px;
-        font-size: 13px;
+      .phone-mockup:hover { transform: none; }
+      .phone-mockup.tilt-right { transform: none; }
+      .phone-mockup.tilt-right:hover { transform: none; }
+
+      .styles-grid {
+        grid-template-columns: repeat(3, 1fr);
       }
 
-      section {
-        padding: 72px 20px;
+      .values-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
       }
 
-      .hero {
-        padding: 100px 20px 60px;
-      }
+      .feature-section { padding: 100px 0; }
+    }
+
+    @media (max-width: 480px) {
+      .site-header { padding: 14px 20px; }
+      .site-header .logo { height: 26px; }
+      .header-cta { padding: 8px 20px; font-size: 13px; }
+
+      .hero { padding: 120px 20px 80px; }
 
       .store-badges {
         flex-direction: column;
@@ -684,48 +717,18 @@
 
       .store-badge {
         width: 100%;
-        max-width: 280px;
+        max-width: 260px;
         justify-content: center;
-      }
-
-      .features-grid {
-        grid-template-columns: 1fr;
       }
 
       .styles-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
       }
 
-      .screenshots-scroll {
-        gap: 20px;
-        justify-content: flex-start;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scroll-snap-type: x mandatory;
-        padding: 0 20px;
-      }
+      .pricing-card { padding: 40px 24px; }
+      .pricing-price { font-size: 52px; }
 
-      .screenshot-item {
-        scroll-snap-align: center;
-      }
-
-      .phone-frame {
-        width: 180px;
-        border-radius: 24px;
-      }
-
-      .photo-banner {
-        height: 240px;
-      }
-
-      .pricing-card {
-        padding: 36px 24px;
-      }
-
-      .pricing-price {
-        font-size: 44px;
-      }
+      .pull-quote { padding: 80px 20px; }
     }
   </style>
 </head>
@@ -739,335 +742,240 @@
 
   <!-- ── HERO ── -->
   <section class="hero">
-    <img src="assets/logos/logo-stacked-light.svg" alt="The Pie Lab" class="hero-logo"
-         style="background:none; filter: invert(1);">
+    <img src="assets/logos/logo-stacked-light.svg" alt="The Pie Lab" class="hero-logo">
     <p class="hero-tagline">Every style. Every crust. Every craving.</p>
-    <h1 class="hero-headline">The most complete pizza-making app ever built.</h1>
+    <h1 class="hero-headline">Master pizza at home.</h1>
     <p class="hero-sub">
-      Precision dough calculator, smart scheduling, a full knowledge hub, and a bake journal —
-      everything you need to make incredible pizza at home.
+      Precision dough calculator, smart scheduling, and a complete knowledge hub — in one app.
     </p>
-    <div class="store-badges">
-      <!-- TODO: Replace # with actual App Store URL when available -->
-      <a href="#" class="store-badge" aria-label="Download on the App Store">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-        <div class="store-badge-text">
-          <small>Download on the</small>
-          <span>App Store</span>
-        </div>
-      </a>
-      <!-- TODO: Replace # with actual Google Play URL when available -->
-      <a href="#" class="store-badge" aria-label="Get it on Google Play">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5v-17c0-.83.52-1.28 1.08-.95l12.68 7.33c.8.46.8 1.78 0 2.24L4.08 19.45c-.56.33-1.08-.12-1.08-.95zM16.5 12L5.27 18.47 16.5 12zm0 0L5.27 5.53 16.5 12z"/><path d="M3.02 3.27L14.25 12 3.02 20.73V3.27zM14.25 12l4.57-2.64L6.34 1.8 14.25 12zm0 0l4.57 2.64L6.34 22.2 14.25 12z"/></svg>
-        <div class="store-badge-text">
-          <small>Get it on</small>
-          <span>Google Play</span>
-        </div>
-      </a>
+    <div class="hero-cta-group">
+      <div class="store-badges">
+        <!-- TODO: Replace # with actual App Store URL -->
+        <a href="#" class="store-badge" aria-label="Download on the App Store">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          <div class="store-badge-text">
+            <small>Download on the</small>
+            <span>App Store</span>
+          </div>
+        </a>
+        <!-- TODO: Replace # with actual Google Play URL -->
+        <a href="#" class="store-badge" aria-label="Get it on Google Play">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5v-17c0-.83.52-1.28 1.08-.95l12.68 7.33c.8.46.8 1.78 0 2.24L4.08 19.45c-.56.33-1.08-.12-1.08-.95z"/><path d="M3.02 3.27L14.25 12 3.02 20.73V3.27zM14.25 12l4.57-2.64L6.34 1.8 14.25 12zm0 0l4.57 2.64L6.34 22.2 14.25 12z"/></svg>
+          <div class="store-badge-text">
+            <small>Get it on</small>
+            <span>Google Play</span>
+          </div>
+        </a>
+      </div>
+      <p class="hero-note">Free to download &middot; <strong>14-day full trial</strong> &middot; $4.99 to unlock Pro</p>
     </div>
-    <p class="hero-price">Free to download &middot; <strong>14-day full trial</strong> &middot; Pro unlocks for $4.99</p>
+  </section>
+
+  <!-- ── PHOTO BREAK: CHEESE PULL ── -->
+  <div class="photo-break">
+    <!-- TODO: Save cheese-pull photo as screenshots/cheese-pull.jpg -->
+    <img src="screenshots/cheese-pull.jpg" alt="Fresh pizza with cheese pull" loading="lazy">
+  </div>
+
+  <!-- ── FEATURE 1: CALCULATOR ── -->
+  <section class="feature-section">
+    <div class="feature-row reveal">
+      <div class="feature-text">
+        <p class="eyebrow">Precision Calculator</p>
+        <h2>Every gram calculated.<br>Every style covered.</h2>
+        <p>
+          Select your pizza style, pick your size, set your count. Get exact weights for flour, water,
+          salt, oil, sugar, and yeast — with baker's percentages calculated automatically.
+        </p>
+        <p>12 styles. All yeast types. Sauce and topping quantities included.</p>
+      </div>
+      <div class="feature-device">
+        <!-- TODO: Save calculator results screenshot as screenshots/calculator.png -->
+        <div class="phone-mockup">
+          <img src="screenshots/calculator.png" alt="Calculator showing Neapolitan dough recipe">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURE 2: JOURNAL ── -->
+  <section class="feature-section" style="background: var(--bg-alt);">
+    <div class="feature-row reverse reveal">
+      <div class="feature-text">
+        <p class="eyebrow">Bake Journal</p>
+        <h2>Track every bake.<br>See yourself improve.</h2>
+        <p>
+          Log bakes with photos, star ratings, and a full dough snapshot — hydration, salt, oven temp,
+          bake time. Compare bakes side-by-side and watch your stats evolve.
+        </p>
+      </div>
+      <div class="feature-device">
+        <!-- TODO: Save journal entry screenshot as screenshots/journal.png -->
+        <div class="phone-mockup tilt-right">
+          <img src="screenshots/journal.png" alt="Bake journal entry with 5-star rating">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURE 3: TIPS ── -->
+  <section class="feature-section">
+    <div class="feature-row reveal">
+      <div class="feature-text">
+        <p class="eyebrow">Knowledge Hub</p>
+        <h2>Real guidance.<br>Not generic tips.</h2>
+        <p>
+          Deep-dive guides on every style, flour type, cheese pairing, oven setup, and fermentation
+          schedule. Skill-level tips that adapt from beginner to pro.
+        </p>
+      </div>
+      <div class="feature-device">
+        <!-- TODO: Save baking tips screenshot as screenshots/tips.png -->
+        <div class="phone-mockup">
+          <img src="screenshots/tips.png" alt="Baking tips with skill level slider">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURE 4: CALCULATOR FORM ── -->
+  <section class="feature-section" style="background: var(--bg-alt);">
+    <div class="feature-row reverse reveal">
+      <div class="feature-text">
+        <p class="eyebrow">Smart Scheduling</p>
+        <h2>Tell us when you eat.<br>We plan the rest.</h2>
+        <p>
+          Plan My Bake builds a step-by-step schedule backwards from your mealtime — mix, bulk
+          ferment, ball, proof, bake — with exact times for every step. Dynamic yeast scaling
+          adjusts for your fermentation time and temperature.
+        </p>
+        <span class="pro-badge">Pro Feature</span>
+      </div>
+      <div class="feature-device">
+        <!-- TODO: Save calculator form screenshot as screenshots/calculator-form.png -->
+        <div class="phone-mockup tilt-right">
+          <img src="screenshots/calculator-form.png" alt="Build Your Recipe calculator form">
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ── PIZZA STYLES ── -->
   <section class="styles-section">
-    <div class="section-header">
-      <p class="section-label">Master Any Style</p>
-      <h2 class="section-title">12 pizza styles. One app.</h2>
-      <p class="section-subtitle">
-        From 90-second Neapolitans to 48-hour cold-ferment Detroit pans — The Pie Lab has
-        precision recipes, techniques, and science for every single one.
+    <div class="styles-header reveal">
+      <p class="eyebrow">Master Any Style</p>
+      <h2 class="section-title">12 styles. One app.</h2>
+      <p class="section-sub" style="margin: 0 auto;">
+        From 90-second Neapolitans to 48-hour cold-ferment Detroit pans.
       </p>
     </div>
-    <div class="styles-grid">
+    <div class="styles-grid reveal">
       <div class="style-card">
-        <img src="assets/images/Neapolitan.webp" alt="Neapolitan pizza" loading="lazy">
+        <img src="assets/images/Neapolitan.webp" alt="Neapolitan" loading="lazy">
         <div class="style-card-label">Neapolitan</div>
       </div>
       <div class="style-card">
-        <img src="assets/images/New-York.webp" alt="New York pizza" loading="lazy">
+        <img src="assets/images/New-York.webp" alt="New York" loading="lazy">
         <div class="style-card-label">New York</div>
       </div>
       <div class="style-card">
-        <img src="assets/images/Chicago-Tavern.webp" alt="Chicago Tavern pizza" loading="lazy">
+        <img src="assets/images/Chicago-Tavern.webp" alt="Chicago Tavern" loading="lazy">
         <div class="style-card-label">Chicago Tavern</div>
       </div>
       <div class="style-card">
-        <img src="assets/images/Grandma.webp" alt="Grandma pizza" loading="lazy">
+        <img src="assets/images/Grandma.webp" alt="Grandma" loading="lazy">
         <div class="style-card-label">Grandma</div>
       </div>
       <div class="style-card">
-        <img src="assets/images/Sicilian.webp" alt="Sicilian pizza" loading="lazy">
+        <img src="assets/images/Sicilian.webp" alt="Sicilian" loading="lazy">
         <div class="style-card-label">Sicilian</div>
       </div>
       <div class="style-card">
-        <img src="assets/images/Ohio-Valley.webp" alt="Ohio Valley pizza" loading="lazy">
+        <img src="assets/images/Ohio-Valley.webp" alt="Ohio Valley" loading="lazy">
         <div class="style-card-label">Ohio Valley</div>
       </div>
     </div>
-    <p class="styles-note">Plus Detroit, Thin &amp; Crispy, Pan, St. Louis, New Haven, and Cast Iron.</p>
+    <p class="styles-note reveal">Plus Detroit, Thin &amp; Crispy, Pan, St. Louis, New Haven, and Cast Iron.</p>
   </section>
 
-  <!-- ── APP SCREENSHOTS ── -->
-  <section class="screenshots-section">
-    <div class="section-header">
-      <p class="section-label">See It In Action</p>
-      <h2 class="section-title">Designed for your kitchen counter.</h2>
-      <p class="section-subtitle">
-        Clean, focused, flour-friendly. Every screen built for mid-bake use.
-      </p>
-    </div>
-    <div class="screenshots-scroll">
-
-      <!-- SLOT 1: Calculator form — "Build Your Recipe" with Neapolitan selected -->
-      <div class="screenshot-item">
-        <div class="phone-frame">
-          <!-- TODO: Save your "Build Your Recipe" calculator form screenshot as screenshots/calculator-form.png -->
-          <img src="screenshots/calculator-form.png" alt="Recipe Calculator — Build Your Recipe">
-        </div>
-        <p class="screenshot-caption">Build Your Recipe</p>
-        <p class="screenshot-caption-sub">Select style, size &amp; count</p>
-      </div>
-
-      <!-- SLOT 2: Calculator results — "Neapolitan — 1 pizza" with dough & sauce tables -->
-      <div class="screenshot-item">
-        <div class="phone-frame">
-          <!-- TODO: Save your calculator results screenshot as screenshots/calculator.png -->
-          <img src="screenshots/calculator.png" alt="Calculator Results — Dough & Sauce">
-        </div>
-        <p class="screenshot-caption">Exact Weights</p>
-        <p class="screenshot-caption-sub">Dough, sauce &amp; toppings</p>
-      </div>
-
-      <!-- SLOT 3: Bake journal entry — "Sunday" Neapolitan 5-star with dough snapshot -->
-      <div class="screenshot-item">
-        <div class="phone-frame">
-          <!-- TODO: Save your journal bake detail screenshot as screenshots/journal.png -->
-          <img src="screenshots/journal.png" alt="Bake Journal Entry — Sunday Neapolitan">
-        </div>
-        <p class="screenshot-caption">Track Every Bake</p>
-        <p class="screenshot-caption-sub">Photos, ratings &amp; dough data</p>
-      </div>
-
-      <!-- SLOT 4: Baking tips — intermediate tips with "Start Bake Timer" -->
-      <div class="screenshot-item">
-        <div class="phone-frame">
-          <!-- TODO: Save your baking tips screenshot as screenshots/tips.png -->
-          <img src="screenshots/tips.png" alt="Baking Tips — Intermediate Level">
-        </div>
-        <p class="screenshot-caption">Expert Guidance</p>
-        <p class="screenshot-caption-sub">Tips for every skill level</p>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ── PHOTO BANNER ── -->
-  <div class="photo-banner">
-    <!-- TODO: Save your cheese-pull photo as screenshots/cheese-pull.jpg -->
-    <img src="screenshots/cheese-pull.jpg" alt="Fresh pizza with cheese pull" loading="lazy">
+  <!-- ── PULL QUOTE ── -->
+  <div class="pull-quote reveal">
+    <blockquote>&ldquo;Not a recipe blog. Not a timer. A complete pizza-making system.&rdquo;</blockquote>
+    <cite>Built by obsessive home bakers</cite>
   </div>
 
-  <!-- ── FEATURES ── -->
-  <section class="features-section">
-    <div class="section-header">
-      <p class="section-label">Everything You Need</p>
-      <h2 class="section-title">Built for people who actually make pizza.</h2>
-      <p class="section-subtitle">
-        Not a recipe blog. Not a timer. A complete pizza-making system designed by obsessive home bakers.
-      </p>
-    </div>
-    <div class="features-grid">
-      <div class="feature-card">
-        <span class="feature-icon" aria-hidden="true">&#x1F9EE;</span>
-        <h3>Precision Dough Calculator</h3>
-        <p>
-          Select your style, pick your size, set your count. Get exact weights for flour, water,
-          salt, oil, sugar, and yeast — down to the gram. Baker's percentages calculated automatically.
-          Supports all yeast types with accurate scaling.
-        </p>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon" aria-hidden="true">&#x1F4C5;</span>
-        <h3>Smart Dough Scheduler</h3>
-        <p>
-          Tell us when you want to eat. We'll build a step-by-step schedule backwards from your mealtime —
-          mix, bulk ferment, ball, proof, bake — with exact times for every step.
-        </p>
-        <span class="pro-tag">Pro</span>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon" aria-hidden="true">&#x1F4D4;</span>
-        <h3>Bake Journal &amp; Analytics</h3>
-        <p>
-          Log every bake with photos, ratings, dough snapshots, and notes. Track your progress with
-          analytics, compare bakes side-by-side, and see your stats evolve over time.
-        </p>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon" aria-hidden="true">&#x1F4DA;</span>
-        <h3>Full Knowledge Hub</h3>
-        <p>
-          Deep-dive guides on every pizza style, flour type, cheese pairing, sauce recipe, and oven setup.
-          Not surface-level tips — real knowledge from the pizza community.
-        </p>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon" aria-hidden="true">&#x1F321;&#xFE0F;</span>
-        <h3>Fermentation Tuning</h3>
-        <p>
-          Dial in your fermentation by adjusting time, temperature, and yeast type. The app dynamically
-          recalculates yeast amounts so your dough is perfectly proofed — not over, not under.
-        </p>
-        <span class="pro-tag">Pro</span>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon" aria-hidden="true">&#x1F3C6;</span>
-        <h3>Pizza Passport &amp; Badges</h3>
-        <p>
-          Collect style badges as you master each pizza type. Your passport tracks which styles
-          you've conquered and celebrates your progress as a home pizzaiolo.
-        </p>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon" aria-hidden="true">&#x1F527;</span>
-        <h3>Troubleshooting Tree</h3>
-        <p>
-          Dough too sticky? Crust not browning? Walk through an interactive decision tree that
-          diagnoses your problem and gives you a specific fix — not a generic blog post.
-        </p>
-        <span class="pro-tag">Pro</span>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon" aria-hidden="true">&#x1F4BE;</span>
-        <h3>Custom Dough Profiles</h3>
-        <p>
-          Save your perfected hydration, salt, oil, and yeast ratios as named profiles.
-          Load them instantly for any future bake. Your recipes, your way.
-        </p>
-        <span class="pro-tag">Pro</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── WHY THE PIE LAB ── -->
-  <section class="why-section">
-    <div class="section-header">
-      <p class="section-label">Why Us</p>
-      <h2 class="section-title">What makes The Pie Lab different?</h2>
-      <p class="section-subtitle">
-        Every other pizza app does one thing. We do everything — and we do it better.
-      </p>
-    </div>
-    <div class="why-grid">
-      <div class="why-item">
-        <div class="why-icon">&#x1F3AF;</div>
-        <h3>Precision, Not Guessing</h3>
-        <p>
-          Other apps give you a generic recipe. The Pie Lab calculates exact weights based on
-          your style, size, count, hydration, and fermentation method. Every gram matters.
-        </p>
-      </div>
-      <div class="why-item">
-        <div class="why-icon">&#x1F4F1;</div>
+  <!-- ── VALUE PROPS ── -->
+  <section class="values-section">
+    <div class="values-grid reveal">
+      <div class="value-item">
         <h3>Fully Offline</h3>
-        <p>
-          All your data stays on your device. No account required. No cloud sync. No tracking.
-          The app works completely offline — your kitchen, your data, your privacy.
-        </p>
+        <p>All data stays on your device. No account. No cloud. No tracking. Works without internet.</p>
       </div>
-      <div class="why-item">
-        <div class="why-icon">&#x1F4B0;</div>
+      <div class="value-item">
         <h3>One Price. Forever.</h3>
-        <p>
-          No subscriptions. No recurring fees. Pay $4.99 once and unlock every Pro feature permanently.
-          Free users still get a powerful calculator and full knowledge hub.
-        </p>
+        <p>$4.99 once. No subscriptions. No recurring fees. Every Pro feature unlocked permanently.</p>
       </div>
-      <div class="why-item">
-        <div class="why-icon">&#x1F3D7;&#xFE0F;</div>
+      <div class="value-item">
         <h3>Actually Complete</h3>
-        <p>
-          Calculator + scheduler + journal + analytics + knowledge base + troubleshooting +
-          fermentation science — all in one app. No juggling five different tools.
-        </p>
-      </div>
-      <div class="why-item">
-        <div class="why-icon">&#x1F370;</div>
-        <h3>12 Styles Deep</h3>
-        <p>
-          Not just Neapolitan and "everything else." We have dedicated recipes, techniques,
-          and science for 12 distinct pizza styles — from New Haven coal-fired to Ohio Valley cold cheese.
-        </p>
-      </div>
-      <div class="why-item">
-        <div class="why-icon">&#x1F9EA;</div>
-        <h3>Real Fermentation Science</h3>
-        <p>
-          Desired Dough Temperature calculator, dynamic yeast scaling by time and temperature,
-          preferment support (poolish &amp; biga). The science your dough deserves.
-        </p>
+        <p>Calculator, scheduler, journal, analytics, knowledge base, troubleshooting — all in one app.</p>
       </div>
     </div>
   </section>
 
   <!-- ── PRICING ── -->
   <section class="pricing-section" id="pricing">
-    <div class="section-header">
-      <p class="section-label">Simple Pricing</p>
+    <div class="pricing-header reveal">
+      <p class="eyebrow">Simple Pricing</p>
       <h2 class="section-title">No subscriptions. Ever.</h2>
-      <p class="section-subtitle">
-        Start with a free 14-day trial of every feature. Then unlock Pro permanently for the price of a pizza topping.
+      <p class="section-sub" style="margin: 0 auto;">
+        Less than the cost of a single pizza delivery.
       </p>
     </div>
-    <div class="pricing-card">
-      <span class="pricing-badge">Pro — Lifetime</span>
+    <div class="pricing-card reveal">
       <div class="pricing-price">$4.99</div>
-      <p class="pricing-price-note">One-time purchase. No subscription.</p>
+      <p class="pricing-price-note">One-time purchase. Unlock everything.</p>
       <ul class="pricing-features">
         <li><span class="pricing-check">&#10003;</span> Precision Dough Calculator</li>
         <li><span class="pricing-check">&#10003;</span> Smart Dough Scheduler</li>
-        <li><span class="pricing-check">&#10003;</span> Plan My Bake (reverse scheduling)</li>
         <li><span class="pricing-check">&#10003;</span> Fermentation Tuning &amp; DDT Calculator</li>
         <li><span class="pricing-check">&#10003;</span> Bake Journal with Photos &amp; Analytics</li>
-        <li><span class="pricing-check">&#10003;</span> Compare Bakes Side-by-Side</li>
         <li><span class="pricing-check">&#10003;</span> Custom Dough Profiles &amp; Preferments</li>
-        <li><span class="pricing-check">&#10003;</span> Interactive Troubleshooting Tree</li>
-        <li><span class="pricing-check">&#10003;</span> Full Knowledge Hub &amp; Style Library</li>
-        <li><span class="pricing-check">&#10003;</span> Pizza Passport &amp; Badges</li>
-        <li><span class="pricing-check">&#10003;</span> 100% Offline &amp; Private</li>
+        <li><span class="pricing-check">&#10003;</span> Full Knowledge Hub &amp; 12 Pizza Styles</li>
       </ul>
+      <a href="#download" class="pricing-cta">Download Free</a>
       <p class="pricing-trial">14-day free trial &middot; No credit card required</p>
     </div>
   </section>
 
   <!-- ── FINAL CTA ── -->
   <section class="cta-section" id="download">
-    <h2 class="section-title">Ready to make better pizza?</h2>
-    <p class="section-subtitle">
-      Download The Pie Lab free and start your 14-day trial today.
-    </p>
-    <div class="cta-stores">
-      <a href="#" class="store-badge" aria-label="Download on the App Store">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-        <div class="store-badge-text">
-          <small>Download on the</small>
-          <span>App Store</span>
-        </div>
-      </a>
-      <a href="#" class="store-badge" aria-label="Get it on Google Play">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5v-17c0-.83.52-1.28 1.08-.95l12.68 7.33c.8.46.8 1.78 0 2.24L4.08 19.45c-.56.33-1.08-.12-1.08-.95zM16.5 12L5.27 18.47 16.5 12zm0 0L5.27 5.53 16.5 12z"/><path d="M3.02 3.27L14.25 12 3.02 20.73V3.27zM14.25 12l4.57-2.64L6.34 1.8 14.25 12zm0 0l4.57 2.64L6.34 22.2 14.25 12z"/></svg>
-        <div class="store-badge-text">
-          <small>Get it on</small>
-          <span>Google Play</span>
-        </div>
-      </a>
+    <div class="reveal">
+      <h2 class="section-title">Ready to make better pizza?</h2>
+      <p class="section-sub">
+        Download The Pie Lab and start your free trial today.
+      </p>
+      <div class="cta-stores">
+        <a href="#" class="store-badge" aria-label="Download on the App Store">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          <div class="store-badge-text">
+            <small>Download on the</small>
+            <span>App Store</span>
+          </div>
+        </a>
+        <a href="#" class="store-badge" aria-label="Get it on Google Play">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5v-17c0-.83.52-1.28 1.08-.95l12.68 7.33c.8.46.8 1.78 0 2.24L4.08 19.45c-.56.33-1.08-.12-1.08-.95z"/><path d="M3.02 3.27L14.25 12 3.02 20.73V3.27zM14.25 12l4.57-2.64L6.34 1.8 14.25 12zm0 0l4.57 2.64L6.34 22.2 14.25 12z"/></svg>
+          <div class="store-badge-text">
+            <small>Get it on</small>
+            <span>Google Play</span>
+          </div>
+        </a>
+      </div>
     </div>
   </section>
 
   <!-- ── FOOTER ── -->
   <footer class="site-footer">
     <nav class="footer-links">
-      <!-- TODO: Update these to your live legal page URLs -->
       <a href="#privacy">Privacy Policy</a>
       <a href="#terms">Terms of Service</a>
       <a href="#refund">Refund Policy</a>
@@ -1075,6 +983,20 @@
     </nav>
     <p class="footer-copy">&copy; 2026 The Pie Lab. All rights reserved.</p>
   </footer>
+
+  <!-- ── SCROLL REVEAL ── -->
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
 
 </body>
 </html>
