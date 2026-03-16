@@ -1080,8 +1080,8 @@
           <div class="share-guide-option">
             <span class="share-guide-icon">&#127758;</span>
             <div>
-              <strong>Post to r/Pizza</strong>
-              <p>Tap <em>Save to Photos</em>, then upload to Reddit. A caption with your stats is auto-copied.</p>
+              <strong>Post to Social Media</strong>
+              <p>Tap <em>Save to Photos</em>, then upload to your social media account. A caption with your stats is auto-copied.</p>
             </div>
           </div>
           <div class="share-guide-option">
@@ -1726,8 +1726,6 @@
 
   // ── Dough Library ──────────────────────────────────
   const doughLibSection = document.getElementById("dough-library-section");
-  const doughLibToggle = document.getElementById("dough-library-toggle");
-  const doughLibArrow = document.getElementById("dough-library-arrow");
   const doughLibBody = document.getElementById("dough-library-body");
   const doughLibGrid = document.getElementById("dough-library-grid");
   const doughLibEmpty = document.getElementById("dough-library-empty");
@@ -1737,10 +1735,11 @@
     if (!doughLibSection) return;
     const allDoughs = PieLabJournal.getAllProfiles();
     if (allDoughs.length === 0) {
-      doughLibSection.classList.add("hidden");
+      if (doughLibGrid) doughLibGrid.innerHTML = "";
+      if (doughLibEmpty) doughLibEmpty.classList.remove("hidden");
       return;
     }
-    doughLibSection.classList.remove("hidden");
+    if (doughLibEmpty) doughLibEmpty.classList.add("hidden");
 
     // Populate style filter
     const styles = [...new Set(allDoughs.map(d => d.styleKey))];
@@ -1824,15 +1823,37 @@
     });
   }
 
-  if (doughLibToggle) {
-    doughLibToggle.addEventListener("click", () => {
-      doughLibBody.classList.toggle("hidden");
-      doughLibArrow.textContent = doughLibBody.classList.contains("hidden") ? "\u25BC" : "\u25B2";
-    });
-  }
-
   if (doughLibFilter) {
     doughLibFilter.addEventListener("change", renderDoughLibrary);
+  }
+
+  // ── Journal Tabs ─────────────────────────────────
+  const tabBar = document.getElementById("journal-tabs");
+  if (tabBar) {
+    const tabs = tabBar.querySelectorAll(".journal-tab");
+    const panels = document.querySelectorAll(".journal-tab-panel");
+
+    function switchTab(tabName) {
+      tabs.forEach(t => {
+        const isActive = t.dataset.tab === tabName;
+        t.classList.toggle("active", isActive);
+        t.setAttribute("aria-selected", isActive ? "true" : "false");
+      });
+      panels.forEach(p => {
+        p.classList.toggle("active", p.id === "tab-panel-" + tabName);
+      });
+      localStorage.setItem("pielab-journal-tab", tabName);
+    }
+
+    tabs.forEach(t => {
+      t.addEventListener("click", () => switchTab(t.dataset.tab));
+    });
+
+    // Restore saved tab
+    const savedTab = localStorage.getItem("pielab-journal-tab");
+    if (savedTab && document.getElementById("tab-panel-" + savedTab)) {
+      switchTab(savedTab);
+    }
   }
 
   // ── Initialize ────────────────────────────────────

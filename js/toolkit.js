@@ -571,11 +571,21 @@ function populateVolumeConversion() {
     return formatVolume(rawUnits, displayUnit);
   }
 
-  // Build ingredient options sorted alphabetically
-  const ingredients = Object.keys(VOLUME_DENSITIES).sort();
-  const optionsHtml = ingredients
-    .map(name => `<option value="${name}">${name}</option>`)
-    .join("");
+  // Group ingredients by category for dropdown and reference table
+  const INGREDIENT_GROUPS = {
+    "Flour": ["00 Flour", "All-Purpose Flour", "Bread Flour", "Rye Flour", "Semolina Flour", "Whole Wheat Flour"],
+    "Yeast": ["Active Dry Yeast", "Fresh Yeast", "Instant Dry Yeast"],
+    "Liquids & Oils": ["Extra Virgin Olive Oil", "Olive Oil", "Water"],
+    "Seasonings": ["Anchovy Paste", "Dried Basil", "Dried Oregano", "Fresh Basil", "Garlic", "Garlic Powder", "Red Pepper Flakes", "Salt", "Sea Salt", "Sugar"],
+    "Tomatoes": ["Crushed Tomatoes", "San Marzano Tomatoes", "Tomato Paste"],
+    "Cheese": ["Brick Cheese", "Cheddar", "Mozzarella", "Parmesan", "Pecorino Romano", "Provel Cheese", "Provolone"],
+    "Toppings": ["Breadcrumbs", "Butter", "Giardiniera", "Italian Sausage", "Pepperoni"],
+  };
+
+  const optionsHtml = Object.entries(INGREDIENT_GROUPS)
+    .map(([group, items]) =>
+      `<optgroup label="${group}">${items.map(name => `<option value="${name}">${name}</option>`).join("")}</optgroup>`
+    ).join("");
 
   panel.innerHTML = `
     <h3>Volume Conversion</h3>
@@ -600,10 +610,13 @@ function populateVolumeConversion() {
         <h4>Quick Reference</h4>
         <table>
           <thead><tr><th>Ingredient</th><th>Base Unit</th><th>Grams</th></tr></thead>
-          <tbody>${ingredients.map(name => {
-            const d = VOLUME_DENSITIES[name];
-            return `<tr><td>${name}</td><td>1 ${d.unit}</td><td>${d.gPerUnit} g</td></tr>`;
-          }).join("")}</tbody>
+          <tbody>${Object.entries(INGREDIENT_GROUPS).map(([group, items]) =>
+            `<tr class="vol-ref-group"><td colspan="3">${group}</td></tr>` +
+            items.map(name => {
+              const d = VOLUME_DENSITIES[name];
+              return `<tr><td class="vol-ref-indent">${name}</td><td>1 ${d.unit}</td><td>${d.gPerUnit} g</td></tr>`;
+            }).join("")
+          ).join("")}</tbody>
         </table>
       </div>
     </div>
