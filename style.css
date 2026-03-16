@@ -6310,23 +6310,6 @@ body[data-page="kitchen"] main {
 .dough-library-section {
   margin: 0;
 }
-.dough-library-toggle {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  background: var(--clr-surface, #252525);
-  border: none;
-  color: var(--clr-text);
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-.dough-library-arrow {
-  transition: transform 200ms ease;
-  font-size: 0.75rem;
-}
 .dough-library-heading {
   font-family: "Playfair Display", serif;
   font-size: 1.25rem;
