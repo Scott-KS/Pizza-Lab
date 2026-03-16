@@ -672,6 +672,10 @@ document.addEventListener("DOMContentLoaded", () => {
         sugarPct: adjustedRecipe.sugarPct,
         yeastPct: adjustedRecipe.yeastPct,
         doughBallWeight,
+        flourType: adjustedRecipe.flour || null,
+        yeastType: dynamicYeastActive ? (document.getElementById("yeast-type")?.value || "idy") : null,
+        fermentHours: fermentHoursVal || null,
+        fermentTemp: fermentTempVal || null,
       },
       bakeTemp: recipe.idealTemp ? recipe.idealTemp.max : null,
       totalDoughWeight: Math.round(doughBallWeight * numPizzas),
@@ -820,6 +824,15 @@ document.addEventListener("DOMContentLoaded", () => {
       renderDoughTable(dough);
       noteEl.className = "flour-sub-note hidden";
       noteEl.innerHTML = "";
+      // Restore original flour type in stored data
+      try {
+        const stored = JSON.parse(localStorage.getItem("pielab-last-calc") || "{}");
+        if (stored.doughSnapshot) {
+          stored.doughSnapshot.flourType = adjustedRecipe.flour || null;
+          stored.doughSnapshot.hydration = adjustedRecipe.hydration;
+          localStorage.setItem("pielab-last-calc", JSON.stringify(stored));
+        }
+      } catch { /* ignore */ }
       return;
     }
 
@@ -843,6 +856,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const dough = calculateDough(subRecipe, numPizzas, sizeKey);
     lastDough = dough;
     renderDoughTable(dough);
+
+    // Update stored flour type in lastCalcData so journal prefill gets the substitute
+    try {
+      const stored = JSON.parse(localStorage.getItem("pielab-last-calc") || "{}");
+      if (stored.doughSnapshot) {
+        stored.doughSnapshot.flourType = selectedFlour;
+        stored.doughSnapshot.hydration = subRecipe.hydration;
+        localStorage.setItem("pielab-last-calc", JSON.stringify(stored));
+      }
+    } catch { /* ignore */ }
 
     // If Custom mode is active, update the hydration field and save
     const toggle = document.getElementById("settings-mode-toggle");
@@ -1143,6 +1166,17 @@ document.addEventListener("DOMContentLoaded", () => {
           yeastPct: parseFloat(document.getElementById("ps-yeast").value) / 100,
           doughBallWeight: parseFloat(document.getElementById("ps-dough-weight").value),
         };
+        // Capture flour, yeast type, and ferment data from current calculation
+        try {
+          const stored = JSON.parse(localStorage.getItem("pielab-last-calc") || "{}");
+          const snap = stored.doughSnapshot;
+          if (snap) {
+            if (snap.flourType) fields.flourType = snap.flourType;
+            if (snap.yeastType) fields.yeastType = snap.yeastType;
+            if (snap.fermentHours) fields.fermentHours = snap.fermentHours;
+            if (snap.fermentTemp) fields.fermentTemp = snap.fermentTemp;
+          }
+        } catch { /* ignore */ }
         PieLabJournal.saveProfile({ name: name.trim(), styleKey, settings: fields });
         refreshProfileList();
       });
