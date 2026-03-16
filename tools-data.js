@@ -767,6 +767,9 @@ const STYLE_TOOLS = {
     { name: "Large Mixing Bowl", desc: "For combining and resting dough" },
     { name: "Bench Scraper", desc: "Dividing dough and cleaning your work surface" },
     { name: "Plastic Wrap or Damp Towel", desc: "Cover dough during fermentation" },
+    { name: "Cutting Board", desc: "A stable surface for slicing and serving" },
+    { name: "Wire Cooling Rack", desc: "Prevents a soggy bottom by letting air circulate under the pie" },
+    { name: "Pizza Cutter", desc: "Wheel or rocker blade for clean, even slices" },
   ],
   neapolitan: {
     tools: [
