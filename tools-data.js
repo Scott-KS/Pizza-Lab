@@ -756,7 +756,109 @@ const TROUBLESHOOTING_TREE = {
 };
 
 // ══════════════════════════════════════════════════════
-// 5. DDT (Desired Dough Temperature) PRESETS
+// 5. TOOLS & EQUIPMENT PER STYLE
+// ══════════════════════════════════════════════════════
+// Each entry lists essential tools for the style, grouped by category.
+// Designed to help novices know exactly what they need before starting.
+
+const STYLE_TOOLS = {
+  _common: [
+    { name: "Kitchen Scale", desc: "Weigh ingredients in grams for accuracy" },
+    { name: "Large Mixing Bowl", desc: "For combining and resting dough" },
+    { name: "Bench Scraper", desc: "Dividing dough and cleaning your work surface" },
+    { name: "Plastic Wrap or Damp Towel", desc: "Cover dough during fermentation" },
+    { name: "Cutting Board", desc: "A stable surface for slicing and serving" },
+    { name: "Wire Cooling Rack", desc: "Prevents a soggy bottom by letting air circulate under the pie" },
+    { name: "Pizza Cutter", desc: "Wheel or rocker blade for clean, even slices" },
+  ],
+  neapolitan: {
+    tools: [
+      { name: "Baking Steel or Pizza Stone", desc: "Essential for high-heat baking and a charred bottom" },
+      { name: "Pizza Peel", desc: "Launch and retrieve pizza from the oven" },
+      { name: "Semolina or Flour for Dusting", desc: "Prevents dough from sticking to the peel" },
+    ],
+  },
+  "new-york": {
+    tools: [
+      { name: "Baking Steel or Pizza Stone", desc: "Provides the thermal mass for a crispy, foldable crust" },
+      { name: "Pizza Peel", desc: "Launch and retrieve pizza from the oven" },
+      { name: "Pizza Screen or Parchment Paper", desc: "Helpful for beginners to transfer the pie" },
+    ],
+  },
+  "chicago-tavern": {
+    tools: [
+      { name: "Round Pizza Pan or Baking Sheet", desc: "14\u2033 thin-gauge pan for a cracker-thin crust" },
+      { name: "Rolling Pin", desc: "Roll dough thin and even \u2014 this style is not hand-stretched" },
+      { name: "Pizza Cutter or Rocker Blade", desc: "Tavern-cut into squares (party cut)" },
+    ],
+  },
+  detroit: {
+    tools: [
+      { name: "Detroit-Style Pan (10\u00D714 blue steel)", desc: "The signature rectangular pan with tall, straight sides" },
+      { name: "Offset Spatula or Bench Scraper", desc: "Spread dough into corners and layer cheese to the edges" },
+    ],
+  },
+  sicilian: {
+    tools: [
+      { name: "Half-Sheet Pan (18\u00D713)", desc: "Standard rimmed baking sheet for thick, airy slices" },
+      { name: "Offset Spatula", desc: "Spread dough evenly across the oiled pan" },
+    ],
+  },
+  grandma: {
+    tools: [
+      { name: "Half-Sheet Pan (18\u00D713)", desc: "Oiled sheet pan for a thin, crispy bottom" },
+      { name: "Offset Spatula", desc: "Spread dough thin and even in the pan" },
+    ],
+  },
+  "thin-crust": {
+    tools: [
+      { name: "Baking Steel or Pizza Stone", desc: "High heat transfer for a crispy thin base" },
+      { name: "Pizza Peel", desc: "Launch and retrieve pizza from the oven" },
+      { name: "Rolling Pin", desc: "Roll dough uniformly thin" },
+    ],
+  },
+  pan: {
+    tools: [
+      { name: "Cast Iron Skillet or Round Cake Pan", desc: "10\u201312\u2033 oven-safe pan, well-oiled" },
+      { name: "Offset Spatula", desc: "Press dough evenly into the pan" },
+    ],
+  },
+  "st-louis": {
+    tools: [
+      { name: "Round Pizza Pan or Baking Sheet", desc: "Thin-gauge pan for a cracker-thin crust" },
+      { name: "Rolling Pin", desc: "Roll dough paper-thin and uniform" },
+      { name: "Pizza Cutter", desc: "Cut into squares (St. Louis party cut)" },
+    ],
+  },
+  "new-haven": {
+    tools: [
+      { name: "Baking Steel or Pizza Stone", desc: "Critical for the charred, blistered bottom" },
+      { name: "Pizza Peel", desc: "Launch and retrieve pizza from the oven" },
+      { name: "Semolina for Dusting", desc: "Prevents sticking \u2014 New Haven style uses a generous dusting" },
+    ],
+  },
+  "ohio-valley": {
+    tools: [
+      { name: "Half-Sheet Pan (18\u00D713)", desc: "Bake the crust and sauce first, then add cold toppings" },
+      { name: "Pizza Cutter", desc: "Cut into squares" },
+    ],
+  },
+  "cast-iron": {
+    tools: [
+      { name: "Cast Iron Skillet (10\u201312\u2033)", desc: "The pan IS the tool \u2014 preheat it for a crispy bottom" },
+      { name: "Oven Mitts (heavy-duty)", desc: "Cast iron gets extremely hot" },
+    ],
+  },
+  "school-night": {
+    tools: [
+      { name: "Baking Sheet or Cast Iron Skillet", desc: "Whatever you have \u2014 this style is forgiving" },
+      { name: "Rolling Pin or Your Hands", desc: "Shape however you like, no technique required" },
+    ],
+  },
+};
+
+// ══════════════════════════════════════════════════════
+// 6. DDT (Desired Dough Temperature) PRESETS
 // ══════════════════════════════════════════════════════
 const DDT_PRESETS = {
   "":            { ddt: 76, friction: 28, label: "General (default)" },

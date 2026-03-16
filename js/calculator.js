@@ -789,6 +789,41 @@ document.addEventListener("DOMContentLoaded", () => {
       flourSubNote.innerHTML = "";
     }
 
+    // ── Yeast substitution row ──
+    const yeastSubRow = document.getElementById("yeast-sub-row");
+    const yeastSubSelect = document.getElementById("yeast-sub-select");
+
+    const YEAST_OPTIONS = [
+      { value: "idy", label: "Instant Dry Yeast" },
+      { value: "ady", label: "Active Dry Yeast" },
+      { value: "fresh", label: "Fresh Yeast" },
+    ];
+
+    // Determine recipe's base yeast key
+    const recYeast = (adjustedRecipe.yeast || "Instant Dry Yeast").toLowerCase().trim();
+    let recYeastKey = "idy";
+    if (recYeast.includes("active dry")) recYeastKey = "ady";
+    else if (recYeast.includes("fresh")) recYeastKey = "fresh";
+
+    // Populate options excluding recipe's own yeast type
+    yeastSubSelect.innerHTML = '<option value="">— Use recommended yeast —</option>';
+    for (const opt of YEAST_OPTIONS) {
+      if (opt.value === recYeastKey) continue;
+      const el = document.createElement("option");
+      el.value = opt.value;
+      el.textContent = opt.label;
+      yeastSubSelect.appendChild(el);
+    }
+    yeastSubRow.classList.remove("hidden");
+    yeastSubSelect.value = "";
+
+    // Clear any previous yeast sub note
+    const yeastSubNote = document.getElementById("yeast-sub-note");
+    if (yeastSubNote) {
+      yeastSubNote.className = "flour-sub-note hidden";
+      yeastSubNote.innerHTML = "";
+    }
+
     // Show results
     const resultsEl = document.getElementById("results");
     resultsEl.classList.remove("hidden");
@@ -1020,6 +1055,142 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+
+  // ── Tools & Equipment Popover ──────────────────────
+  document.getElementById("tools-info-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    // Close any existing popover
+    const existing = document.querySelector(".tools-popover");
+    if (existing) { existing.remove(); return; }
+
+    const type = document.getElementById("pizza-type").value;
+    if (!type || typeof STYLE_TOOLS === "undefined") return;
+
+    const styleTools = STYLE_TOOLS[type];
+    const commonTools = STYLE_TOOLS._common || [];
+    if (!styleTools) return;
+
+    const styleName = PIZZA_RECIPES[type] ? PIZZA_RECIPES[type].name : type;
+
+    const commonHtml = commonTools
+      .map((t) => `<li><strong>${t.name}</strong> \u2014 ${t.desc}</li>`)
+      .join("");
+
+    const styleHtml = styleTools.tools
+      .map((t) => `<li><strong>${t.name}</strong> \u2014 ${t.desc}</li>`)
+      .join("");
+
+    const popover = document.createElement("div");
+    popover.className = "tools-popover";
+    popover.innerHTML = `
+      <div class="popover-header">
+        <span class="popover-title">Tools & Equipment</span>
+        <button class="popover-close" type="button" aria-label="Close">&times;</button>
+      </div>
+      <div class="popover-body">
+        <div class="popover-section">
+          <h4>${styleName} Essentials</h4>
+          <ul class="tools-list">${styleHtml}</ul>
+        </div>
+        <div class="popover-section">
+          <h4>Every Bake</h4>
+          <ul class="tools-list">${commonHtml}</ul>
+        </div>
+      </div>
+    `;
+
+    const header = document.querySelector(".results-header");
+    header.style.position = "relative";
+    header.appendChild(popover);
+
+    popover.querySelector(".popover-close").addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      popover.remove();
+    });
+
+    document.addEventListener("click", function closeOnOutside(ev) {
+      if (!popover.contains(ev.target) && ev.target !== e.target) {
+        popover.remove();
+        document.removeEventListener("click", closeOnOutside);
+      }
+    });
+  });
+
+  // ── Yeast Substitution Handler ────────────────────
+  document.getElementById("yeast-sub-select").addEventListener("change", () => {
+    if (!lastCalcContext) return;
+
+    const select = document.getElementById("yeast-sub-select");
+    const selectedYeast = select.value;
+    const { adjustedRecipe, numPizzas, sizeKey } = lastCalcContext;
+
+    // Yeast conversion factors relative to IDY (1g IDY base)
+    const YEAST_FACTORS = { idy: 1, ady: 1.25, fresh: 3 };
+    const YEAST_LABELS = { idy: "Instant Dry Yeast", ady: "Active Dry Yeast", fresh: "Fresh Yeast" };
+
+    // Determine recipe's base yeast type key
+    const recipeYeastName = (adjustedRecipe.yeast || "Instant Dry Yeast").toLowerCase().trim();
+    let recipeYeastKey = "idy";
+    if (recipeYeastName.includes("active dry")) recipeYeastKey = "ady";
+    else if (recipeYeastName.includes("fresh")) recipeYeastKey = "fresh";
+
+    // Manage the yeast-sub-note element
+    let noteEl = document.getElementById("yeast-sub-note");
+    if (!noteEl) {
+      noteEl = document.createElement("div");
+      noteEl.id = "yeast-sub-note";
+      const doughTable = document.getElementById("dough-table");
+      doughTable.parentNode.insertBefore(noteEl, doughTable);
+    }
+
+    // Reset: restore original dough table
+    if (!selectedYeast) {
+      const dough = calculateDough(adjustedRecipe, numPizzas, sizeKey);
+      lastDough = dough;
+      renderDoughTable(dough);
+      noteEl.className = "flour-sub-note hidden";
+      noteEl.innerHTML = "";
+      return;
+    }
+
+    // Hide the option matching the recipe's own yeast type
+    // (already filtered out below)
+    if (selectedYeast === recipeYeastKey) {
+      select.value = "";
+      return;
+    }
+
+    // Recalculate dough with converted yeast amount
+    const conversionFactor = YEAST_FACTORS[selectedYeast] / YEAST_FACTORS[recipeYeastKey];
+    const subRecipe = { ...adjustedRecipe };
+    subRecipe.yeastPct = adjustedRecipe.yeastPct * conversionFactor;
+
+    const dough = calculateDough(subRecipe, numPizzas, sizeKey);
+
+    // Rename the yeast ingredient row
+    dough.forEach((d) => {
+      if (/yeast/i.test(d.ingredient)) {
+        d.ingredient = YEAST_LABELS[selectedYeast];
+      }
+    });
+
+    lastDough = dough;
+    renderDoughTable(dough);
+
+    const origLabel = YEAST_LABELS[recipeYeastKey];
+    const subLabel = YEAST_LABELS[selectedYeast];
+    const noteText = selectedYeast === "ady"
+      ? "Active Dry Yeast should be dissolved in warm water (100\u2013110\u00B0F) for 5\u201310 minutes before adding to the dough."
+      : selectedYeast === "fresh"
+        ? "Crumble Fresh Yeast directly into the flour or dissolve in lukewarm water. Use within 2 weeks of purchase."
+        : "Instant Dry Yeast can be mixed directly into the flour \u2014 no activation needed.";
+
+    noteEl.className = "flour-sub-note compat-great";
+    noteEl.innerHTML =
+      `Using <strong>${subLabel}</strong> instead of <strong>${origLabel}</strong>. ` +
+      `Amount adjusted automatically. <br><em>${noteText}</em>`;
+  });
 
   // ══════════════════════════════════════════════════════
   // ── Settings Toggle ─────────────────────────────────
