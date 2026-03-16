@@ -1081,14 +1081,14 @@
             <span class="share-guide-icon">&#127758;</span>
             <div>
               <strong>Post to Social Media</strong>
-              <p>Tap <em>Save to Photos</em>, then upload to your social media account. A caption with your stats is auto-copied.</p>
+              <p>Open your bake, then upload to your social media account. A caption with your bake stats is auto-copied.</p>
             </div>
           </div>
           <div class="share-guide-option">
             <span class="share-guide-icon">&#128247;</span>
             <div>
               <strong>Submit to our Instagram</strong>
-              <p>Tap <em>Save to Photos</em> and DM the image to <strong>@ThePieLab</strong> on Instagram. The best bakes get featured in our weekly feed.</p>
+              <p>DM the image to <strong>@ThePieLab</strong> on Instagram. The best bakes get featured in our feed.</p>
             </div>
           </div>
         </div>
