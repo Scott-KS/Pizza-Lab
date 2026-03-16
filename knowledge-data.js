@@ -127,16 +127,16 @@ const STYLE_LIBRARY = {
 
   pan: {
     name: "Pan Pizza",
-    origin: "American home and chain tradition — 1960s\u2013present",
+    origin: "Chicago — Burt Katz at Pequod\u2019s Pizza, 1970s\u2013present",
     story:
-      "Pan pizza's mainstream moment came in 1980 when Pizza Hut launched its Pan Pizza nationally, but the style existed long before that in home kitchens and local pizzerias. The concept is simple: press a high-hydration dough into a generously oiled cast iron skillet or cake pan, let it proof until puffy, then bake until the bottom is golden and fried. The home cast iron revival of the 2010s brought pan pizza back as a serious homemade style, with bakers using Lodge skillets and 48-hour cold ferments.",
+      "Pan pizza existed in home kitchens and chains for decades, but the style was reinvented by Burt Katz at Pequod\u2019s Pizza in Chicago. Katz\u2019s breakthrough was pressing mozzarella against the oiled pan walls so it would melt, fry, and caramelize into a crispy golden crown \u2014 a technique that turned a simple pan pizza into something iconic. Pequod\u2019s opened in Morton Grove in 1970 and moved to Lincoln Park, where it became a Chicago institution. The caramelized cheese crust is now the defining feature of the style.",
     authenticity:
-      "A great pan pizza has three signatures: a golden fried bottom crust (from the oil in the pan), a thick and airy interior with visible air pockets, and cheese that melts down the sides to crisp against the pan. The dough should be high-hydration (70%+) bread flour, cold-fermented for at least 24 hours. Traditionally, cheese goes under the sauce for pan pizza, creating a barrier that keeps the crust from getting soggy.",
+      "A Pequod\u2019s-style pan pizza has four signatures: a caramelized cheese crown where mozzarella fries against the pan walls, a golden fried bottom crust from the generous oil, a thick and airy interior, and cheese layered under the sauce. The dough is slightly sweeter than standard pan dough to aid caramelization. The sauce goes on top of the cheese \u2014 never under it. The cheese crown should be dark golden and crispy, not burnt.",
     debates:
-      "Cast iron vs. cake pan is the first argument. Cast iron retains more heat and gives a better fry on the bottom, but cake pans are lighter and easier to handle. The cheese question matters too: under the sauce (traditional) or over (modern)? And the big one: is Detroit pizza just a regional variation of pan pizza, or is it its own distinct style? Detroit purists have strong opinions.",
+      "The cheese crown is the battleground. How dark is too dark? Pequod\u2019s runs theirs aggressively caramelized \u2014 almost charred at the edges. Some prefer a lighter golden frico. The pan matters: deep-sided cake pans give more wall surface for the cheese crown than shallow cast iron. And the eternal question: is this really pan pizza, or is it its own Chicago subspecies?",
     keyFacts: [
-      { label: "Key Tool", value: "Cast iron skillet or cake pan" },
-      { label: "Signature", value: "Fried golden bottom, thick and airy" },
+      { label: "Key Tool", value: "Deep-sided cake pan or cast iron" },
+      { label: "Signature", value: "Caramelized cheese crown, fried bottom" },
       { label: "Ferment", value: "24\u201348 hour cold proof" },
     ],
   },
@@ -402,15 +402,15 @@ const TOPPING_COMBOS = {
     combos: [
       {
         tier: "Classic",
-        name: "Cheese-Under Pan",
-        ingredients: ["Sauce: Cooked tomato sauce (over cheese)", "Cheese: Mozz and cheddar blend (under sauce)", "Garnish: Dried oregano"],
-        why: "Cheese under sauce keeps the thick crust from going soggy.",
+        name: "Caramelized Cheese Crown (Pequod\u2019s)",
+        ingredients: ["Sauce: Buttery tomato sauce (on top)", "Cheese: Mozzarella (on dough + pressed against pan walls)", "Garnish: Dried oregano, red pepper flakes"],
+        why: "Burt Katz\u2019s signature \u2014 mozzarella pressed against the pan walls caramelizes into a crispy, golden crown that defines the style.",
       },
       {
         tier: "Modern",
-        name: "Caramelized Crust (Pequod\u2019s, Chicago)",
-        ingredients: ["Sauce: Tangy tomato sauce (on top)", "Cheese: Mozzarella (pressed against pan walls)", "Toppings: House sausage, giardiniera, saut\u00E9ed onions", "Garnish: Dried oregano"],
-        why: "Burt Katz invented the caramelized cheese crust \u2014 mozzarella pressed against the pan creates a crispy, golden frico halo.",
+        name: "Sausage & Giardiniera (Pequod\u2019s-style)",
+        ingredients: ["Sauce: Buttery tomato sauce (on top)", "Cheese: Mozzarella (pressed against pan walls)", "Toppings: Italian sausage, giardiniera, saut\u00E9ed onions", "Garnish: Dried oregano"],
+        why: "The classic Pequod\u2019s build \u2014 sausage and hot giardiniera against the caramelized cheese crown.",
       },
       {
         tier: "Seasonal",
