@@ -1080,8 +1080,8 @@
           <div class="share-guide-option">
             <span class="share-guide-icon">&#127758;</span>
             <div>
-              <strong>Post to r/Pizza</strong>
-              <p>Tap <em>Save to Photos</em>, then upload to Reddit. A caption with your stats is auto-copied.</p>
+              <strong>Post to Social Media</strong>
+              <p>Tap <em>Save to Photos</em>, then upload to your social media account. A caption with your stats is auto-copied.</p>
             </div>
           </div>
           <div class="share-guide-option">
