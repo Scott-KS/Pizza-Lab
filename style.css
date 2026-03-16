@@ -1032,6 +1032,15 @@ main {
   background: rgba(140, 53, 36, 0.08);
 }
 
+.tools-info-label {
+  font-size: 0.7rem;
+  color: var(--clr-muted);
+  vertical-align: middle;
+  margin-left: 2px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+}
+
 /* ── Tools Popover ─────────────────────────────── */
 .tools-popover {
   position: absolute;
