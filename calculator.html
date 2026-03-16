@@ -205,6 +205,7 @@
       <div class="results-header">
         <h2 id="result-title"></h2>
         <span class="badge" id="result-badge"></span>
+        <button class="tools-info-btn" id="tools-info-btn" type="button" aria-label="Tools &amp; equipment needed">&#x24D8;</button>
       </div>
 
       <div class="results-grid">
@@ -293,6 +294,16 @@
         <label for="flour-sub-select">Substitute Flour</label>
         <select id="flour-sub-select">
           <option value="">— Use recommended flour —</option>
+        </select>
+      </div>
+
+      <div id="yeast-sub-row" class="flour-sub-row hidden">
+        <label for="yeast-sub-select">Substitute Yeast</label>
+        <select id="yeast-sub-select">
+          <option value="">— Use recommended yeast —</option>
+          <option value="idy">Instant Dry Yeast</option>
+          <option value="ady">Active Dry Yeast</option>
+          <option value="fresh">Fresh Yeast</option>
         </select>
       </div>
 
