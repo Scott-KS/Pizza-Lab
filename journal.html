@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=26" />
+  <link rel="stylesheet" href="style.css?v=27" />
 </head>
 <body data-page="journal">
 
@@ -47,78 +47,61 @@
         <div class="storage-bar"><div class="storage-bar-fill" id="storage-bar-fill"></div></div>
       </div>
 
-      <div class="journal-toolbar">
-        <div class="journal-search">
-          <input type="search" id="journal-search-input" placeholder="Search bakes…" aria-label="Search journal entries" />
-        </div>
-        <div class="journal-filter">
-          <label for="journal-style-filter">Filter by style:</label>
-          <select id="journal-style-filter">
-            <option value="all">All Styles</option>
-          </select>
-        </div>
-        <div class="journal-sort">
-          <label for="journal-sort-select">Sort:</label>
-          <select id="journal-sort-select">
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="hydration-high">Highest Hydration</option>
-            <option value="hydration-low">Lowest Hydration</option>
-            <option value="rating-high">Highest Rating</option>
-            <option value="rating-low">Lowest Rating</option>
-          </select>
-        </div>
-        <button class="btn-compare" id="btn-compare" disabled>Compare</button>
-        <p class="compare-hint" id="compare-hint"></p>
-      </div>
+      <!-- Journal Tab Bar -->
+      <nav class="journal-tabs" id="journal-tabs" role="tablist">
+        <button class="journal-tab active" data-tab="bakes" role="tab" aria-selected="true" aria-controls="tab-panel-bakes">Bakes</button>
+        <button class="journal-tab" data-tab="passport" role="tab" aria-selected="false" aria-controls="tab-panel-passport">Passport</button>
+        <button class="journal-tab" data-tab="library" role="tab" aria-selected="false" aria-controls="tab-panel-library">Library</button>
+      </nav>
 
-      <div class="journal-stats-section hidden" id="journal-stats-section">
-        <button class="stats-toggle" id="stats-toggle" type="button">
-          <span>Your Baking Stats</span>
-          <span class="stats-toggle-arrow" id="stats-toggle-arrow">▼</span>
-        </button>
-        <div class="stats-grid" id="stats-grid"></div>
-      </div>
-
-      <!-- Bake Analytics (Pro) -->
-      <div class="analytics-section hidden" id="analytics-section">
-        <button class="analytics-toggle" id="analytics-toggle" type="button">
-          <span>Bake Analytics <span class="premium-tag">PRO</span></span>
-          <span class="analytics-toggle-arrow" id="analytics-toggle-arrow">&#9660;</span>
-        </button>
-        <div class="analytics-body" id="analytics-body">
-          <div class="analytics-timeline" id="analytics-timeline"></div>
-          <div class="analytics-grid" id="analytics-grid"></div>
-        </div>
-      </div>
-
-      <!-- Style Passport -->
-      <div class="passport-section" id="passport-section">
-        <h3>Style Passport</h3>
-        <p class="kitchen-subtitle">Log a bake in every style to fill your passport.</p>
-        <div class="passport-progress" id="passport-progress"><span id="passport-count">0</span> of 13 unlocked</div>
-        <div class="passport-grid" id="passport-grid"></div>
-      </div>
-
-      <!-- Dough Library (Pro) -->
-      <div class="dough-library-section hidden" id="dough-library-section">
-        <button class="dough-library-toggle" id="dough-library-toggle" type="button">
-          <span>Dough Library <span class="premium-tag">PRO</span></span>
-          <span class="dough-library-arrow" id="dough-library-arrow">&#9660;</span>
-        </button>
-        <div class="dough-library-body hidden" id="dough-library-body">
-          <div class="dough-library-filter">
-            <label for="dough-library-style-filter">Filter by style:</label>
-            <select id="dough-library-style-filter">
+      <!-- Tab Panel: Bakes -->
+      <div class="journal-tab-panel active" id="tab-panel-bakes" role="tabpanel">
+        <div class="journal-toolbar">
+          <div class="journal-search">
+            <input type="search" id="journal-search-input" placeholder="Search bakes…" aria-label="Search journal entries" />
+          </div>
+          <div class="journal-filter">
+            <label for="journal-style-filter">Filter by style:</label>
+            <select id="journal-style-filter">
               <option value="all">All Styles</option>
             </select>
           </div>
-          <div class="dough-library-grid" id="dough-library-grid"></div>
-          <p class="dough-library-empty hidden" id="dough-library-empty">No saved doughs yet. Use Save Dough in the calculator to add one.</p>
+          <div class="journal-sort">
+            <label for="journal-sort-select">Sort:</label>
+            <select id="journal-sort-select">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="hydration-high">Highest Hydration</option>
+              <option value="hydration-low">Lowest Hydration</option>
+              <option value="rating-high">Highest Rating</option>
+              <option value="rating-low">Lowest Rating</option>
+            </select>
+          </div>
+          <button class="btn-compare" id="btn-compare" disabled>Compare</button>
+          <p class="compare-hint" id="compare-hint"></p>
         </div>
-      </div>
 
-      <div class="journal-form-wrapper hidden" id="journal-form-wrapper">
+        <div class="journal-stats-section hidden" id="journal-stats-section">
+          <button class="stats-toggle" id="stats-toggle" type="button">
+            <span>Your Baking Stats</span>
+            <span class="stats-toggle-arrow" id="stats-toggle-arrow">▼</span>
+          </button>
+          <div class="stats-grid" id="stats-grid"></div>
+        </div>
+
+        <!-- Bake Analytics (Pro) -->
+        <div class="analytics-section hidden" id="analytics-section">
+          <button class="analytics-toggle" id="analytics-toggle" type="button">
+            <span>Bake Analytics <span class="premium-tag">PRO</span></span>
+            <span class="analytics-toggle-arrow" id="analytics-toggle-arrow">&#9660;</span>
+          </button>
+          <div class="analytics-body" id="analytics-body">
+            <div class="analytics-timeline" id="analytics-timeline"></div>
+            <div class="analytics-grid" id="analytics-grid"></div>
+          </div>
+        </div>
+
+        <div class="journal-form-wrapper hidden" id="journal-form-wrapper">
         <h3 id="journal-form-heading">Log a Bake</h3>
         <form id="journal-form">
           <div class="form-group">
@@ -197,11 +180,39 @@
         </form>
       </div>
 
-      <button class="btn-new-entry" id="btn-new-entry">+ Log a Bake</button>
+        <button class="btn-new-entry" id="btn-new-entry">+ Log a Bake</button>
 
-      <div class="journal-entries" id="journal-entries"></div>
+        <div class="journal-entries" id="journal-entries"></div>
 
-      <div class="journal-comparison hidden" id="journal-comparison"></div>
+        <div class="journal-comparison hidden" id="journal-comparison"></div>
+      </div>
+
+      <!-- Tab Panel: Passport -->
+      <div class="journal-tab-panel" id="tab-panel-passport" role="tabpanel">
+        <div class="passport-section" id="passport-section">
+          <h3>Style Passport</h3>
+          <p class="kitchen-subtitle">Log a bake in every style to fill your passport.</p>
+          <div class="passport-progress" id="passport-progress"><span id="passport-count">0</span> of 13 unlocked</div>
+          <div class="passport-grid" id="passport-grid"></div>
+        </div>
+      </div>
+
+      <!-- Tab Panel: Library -->
+      <div class="journal-tab-panel" id="tab-panel-library" role="tabpanel">
+        <div class="dough-library-section" id="dough-library-section">
+          <h3 class="dough-library-heading">Dough Library <span class="premium-tag">PRO</span></h3>
+          <div class="dough-library-body" id="dough-library-body">
+            <div class="dough-library-filter">
+              <label for="dough-library-style-filter">Filter by style:</label>
+              <select id="dough-library-style-filter">
+                <option value="all">All Styles</option>
+              </select>
+            </div>
+            <div class="dough-library-grid" id="dough-library-grid"></div>
+            <p class="dough-library-empty hidden" id="dough-library-empty">No saved doughs yet. Use Save Dough in the calculator to add one.</p>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -258,6 +269,6 @@
   <script src="js/nav.js?v=7"></script>
   <script src="js/user-profile.js?v=5"></script>
   <script src="js/premium.js?v=3"></script>
-  <script src="js/journal-ui.js?v=14"></script>
+  <script src="js/journal-ui.js?v=15"></script>
 </body>
 </html>

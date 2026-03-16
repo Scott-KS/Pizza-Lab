@@ -2402,6 +2402,45 @@ main {
   margin-bottom: 1.25rem;
 }
 
+/* ── Journal Tabs ────────────────────────────────── */
+.journal-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--clr-border);
+  margin-bottom: 1.5rem;
+}
+.journal-tab {
+  flex: 1;
+  padding: 0.65rem 0.5rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--clr-text-light);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 200ms ease, border-color 200ms ease;
+  text-align: center;
+}
+.journal-tab:hover {
+  color: var(--clr-text);
+}
+.journal-tab.active {
+  color: var(--clr-primary);
+  border-bottom-color: var(--clr-primary);
+}
+.journal-tab:focus-visible {
+  outline: 2px solid var(--clr-primary);
+  outline-offset: -2px;
+}
+.journal-tab-panel {
+  display: none;
+}
+.journal-tab-panel.active {
+  display: block;
+}
+
 /* ── Journal Storage Display ─────────────────────── */
 .journal-storage {
   margin-bottom: 1rem;
@@ -6104,9 +6143,8 @@ body[data-page="kitchen"] main {
    Style Passport — Journal achievement grid
    ═══════════════════════════════════════════════════════ */
 .passport-section {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--clr-border);
+  margin-top: 0;
+  padding-top: 0;
 }
 .passport-section h3 {
   font-family: "Playfair Display", serif;
@@ -6270,10 +6308,7 @@ body[data-page="kitchen"] main {
 
 /* ── Dough Library ────────────────────────────────────── */
 .dough-library-section {
-  margin: 1rem 0;
-  border: 1px solid var(--clr-border);
-  border-radius: 8px;
-  overflow: hidden;
+  margin: 0;
 }
 .dough-library-toggle {
   width: 100%;
@@ -6292,8 +6327,13 @@ body[data-page="kitchen"] main {
   transition: transform 200ms ease;
   font-size: 0.75rem;
 }
+.dough-library-heading {
+  font-family: "Playfair Display", serif;
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
 .dough-library-body {
-  padding: 1rem;
+  padding: 0;
 }
 .dough-library-filter {
   display: flex;
