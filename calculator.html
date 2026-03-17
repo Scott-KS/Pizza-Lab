@@ -95,6 +95,7 @@
         <div class="form-group">
           <label for="pizza-type">Pizza Style
             <button class="tools-info-btn" id="tools-info-btn" type="button" aria-label="Tools &amp; equipment needed">&#x24D8;</button><span class="tools-info-label">Tools &amp; Equip</span>
+            <a class="style-library-link" href="learn.html#styles">&#x24D8; Style Library</a>
           </label>
           <select id="pizza-type" required>
             <option value="" disabled selected>Select a style&hellip;</option>
@@ -199,6 +200,23 @@
           </div>
         </div>
 
+        <div id="flour-sub-row" class="flour-sub-row hidden">
+          <label for="flour-sub-select">Substitute Flour</label>
+          <select id="flour-sub-select">
+            <option value="">— Use recommended flour —</option>
+          </select>
+        </div>
+
+        <div id="yeast-sub-row" class="flour-sub-row hidden">
+          <label for="yeast-sub-select">Substitute Yeast</label>
+          <select id="yeast-sub-select">
+            <option value="">— Use recommended yeast —</option>
+            <option value="idy">Instant Dry Yeast</option>
+            <option value="ady">Active Dry Yeast</option>
+            <option value="fresh">Fresh Yeast</option>
+          </select>
+        </div>
+
         <button type="submit" class="btn-calculate">Calculate Recipe</button>
       </form>
     </section>
@@ -290,23 +308,6 @@
       </div>
 
       <div class="results-learn-more" id="results-learn-more"></div>
-
-      <div id="flour-sub-row" class="flour-sub-row hidden">
-        <label for="flour-sub-select">Substitute Flour</label>
-        <select id="flour-sub-select">
-          <option value="">— Use recommended flour —</option>
-        </select>
-      </div>
-
-      <div id="yeast-sub-row" class="flour-sub-row hidden">
-        <label for="yeast-sub-select">Substitute Yeast</label>
-        <select id="yeast-sub-select">
-          <option value="">— Use recommended yeast —</option>
-          <option value="idy">Instant Dry Yeast</option>
-          <option value="ady">Active Dry Yeast</option>
-          <option value="fresh">Fresh Yeast</option>
-        </select>
-      </div>
 
       <div id="plan-preview" class="plan-preview hidden">
         <h3>Your Bake Plan</h3>
