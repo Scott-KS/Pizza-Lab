@@ -1379,7 +1379,7 @@
   function generatePolaroidCard(entry, profile) {
     return new Promise((resolve, reject) => {
       // Polaroid-style: thin equal borders top/left/right, thicker bottom for text
-      const BORDER = 60;                    // top, left, right border
+      const BORDER = 40;                    // top, left, right border
       const PHOTO_SIZE = 1080;              // square photo area
       const BOTTOM_H = 150;                 // white text area below photo
       const W = BORDER + PHOTO_SIZE + BORDER;           // 1160
@@ -1486,7 +1486,7 @@
   function finishCard(ctx, canvas, entry, profile, W, H, LEFT, photoBottom, resolve) {
     // Polaroid border is already white from initial fill — no separator line needed
     // Extra inset so text isn't clipped when Instagram crops edges
-    const TEXT_PAD = 16;
+    const TEXT_PAD = 36;
     LEFT = LEFT + TEXT_PAD;
     const RIGHT = W - LEFT;
 
