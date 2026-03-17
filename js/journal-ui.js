@@ -942,13 +942,13 @@
       }
     });
 
-    // Share handler — copies caption to clipboard, then opens share sheet
+    // Share handler — opens destination chooser, then shares with tailored caption
     const shareBtn = modalBody.querySelector(".btn-modal-share");
-    if (shareBtn) shareBtn.addEventListener("click", () => shareThisBake(entry));
+    if (shareBtn) shareBtn.addEventListener("click", () => showShareChooser(entry, "share"));
 
-    // Save to Photos handler — generates + downloads watermarked images
+    // Save to Photos handler — opens destination chooser, then downloads with tailored caption
     const saveBtn = modalBody.querySelector(".btn-modal-save-photo");
-    if (saveBtn) saveBtn.addEventListener("click", () => savePhotosToDevice(entry));
+    if (saveBtn) saveBtn.addEventListener("click", () => showShareChooser(entry, "save"));
   }
 
   modalClose.addEventListener("click", () => modalOverlay.classList.add("hidden"));
@@ -1145,8 +1145,64 @@
     }, 3000);
   }
 
+  // ── Share Destination Chooser ─────────────────────
+  function showShareChooser(entry, mode) {
+    const overlay = document.createElement("div");
+    overlay.className = "share-chooser-overlay";
+    overlay.innerHTML = `
+      <div class="share-chooser-card">
+        <h3 class="share-chooser-title">${mode === "save" ? "Save for…" : "Share via…"}</h3>
+        <div class="share-chooser-options">
+          <button class="share-chooser-btn" data-dest="social">
+            <span class="share-chooser-icon">&#127758;</span>
+            <div>
+              <strong>Social Media</strong>
+              <p>Caption with hashtags &amp; link</p>
+            </div>
+          </button>
+          <button class="share-chooser-btn" data-dest="email">
+            <span class="share-chooser-icon">&#9993;</span>
+            <div>
+              <strong>Email</strong>
+              <p>Clean caption, no hashtags</p>
+            </div>
+          </button>
+          <button class="share-chooser-btn" data-dest="text">
+            <span class="share-chooser-icon">&#128172;</span>
+            <div>
+              <strong>Text / Message</strong>
+              <p>Short &amp; casual</p>
+            </div>
+          </button>
+        </div>
+        <button class="share-chooser-cancel">Cancel</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add("share-chooser--visible"));
+
+    const dismiss = () => {
+      overlay.classList.remove("share-chooser--visible");
+      setTimeout(() => overlay.remove(), 300);
+    };
+
+    overlay.querySelector(".share-chooser-cancel").addEventListener("click", dismiss);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
+
+    overlay.querySelectorAll(".share-chooser-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const dest = btn.dataset.dest;
+        dismiss();
+        if (mode === "save") {
+          savePhotosToDevice(entry, dest);
+        } else {
+          shareThisBake(entry, dest);
+        }
+      });
+    });
+  }
+
   // ── Share This Bake ────────────────────────────────
-  async function shareThisBake(entry) {
+  async function shareThisBake(entry, destination = "social") {
     // 1. Read profile
     if (typeof PieLabProfile === "undefined") {
       showToast("Complete your profile in the Kitchen tab to share your bakes");
@@ -1197,8 +1253,8 @@
       return;
     }
 
-    // 5. Copy caption to clipboard for easy paste into Reddit/Instagram
-    const caption = buildShareCaption(entry, { name, location, skillLevel });
+    // 5. Copy destination-aware caption to clipboard
+    const caption = buildShareCaption(entry, { name, location, skillLevel }, destination);
     try { await navigator.clipboard.writeText(caption); } catch {}
 
     // 6. Share or download
@@ -1228,8 +1284,8 @@
     }
   }
 
-  /** Save watermarked images directly to device (for Instagram feed posting). */
-  async function savePhotosToDevice(entry) {
+  /** Save watermarked images directly to device. */
+  async function savePhotosToDevice(entry, destination = "social") {
     if (typeof PieLabProfile === "undefined") return;
     const profile = PieLabProfile.getProfile();
     const name = (profile.displayName || "").trim();
@@ -1259,8 +1315,8 @@
         downloadBlob(wmBlob, `my-bake-${i + 1}.png`);
       }
 
-      // Copy caption for easy paste
-      const caption = buildShareCaption(entry, { name, location, skillLevel });
+      // Copy destination-aware caption for easy paste
+      const caption = buildShareCaption(entry, { name, location, skillLevel }, destination);
       try { await navigator.clipboard.writeText(caption); } catch {}
       showToast("Saved! Caption copied — paste into your post");
     } catch (err) {
@@ -1269,8 +1325,13 @@
     }
   }
 
-  /** Build a ready-to-paste caption for Reddit / Instagram. */
-  function buildShareCaption(entry, profile) {
+  /**
+   * Build a ready-to-paste caption tailored to the share destination.
+   * @param {object} entry   - journal entry
+   * @param {object} profile - { name, location, skillLevel }
+   * @param {"social"|"email"|"text"} destination
+   */
+  function buildShareCaption(entry, profile, destination = "social") {
     const styleName = entry.styleName || entry.styleKey || "";
     const parts = [];
     if (styleName) parts.push(styleName);
@@ -1278,9 +1339,23 @@
     const headline = parts.length ? parts.join(" · ") : "Homemade Pizza";
     const badge = profile.skillLevel ? `${profile.skillLevel}` : "";
 
+    if (destination === "email") {
+      let caption = `Check out my latest bake: ${headline}`;
+      if (badge) caption += ` (${badge})`;
+      caption += "\n\nMade with The Pie Lab — ThePieLab.app";
+      return caption;
+    }
+
+    if (destination === "text") {
+      let caption = headline;
+      if (badge) caption += ` — ${badge}`;
+      caption += "\n\nMade with The Pie Lab 🍕";
+      return caption;
+    }
+
+    // Social media — full caption with hashtags
     let caption = headline;
     if (badge) caption += ` — ${badge}`;
-
     caption += "\n\nMade with The Pie Lab 🍕\nThePieLab.app";
     caption += "\n\n#ThePieLab #HomemadePizza #PizzaMaking";
     if (styleName) {
