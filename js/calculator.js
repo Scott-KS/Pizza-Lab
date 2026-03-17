@@ -1669,10 +1669,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const timer = { running: false, paused: false, total: 0, remaining: 0, startedAt: 0, pauseOffset: 0, intervalId: null };
 
   function parseBakeTimeString(str) {
-    const m = str.match(/(\d+)[–\u2013-](\d+)\s*(seconds?|minutes?)/i);
-    if (!m) return 300; // fallback 5 min
-    const lo = parseInt(m[1], 10);
-    const multiplier = m[3].toLowerCase().startsWith("minute") ? 60 : 1;
+    // Handles: "6–18 min", "60–90 seconds", "90 sec–3 min", "3–5 minutes"
+    const range = str.match(/(\d+)\s*(seconds?|minutes?|min|sec)?\s*[–\u2013-]\s*(\d+)\s*(seconds?|minutes?|min|sec)/i);
+    if (!range) return 300; // fallback 5 min
+    const lo = parseInt(range[1], 10);
+    const loUnit = range[2] || range[4]; // use first unit if present, else the trailing unit
+    const multiplier = loUnit.toLowerCase().startsWith("s") ? 1 : 60;
     return lo * multiplier;
   }
 
