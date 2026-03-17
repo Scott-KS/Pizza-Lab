@@ -1342,21 +1342,20 @@
     if (destination === "email") {
       let caption = `Check out my latest bake: ${headline}`;
       if (badge) caption += ` (${badge})`;
-      caption += "\n\nMade with The Pie Lab — ThePieLab.app";
+      caption += "\n\nThePieLab.app";
       return caption;
     }
 
     if (destination === "text") {
       let caption = headline;
       if (badge) caption += ` — ${badge}`;
-      caption += "\n\nMade with The Pie Lab 🍕";
       return caption;
     }
 
     // Social media — full caption with hashtags
     let caption = headline;
     if (badge) caption += ` — ${badge}`;
-    caption += "\n\nMade with The Pie Lab 🍕\nThePieLab.app";
+    caption += "\n\nThePieLab.app";
     caption += "\n\n#ThePieLab #HomemadePizza #PizzaMaking";
     if (styleName) {
       const tag = "#" + styleName.replace(/[^a-zA-Z0-9]/g, "");
@@ -1486,6 +1485,9 @@
 
   function finishCard(ctx, canvas, entry, profile, W, H, LEFT, photoBottom, resolve) {
     // Polaroid border is already white from initial fill — no separator line needed
+    // Extra inset so text isn't clipped when Instagram crops edges
+    const TEXT_PAD = 16;
+    LEFT = LEFT + TEXT_PAD;
     const RIGHT = W - LEFT;
 
     // Text area starts below the photo with some padding
