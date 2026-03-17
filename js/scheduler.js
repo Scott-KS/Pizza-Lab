@@ -45,6 +45,61 @@
   let stepTimeouts = [];
   let notifiedSteps = new Set();
 
+  // ── Step Alarm (Web Audio) ──
+  let alarmCtx = null;
+  let alarmIntervalId = null;
+
+  function startStepAlarm() {
+    stopStepAlarm();
+    try {
+      alarmCtx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch { return; }
+    function beepBurst() {
+      if (!alarmCtx) return;
+      [0, 0.2, 0.4].forEach(offset => {
+        const osc = alarmCtx.createOscillator();
+        const gain = alarmCtx.createGain();
+        osc.connect(gain);
+        gain.connect(alarmCtx.destination);
+        osc.frequency.value = 660;
+        gain.gain.value = 0.3;
+        osc.start(alarmCtx.currentTime + offset);
+        osc.stop(alarmCtx.currentTime + offset + 0.12);
+      });
+    }
+    beepBurst();
+    alarmIntervalId = setInterval(beepBurst, 2000);
+  }
+
+  function stopStepAlarm() {
+    if (alarmIntervalId) { clearInterval(alarmIntervalId); alarmIntervalId = null; }
+    if (alarmCtx) { try { alarmCtx.close(); } catch {} alarmCtx = null; }
+  }
+
+  function showStepAlert(stepLabel) {
+    // Remove any existing alert
+    const existing = document.getElementById("sched-step-alert");
+    if (existing) existing.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "sched-step-alert";
+    overlay.className = "sched-step-alert-overlay";
+    overlay.innerHTML = `
+      <div class="sched-step-alert-card">
+        <div class="sched-alert-icon">\u23F0</div>
+        <h3 class="sched-alert-title">Time\u2019s Up!</h3>
+        <p class="sched-alert-label">${stepLabel}</p>
+        <button type="button" class="sched-alert-dismiss" id="sched-alert-dismiss">Got It</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    document.getElementById("sched-alert-dismiss").addEventListener("click", () => {
+      stopStepAlarm();
+      overlay.remove();
+    });
+  }
+
   // ── Populate dropdowns using shared utilities ──
   populateStyleSelect(styleSelect);
   populateOvenSelect(ovenSelect);
@@ -529,6 +584,7 @@
       clearInterval(countdownInterval);
       countdownInterval = null;
     }
+    stopStepAlarm();
     clearAllStepTimeouts();
   }
 
@@ -540,10 +596,16 @@
     if (diff <= 0) {
       el.textContent = "\u23F0 Now!";
       el.classList.add("countdown-now");
-      // Notification is handled by scheduleAllNotifications timeouts.
-      // Re-render to advance countdown to the next upcoming step.
+      // Fire alarm + alert once per step
       if (!el.dataset.advanced) {
         el.dataset.advanced = "1";
+        const stepIdx = el.closest(".sched-timeline-step")?.dataset.stepIdx;
+        const stepLabel = computedSchedule && stepIdx != null
+          ? computedSchedule[stepIdx].label
+          : "This step";
+        startStepAlarm();
+        showStepAlert(stepLabel);
+        // Re-render to advance countdown to the next upcoming step
         setTimeout(() => {
           if (computedSchedule) {
             renderScheduleTimeline(computedSchedule);
@@ -604,10 +666,13 @@
         at: new Date(fireAt),
       });
 
-      // Also keep a browser-side timeout for re-rendering the timeline
+      // Also keep a browser-side timeout for alarm + re-rendering
+      const stepLabel = step.label;
       const tid = setTimeout(() => {
         if (notifiedSteps.has(key)) return;
         notifiedSteps.add(key);
+        startStepAlarm();
+        showStepAlert(stepLabel);
         if (computedSchedule) {
           renderScheduleTimeline(computedSchedule);
           renderVisualBar(computedSchedule);
