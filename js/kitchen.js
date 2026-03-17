@@ -277,6 +277,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     PieLabProfile.saveProfile(updates);
 
+    // Start Pro trial on first profile save (7-day trial)
+    if (typeof PieLabPremium !== "undefined" && updates.displayName) {
+      PieLabPremium.startTrial();
+    }
+
     // Update stored city so subsequent edits compare to latest save
     storedCity = currentCity;
 
