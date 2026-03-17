@@ -1,10 +1,11 @@
 /*  The Pie Lab — Service Worker  */
-const CACHE_NAME = "pielab-v39";
+const CACHE_NAME = "pielab-v40";
 
 /* ── Derive base path so caching works on both localhost and /Pizza-Lab/ ── */
 const BASE = self.registration.scope;
 
 /* ── Shell assets (app skeleton — always cached) ── */
+/* Version query strings MUST match the <script>/<link> tags in HTML pages */
 const APP_SHELL_PATHS = [
   "",
   "index.html",
@@ -15,26 +16,26 @@ const APP_SHELL_PATHS = [
   "learn.html",
   "legal.html",
   "style.css?v=27",
-  "js/premium.js",
-  "js/toolkit.js",
-  "js/calculator.js",
+  "js/premium.js?v=3",
+  "js/toolkit.js?v=5",
+  "js/calculator.js?v=16",
   "js/scheduler.js",
-  "js/journal-ui.js",
-  "js/kitchen.js",
-  "js/knowledge.js",
-  "js/nav.js",
+  "js/journal-ui.js?v=15",
+  "js/kitchen.js?v=9",
+  "js/knowledge.js?v=3",
+  "js/nav.js?v=7",
   "js/carousel.js",
   "js/onboarding.js",
   "js/first-bake.js",
-  "js/user-profile.js",
+  "js/user-profile.js?v=5",
   "js/pie-notifications.js",
   "js/capacitor-init.js",
   "js/vendor/html2canvas.min.js",
-  "recipes.js",
-  "knowledge-data.js",
-  "tools-data.js",
-  "scheduler-data.js",
-  "journal.js",
+  "recipes.js?v=6",
+  "knowledge-data.js?v=2",
+  "tools-data.js?v=4",
+  "scheduler-data.js?v=5",
+  "journal.js?v=3",
   "assets/logos/favicon-32.svg",
   "assets/logos/logo-monogram-512.svg",
   "assets/logos/logo-horizontal.svg",
