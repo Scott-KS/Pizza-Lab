@@ -180,27 +180,33 @@ function populateOvenGuide() {
         </select>
       </div>
     </div>
-    <div class="oven-cards" id="oven-cards"></div>
+    <div class="oven-accordion" id="oven-accordion"></div>
   `;
 
   const styleFilter = panel.querySelector("#oven-style-filter");
-  const cardsContainer = panel.querySelector("#oven-cards");
+  const accordionContainer = panel.querySelector("#oven-accordion");
 
-  function renderOvenCards(filterStyle) {
-    cardsContainer.innerHTML = OVEN_SETUPS.map((setup) => {
-      const isRecommended = filterStyle !== "all" && setup.bestStyles.includes(filterStyle);
+  function renderOvenAccordion(filterStyle) {
+    accordionContainer.innerHTML = "";
 
+    const items = OVEN_SETUPS
+      .map((setup) => {
+        const isRecommended = filterStyle !== "all" && setup.bestStyles.includes(filterStyle);
+        return { setup, isRecommended };
+      })
+      // When filtering, show recommended ovens first
+      .sort((a, b) => (b.isRecommended ? 1 : 0) - (a.isRecommended ? 1 : 0));
+
+    items.forEach(({ setup, isRecommended }) => {
       // Build bake time rows
       let bakeRows;
       if (filterStyle === "all") {
-        // Show best styles only
         bakeRows = setup.bestStyles.map((key) => {
           const bt = setup.styleBakeTimes[key];
           const name = PIZZA_RECIPES[key] ? PIZZA_RECIPES[key].name : key;
           return `<tr><td>${name}<div class="bake-note">${bt.note}</div></td><td>${bt.time}</td></tr>`;
         }).join("");
       } else {
-        // Show just the selected style
         const bt = setup.styleBakeTimes[filterStyle];
         const name = PIZZA_RECIPES[filterStyle] ? PIZZA_RECIPES[filterStyle].name : filterStyle;
         if (bt) {
@@ -211,49 +217,48 @@ function populateOvenGuide() {
       }
 
       const tipsHtml = setup.tips.map((t) => `<li>${t}</li>`).join("");
+      const recBadge = isRecommended ? ' <span class="oven-rec-badge-inline">\u2605 Recommended</span>' : "";
 
-      return `
-        <div class="oven-card ${isRecommended ? "oven-recommended" : ""}">
-          ${isRecommended ? '<span class="oven-rec-badge">\u2605 Recommended</span>' : ""}
-          <div class="oven-card-header">
-            <span class="oven-icon">${setup.icon}</span>
-            <div>
-              <h3>${setup.name}</h3>
-              <span class="oven-temp-range">${setup.tempRange}</span>
-            </div>
-          </div>
-          <div class="oven-card-body">
-            <div class="oven-stat">
-              <span class="oven-stat-label">Preheat</span>
-              <span class="oven-stat-value">${setup.preheatTime}</span>
-            </div>
-            <div class="oven-stat">
-              <span class="oven-stat-label">Heat Transfer</span>
-              <span class="oven-stat-value">${setup.heatTransfer}</span>
-            </div>
-            <div class="oven-stat">
-              <span class="oven-stat-label">Limitations</span>
-              <span class="oven-stat-value">${setup.limitations}</span>
-            </div>
-
-            <h4>Bake Times</h4>
-            <div class="oven-bake-table-wrapper">
-              <table class="oven-bake-table">
-                <thead><tr><th>Style</th><th>Time</th></tr></thead>
-                <tbody>${bakeRows}</tbody>
-              </table>
-            </div>
-
-            <h4>Tips</h4>
-            <ul class="oven-tips">${tipsHtml}</ul>
-          </div>
+      const bodyHtml = `
+        <div class="oven-stat">
+          <span class="oven-stat-label">Preheat</span>
+          <span class="oven-stat-value">${setup.preheatTime}</span>
         </div>
+        <div class="oven-stat">
+          <span class="oven-stat-label">Heat Transfer</span>
+          <span class="oven-stat-value">${setup.heatTransfer}</span>
+        </div>
+        <div class="oven-stat">
+          <span class="oven-stat-label">Limitations</span>
+          <span class="oven-stat-value">${setup.limitations}</span>
+        </div>
+        <h4>Bake Times</h4>
+        <div class="oven-bake-table-wrapper">
+          <table class="oven-bake-table">
+            <thead><tr><th>Style</th><th>Time</th></tr></thead>
+            <tbody>${bakeRows}</tbody>
+          </table>
+        </div>
+        <h4>Tips</h4>
+        <ul class="oven-tips">${tipsHtml}</ul>
       `;
-    }).join("");
+
+      createAccordion(accordionContainer, [{
+        title: `${setup.icon} ${setup.name}${recBadge}`,
+        subtitle: setup.tempRange,
+        data: bodyHtml,
+      }], (html) => html);
+    });
+
+    // Auto-open recommended oven when filtering by style
+    if (filterStyle !== "all") {
+      const first = accordionContainer.querySelector(".accordion-item");
+      if (first) openAccordion(first);
+    }
   }
 
-  styleFilter.addEventListener("change", () => renderOvenCards(styleFilter.value));
-  renderOvenCards("all");
+  styleFilter.addEventListener("change", () => renderOvenAccordion(styleFilter.value));
+  renderOvenAccordion("all");
 }
 
 // ── Dough Troubleshooting ────────────────────────────
