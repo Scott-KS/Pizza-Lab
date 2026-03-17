@@ -1419,10 +1419,10 @@
         const photoBottom = PHOTO_Y + PHOTO_SIZE;
         logo.onload = () => {
           drawLogoWatermark(ctx, logo, PHOTO_X + PHOTO_SIZE, photoBottom);
-          finishCard(ctx, canvas, entry, profile, W, H, PHOTO_X, photoBottom, resolve);
+          finishCard(ctx, canvas, entry, profile, W, H, PHOTO_X, photoBottom, resolve, reject);
         };
         logo.onerror = () => {
-          finishCard(ctx, canvas, entry, profile, W, H, PHOTO_X, photoBottom, resolve);
+          finishCard(ctx, canvas, entry, profile, W, H, PHOTO_X, photoBottom, resolve, reject);
         };
         logo.src = "assets/logos/logo-transparent.svg";
       };
@@ -1483,10 +1483,10 @@
     ctx.drawImage(offscreen, x, y);
   }
 
-  function finishCard(ctx, canvas, entry, profile, W, H, LEFT, photoBottom, resolve) {
+  function finishCard(ctx, canvas, entry, profile, W, H, LEFT, photoBottom, resolve, reject) {
     // Polaroid border is already white from initial fill — no separator line needed
     // Extra inset so text isn't clipped when Instagram crops edges
-    const TEXT_PAD = 16;
+    const TEXT_PAD = 36;
     LEFT = LEFT + TEXT_PAD;
     const RIGHT = W - LEFT;
 
