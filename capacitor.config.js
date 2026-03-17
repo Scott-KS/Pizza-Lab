@@ -1,6 +1,5 @@
-import type { CapacitorConfig } from '@capacitor/cli';
-
-const config: CapacitorConfig = {
+/** @type {import('@capacitor/cli').CapacitorConfig} */
+const config = {
   appId: 'app.pielab',
   appName: 'The Pie Lab',
   webDir: '.',
@@ -24,4 +23,4 @@ const config: CapacitorConfig = {
   },
 };
 
-export default config;
+module.exports = config;

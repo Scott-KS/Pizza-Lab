@@ -14,29 +14,29 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=26" />
+  <link rel="stylesheet" href="style.css?v=27" />
 </head>
 <body data-page="welcome" class="splash-page">
 
   <!-- Pizza Carousel Hero -->
   <section class="pizza-hero">
     <div class="carousel-track">
-      <div class="carousel-slide active" data-style="neapolitan" style="background-image: url('Images/Neapolitan.webp')">
+      <div class="carousel-slide active" data-style="neapolitan" role="img" aria-label="Neapolitan pizza" style="background-image: url('Images/Neapolitan.webp')">
         <span class="slide-label">Neapolitan</span>
       </div>
-      <div class="carousel-slide" data-style="new-york" style="background-image: url('Images/New-York.webp')">
+      <div class="carousel-slide" data-style="new-york" role="img" aria-label="New York pizza" style="background-image: url('Images/New-York.webp')">
         <span class="slide-label">New York</span>
       </div>
-      <div class="carousel-slide" data-style="grandma" style="background-image: url('Images/Grandma.webp')">
+      <div class="carousel-slide" data-style="grandma" role="img" aria-label="Grandma pizza" style="background-image: url('Images/Grandma.webp')">
         <span class="slide-label">Grandma</span>
       </div>
-      <div class="carousel-slide" data-style="chicago-tavern" style="background-image: url('Images/Chicago-Tavern.webp')">
+      <div class="carousel-slide" data-style="chicago-tavern" role="img" aria-label="Chicago Tavern pizza" style="background-image: url('Images/Chicago-Tavern.webp')">
         <span class="slide-label">Chicago Tavern</span>
       </div>
-      <div class="carousel-slide" data-style="sicilian" style="background-image: url('Images/Sicilian.webp')">
+      <div class="carousel-slide" data-style="sicilian" role="img" aria-label="Sicilian pizza" style="background-image: url('Images/Sicilian.webp')">
         <span class="slide-label">Sicilian</span>
       </div>
-      <div class="carousel-slide" data-style="ohio-valley" style="background-image: url('Images/Ohio-Valley.webp')">
+      <div class="carousel-slide" data-style="ohio-valley" role="img" aria-label="Ohio Valley pizza" style="background-image: url('Images/Ohio-Valley.webp')">
         <span class="slide-label">Ohio Valley</span>
       </div>
     </div>
@@ -47,12 +47,12 @@
       <a href="calculator.html" class="btn-start-baking" id="btn-start">Start Baking</a>
     </div>
     <div class="carousel-dots">
-      <button class="dot active" data-index="0"></button>
-      <button class="dot" data-index="1"></button>
-      <button class="dot" data-index="2"></button>
-      <button class="dot" data-index="3"></button>
-      <button class="dot" data-index="4"></button>
-      <button class="dot" data-index="5"></button>
+      <button type="button" class="dot active" data-index="0" aria-label="Slide 1"></button>
+      <button type="button" class="dot" data-index="1" aria-label="Slide 2"></button>
+      <button type="button" class="dot" data-index="2" aria-label="Slide 3"></button>
+      <button type="button" class="dot" data-index="3" aria-label="Slide 4"></button>
+      <button type="button" class="dot" data-index="4" aria-label="Slide 5"></button>
+      <button type="button" class="dot" data-index="5" aria-label="Slide 6"></button>
     </div>
     <button class="carousel-arrow prev" aria-label="Previous">&#8592;</button>
     <button class="carousel-arrow next" aria-label="Next">&#8594;</button>

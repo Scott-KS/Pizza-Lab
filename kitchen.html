@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=26" />
+  <link rel="stylesheet" href="style.css?v=27" />
 </head>
 <body data-page="kitchen">
 
@@ -77,8 +77,8 @@
         </div>
 
         <div class="form-group">
-          <label>Humidity</label>
-          <div class="toggle-group" id="k-humidity">
+          <label id="humidity-label">Humidity</label>
+          <div class="toggle-group" id="k-humidity" role="group" aria-labelledby="humidity-label">
             <button type="button" class="toggle-btn" data-value="dry">Dry</button>
             <button type="button" class="toggle-btn selected" data-value="normal">Normal</button>
             <button type="button" class="toggle-btn" data-value="humid">Humid</button>
@@ -91,8 +91,8 @@
         </div>
 
         <div class="form-group">
-          <label>Measurement System</label>
-          <div class="toggle-group toggle-group--three" id="k-units">
+          <label id="units-label">Measurement System</label>
+          <div class="toggle-group toggle-group--three" id="k-units" role="group" aria-labelledby="units-label">
             <button type="button" class="toggle-btn" data-value="standard">Standard<br><span class="toggle-sub">oz / °F</span></button>
             <button type="button" class="toggle-btn" data-value="metric">Metric<br><span class="toggle-sub">g / °C</span></button>
             <button type="button" class="toggle-btn" data-value="hybrid">Hybrid<br><span class="toggle-sub">Metric weight, Standard temp</span></button>
@@ -100,17 +100,17 @@
         </div>
       </fieldset>
 
-      <button id="k-save" class="btn-save-kitchen">Save My Kitchen</button>
+      <button type="button" id="k-save" class="btn-save-kitchen">Save My Kitchen</button>
       <p id="k-save-confirm" class="save-confirm hidden">Settings saved.</p>
 
       <div class="kitchen-data-section">
         <h3>Data Backup</h3>
         <p class="kitchen-subtitle">Export or import all your Pie Lab data — journal entries, kitchen settings, and profile.</p>
         <div class="data-actions">
-          <button id="btn-export" class="btn-export">Export Data</button>
+          <button type="button" id="btn-export" class="btn-export">Export Data</button>
           <label for="import-file" class="btn-import">
             Import Data
-            <input type="file" id="import-file" accept=".json" style="display:none" />
+            <input type="file" id="import-file" accept=".json" class="sr-only" />
           </label>
         </div>
         <p id="export-status" class="save-confirm hidden"></p>
@@ -136,7 +136,7 @@
         </div>
 
         <div class="feedback-actions">
-          <button id="btn-send-feedback" class="btn-feedback-send">Send Feedback</button>
+          <button type="button" id="btn-send-feedback" class="btn-feedback-send">Send Feedback</button>
         </div>
         <p id="feedback-status" class="save-confirm hidden"></p>
       </div>
@@ -163,11 +163,12 @@
   <!-- Delete Data Confirmation Modal -->
   <div class="modal-overlay hidden" id="delete-data-modal">
     <div class="modal-content modal-content--narrow">
+      <button type="button" class="modal-close" id="delete-modal-close" aria-label="Close">&times;</button>
       <h3>Delete All Data?</h3>
       <p>This will permanently erase your profile, journal entries, photos, schedule, and all settings. This cannot be undone.</p>
       <div class="modal-actions">
-        <button class="btn-modal-cancel" id="delete-cancel">Cancel</button>
-        <button class="btn-modal-delete" id="delete-confirm">Delete Everything</button>
+        <button type="button" class="btn-modal-cancel" id="delete-cancel">Cancel</button>
+        <button type="button" class="btn-modal-delete" id="delete-confirm">Delete Everything</button>
       </div>
     </div>
   </div>

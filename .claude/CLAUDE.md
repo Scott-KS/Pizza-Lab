@@ -49,18 +49,19 @@ The Pie Lab is a premium pizza-making web app. Static HTML/CSS/JS — no framewo
 
 ### CSS
 - Never use inline styles unless dynamically required by JS logic.
-- Match the existing design system exactly:
-  - Background: `#1a1a1a`
-  - Surface: `#252525`
-  - Surface-2: `#2e2e2e`
-  - Border: `#383838`
-  - Text: `#f0ece4`
-  - Muted: `#9a9690`
-  - Accent: `#c9622a`
-  - Gold: `#c9a84c`
-  - Border radius: `2px` throughout
-  - Transitions: `200ms ease` only
-- Typography: Cormorant Garamond for headings, Inter for body. Do not introduce new fonts.
+- Match the existing design system (CSS variables defined in `:root`):
+  - Light mode background: `#f3ebe2` (`--clr-bg`)
+  - Card surface: `#faf6f1` (`--clr-card`)
+  - Section bg: `#ede4da` (`--clr-section-bg`)
+  - Border: `#d5c9bc` (`--clr-border`)
+  - Text: `#1a1410` (`--clr-text`)
+  - Text light/muted: `#5a4e47` (`--clr-text-light`)
+  - Primary: `#8c3524` (`--clr-primary`)
+  - Accent: `#c9954a` (`--clr-accent`)
+  - Dark mode overrides are in `[data-theme="dark"]` block
+  - Border radius: `12px` (`--radius`)
+  - Transitions: `200ms ease` preferred, up to `400ms` for complex animations
+- Typography: Playfair Display for headings (`--font-display`), Inter for body (`--font-body`). Do not introduce new fonts.
 - Mobile-first. New UI elements must stack cleanly on small screens. Test at 375px width mentally before submitting.
 
 ### HTML

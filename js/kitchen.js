@@ -2,6 +2,11 @@
    The Pie Lab — My Kitchen
    Page: kitchen.html
    ══════════════════════════════════════════════════════ */
+function escapeHtml(str) {
+  if (!str) return "";
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // ── Welcome banner for new users ───────────────────
   const urlParams = new URLSearchParams(window.location.search);
@@ -172,8 +177,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const isUS = place.country_code?.toUpperCase() === "US" && abbr;
 
       li.innerHTML = isUS
-        ? `<span class="ac-city">${place.name}</span>, <span class="ac-region">${abbr}</span>`
-        : `<span class="ac-city">${place.name}</span>${region ? `, <span class="ac-region">${region}</span>` : ""}${place.country && place.country !== "United States" ? `, <span class="ac-region">${place.country}</span>` : ""}`;
+        ? `<span class="ac-city">${escapeHtml(place.name)}</span>, <span class="ac-region">${escapeHtml(abbr)}</span>`
+        : `<span class="ac-city">${escapeHtml(place.name)}</span>${region ? `, <span class="ac-region">${escapeHtml(region)}</span>` : ""}${place.country && place.country !== "United States" ? `, <span class="ac-region">${escapeHtml(place.country)}</span>` : ""}`;
 
       li.addEventListener("mousedown", (e) => {
         e.preventDefault();          // prevent blur from firing first
@@ -442,6 +447,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (deleteCancel) deleteCancel.addEventListener("click", () => {
+      deleteModal.classList.add("hidden");
+    });
+
+    const deleteClose = document.getElementById("delete-modal-close");
+    if (deleteClose) deleteClose.addEventListener("click", () => {
       deleteModal.classList.add("hidden");
     });
 
