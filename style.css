@@ -1014,6 +1014,14 @@ main {
   }
 }
 
+/* ── Form Info Row (below label, above input) ──── */
+.form-info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  margin-bottom: 0.35rem;
+}
+
 /* ── Tools & Equipment Info Button ──────────────── */
 .tools-info-btn {
   display: inline-flex;
@@ -1057,7 +1065,7 @@ main {
   color: var(--clr-accent);
   text-decoration: none;
   vertical-align: middle;
-  margin-left: 8px;
+  margin-left: 10px;
   transition: color 200ms ease;
 }
 .style-library-link:hover {
