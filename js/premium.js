@@ -181,11 +181,7 @@ window.PieLabPremium = (function () {
       badge.textContent = "";
     }
 
-    // Hide PRO tags on toolkit tabs during trial or when Pro is active
-    const hasAccess = canUse();
-    document.querySelectorAll(".toolkit-tab .premium-tag").forEach((tag) => {
-      tag.style.display = hasAccess ? "none" : "";
-    });
+    // PRO tags always stay visible as feature indicators
   }
 
   // ── Init on load ─────────────────────────────────────
