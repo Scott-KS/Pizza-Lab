@@ -45,15 +45,21 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedHumidity = profile.humidity || "normal";
 
   humidityGrp.querySelectorAll(".toggle-btn").forEach((btn) => {
-    btn.classList.toggle("selected", btn.dataset.value === selectedHumidity);
+    const isActive = btn.dataset.value === selectedHumidity;
+    btn.classList.toggle("selected", isActive);
+    btn.setAttribute("aria-pressed", isActive);
   });
 
   humidityGrp.addEventListener("click", (e) => {
     const btn = e.target.closest(".toggle-btn");
     if (!btn) return;
 
-    humidityGrp.querySelectorAll(".toggle-btn").forEach((b) => b.classList.remove("selected"));
+    humidityGrp.querySelectorAll(".toggle-btn").forEach((b) => {
+      b.classList.remove("selected");
+      b.setAttribute("aria-pressed", "false");
+    });
     btn.classList.add("selected");
+    btn.setAttribute("aria-pressed", "true");
     selectedHumidity = btn.dataset.value;
   });
 
@@ -62,15 +68,21 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedUnits = profile.unitSystem || "standard";
 
   unitsGrp.querySelectorAll(".toggle-btn").forEach((btn) => {
-    btn.classList.toggle("selected", btn.dataset.value === selectedUnits);
+    const isActive = btn.dataset.value === selectedUnits;
+    btn.classList.toggle("selected", isActive);
+    btn.setAttribute("aria-pressed", isActive);
   });
 
   unitsGrp.addEventListener("click", (e) => {
     const btn = e.target.closest(".toggle-btn");
     if (!btn) return;
 
-    unitsGrp.querySelectorAll(".toggle-btn").forEach((b) => b.classList.remove("selected"));
+    unitsGrp.querySelectorAll(".toggle-btn").forEach((b) => {
+      b.classList.remove("selected");
+      b.setAttribute("aria-pressed", "false");
+    });
     btn.classList.add("selected");
+    btn.setAttribute("aria-pressed", "true");
     selectedUnits = btn.dataset.value;
   });
 
@@ -152,10 +164,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const { display } = formatPlace(place);
     cityInput.value = display;
     closeSuggestions();
-    // Advance to next field after selecting a location
+    // During onboarding, skip past oven (defaults to Home) and scroll to save
+    const params = new URLSearchParams(window.location.search);
+    const isOnboarding = params.get("onboarding") === "1";
     setTimeout(() => {
-      ovenSelect.focus();
-      ovenSelect.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (isOnboarding) {
+        saveBtn.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else {
+        ovenSelect.focus();
+        ovenSelect.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
     }, 200);
 
     cityStatus.textContent = "Resolving elevation\u2026";
@@ -320,6 +338,49 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     }, 2500);
   });
+
+  // ── Restore Purchase ─────────────────────────────────
+  const restoreBtn = document.getElementById("btn-restore-purchase");
+  const restoreStatus = document.getElementById("restore-status");
+  const restoreRow = document.getElementById("restore-purchase-row");
+
+  // Only show if premium system is loaded and user is not already Pro
+  if (restoreRow && typeof PieLabPremium !== "undefined") {
+    if (PieLabPremium.isPro()) {
+      restoreRow.classList.add("hidden");
+    }
+  }
+
+  if (restoreBtn) {
+    restoreBtn.addEventListener("click", async () => {
+      if (typeof PieLabPremium === "undefined") return;
+      restoreBtn.disabled = true;
+      restoreBtn.textContent = "Restoring\u2026";
+
+      const restored = await PieLabPremium.restorePurchases();
+
+      if (restored) {
+        restoreStatus.textContent = "Pro access restored!";
+        restoreStatus.classList.remove("hidden");
+        restoreBtn.textContent = "Restored";
+        if (window.PieLabHaptics) PieLabHaptics.success();
+      } else {
+        restoreStatus.textContent = "No previous purchase found.";
+        restoreStatus.classList.remove("hidden");
+        restoreBtn.textContent = "Restore Purchase";
+        restoreBtn.disabled = false;
+      }
+
+      setTimeout(() => {
+        restoreStatus.classList.add("fade-out");
+        restoreStatus.addEventListener(
+          "transitionend",
+          () => { restoreStatus.classList.add("hidden"); restoreStatus.classList.remove("fade-out"); },
+          { once: true }
+        );
+      }, 3000);
+    });
+  }
 
   // ── Clear any saved theme override — always use system preference ──
   localStorage.removeItem("pielab-theme");
@@ -511,6 +572,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Step 2: confirmed — delete everything
     if (deleteConfirm) deleteConfirm.addEventListener("click", () => {
+      if (window.PieLabHaptics) PieLabHaptics.warning();
       const keys = Object.keys(localStorage).filter((k) => k.startsWith("pielab"));
       keys.forEach((k) => localStorage.removeItem(k));
       // Clear IndexedDB photo storage (does not affect camera roll)

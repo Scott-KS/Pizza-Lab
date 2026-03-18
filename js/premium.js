@@ -128,6 +128,7 @@ window.PieLabPremium = (function () {
         save(data);
         renderBadge();
         hideModal();
+        if (window.PieLabHaptics) PieLabHaptics.success();
         return true;
       }
 
