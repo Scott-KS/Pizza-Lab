@@ -65,21 +65,31 @@
     const fill = document.getElementById("storage-bar-fill");
     if (!label || !fill) return;
 
-    let totalBytes = 0;
+    let lsBytes = 0;
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        totalBytes += (key.length + localStorage.getItem(key).length) * 2; // UTF-16
+        lsBytes += (key.length + localStorage.getItem(key).length) * 2; // UTF-16
       }
     } catch { /* ignore */ }
 
-    const limitBytes = 5 * 1024 * 1024; // ~5 MB
-    const usedMB = (totalBytes / (1024 * 1024)).toFixed(1);
-    const pct = Math.min((totalBytes / limitBytes) * 100, 100);
+    const lsMB = (lsBytes / (1024 * 1024)).toFixed(1);
+    const lsLimit = 5 * 1024 * 1024;
+    const lsPct = Math.min((lsBytes / lsLimit) * 100, 100);
 
-    label.textContent = `Storage: ${usedMB} MB of ~5 MB used`;
-    fill.style.width = `${pct}%`;
-    fill.className = "storage-bar-fill" + (pct > 95 ? " storage-critical" : pct > 80 ? " storage-warning" : "");
+    label.textContent = `Storage: ${lsMB} MB settings`;
+    fill.style.width = `${lsPct}%`;
+    fill.className = "storage-bar-fill" + (lsPct > 95 ? " storage-critical" : lsPct > 80 ? " storage-warning" : "");
+
+    // Show IndexedDB photo storage size
+    if (typeof PieLabPhotos !== "undefined") {
+      PieLabPhotos.getStorageSize().then((photoBytes) => {
+        const photoMB = (photoBytes / (1024 * 1024)).toFixed(1);
+        if (photoBytes > 0) {
+          label.textContent = `Storage: ${lsMB} MB settings + ${photoMB} MB photos`;
+        }
+      }).catch(() => {});
+    }
   }
 
   // ── Populate dropdowns ────────────────────────────
@@ -563,9 +573,15 @@
       showMilestoneCelebration(saved);
     }
 
-    // Show share guide after first bake with a photo (delayed if milestone is showing)
-    const shareGuideDelay = hasMilestone ? 4500 : 600;
-    setTimeout(() => showShareGuide(saved), shareGuideDelay);
+    // Show share guide after first bake, or submit nudge every 3rd bake
+    const guideDelay = hasMilestone ? 4500 : 600;
+    setTimeout(() => {
+      if (!localStorage.getItem(SHARE_GUIDE_KEY)) {
+        showShareGuide(saved);
+      } else {
+        showSubmitNudge(saved);
+      }
+    }, guideDelay);
   });
 
   // ── Empty state builder ──────────────────────────
@@ -666,10 +682,10 @@
       card.className = "journal-entry-card";
       card.dataset.id = entry.id;
 
-      // Use first photo from photos array, fall back to legacy photo field
-      const thumbSrc = (entry.photos && entry.photos.length) ? entry.photos[0] : entry.photo;
-      const thumbHtml = thumbSrc
-        ? `<img class="entry-thumb" src="${thumbSrc}" alt="Bake photo" />`
+      // Photo thumbnail — loaded async from IndexedDB
+      const hasPhoto = entry.photoCount > 0 || (entry.photos && entry.photos.length) || entry.photo;
+      const thumbHtml = hasPhoto
+        ? `<div class="entry-thumb-placeholder entry-thumb-loading" data-photo-id="${entry.id}"></div>`
         : `<div class="entry-thumb-placeholder">\uD83C\uDF55</div>`;
 
       const detailParts = [];
@@ -704,6 +720,32 @@
 
       card.addEventListener("click", () => openDetailModal(entry));
       entriesContainer.appendChild(card);
+    });
+
+    // Lazy-load thumbnails from IndexedDB
+    lazyLoadThumbnails();
+  }
+
+  function lazyLoadThumbnails() {
+    if (typeof PieLabPhotos === "undefined") return;
+    const placeholders = entriesContainer.querySelectorAll("[data-photo-id]");
+    placeholders.forEach((el) => {
+      const entryId = el.dataset.photoId;
+      PieLabPhotos.getPhotos(entryId).then((photos) => {
+        if (photos && photos.length) {
+          const img = document.createElement("img");
+          img.className = "entry-thumb";
+          img.alt = "Bake photo";
+          img.src = photos[0];
+          el.replaceWith(img);
+        } else {
+          el.textContent = "\uD83C\uDF55";
+          el.classList.remove("entry-thumb-loading");
+        }
+      }).catch(() => {
+        el.textContent = "\uD83C\uDF55";
+        el.classList.remove("entry-thumb-loading");
+      });
     });
   }
 
@@ -759,11 +801,20 @@
   }
 
   // ── Detail Modal ──────────────────────────────────
-  function openDetailModal(entry) {
+  async function openDetailModal(entry) {
     let html = "";
 
-    // Photo strip — supports multiple photos
-    const photos = (entry.photos && entry.photos.length) ? entry.photos : (entry.photo ? [entry.photo] : []);
+    // Load photos from IndexedDB (fall back to entry data for backward compat)
+    let photos = [];
+    if (typeof PieLabPhotos !== "undefined" && entry.id) {
+      try { photos = await PieLabPhotos.getPhotos(entry.id); } catch {}
+    }
+    if (!photos.length) {
+      photos = (entry.photos && entry.photos.length) ? entry.photos : (entry.photo ? [entry.photo] : []);
+    }
+    // Attach loaded photos so share/save can use them without another read
+    entry.photos = photos;
+
     if (photos.length) {
       html += '<div class="modal-photo-strip">';
       photos.forEach((src, i) => {
@@ -1078,6 +1129,7 @@
 
   // ── Share Guide Popup (after saving a bake with photo) ──
   const SHARE_GUIDE_KEY = "pielab-share-guide-shown";
+  const SUBMIT_FORM_URL = "https://REPLACE_WITH_YOUR_GOOGLE_FORM_URL";
 
   function showShareGuide(entry) {
     // Only show once
@@ -1112,12 +1164,54 @@
           <div class="share-guide-option">
             <span class="share-guide-icon">&#128247;</span>
             <div>
-              <strong>Submit to our Instagram</strong>
-              <p>DM the image to <strong>@ThePieLab</strong> on Instagram. The best bakes get featured in our feed.</p>
+              <strong>Get Featured on @pielab.app</strong>
+              <p>Submit your bake photo and you could be featured in our daily Instagram feed!</p>
             </div>
           </div>
         </div>
         <button class="share-guide-dismiss">Got It</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add("share-guide--visible"));
+
+    const dismiss = () => {
+      overlay.classList.remove("share-guide--visible");
+      setTimeout(() => overlay.remove(), 400);
+    };
+    overlay.querySelector(".share-guide-dismiss").addEventListener("click", dismiss);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
+  }
+
+  // ── Instagram Submit Nudge (every 3rd bake) ──────
+  const SUBMIT_NUDGE_KEY = "pielab-submit-nudge-count";
+
+  function showSubmitNudge(entry) {
+    const hasPhotos = (entry.photos && entry.photos.length) || entry.photo;
+    if (!hasPhotos) return;
+
+    const totalBakes = PieLabJournal.getAllEntries().length;
+    // Show on every 3rd bake, but not the 1st (share guide covers that)
+    if (totalBakes < 3 || totalBakes % 3 !== 0) return;
+
+    const overlay = document.createElement("div");
+    overlay.className = "share-guide-overlay";
+    overlay.innerHTML = `
+      <div class="share-guide-card">
+        <h2 class="share-guide-title">Feature Your Bake?</h2>
+        <p class="share-guide-subtitle">You\u2019ve logged ${totalBakes} bakes! Submit your best to <strong>@pielab.app</strong> on Instagram.</p>
+        <div class="share-guide-options">
+          <div class="share-guide-option">
+            <span class="share-guide-icon">&#128247;</span>
+            <div>
+              <strong>Get Featured</strong>
+              <p>Upload your bake photo and we\u2019ll pick the best submissions for our daily feed.</p>
+            </div>
+          </div>
+        </div>
+        <div class="submit-nudge-actions">
+          <a href="${SUBMIT_FORM_URL}" target="_blank" rel="noopener" class="btn-primary submit-nudge-btn">Submit My Bake</a>
+          <button class="share-guide-dismiss">Not Now</button>
+        </div>
       </div>`;
     document.body.appendChild(overlay);
     requestAnimationFrame(() => overlay.classList.add("share-guide--visible"));
@@ -1175,6 +1269,13 @@
               <p>Short &amp; casual</p>
             </div>
           </button>
+          <button class="share-chooser-btn share-chooser-btn--submit" data-dest="submit">
+            <span class="share-chooser-icon">&#128247;</span>
+            <div>
+              <strong>Submit to @pielab.app</strong>
+              <p>Get featured on our Instagram</p>
+            </div>
+          </button>
         </div>
         <button class="share-chooser-cancel">Cancel</button>
       </div>`;
@@ -1193,6 +1294,10 @@
       btn.addEventListener("click", () => {
         const dest = btn.dataset.dest;
         dismiss();
+        if (dest === "submit") {
+          window.open(SUBMIT_FORM_URL, "_blank", "noopener");
+          return;
+        }
         if (mode === "save") {
           savePhotosToDevice(entry, dest);
         } else {
@@ -1218,10 +1323,13 @@
       return;
     }
 
-    // 2. Collect all photos
-    const photos = (entry.photos && entry.photos.length)
+    // 2. Collect photos (from entry or IndexedDB)
+    let photos = (entry.photos && entry.photos.length)
       ? entry.photos
       : (entry.photo ? [entry.photo] : []);
+    if (!photos.length && typeof PieLabPhotos !== "undefined" && entry.id) {
+      try { photos = await PieLabPhotos.getPhotos(entry.id); } catch {}
+    }
     if (!photos.length) {
       showToast("Add a photo to share this bake");
       return;
@@ -1293,9 +1401,12 @@
     const location = (profile.city || "").trim();
     const skillLevel = entry.skillBadge || null;
 
-    const photos = (entry.photos && entry.photos.length)
+    let photos = (entry.photos && entry.photos.length)
       ? entry.photos
       : (entry.photo ? [entry.photo] : []);
+    if (!photos.length && typeof PieLabPhotos !== "undefined" && entry.id) {
+      try { photos = await PieLabPhotos.getPhotos(entry.id); } catch {}
+    }
     if (!photos.length) {
       showToast("No photos to save");
       return;
@@ -1642,9 +1753,9 @@
       <div class="passport-bake-items">`;
 
     entries.forEach((entry) => {
-      const thumbSrc = (entry.photos && entry.photos.length) ? entry.photos[0] : entry.photo;
-      const thumbHtml = thumbSrc
-        ? `<img class="passport-bake-thumb" src="${thumbSrc}" alt="Bake photo" />`
+      const hasPhoto = entry.photoCount > 0 || (entry.photos && entry.photos.length) || entry.photo;
+      const thumbHtml = hasPhoto
+        ? `<div class="passport-bake-thumb-placeholder" data-passport-photo-id="${entry.id}"></div>`
         : `<div class="passport-bake-thumb-placeholder">\uD83C\uDF55</div>`;
 
       const stars = entry.rating ? renderStars(entry.rating) : "";
@@ -1675,6 +1786,23 @@
         if (entry) openDetailModal(entry);
       });
     });
+
+    // Lazy-load passport thumbnails from IndexedDB
+    if (typeof PieLabPhotos !== "undefined") {
+      list.querySelectorAll("[data-passport-photo-id]").forEach((el) => {
+        PieLabPhotos.getPhotos(el.dataset.passportPhotoId).then((photos) => {
+          if (photos && photos.length) {
+            const img = document.createElement("img");
+            img.className = "passport-bake-thumb";
+            img.alt = "Bake photo";
+            img.src = photos[0];
+            el.replaceWith(img);
+          } else {
+            el.textContent = "\uD83C\uDF55";
+          }
+        }).catch(() => { el.textContent = "\uD83C\uDF55"; });
+      });
+    }
 
     // Scroll list into view
     list.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -1970,13 +2098,25 @@
   // ── Initialize ────────────────────────────────────
   populateDropdowns();
   populateOvenDropdown();
-  renderEntries();
-  renderStats();
-  renderAnalytics();
-  renderPassport();
-  renderDoughLibrary();
-  updateCompareButton();
-  updateStorageDisplay();
+
+  // Migrate localStorage photos to IndexedDB on first load, then render
+  function initRender() {
+    renderEntries();
+    renderStats();
+    renderAnalytics();
+    renderPassport();
+    renderDoughLibrary();
+    updateCompareButton();
+    updateStorageDisplay();
+  }
+
+  if (typeof PieLabPhotos !== "undefined") {
+    PieLabPhotos.migrateFromLocalStorage()
+      .then(() => initRender())
+      .catch(() => initRender());
+  } else {
+    initRender();
+  }
 
   // Start journal guide if flagged by the first-bake guide
   if (shouldShowJournalGuide()) {
