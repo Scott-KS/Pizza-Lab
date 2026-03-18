@@ -891,6 +891,17 @@
     const profile = (typeof PieLabProfile !== "undefined") ? PieLabProfile.getProfile() : {};
     const ovenType = profile.preferredOven || "home";
 
+    // If no eat time or method provided, pre-fill wizard Step 1 and let user choose
+    if (!prefill.eatTime || !prefill.fermentMethodKey) {
+      if (prefill.styleKey && styleSelect.querySelector(`option[value="${prefill.styleKey}"]`)) {
+        styleSelect.value = prefill.styleKey;
+      }
+      if (prefill.quantity) countInput.value = prefill.quantity;
+      checkStep1Ready();
+      goToStep(1);
+      return;
+    }
+
     // Validate eat time is in the future
     const eatTime = new Date(prefill.eatTime);
     const now = new Date();

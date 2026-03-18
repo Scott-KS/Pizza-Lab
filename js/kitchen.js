@@ -74,6 +74,15 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedUnits = btn.dataset.value;
   });
 
+  // ── Onboarding flow: Enter key advances to next field ──
+  nameInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      cityInput.focus();
+      cityInput.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
+
   // ── Location autocomplete & elevation ────────────────
   const suggestList = document.getElementById("k-city-suggestions");
   let storedCity         = profile.city || "";
@@ -143,6 +152,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const { display } = formatPlace(place);
     cityInput.value = display;
     closeSuggestions();
+    // Advance to next field after selecting a location
+    setTimeout(() => {
+      ovenSelect.focus();
+      ovenSelect.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 200);
 
     cityStatus.textContent = "Resolving elevation\u2026";
     cityStatus.className   = "city-status resolving";
@@ -452,34 +466,54 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 5000);
   });
 
-  // ── Delete All Data ─────────────────────────────────
+  // ── Delete All Data (two-step confirmation) ─────────
   const deleteBtn     = document.getElementById("k-delete-data");
   const deleteModal   = document.getElementById("delete-data-modal");
-  const deleteCancel  = document.getElementById("delete-cancel");
+  const deleteStep1   = document.getElementById("delete-step-1");
+  const deleteStep2   = document.getElementById("delete-step-2");
   const deleteConfirm = document.getElementById("delete-confirm");
+
+  function resetDeleteModal() {
+    deleteModal.classList.add("hidden");
+    if (deleteStep1) deleteStep1.classList.remove("hidden");
+    if (deleteStep2) deleteStep2.classList.add("hidden");
+  }
 
   if (deleteBtn && deleteModal) {
     deleteBtn.addEventListener("click", () => {
+      resetDeleteModal();
       deleteModal.classList.remove("hidden");
     });
 
-    if (deleteCancel) deleteCancel.addEventListener("click", () => {
-      deleteModal.classList.add("hidden");
+    // Step 1 → Step 2
+    const stepNext = document.getElementById("delete-step-next");
+    if (stepNext) stepNext.addEventListener("click", () => {
+      deleteStep1.classList.add("hidden");
+      deleteStep2.classList.remove("hidden");
+    });
+
+    // Cancel buttons
+    const deleteCancel = document.getElementById("delete-cancel");
+    if (deleteCancel) deleteCancel.addEventListener("click", resetDeleteModal);
+
+    const deleteCancel2 = document.getElementById("delete-cancel-2");
+    if (deleteCancel2) deleteCancel2.addEventListener("click", () => {
+      deleteStep2.classList.add("hidden");
+      deleteStep1.classList.remove("hidden");
     });
 
     const deleteClose = document.getElementById("delete-modal-close");
-    if (deleteClose) deleteClose.addEventListener("click", () => {
-      deleteModal.classList.add("hidden");
-    });
+    if (deleteClose) deleteClose.addEventListener("click", resetDeleteModal);
 
     deleteModal.addEventListener("click", (e) => {
-      if (e.target === deleteModal) deleteModal.classList.add("hidden");
+      if (e.target === deleteModal) resetDeleteModal();
     });
 
+    // Step 2: confirmed — delete everything
     if (deleteConfirm) deleteConfirm.addEventListener("click", () => {
       const keys = Object.keys(localStorage).filter((k) => k.startsWith("pielab"));
       keys.forEach((k) => localStorage.removeItem(k));
-      // Clear IndexedDB photo storage
+      // Clear IndexedDB photo storage (does not affect camera roll)
       if (typeof PieLabPhotos !== "undefined") {
         PieLabPhotos.deleteAll().catch(() => {}).finally(() => {
           window.location.href = "index.html";

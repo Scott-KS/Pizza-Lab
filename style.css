@@ -864,6 +864,7 @@ main {
 /* ── Action Buttons ──────────────────────────────── */
 .results-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-top: 2rem;
 }
@@ -1566,23 +1567,29 @@ main {
 
 /* ── Toolkit Tab Strip ───────────────────────────── */
 .toolkit-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  margin-bottom: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.35rem;
+  margin-bottom: 0;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.toolkit-panels {
+  padding-top: 1.25rem;
 }
 
 .toolkit-tab {
-  padding: 0.5rem 1rem;
+  padding: 0.55rem 0.75rem;
   border: 1.5px solid var(--clr-border);
   border-radius: 6px;
   background: var(--clr-card);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--clr-text-light);
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s, background 0.2s;
-  white-space: nowrap;
+  text-align: center;
 }
 
 .toolkit-tab:hover {
@@ -3138,13 +3145,32 @@ main {
   color: #fff;
 }
 
+/* ── Schedule This Bake Button ──────────────────── */
+.btn-schedule-bake {
+  flex: 1;
+  padding: 0.85rem 1rem;
+  border: 2px solid var(--clr-accent);
+  border-radius: 8px;
+  background: none;
+  color: var(--clr-accent);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-schedule-bake:hover {
+  background: var(--clr-accent);
+  color: #fff;
+}
+
 /* ── Detail Modal ────────────────────────────────── */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4776,6 +4802,7 @@ footer {
     align-items: center;
     justify-content: space-around;
     padding: 0 0.5rem;
+    transition: transform 200ms ease;
   }
 
   .tab-item {
@@ -4836,6 +4863,12 @@ footer {
   /* Give main content clearance above the tab bar */
   main {
     padding-bottom: 72px !important;
+  }
+
+  /* Hide tab bar when virtual keyboard is open */
+  .mobile-tab-bar.keyboard-open {
+    transform: translateY(100%);
+    pointer-events: none;
   }
 
   /* Keep header logo centered on mobile */
@@ -7289,12 +7322,12 @@ body[data-page="kitchen"] main {
 
 .btn-delete-data {
   display: inline-block;
-  padding: 0.6rem 1.25rem;
-  border: 2px solid #c0392b;
-  border-radius: 8px;
+  padding: 0.4rem 0.9rem;
+  border: 1.5px solid #c0392b;
+  border-radius: 6px;
   background: none;
   color: #c0392b;
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 200ms ease, color 200ms ease;

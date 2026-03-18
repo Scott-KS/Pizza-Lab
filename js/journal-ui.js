@@ -2029,6 +2029,135 @@
     }
   }
 
+  // ── Journal Welcome Tour (2nd app session) ────────
+  const JOURNAL_TOUR_DONE_KEY = "pielab-journal-tour-done";
+
+  function shouldShowJournalTour() {
+    if (localStorage.getItem(JOURNAL_TOUR_DONE_KEY) === "1") return false;
+    if (localStorage.getItem(JOURNAL_GUIDE_DONE_KEY) === "1") return false;
+    // Don't show if first-bake guide is pending or active
+    if (localStorage.getItem(JOURNAL_GUIDE_KEY) === "1") return false;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("prefill") === "1") return false;
+    const sessions = parseInt(localStorage.getItem("pielab-session-count") || "0", 10);
+    return sessions >= 2;
+  }
+
+  const journalTourSteps = [
+    {
+      title: "Your Bakes",
+      body: "This is where all your bakes live. Each time you make a pizza, log it here with a rating, photos, and tasting notes. Over time you'll build a record of what works and what to improve.",
+      target: "#tab-panel-bakes",
+    },
+    {
+      title: "Style Passport",
+      body: "The passport tracks your progress across all 13 pizza styles. As you log more bakes in each style, you'll earn skill badges — from First Bake all the way up to Pizzaiolo. It helps you dial in your recipe and build real skills.",
+      target: ".journal-tab[data-tab='passport']",
+      action: () => {
+        document.querySelector(".journal-tab[data-tab='passport']")?.click();
+      },
+    },
+    {
+      title: "Dough Library",
+      body: "Save your best dough recipes here so you can load them instantly in the calculator next time. Think of it as your personal recipe book for doughs you've perfected.",
+      target: ".journal-tab[data-tab='library']",
+      nextLabel: "Got It!",
+      action: () => {
+        document.querySelector(".journal-tab[data-tab='library']")?.click();
+      },
+    },
+  ];
+
+  let jtOverlay = null;
+  let jtHighlight = null;
+  let jtStep = 0;
+
+  function startJournalTour() {
+    jtStep = 0;
+    jtOverlay = document.createElement("div");
+    jtOverlay.className = "firstbake-overlay";
+    jtOverlay.innerHTML = `
+      <div class="firstbake-card">
+        <button class="firstbake-skip" id="jt-skip" aria-label="Close tour">Skip</button>
+        <div class="firstbake-step-count" id="jt-step-count"></div>
+        <h3 class="firstbake-title" id="jt-title"></h3>
+        <p class="firstbake-body" id="jt-body"></p>
+        <div class="firstbake-actions">
+          <button class="firstbake-btn firstbake-btn--next" id="jt-next">Next</button>
+        </div>
+      </div>
+    `;
+
+    jtHighlight = document.createElement("div");
+    jtHighlight.className = "firstbake-highlight hidden";
+    document.body.appendChild(jtHighlight);
+    document.body.appendChild(jtOverlay);
+
+    document.getElementById("jt-next").addEventListener("click", jtNextStep);
+    document.getElementById("jt-skip").addEventListener("click", jtClose);
+
+    requestAnimationFrame(() => jtOverlay.classList.add("firstbake-overlay--visible"));
+    jtRenderStep();
+  }
+
+  function jtRenderStep() {
+    const step = journalTourSteps[jtStep];
+    const total = journalTourSteps.length;
+
+    document.getElementById("jt-step-count").textContent = `Step ${jtStep + 1} of ${total}`;
+    document.getElementById("jt-title").textContent = step.title;
+    document.getElementById("jt-body").textContent = step.body;
+
+    const nextBtn = document.getElementById("jt-next");
+    nextBtn.textContent = step.nextLabel || (jtStep === total - 1 ? "Done" : "Next");
+
+    // Run action (e.g., switch tabs)
+    if (step.action) step.action();
+
+    // Highlight target
+    if (jtHighlight) jtHighlight.classList.add("hidden");
+    if (step.target) {
+      setTimeout(() => {
+        const el = document.querySelector(step.target);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          setTimeout(() => {
+            if (!jtHighlight) return;
+            const rect = el.getBoundingClientRect();
+            const pad = 6;
+            jtHighlight.style.top = (rect.top + window.scrollY - pad) + "px";
+            jtHighlight.style.left = (rect.left - pad) + "px";
+            jtHighlight.style.width = (rect.width + pad * 2) + "px";
+            jtHighlight.style.height = (rect.height + pad * 2) + "px";
+            jtHighlight.classList.remove("hidden");
+          }, 350);
+        }
+      }, 100);
+    }
+  }
+
+  function jtNextStep() {
+    if (jtStep < journalTourSteps.length - 1) {
+      jtStep++;
+      jtRenderStep();
+    } else {
+      jtClose();
+    }
+  }
+
+  function jtClose() {
+    localStorage.setItem(JOURNAL_TOUR_DONE_KEY, "1");
+    if (jtHighlight) { jtHighlight.remove(); jtHighlight = null; }
+    if (jtOverlay) {
+      jtOverlay.classList.remove("firstbake-overlay--visible");
+      setTimeout(() => {
+        if (jtOverlay) { jtOverlay.remove(); jtOverlay = null; }
+        // Return to bakes tab
+        document.querySelector(".journal-tab[data-tab='bakes']")?.click();
+      }, 300);
+    }
+  }
+
   // ── Initialize ────────────────────────────────────
   populateDropdowns();
   populateOvenDropdown();
@@ -2055,5 +2184,7 @@
   // Start journal guide if flagged by the first-bake guide
   if (shouldShowJournalGuide()) {
     setTimeout(() => startJournalGuide(), 800);
+  } else if (shouldShowJournalTour()) {
+    setTimeout(() => startJournalTour(), 800);
   }
 })();

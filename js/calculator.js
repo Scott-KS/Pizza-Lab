@@ -11,7 +11,6 @@ let lastSauce = null;
 let lastToppings = null;
 let lastPreferment = null;   // preferment ingredient split (if active)
 let currentUnit = "g";
-let currentMode = "quick"; // "quick" or "plan"
 
 // ── Preferment-eligible styles ──────────────────────
 const PREFERMENT_STYLES = ["neapolitan", "new-york", "sicilian", "grandma", "new-haven"];
@@ -130,131 +129,6 @@ document.addEventListener("DOMContentLoaded", () => {
     currentUnit = PieLabProfile.isMetricWeight() ? "g" : "oz";
   }
 
-  // ── Mode Toggle (Quick Calculate / Plan My Bake) ───
-  const modeToggleEl = document.getElementById("mode-toggle");
-  const planFieldsEl = document.getElementById("plan-fields");
-  const eatTimeInput = document.getElementById("eat-time");
-  const fermentSelect = document.getElementById("ferment-method");
-
-  // Restore mode from localStorage
-  try {
-    const savedMode = localStorage.getItem("pielab-calc-mode");
-    if (savedMode === "plan") currentMode = "plan";
-  } catch { /* ignore */ }
-
-  function setMode(mode) {
-    currentMode = mode;
-    modeToggleEl.querySelectorAll(".mode-btn").forEach((b) =>
-      b.classList.toggle("active", b.dataset.mode === mode)
-    );
-    planFieldsEl.classList.toggle("hidden", mode !== "plan");
-
-    // Show/hide yeast scaling controls based on mode
-    const yeastControls = document.getElementById("yeast-scaling-controls");
-    if (yeastControls) yeastControls.classList.toggle("hidden", mode !== "plan");
-
-    // Show tools info button only in Quick Calculate mode
-    const toolsBtn = document.getElementById("tools-info-btn");
-    const toolsLabel = document.querySelector(".tools-info-label");
-    if (toolsBtn) toolsBtn.classList.toggle("hidden", mode !== "quick");
-    if (toolsLabel) toolsLabel.classList.toggle("hidden", mode !== "quick");
-
-    if (mode === "plan" && !eatTimeInput.value) {
-      // Default to tomorrow 6:30 PM local
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(18, 30, 0, 0);
-      eatTimeInput.value = toLocalDateTimeString(tomorrow);
-      updateFermentOptions();
-    }
-
-    try {
-      localStorage.setItem("pielab-calc-mode", mode);
-    } catch { /* ignore */ }
-  }
-
-  function toLocalDateTimeString(date) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, "0");
-    const d = String(date.getDate()).padStart(2, "0");
-    const h = String(date.getHours()).padStart(2, "0");
-    const min = String(date.getMinutes()).padStart(2, "0");
-    return `${y}-${m}-${d}T${h}:${min}`;
-  }
-
-  function updateFermentOptions() {
-    const eatTime = new Date(eatTimeInput.value);
-    const now = new Date();
-    const availableHours = (eatTime - now) / 3600000;
-    const styleKey = document.getElementById("pizza-type").value || "";
-
-    const methods = (typeof getAvailableFermentMethods === "function")
-      ? getAvailableFermentMethods(availableHours, styleKey)
-      : [{ id: "same-day", label: "Same-Day Room Temperature" }];
-
-    fermentSelect.innerHTML = "";
-    methods.forEach((m, i) => {
-      const opt = document.createElement("option");
-      opt.value = m.id;
-      opt.textContent = m.label;
-      if (i === 0) opt.selected = true;
-      fermentSelect.appendChild(opt);
-    });
-  }
-
-  modeToggleEl.addEventListener("click", (e) => {
-    const btn = e.target.closest(".mode-btn");
-    if (!btn) return;
-    if (btn.dataset.mode === "plan" && typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
-      PieLabPremium.gate(() => setMode("plan"));
-      return;
-    }
-    setMode(btn.dataset.mode);
-  });
-
-  eatTimeInput.addEventListener("change", updateFermentOptions);
-
-  // ── Sync Fermentation Tuning sliders when method dropdown changes ──
-  fermentSelect.addEventListener("change", () => {
-    const methodId = fermentSelect.value;
-    if (!fermentHoursSlider || !fermentTempSlider) return;
-
-    // Map method to default hours and temp
-    const methodDefaults = {
-      "cold-72": { hours: 72, tempF: 38 },
-      "cold-48": { hours: 48, tempF: 38 },
-      "cold-24": { hours: 24, tempF: 38 },
-      "same-day": { hours: 6,  tempF: 72 },
-      "cure-24":  { hours: 24, tempF: 38 },
-    };
-    const defaults = methodDefaults[methodId];
-    if (!defaults) return;
-
-    fermentHoursSlider.value = Math.max(
-      parseInt(fermentHoursSlider.min),
-      Math.min(parseInt(fermentHoursSlider.max), defaults.hours)
-    );
-    fermentHoursLabel.textContent = fermentHoursSlider.value + " hours";
-
-    fermentTempSlider.value = defaults.tempF;
-    if (typeof updateFermentTempLabel === "function") updateFermentTempLabel();
-    else {
-      const valF = parseFloat(fermentTempSlider.value);
-      const metricTemp = typeof PieLabProfile !== "undefined" && PieLabProfile.isMetricTemp();
-      fermentTempLabel.textContent = metricTemp
-        ? fToC(valF) + "°C"
-        : valF + "°F";
-    }
-  });
-
-  // Apply saved mode on load (only if user has premium access)
-  if (currentMode === "plan") {
-    if (typeof PieLabPremium === "undefined" || PieLabPremium.canUse()) {
-      setMode("plan");
-    } else {
-      currentMode = "quick";
-    }
-  }
 
   // ── URL params (used for style pre-select after handler is bound) ──
   const urlParams = new URLSearchParams(window.location.search);
@@ -438,12 +312,12 @@ document.addEventListener("DOMContentLoaded", () => {
         recipe.yeastPct * yeastMultiplier));
     }
 
-    // ── Dynamic Yeast Scaling (Exponential Q10 model, Plan mode + premium) ──
+    // ── Dynamic Yeast Scaling (Exponential Q10 model, premium) ──
     let dynamicYeastActive = false;
     let fermentHoursVal = null;
     let fermentTempVal = null;
     let yeastTypeLabel = "Instant Dry Yeast";
-    if (currentMode === "plan" && PieLabPremium.canUse()) {
+    if (typeof PieLabPremium !== "undefined" && PieLabPremium.canUse()) {
       const fhSlider = document.getElementById("ferment-hours");
       const ftSlider = document.getElementById("ferment-temp");
       const ytSelect = document.getElementById("yeast-type");
@@ -483,10 +357,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const sauce    = calculateSauce(adjustedRecipe, numPizzas, sizeKey);
     const toppings = calculateToppings(adjustedRecipe, numPizzas, sizeKey);
 
-    // ── Bowl Residue Compensation (+1.5%) ──
-    const residueOn = document.getElementById("bowl-residue-toggle")?.checked || false;
-    if (residueOn) {
+    // ── Bowl Residue Compensation (+1.5%, Pro) ──
+    const residueToggle = document.getElementById("bowl-residue-toggle");
+    const residueOn = residueToggle?.checked || false;
+    if (residueOn && typeof PieLabPremium !== "undefined" && PieLabPremium.canUse()) {
       dough.forEach(d => { d.amount = round1(d.amount * 1.015); });
+    } else if (residueToggle) {
+      residueToggle.checked = false;
     }
 
     // ── Preferment Split ──
@@ -723,54 +600,6 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("pielab-scaling-memory", JSON.stringify(mem));
     } catch { /* ignore */ }
 
-    // ── Plan preview (Plan My Bake mode) ──
-    const planPreviewEl = document.getElementById("plan-preview");
-    const planStepsEl = document.getElementById("plan-preview-steps");
-
-    if (currentMode === "plan" && eatTimeInput.value) {
-      const eatTime = new Date(eatTimeInput.value);
-      const methodKey = fermentSelect.value || "same-day";
-      const method = (typeof FERMENT_METHODS !== "undefined") ? FERMENT_METHODS[methodKey] : null;
-      const doughBallWeight = adjustedRecipe.sizes[sizeKey].doughWeight;
-      const ovenType = ovenSelect ? ovenSelect.value : "home";
-
-      if (method && typeof buildScheduleBackward === "function") {
-        const schedule = buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWeight, type);
-
-        // Render preview steps
-        const fmtOpts = { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" };
-        planStepsEl.innerHTML = schedule.steps.map((s) => {
-          const time = s.dateTime.toLocaleString(undefined, fmtOpts);
-          return `<div class="plan-step">
-            <span class="plan-step-time">${time}</span>
-            <span class="plan-step-label">${s.label}</span>
-          </div>`;
-        }).join("");
-
-        if (!schedule.isValid) {
-          planStepsEl.innerHTML += `<p class="plan-warning">${schedule.validationMsg}</p>`;
-        }
-
-        // Save to localStorage for schedule page prefill
-        try {
-          const planData = {
-            styleKey: type,
-            quantity: numPizzas,
-            eatTime: eatTimeInput.value,
-            fermentMethodKey: methodKey,
-            calcResult: { doughBallWeight },
-          };
-          localStorage.setItem("pielab-plan-prefill", JSON.stringify(planData));
-        } catch { /* ignore */ }
-
-        planPreviewEl.classList.remove("hidden");
-      } else {
-        planPreviewEl.classList.add("hidden");
-      }
-    } else {
-      planPreviewEl.classList.add("hidden");
-    }
-
     // ── Flour substitution row ──
     lastCalcContext = { adjustedRecipe, numPizzas, sizeKey };
 
@@ -842,10 +671,42 @@ document.addEventListener("DOMContentLoaded", () => {
     if (window.PieLabHaptics) PieLabHaptics.success();
   });
 
+  // ── "Schedule This Bake" prefills scheduler ──────────
+  document.getElementById("btn-schedule-bake").addEventListener("click", () => {
+    if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
+      PieLabPremium.gate(() => document.getElementById("btn-schedule-bake").click());
+      return;
+    }
+    if (!lastCalcContext) return;
+    const { adjustedRecipe, numPizzas, sizeKey } = lastCalcContext;
+    const type = document.getElementById("pizza-type").value;
+    const doughBallWeight = adjustedRecipe.sizes[sizeKey].doughWeight;
+    try {
+      const planData = {
+        styleKey: type,
+        quantity: numPizzas,
+        calcResult: { doughBallWeight },
+      };
+      localStorage.setItem("pielab-plan-prefill", JSON.stringify(planData));
+    } catch { /* ignore */ }
+    window.location.href = "schedule.html?prefill=1";
+  });
+
   // ── "Log This Bake" navigates to journal page ────────
   document.getElementById("btn-log-bake").addEventListener("click", () => {
     window.location.href = "journal.html?prefill=1";
   });
+
+  // ── Bowl Residue Pro gate ─────────────────────────────
+  const bowlResidueToggle = document.getElementById("bowl-residue-toggle");
+  if (bowlResidueToggle) {
+    bowlResidueToggle.addEventListener("change", () => {
+      if (bowlResidueToggle.checked && typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
+        bowlResidueToggle.checked = false;
+        PieLabPremium.gate(() => { bowlResidueToggle.checked = true; });
+      }
+    });
+  }
 
   // ── Flour Substitution Handler ───────────────────────
   document.getElementById("flour-sub-select").addEventListener("change", () => {
@@ -1269,6 +1130,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       editor.classList.remove("hidden");
+
+      // Show fermentation tuning if user has Pro access
+      const yeastControls = document.getElementById("yeast-scaling-controls");
+      if (yeastControls) {
+        const isPro = typeof PieLabPremium !== "undefined" && PieLabPremium.canUse();
+        yeastControls.classList.toggle("hidden", !isPro);
+      }
     }
 
     function saveCurrentSettings() {
