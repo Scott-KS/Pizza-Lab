@@ -545,6 +545,7 @@
 
     const saved = PieLabJournal.addEntry(entry);
     localStorage.removeItem("pielab-pending-bake");
+    if (window.PieLabHaptics) PieLabHaptics.success();
 
     pendingDerivedFromId = null;
     hideForm();
