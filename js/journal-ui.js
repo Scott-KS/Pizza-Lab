@@ -994,13 +994,13 @@
       }
     });
 
-    // Share handler — opens destination chooser, then shares with tailored caption
+    // Share handler — generates share image with social caption
     const shareBtn = modalBody.querySelector(".btn-modal-share");
-    if (shareBtn) shareBtn.addEventListener("click", () => showShareChooser(entry, "share"));
+    if (shareBtn) shareBtn.addEventListener("click", () => shareThisBake(entry, "social"));
 
-    // Save to Photos handler — opens destination chooser, then downloads with tailored caption
+    // Save to Photos handler — downloads watermarked images with social caption
     const saveBtn = modalBody.querySelector(".btn-modal-save-photo");
-    if (saveBtn) saveBtn.addEventListener("click", () => showShareChooser(entry, "save"));
+    if (saveBtn) saveBtn.addEventListener("click", () => savePhotosToDevice(entry, "social"));
   }
 
   modalClose.addEventListener("click", () => modalOverlay.classList.add("hidden"));
@@ -1240,72 +1240,6 @@
     }, 3000);
   }
 
-  // ── Share Destination Chooser ─────────────────────
-  function showShareChooser(entry, mode) {
-    const overlay = document.createElement("div");
-    overlay.className = "share-chooser-overlay";
-    overlay.innerHTML = `
-      <div class="share-chooser-card">
-        <h3 class="share-chooser-title">${mode === "save" ? "Save for…" : "Share via…"}</h3>
-        <div class="share-chooser-options">
-          <button class="share-chooser-btn" data-dest="social">
-            <span class="share-chooser-icon">&#127758;</span>
-            <div>
-              <strong>Social Media</strong>
-              <p>Caption with hashtags &amp; link</p>
-            </div>
-          </button>
-          <button class="share-chooser-btn" data-dest="email">
-            <span class="share-chooser-icon">&#9993;</span>
-            <div>
-              <strong>Email</strong>
-              <p>Clean caption, no hashtags</p>
-            </div>
-          </button>
-          <button class="share-chooser-btn" data-dest="text">
-            <span class="share-chooser-icon">&#128172;</span>
-            <div>
-              <strong>Text / Message</strong>
-              <p>Short &amp; casual</p>
-            </div>
-          </button>
-          <button class="share-chooser-btn share-chooser-btn--submit" data-dest="submit">
-            <span class="share-chooser-icon">&#128247;</span>
-            <div>
-              <strong>Submit to @pielab.app</strong>
-              <p>Get featured on our Instagram</p>
-            </div>
-          </button>
-        </div>
-        <button class="share-chooser-cancel">Cancel</button>
-      </div>`;
-    document.body.appendChild(overlay);
-    requestAnimationFrame(() => overlay.classList.add("share-chooser--visible"));
-
-    const dismiss = () => {
-      overlay.classList.remove("share-chooser--visible");
-      setTimeout(() => overlay.remove(), 300);
-    };
-
-    overlay.querySelector(".share-chooser-cancel").addEventListener("click", dismiss);
-    overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
-
-    overlay.querySelectorAll(".share-chooser-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const dest = btn.dataset.dest;
-        dismiss();
-        if (dest === "submit") {
-          window.open(SUBMIT_FORM_URL, "_blank", "noopener");
-          return;
-        }
-        if (mode === "save") {
-          savePhotosToDevice(entry, dest);
-        } else {
-          shareThisBake(entry, dest);
-        }
-      });
-    });
-  }
 
   // ── Share This Bake ────────────────────────────────
   async function shareThisBake(entry, destination = "social") {
