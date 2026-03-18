@@ -563,9 +563,15 @@
       showMilestoneCelebration(saved);
     }
 
-    // Show share guide after first bake with a photo (delayed if milestone is showing)
-    const shareGuideDelay = hasMilestone ? 4500 : 600;
-    setTimeout(() => showShareGuide(saved), shareGuideDelay);
+    // Show share guide after first bake, or submit nudge every 3rd bake
+    const guideDelay = hasMilestone ? 4500 : 600;
+    setTimeout(() => {
+      if (!localStorage.getItem(SHARE_GUIDE_KEY)) {
+        showShareGuide(saved);
+      } else {
+        showSubmitNudge(saved);
+      }
+    }, guideDelay);
   });
 
   // ── Empty state builder ──────────────────────────
@@ -1078,6 +1084,7 @@
 
   // ── Share Guide Popup (after saving a bake with photo) ──
   const SHARE_GUIDE_KEY = "pielab-share-guide-shown";
+  const SUBMIT_FORM_URL = "https://REPLACE_WITH_YOUR_GOOGLE_FORM_URL";
 
   function showShareGuide(entry) {
     // Only show once
@@ -1112,12 +1119,54 @@
           <div class="share-guide-option">
             <span class="share-guide-icon">&#128247;</span>
             <div>
-              <strong>Submit to our Instagram</strong>
-              <p>DM the image to <strong>@ThePieLab</strong> on Instagram. The best bakes get featured in our feed.</p>
+              <strong>Get Featured on @pielab.app</strong>
+              <p>Submit your bake photo and you could be featured in our daily Instagram feed!</p>
             </div>
           </div>
         </div>
         <button class="share-guide-dismiss">Got It</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add("share-guide--visible"));
+
+    const dismiss = () => {
+      overlay.classList.remove("share-guide--visible");
+      setTimeout(() => overlay.remove(), 400);
+    };
+    overlay.querySelector(".share-guide-dismiss").addEventListener("click", dismiss);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
+  }
+
+  // ── Instagram Submit Nudge (every 3rd bake) ──────
+  const SUBMIT_NUDGE_KEY = "pielab-submit-nudge-count";
+
+  function showSubmitNudge(entry) {
+    const hasPhotos = (entry.photos && entry.photos.length) || entry.photo;
+    if (!hasPhotos) return;
+
+    const totalBakes = PieLabJournal.getAllEntries().length;
+    // Show on every 3rd bake, but not the 1st (share guide covers that)
+    if (totalBakes < 3 || totalBakes % 3 !== 0) return;
+
+    const overlay = document.createElement("div");
+    overlay.className = "share-guide-overlay";
+    overlay.innerHTML = `
+      <div class="share-guide-card">
+        <h2 class="share-guide-title">Feature Your Bake?</h2>
+        <p class="share-guide-subtitle">You\u2019ve logged ${totalBakes} bakes! Submit your best to <strong>@pielab.app</strong> on Instagram.</p>
+        <div class="share-guide-options">
+          <div class="share-guide-option">
+            <span class="share-guide-icon">&#128247;</span>
+            <div>
+              <strong>Get Featured</strong>
+              <p>Upload your bake photo and we\u2019ll pick the best submissions for our daily feed.</p>
+            </div>
+          </div>
+        </div>
+        <div class="submit-nudge-actions">
+          <a href="${SUBMIT_FORM_URL}" target="_blank" rel="noopener" class="btn-primary submit-nudge-btn">Submit My Bake</a>
+          <button class="share-guide-dismiss">Not Now</button>
+        </div>
       </div>`;
     document.body.appendChild(overlay);
     requestAnimationFrame(() => overlay.classList.add("share-guide--visible"));
@@ -1175,6 +1224,13 @@
               <p>Short &amp; casual</p>
             </div>
           </button>
+          <button class="share-chooser-btn share-chooser-btn--submit" data-dest="submit">
+            <span class="share-chooser-icon">&#128247;</span>
+            <div>
+              <strong>Submit to @pielab.app</strong>
+              <p>Get featured on our Instagram</p>
+            </div>
+          </button>
         </div>
         <button class="share-chooser-cancel">Cancel</button>
       </div>`;
@@ -1193,6 +1249,10 @@
       btn.addEventListener("click", () => {
         const dest = btn.dataset.dest;
         dismiss();
+        if (dest === "submit") {
+          window.open(SUBMIT_FORM_URL, "_blank", "noopener");
+          return;
+        }
         if (mode === "save") {
           savePhotosToDevice(entry, dest);
         } else {
