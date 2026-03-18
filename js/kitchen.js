@@ -320,12 +320,17 @@ document.addEventListener("DOMContentLoaded", () => {
     "pielab-style-levels",
   ];
 
-  document.getElementById("btn-export").addEventListener("click", () => {
-    const backup = { _version: 1, _exportedAt: new Date().toISOString() };
+  document.getElementById("btn-export").addEventListener("click", async () => {
+    const backup = { _version: 2, _exportedAt: new Date().toISOString() };
     BACKUP_KEYS.forEach((key) => {
       const raw = localStorage.getItem(key);
       try { backup[key] = raw ? JSON.parse(raw) : null; } catch { backup[key] = raw; }
     });
+
+    // Include IndexedDB photos in backup
+    if (typeof PieLabPhotos !== "undefined") {
+      try { backup._photos = await PieLabPhotos.getAllPhotos(); } catch {}
+    }
 
     const json = JSON.stringify(backup, null, 2);
     const blob = new Blob([json], { type: "application/json" });
@@ -375,7 +380,15 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem(key, JSON.stringify(data[key]));
           }
         });
-        window.location.reload();
+
+        // Restore IndexedDB photos if present in backup
+        if (data._photos && typeof PieLabPhotos !== "undefined") {
+          PieLabPhotos.importPhotos(data._photos)
+            .catch(() => {})
+            .finally(() => window.location.reload());
+        } else {
+          window.location.reload();
+        }
       } catch {
         alert("Could not read backup file. Make sure it\u2019s a valid JSON file.");
       }
@@ -466,7 +479,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (deleteConfirm) deleteConfirm.addEventListener("click", () => {
       const keys = Object.keys(localStorage).filter((k) => k.startsWith("pielab"));
       keys.forEach((k) => localStorage.removeItem(k));
-      window.location.href = "index.html";
+      // Clear IndexedDB photo storage
+      if (typeof PieLabPhotos !== "undefined") {
+        PieLabPhotos.deleteAll().catch(() => {}).finally(() => {
+          window.location.href = "index.html";
+        });
+      } else {
+        window.location.href = "index.html";
+      }
     });
   }
 });
