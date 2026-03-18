@@ -735,26 +735,99 @@ main {
 }
 
 /* ── Instructions & Tips ─────────────────────────── */
+/* ── Baking Instructions (step-based layout) ─── */
 .instructions-section {
   margin-top: 2rem;
   background: var(--clr-section-bg);
-  border-radius: 8px;
+  border-radius: var(--radius, 12px);
   padding: 1.25rem;
 }
 
 .instructions-section h3 {
-  font-family: var(--font-body);
-  font-size: 1rem;
-  color: var(--clr-text-light);
-  margin-bottom: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--clr-text);
+  margin-bottom: 1rem;
 }
 
+/* ── Numbered bake steps ─── */
+.bake-steps {
+  list-style: none;
+  counter-reset: bake-step;
+  padding: 0;
+  margin: 0;
+}
+
+.bake-step {
+  counter-increment: bake-step;
+  position: relative;
+  padding-left: 2.5rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 0;
+  border-left: 2px solid var(--clr-border);
+  margin-left: 0.75rem;
+}
+
+.bake-step:last-child {
+  border-left-color: transparent;
+  padding-bottom: 0;
+}
+
+.bake-step::before {
+  content: counter(bake-step);
+  position: absolute;
+  left: -0.85rem;
+  top: -0.1rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--clr-primary);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+}
+
+.bake-step-title {
+  display: block;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--clr-primary);
+  margin-bottom: 0.35rem;
+}
+
+.bake-step-body p {
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.bake-step-detail {
+  color: var(--clr-text-light);
+  font-size: 0.85rem !important;
+}
+
+.bake-time-note {
+  color: var(--clr-text-light);
+  font-size: 0.85rem !important;
+  font-style: italic;
+  margin-top: -0.15rem;
+}
+
+.bake-step .btn-start-timer {
+  margin-top: 0.5rem;
+}
+
+/* ── Tips subsection below steps ─── */
 .tips-subsection {
-  margin-top: 1rem;
-  padding-top: 1rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
   border-top: 1px solid var(--clr-border);
 }
 
@@ -768,26 +841,6 @@ main {
   font-weight: 700;
 }
 
-#baking-instructions p,
-#baking-rack p,
-#baking-time p {
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
-}
-
-#baking-time {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--clr-border);
-}
-
-#baking-time .bake-time-note {
-  color: var(--clr-text-light);
-  font-size: 0.85rem;
-  font-style: italic;
-  margin-top: -0.25rem;
-}
-
 #pro-tips {
   list-style: none;
 }
@@ -797,6 +850,7 @@ main {
   padding-left: 1.5rem;
   margin-bottom: 0.5rem;
   font-size: 0.95rem;
+  line-height: 1.55;
 }
 
 #pro-tips li::before {
@@ -5791,8 +5845,42 @@ body[data-page="kitchen"] main {
   .instructions-section {
     font-size: 9pt;
   }
-  .instructions-section p,
-  .tips-subsection li {
+  .instructions-section h3 {
+    font-size: 11pt;
+  }
+  .bake-steps {
+    counter-reset: bake-step;
+  }
+  .bake-step {
+    border-left: 1px solid #ccc;
+    padding-left: 1.5rem;
+    padding-bottom: 0.5rem;
+    margin-left: 0.5rem;
+  }
+  .bake-step:last-child {
+    border-left-color: transparent;
+  }
+  .bake-step::before {
+    background: #333;
+    width: 1.2rem;
+    height: 1.2rem;
+    font-size: 7pt;
+    left: -0.65rem;
+  }
+  .bake-step-title {
+    font-size: 8pt;
+    color: #333;
+  }
+  .bake-step-body p {
+    margin-bottom: 0.1rem;
+    font-size: 9pt;
+  }
+  .bake-step-detail,
+  .bake-time-note {
+    font-size: 8pt !important;
+  }
+  .tips-subsection li,
+  .instructions-section p {
     margin-bottom: 0.15rem;
   }
 

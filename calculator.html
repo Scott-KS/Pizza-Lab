@@ -278,9 +278,23 @@
       </div>
 
       <div class="instructions-section">
-        <h3>Baking Instructions</h3>
-        <div id="baking-instructions"></div>
-        <div id="baking-rack"></div>
+        <h3>How to Bake</h3>
+
+        <ol class="bake-steps">
+          <li class="bake-step" id="step-preheat">
+            <span class="bake-step-title">Preheat</span>
+            <div class="bake-step-body" id="baking-instructions"></div>
+          </li>
+          <li class="bake-step" id="step-position">
+            <span class="bake-step-title">Position</span>
+            <div class="bake-step-body" id="baking-rack"></div>
+          </li>
+          <li class="bake-step" id="step-bake">
+            <span class="bake-step-title">Bake</span>
+            <div class="bake-step-body" id="baking-time"></div>
+            <button class="btn-start-timer" id="btn-start-timer" type="button">Start Bake Timer</button>
+          </li>
+        </ol>
 
         <div class="tips-subsection">
           <div class="tips-header">
@@ -303,9 +317,6 @@
           </div>
           <ul id="pro-tips"></ul>
         </div>
-
-        <div id="baking-time"></div>
-        <button class="btn-start-timer" id="btn-start-timer" type="button">⏱ Start Bake Timer</button>
       </div>
 
       <div class="results-learn-more" id="results-learn-more"></div>

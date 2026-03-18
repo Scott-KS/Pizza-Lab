@@ -596,7 +596,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderSimpleTable("sauce-table", sauce);
     renderSimpleTable("toppings-table", toppings);
 
-    // Baking instructions — dynamic preheat from oven type
+    // ── Step 1: Preheat ──
     const recTempF = bakingInfo.recommendedTemp;
     const recTempC = fToC(recTempF);
     const preheatMinutes = (typeof OVEN_PREHEAT_MINUTES !== "undefined" && OVEN_PREHEAT_MINUTES[ovenType])
@@ -607,34 +607,32 @@ document.addEventListener("DOMContentLoaded", () => {
     const tempDisplay = metricTempBake
       ? `${recTempC}°C`
       : `${recTempF}°F`;
-    // Oven recommendation + temp
+
     const preferredLabel = (typeof OVEN_TYPES !== "undefined" && recipe.preferredOven) ? OVEN_TYPES[recipe.preferredOven] : "";
     const secondaryLabel = (typeof OVEN_TYPES !== "undefined" && recipe.secondaryOven) ? OVEN_TYPES[recipe.secondaryOven] : "";
-    const ovenRecHtml = preferredLabel
-      ? `<p><strong>Best oven:</strong> ${preferredLabel}${secondaryLabel ? ` · Also works well: ${secondaryLabel}` : ""}</p>`
-      : "";
-    document.getElementById("baking-instructions").innerHTML =
-      ovenRecHtml +
-      `<p><strong>Preheat oven to:</strong> ${tempDisplay} (preheat for at least ${preheatMinutes} minutes)</p>`;
 
-    // Rack position
+    let preheatHtml = `<p>Set your oven to <strong>${tempDisplay}</strong>. Preheat for at least ${preheatMinutes} minutes with your steel or stone inside.</p>`;
+    if (preferredLabel) {
+      preheatHtml += `<p class="bake-step-detail">Best oven: ${preferredLabel}`;
+      if (secondaryLabel) preheatHtml += ` · Also works well: ${secondaryLabel}`;
+      preheatHtml += `</p>`;
+    }
+    document.getElementById("baking-instructions").innerHTML = preheatHtml;
+
+    // ── Step 2: Position ──
     const rackEl = document.getElementById("baking-rack");
     if (rackEl) {
       rackEl.innerHTML = recipe.rackPosition
-        ? `<p><strong>Rack position:</strong> ${recipe.rackPosition}</p>`
+        ? `<p>${recipe.rackPosition}</p>`
         : "";
+      // Hide the step entirely if no position data
+      const posStep = document.getElementById("step-position");
+      if (posStep) posStep.classList.toggle("hidden", !recipe.rackPosition);
     }
 
-    // Tiered tips — init slider for this style (sets level from profile/bakes), then render
-    window._currentTips   = recipe.tips || [];
-    window._currentStyleKey = type;
-    if (window.initTipsSlider) window.initTipsSlider(type);
-    if (window.renderTips)    window.renderTips();
-
-    // Bake time — prefer oven-specific times from OVEN_SETUPS (Oven Guide)
+    // ── Step 3: Bake ──
     const bakeTimeEl = document.getElementById("baking-time");
     if (bakeTimeEl) {
-      let bakeTimeHTML = "";
       const ovenSetup = typeof OVEN_SETUPS !== "undefined"
         ? OVEN_SETUPS.find(o => o.id === ovenType)
         : null;
@@ -642,16 +640,23 @@ document.addEventListener("DOMContentLoaded", () => {
         ? ovenSetup.styleBakeTimes[type]
         : null;
 
+      let bakeTimeHTML = "";
       if (ovenBake) {
-        bakeTimeHTML = `<p><strong>Bake time:</strong> ${ovenBake.time}</p>`;
+        bakeTimeHTML = `<p>Bake for <strong>${ovenBake.time}</strong> at ${tempDisplay}.</p>`;
         if (ovenBake.note) {
           bakeTimeHTML += `<p class="bake-time-note">${ovenBake.note}</p>`;
         }
       } else {
-        bakeTimeHTML = `<p><strong>Bake time:</strong> ${bakingInfo.bakeTime}</p>`;
+        bakeTimeHTML = `<p>Bake for <strong>${bakingInfo.bakeTime}</strong> at ${tempDisplay}.</p>`;
       }
       bakeTimeEl.innerHTML = bakeTimeHTML;
     }
+
+    // ── Tips — init slider for this style, then render ──
+    window._currentTips   = recipe.tips || [];
+    window._currentStyleKey = type;
+    if (window.initTipsSlider) window.initTipsSlider(type);
+    if (window.renderTips)    window.renderTips();
 
     // ── Contextual "Learn More" link (cross-page) ──
     const learnMoreEl = document.getElementById("results-learn-more");
