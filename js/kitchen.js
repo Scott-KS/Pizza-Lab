@@ -409,25 +409,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const screen  = `${window.screen.width}x${window.screen.height}`;
     const theme   = document.documentElement.dataset.theme || "light";
 
-    const subject = encodeURIComponent(`[Pie Lab] ${label}`);
-    const body    = encodeURIComponent(
-      `${message}\n\n` +
-      `--- App Context (auto-generated) ---\n` +
-      `Type: ${label}\n` +
-      `Name: ${profile.displayName || "—"}\n` +
-      `Location: ${profile.city || "—"}\n` +
-      `Units: ${profile.unitSystem || "standard"}\n` +
-      `Theme: ${theme}\n` +
-      `Screen: ${screen}\n` +
-      `Device: ${device}\n`
-    );
+    // Build query params and open feedback on pielab.app
+    const params = new URLSearchParams({
+      type:     label,
+      message:  message,
+      name:     profile.displayName || "",
+      location: profile.city || "",
+      units:    profile.unitSystem || "standard",
+      theme:    theme,
+      screen:   screen,
+      device:   device
+    });
 
-    const mailto = `mailto:feedback@thepielab.app?subject=${subject}&body=${body}`;
-    window.location.href = mailto;
+    window.open(`https://www.pielab.app/feedback?${params.toString()}`, "_blank");
 
     // Show confirmation + clear form
     fbMessage.value = "";
-    fbStatus.textContent = "Thanks! Your email client should open with the feedback ready to send.";
+    fbStatus.textContent = "Thanks! A feedback page has opened — please submit it there.";
     fbStatus.classList.remove("hidden");
     fbStatus.classList.remove("fade-out");
 
