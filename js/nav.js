@@ -150,6 +150,37 @@ function populateOvenSelect(selectEl) {
   }
 }
 
+// ── localStorage Quota Warning ───────────────────────
+(function checkStorageQuota() {
+  try {
+    let totalBytes = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("pielab")) {
+        totalBytes += (localStorage.getItem(key) || "").length * 2; // UTF-16
+      }
+    }
+    const limitBytes = 5 * 1024 * 1024; // 5MB typical limit
+    const WARNED_KEY = "pielab-storage-warning-shown";
+    if (totalBytes > limitBytes * 0.8 && !sessionStorage.getItem(WARNED_KEY)) {
+      sessionStorage.setItem(WARNED_KEY, "1");
+      const usedMB = (totalBytes / (1024 * 1024)).toFixed(1);
+      // Show a non-blocking toast after page loads
+      setTimeout(() => {
+        const toast = document.createElement("div");
+        toast.className = "storage-warning-toast";
+        toast.innerHTML = `Storage ${usedMB} MB of ~5 MB used. <a href="kitchen.html">Export your data</a> as a backup.`;
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add("visible"));
+        setTimeout(() => {
+          toast.classList.remove("visible");
+          setTimeout(() => toast.remove(), 400);
+        }, 8000);
+      }, 2000);
+    }
+  } catch { /* ignore */ }
+})();
+
 // ── App Session Counter ──────────────────────────────
 // Increments once per browser session using sessionStorage as a dedup guard.
 (function trackAppSession() {

@@ -51,6 +51,7 @@
 
   function startStepAlarm() {
     stopStepAlarm();
+    if (window.PieLabHaptics) PieLabHaptics.warning();
     try {
       alarmCtx = new (window.AudioContext || window.webkitAudioContext)();
     } catch { return; }
@@ -349,6 +350,7 @@
 
     // Update schedule badge in nav
     updateScheduleBadge();
+    if (window.PieLabHaptics) PieLabHaptics.success();
 
     renderScheduleTimeline(computedSchedule);
     renderVisualBar(computedSchedule);
@@ -376,6 +378,24 @@
     updateScheduleBadge();
     goToStep(1);
   });
+
+  // ── Bake step detection (for timer button) ──
+  const BAKE_STEP_IDS = new Set([
+    "stretch-and-top", "top-detroit", "top-upside-down",
+    "parbake", "second-bake", "stovetop-start", "oven-finish",
+    "assemble-tavern", "roll-dock-top"
+  ]);
+  function isBakeStep(step) {
+    return BAKE_STEP_IDS.has(step.id);
+  }
+
+  function parseDurationToSeconds(str) {
+    // Handles "~12 min", "~15–20 min", "~10 min", "~8 min"
+    const m = str.match(/(\d+)/);
+    if (!m) return 300; // fallback 5 min
+    const mins = parseInt(m[1], 10);
+    return mins * 60;
+  }
 
   // ── Timeline Rendering ──
 
@@ -436,6 +456,7 @@
             <button class="step-why-toggle" type="button">Why it matters</button>
             <div class="step-why-content">${step.why}</div>
             ${isNext ? `<div class="sched-step-countdown" data-target="${step.dateTime.toISOString()}"></div>` : ""}
+            ${isBakeStep(step) && step.duration ? `<button class="btn-sched-bake-timer" data-duration="${step.duration}" type="button">Start Bake Timer</button>` : ""}
           </div>
         </div>
       `;
@@ -453,6 +474,7 @@
         if (isNaN(idx) || !computedSchedule) return;
         computedSchedule[idx].checked = !computedSchedule[idx].checked;
         updateStoredChecks();
+        if (window.PieLabHaptics) PieLabHaptics.light();
         renderScheduleTimeline(computedSchedule);
         renderVisualBar(computedSchedule);
       });
@@ -464,6 +486,22 @@
         toggle.classList.toggle("open");
         const content = toggle.nextElementSibling;
         if (content) content.classList.toggle("open");
+      });
+    });
+
+    // Bake timer buttons
+    timelineEl.querySelectorAll(".btn-sched-bake-timer").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const durStr = btn.dataset.duration || "";
+        const seconds = parseDurationToSeconds(durStr);
+        // Save timer state so calculator.html auto-resumes it
+        try {
+          localStorage.setItem("pielab-bake-timer", JSON.stringify({
+            total: seconds, startedAt: Date.now(), pauseOffset: 0,
+            paused: false, pausedAt: 0
+          }));
+        } catch { /* ignore */ }
+        window.location.href = "calculator.html";
       });
     });
 

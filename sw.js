@@ -1,5 +1,5 @@
 /*  The Pie Lab — Service Worker  */
-const CACHE_NAME = "pielab-v44";
+const CACHE_NAME = "pielab-v46";
 
 /* ── Derive base path so caching works on both localhost and /Pizza-Lab/ ── */
 const BASE = self.registration.scope;
@@ -20,6 +20,7 @@ const APP_SHELL_PATHS = [
   "js/toolkit.js?v=5",
   "js/calculator.js?v=16",
   "js/scheduler.js",
+  "js/scheduler-guide.js",
   "js/photo-store.js?v=1",
   "js/journal-ui.js?v=16",
   "js/kitchen.js?v=10",
@@ -40,7 +41,13 @@ const APP_SHELL_PATHS = [
   "assets/logos/favicon-32.svg",
   "assets/logos/logo-monogram-512.svg",
   "assets/logos/logo-horizontal.svg",
+  "assets/logos/logo-transparent.svg",
   "manifest.json",
+];
+
+/* ── External fonts (cached on first successful load) ── */
+const FONT_URLS = [
+  "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap",
 ];
 
 /* ── Images (cached on first load, not blocking install) ── */
@@ -64,6 +71,10 @@ self.addEventListener("install", (e) => {
       // Cache images in background (don't block install)
       IMAGE_PATHS.forEach((p) =>
         cache.add(BASE + p).catch(() => {/* non-critical */})
+      );
+      // Cache Google Fonts in background (for offline use)
+      FONT_URLS.forEach((url) =>
+        cache.add(url).catch(() => {/* non-critical */})
       );
       // App shell must succeed
       return cache.addAll(APP_SHELL_PATHS.map((p) => BASE + p));

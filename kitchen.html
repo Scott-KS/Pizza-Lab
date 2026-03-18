@@ -103,6 +103,12 @@
       <button type="button" id="k-save" class="btn-save-kitchen">Save My Kitchen</button>
       <p id="k-save-confirm" class="save-confirm hidden">Settings saved.</p>
 
+      <!-- Restore Purchases (required by App Store) -->
+      <div class="restore-purchase-row" id="restore-purchase-row">
+        <button type="button" id="btn-restore-purchase" class="btn-restore-purchase">Restore Purchase</button>
+        <p id="restore-status" class="save-confirm hidden"></p>
+      </div>
+
       <div class="kitchen-data-section">
         <h3>Data Backup</h3>
         <p class="kitchen-subtitle">Export or import all your Pie Lab data — journal entries, kitchen settings, and profile.</p>
@@ -161,7 +167,7 @@
   </main>
 
   <!-- Delete Data Confirmation Modal (two-step) -->
-  <div class="modal-overlay hidden" id="delete-data-modal">
+  <div class="modal-overlay hidden" id="delete-data-modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
     <div class="modal-content modal-content--narrow">
       <button type="button" class="modal-close" id="delete-modal-close" aria-label="Close">&times;</button>
       <!-- Step 1 -->

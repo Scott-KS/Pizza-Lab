@@ -42,7 +42,7 @@
   --clr-text: #e8ddd4;
   --clr-display: #f0e6dd;
   --clr-text-light: #9a8e85;
-  --clr-border: #3d332e;
+  --clr-border: #4d413a;
   --clr-section-bg: #241e1b;
   --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.4);
@@ -3010,6 +3010,27 @@ main {
   flex-shrink: 0;
 }
 
+/* Photo loading shimmer */
+.entry-thumb-shimmer {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  background: linear-gradient(
+    90deg,
+    var(--clr-border) 25%,
+    var(--clr-section-bg) 50%,
+    var(--clr-border) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 .entry-info {
   flex: 1;
   min-width: 0;
@@ -4396,6 +4417,28 @@ footer {
   margin-top: 0.3rem;
 }
 
+/* Bake timer button on bake steps */
+.btn-sched-bake-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  background: var(--clr-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+
+.btn-sched-bake-timer:hover {
+  background: var(--clr-primary-hover, #a33d2a);
+}
+
 /* Countdown on next step */
 .sched-step-countdown {
   display: inline-block;
@@ -5152,6 +5195,32 @@ body[data-page="journal"] main {
 
 .save-confirm.fade-out {
   opacity: 0;
+}
+
+/* ── Restore Purchase Row ──────────────────────── */
+.restore-purchase-row {
+  text-align: center;
+  margin-top: 0.75rem;
+}
+
+.btn-restore-purchase {
+  background: none;
+  border: none;
+  color: var(--clr-text-light);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0.4rem 0.6rem;
+}
+
+.btn-restore-purchase:hover {
+  color: var(--clr-primary);
+}
+
+.btn-restore-purchase:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 /* ── Kitchen Welcome Banner ──────────────────────── */
@@ -7322,13 +7391,13 @@ body[data-page="kitchen"] main {
 
 .btn-delete-data {
   display: inline-block;
-  padding: 0.4rem 0.9rem;
-  border: 1.5px solid #c0392b;
-  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid #c0392b;
+  border-radius: 4px;
   background: none;
   color: #c0392b;
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 0.65rem;
+  font-weight: 500;
   cursor: pointer;
   transition: background 200ms ease, color 200ms ease;
 }
@@ -7771,4 +7840,41 @@ body[data-page="kitchen"] main {
   .firstbake-body {
     font-size: 0.88rem;
   }
+}
+
+/* ══════════════════════════════════════════════════════
+   STORAGE WARNING TOAST
+   ══════════════════════════════════════════════════════ */
+
+.storage-warning-toast {
+  position: fixed;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(1rem);
+  background: var(--clr-text, #1a1410);
+  color: #fff;
+  padding: 0.65rem 1.1rem;
+  border-radius: var(--radius, 12px);
+  font-family: var(--font-body, Inter, sans-serif);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  max-width: 360px;
+  width: calc(100% - 2rem);
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transition: opacity 350ms ease, transform 350ms ease;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.storage-warning-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.storage-warning-toast a {
+  color: var(--clr-accent, #c9954a);
+  text-decoration: underline;
 }

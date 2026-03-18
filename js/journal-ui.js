@@ -587,10 +587,10 @@
   // ── Empty state builder ──────────────────────────
   function buildEmptyState() {
     return `<div class="journal-empty-state">
-      <div class="empty-state-icon">\u25CB</div>
-      <h3>No bakes logged yet</h3>
-      <p>Run the calculator, hit \u201CLog This Bake,\u201D and your first session will appear here.</p>
-      <a href="calculator.html" class="btn-primary">Go to Make \u2192</a>
+      <div class="empty-state-icon">\uD83C\uDF55</div>
+      <h3>Your Pizza Journal</h3>
+      <p>Every great pizzaiolo keeps a journal. Calculate your first recipe, bake it, then come back and log how it turned out — photos, ratings, and all.</p>
+      <a href="calculator.html" class="btn-primary">Make Your First Pizza \u2192</a>
     </div>`;
   }
 
@@ -984,6 +984,7 @@
     modalBody.querySelector(".btn-modal-delete").addEventListener("click", (e) => {
       if (confirm("Delete this journal entry? This cannot be undone.")) {
         PieLabJournal.deleteEntry(e.target.dataset.id);
+        if (window.PieLabHaptics) PieLabHaptics.warning();
         modalOverlay.classList.add("hidden");
         renderEntries();
         renderStats();
@@ -1090,6 +1091,7 @@
 
   // ── Milestone Celebration ─────────────────────────
   function showMilestoneCelebration(entry) {
+    if (window.PieLabHaptics) PieLabHaptics.success();
     const badge = entry.skillBadge || "";
     const badgeEmoji = badge.split(" ")[0];
     const badgeName  = badge.split(" ").slice(1).join(" ");
@@ -1965,6 +1967,7 @@
         e.stopPropagation();
         if (confirm("Delete this saved dough?")) {
           PieLabJournal.deleteProfile(btn.dataset.id);
+          if (window.PieLabHaptics) PieLabHaptics.warning();
           renderDoughLibrary();
         }
       });
