@@ -160,15 +160,28 @@
     </section>
   </main>
 
-  <!-- Delete Data Confirmation Modal -->
+  <!-- Delete Data Confirmation Modal (two-step) -->
   <div class="modal-overlay hidden" id="delete-data-modal">
     <div class="modal-content modal-content--narrow">
       <button type="button" class="modal-close" id="delete-modal-close" aria-label="Close">&times;</button>
-      <h3>Delete All Data?</h3>
-      <p>This will permanently erase your profile, journal entries, photos, schedule, and all settings. This cannot be undone.</p>
-      <div class="modal-actions">
-        <button type="button" class="btn-modal-cancel" id="delete-cancel">Cancel</button>
-        <button type="button" class="btn-modal-delete" id="delete-confirm">Delete Everything</button>
+      <!-- Step 1 -->
+      <div id="delete-step-1">
+        <h3>Delete All Data?</h3>
+        <p>This will permanently erase your profile, journal entries, schedule, and all app settings. <strong>This cannot be undone.</strong></p>
+        <p class="field-hint">Photos saved to your camera roll are not affected.</p>
+        <div class="modal-actions">
+          <button type="button" class="btn-modal-cancel" id="delete-cancel">Cancel</button>
+          <button type="button" class="btn-modal-delete" id="delete-step-next">Continue</button>
+        </div>
+      </div>
+      <!-- Step 2 -->
+      <div id="delete-step-2" class="hidden">
+        <h3>Are you sure?</h3>
+        <p>All your bake journal entries, custom dough profiles, and kitchen settings will be permanently deleted. There is no way to recover this data.</p>
+        <div class="modal-actions">
+          <button type="button" class="btn-modal-cancel" id="delete-cancel-2">Go Back</button>
+          <button type="button" class="btn-modal-delete" id="delete-confirm">Delete Everything</button>
+        </div>
       </div>
     </div>
   </div>

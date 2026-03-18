@@ -150,6 +150,17 @@ function populateOvenSelect(selectEl) {
   }
 }
 
+// ── App Session Counter ──────────────────────────────
+// Increments once per browser session using sessionStorage as a dedup guard.
+(function trackAppSession() {
+  if (sessionStorage.getItem("pielab-session-counted")) return;
+  sessionStorage.setItem("pielab-session-counted", "1");
+  try {
+    const count = parseInt(localStorage.getItem("pielab-session-count") || "0", 10);
+    localStorage.setItem("pielab-session-count", String(count + 1));
+  } catch { /* ignore */ }
+})();
+
 // ── Navigation Active State + Schedule Badge ──────────
 (function initNav() {
   const page = document.body.dataset.page;
@@ -366,3 +377,34 @@ function showDataNotice() {
     notice.remove();
   });
 }
+
+// ── Hide mobile tab bar when virtual keyboard is open ──
+(function initKeyboardDetection() {
+  const tabBar = document.querySelector(".mobile-tab-bar");
+  if (!tabBar) return;
+
+  if (window.visualViewport) {
+    let lastHeight = window.visualViewport.height;
+    const threshold = 150; // pixels — keyboards are typically 200px+
+
+    window.visualViewport.addEventListener("resize", () => {
+      const heightDiff = window.innerHeight - window.visualViewport.height;
+      if (heightDiff > threshold) {
+        tabBar.classList.add("keyboard-open");
+      } else {
+        tabBar.classList.remove("keyboard-open");
+      }
+    });
+  } else {
+    // Fallback: hide on focus of text inputs
+    document.addEventListener("focusin", (e) => {
+      const tag = e.target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") {
+        tabBar.classList.add("keyboard-open");
+      }
+    });
+    document.addEventListener("focusout", () => {
+      tabBar.classList.remove("keyboard-open");
+    });
+  }
+})();

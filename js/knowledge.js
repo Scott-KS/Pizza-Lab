@@ -633,3 +633,155 @@ function renderComparison(keys, container) {
   html += `</div>`;
   container.innerHTML = html;
 }
+
+// ── Toolkit Tour (3rd app session) ──────────────────
+(function initToolkitTour() {
+  const TOUR_DONE_KEY = "pielab-toolkit-tour-done";
+  if (localStorage.getItem(TOUR_DONE_KEY) === "1") return;
+  const sessions = parseInt(localStorage.getItem("pielab-session-count") || "0", 10);
+  if (sessions < 3) return;
+
+  const steps = [
+    {
+      tab: "styles",
+      title: "Style Library",
+      body: "Explore 13 regional pizza styles — from Neapolitan to Detroit. Each entry covers the history, key characteristics, and authentic techniques to get it right.",
+    },
+    {
+      tab: "cheese",
+      title: "Cheese & Sauce Guide",
+      body: "Learn which cheeses and sauces pair best with each style. Covers everything from fresh mozzarella to brick cheese, and classic marinara to white sauce.",
+    },
+    {
+      tab: "flour",
+      title: "Flour & Yeast Guide",
+      body: "Understand the difference between Tipo 00, bread flour, and all-purpose. Plus a yeast converter to switch between instant, active dry, and fresh yeast.",
+    },
+    {
+      tab: "fermentation",
+      title: "Fermentation Chart",
+      body: "A quick reference for every style's fermentation schedule — cold vs. room temp, total time, and optimal bake temperatures all in one place.",
+    },
+    {
+      tab: "hydration",
+      title: "Hydration Guide",
+      body: "A Pro tool that shows the ideal hydration range for each style with an interactive slider. See exactly how much water to use for your flour amount.",
+      isPro: true,
+    },
+    {
+      tab: "oven",
+      title: "Oven Guide",
+      body: "Detailed guides for 6 oven types — home, wood-fired, gas, portable, and electric. Learn preheat times, heat transfer methods, and style-specific tips.",
+    },
+    {
+      tab: "troubleshoot",
+      title: "Troubleshooting",
+      body: "Having issues with your dough or bake? This Pro tool walks you through common symptoms with a diagnostic flow to pinpoint the problem and fix it.",
+      isPro: true,
+    },
+    {
+      tab: "compare",
+      title: "Style Compare",
+      body: "Pick 2–3 styles and compare their recipes side by side — hydration, salt, oil, sugar, yeast, bake temp, and more. A Pro feature for dialing in your dough.",
+      isPro: true,
+    },
+    {
+      tab: "ddt",
+      title: "DDT Calculator",
+      body: "Calculate the ideal water temperature for your dough using the Desired Dough Temperature method. Accounts for room temp, flour temp, and friction factor.",
+      isPro: true,
+    },
+    {
+      tab: "volume",
+      title: "Volume Conversion",
+      body: "Convert grams to cups, tablespoons, and teaspoons for any pizza ingredient. Handy when you don't have a scale.",
+    },
+  ];
+
+  let overlay = null;
+  let highlight = null;
+  let currentStep = 0;
+
+  function start() {
+    currentStep = 0;
+    overlay = document.createElement("div");
+    overlay.className = "firstbake-overlay";
+    overlay.innerHTML = `
+      <div class="firstbake-card">
+        <button class="firstbake-skip" id="tt-skip" aria-label="Close tour">Skip</button>
+        <div class="firstbake-step-count" id="tt-step-count"></div>
+        <h3 class="firstbake-title" id="tt-title"></h3>
+        <p class="firstbake-body" id="tt-body"></p>
+        <div class="firstbake-actions">
+          <button class="firstbake-btn firstbake-btn--next" id="tt-next">Next</button>
+        </div>
+      </div>
+    `;
+
+    highlight = document.createElement("div");
+    highlight.className = "firstbake-highlight hidden";
+    document.body.appendChild(highlight);
+    document.body.appendChild(overlay);
+
+    document.getElementById("tt-next").addEventListener("click", next);
+    document.getElementById("tt-skip").addEventListener("click", close);
+
+    requestAnimationFrame(() => overlay.classList.add("firstbake-overlay--visible"));
+    render();
+  }
+
+  function render() {
+    const step = steps[currentStep];
+    const total = steps.length;
+
+    document.getElementById("tt-step-count").textContent = `${currentStep + 1} of ${total}`;
+    document.getElementById("tt-title").textContent = step.title + (step.isPro ? " (Pro)" : "");
+    document.getElementById("tt-body").textContent = step.body;
+
+    const nextBtn = document.getElementById("tt-next");
+    nextBtn.textContent = currentStep === total - 1 ? "Got It!" : "Next";
+
+    // Switch to this tab
+    if (typeof activateTab === "function") activateTab(step.tab);
+
+    // Highlight the tab button
+    if (highlight) highlight.classList.add("hidden");
+    const tabBtn = document.querySelector(`.toolkit-tab[data-tool="${step.tab}"]`);
+    if (tabBtn) {
+      tabBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      setTimeout(() => {
+        if (!highlight) return;
+        const rect = tabBtn.getBoundingClientRect();
+        const pad = 4;
+        highlight.style.top = (rect.top + window.scrollY - pad) + "px";
+        highlight.style.left = (rect.left - pad) + "px";
+        highlight.style.width = (rect.width + pad * 2) + "px";
+        highlight.style.height = (rect.height + pad * 2) + "px";
+        highlight.classList.remove("hidden");
+      }, 200);
+    }
+  }
+
+  function next() {
+    if (currentStep < steps.length - 1) {
+      currentStep++;
+      render();
+    } else {
+      close();
+    }
+  }
+
+  function close() {
+    localStorage.setItem(TOUR_DONE_KEY, "1");
+    if (highlight) { highlight.remove(); highlight = null; }
+    if (overlay) {
+      overlay.classList.remove("firstbake-overlay--visible");
+      setTimeout(() => {
+        if (overlay) { overlay.remove(); overlay = null; }
+        if (typeof activateTab === "function") activateTab("styles");
+      }, 300);
+    }
+  }
+
+  setTimeout(() => start(), 800);
+})();
