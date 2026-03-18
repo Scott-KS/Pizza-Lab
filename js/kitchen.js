@@ -276,8 +276,9 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     PieLabProfile.saveProfile(updates);
+    if (window.PieLabHaptics) PieLabHaptics.success();
 
-    // Start Pro trial on first profile save (7-day trial)
+    // Start Pro trial on first profile save (14-day trial)
     if (typeof PieLabPremium !== "undefined" && updates.displayName) {
       PieLabPremium.startTrial();
     }

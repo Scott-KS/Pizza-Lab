@@ -834,6 +834,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const resultsEl = document.getElementById("results");
     resultsEl.classList.remove("hidden");
     resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (window.PieLabHaptics) PieLabHaptics.success();
   });
 
   // ── "Log This Bake" navigates to journal page ────────
@@ -1744,6 +1745,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("timer-running-controls").classList.add("hidden");
     document.getElementById("timer-done-controls").classList.remove("hidden");
     timerStatusEl.textContent = "Pizza is done! 🍕";
+    if (window.PieLabHaptics) PieLabHaptics.warning();
     // Start looping alarm
     startAlarmSound();
     // Browser notification
