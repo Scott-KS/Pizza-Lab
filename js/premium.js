@@ -1,11 +1,11 @@
 /* ══════════════════════════════════════════════════════
    The Pie Lab — Premium / Trial System
-   Loaded on: calculator.html, learn.html
+   Loaded on: calculator.html, learn.html, kitchen.html
    ══════════════════════════════════════════════════════ */
 
 window.PieLabPremium = (function () {
   const STORAGE_KEY = "pielab-premium";
-  const TRIAL_DAYS = 14;
+  const TRIAL_DAYS = 7;
 
   // ── Persistence helpers ──────────────────────────────
   function load() {
@@ -75,7 +75,7 @@ window.PieLabPremium = (function () {
           Get access to preferment calculations, dynamic yeast scaling,
           DDT water temperature tools, and more.
         </p>
-        <button class="btn-start-trial" id="btn-premium-trial">Start 14-Day Free Trial</button>
+        <button class="btn-start-trial" id="btn-premium-trial">Set Up My Kitchen</button>
         <p class="premium-modal-footer">No credit card required. $4.99 one-time purchase after trial.</p>
         <button class="premium-modal-close" aria-label="Close">&times;</button>
       </div>
@@ -88,12 +88,17 @@ window.PieLabPremium = (function () {
       if (e.target === modalOverlay) hideModal();
     });
 
-    // Start trial handler
+    // Action button handler
     modalOverlay.querySelector("#btn-premium-trial").addEventListener("click", () => {
-      startTrial();
+      if (!trialStart() && !isPro()) {
+        // No trial yet — send to Kitchen Profile to start trial
+        hideModal();
+        window.location.href = "kitchen.html";
+        return;
+      }
       hideModal();
-      // Re-invoke the gated action
-      if (pendingCallback) {
+      // Re-invoke the gated action if trial is active
+      if (canUse() && pendingCallback) {
         const cb = pendingCallback;
         pendingCallback = null;
         cb();
@@ -104,21 +109,27 @@ window.PieLabPremium = (function () {
   function showModal() {
     createModal();
 
-    // Update button text based on state
     const btn = modalOverlay.querySelector("#btn-premium-trial");
+    const desc = modalOverlay.querySelector(".premium-modal-desc");
+    const footer = modalOverlay.querySelector(".premium-modal-footer");
+
     if (isExpired()) {
-      btn.textContent = "Unlock Pro — $4.99";
+      btn.textContent = "Unlock Pro \u2014 $4.99";
       btn.disabled = false;
       btn.classList.remove("btn-disabled");
+      desc.textContent = "Your 7-day trial has ended. Unlock all Pro features permanently.";
+      footer.textContent = "One-time $4.99 purchase. No subscription.";
     } else if (canUse()) {
-      // Trial active — shouldn't see modal, but just in case
       btn.textContent = "Continue with Trial";
       btn.disabled = false;
       btn.classList.remove("btn-disabled");
     } else {
-      btn.textContent = "Start 14-Day Free Trial";
+      // No trial started — direct to Kitchen Profile
+      btn.textContent = "Set Up My Kitchen";
       btn.disabled = false;
       btn.classList.remove("btn-disabled");
+      desc.textContent = "Fill out your Kitchen Profile to unlock a free 7-day trial of all Pro features.";
+      footer.textContent = "No credit card required. $4.99 one-time purchase after trial.";
     }
 
     modalOverlay.classList.add("premium-modal--visible");
@@ -170,11 +181,7 @@ window.PieLabPremium = (function () {
       badge.textContent = "";
     }
 
-    // Hide PRO tags on toolkit tabs during trial or when Pro is active
-    const hasAccess = canUse();
-    document.querySelectorAll(".toolkit-tab .premium-tag").forEach((tag) => {
-      tag.style.display = hasAccess ? "none" : "";
-    });
+    // PRO tags always stay visible as feature indicators
   }
 
   // ── Init on load ─────────────────────────────────────
