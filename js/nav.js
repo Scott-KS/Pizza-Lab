@@ -32,13 +32,13 @@ const OVEN_KEY_MIGRATION = {
 function migrateOvenKeys() {
   // Migrate profile.preferredOven
   try {
-    const raw = localStorage.getItem("pielab-profile");
+    const raw = localStorage.getItem("pielab-user-profile");
     if (raw) {
       const profile = JSON.parse(raw);
       const mapped = OVEN_KEY_MIGRATION[profile.preferredOven];
       if (mapped) {
         profile.preferredOven = mapped;
-        localStorage.setItem("pielab-profile", JSON.stringify(profile));
+        localStorage.setItem("pielab-user-profile", JSON.stringify(profile));
       }
     }
   } catch { /* ignore */ }
