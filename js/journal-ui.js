@@ -324,6 +324,16 @@
     } else {
       photoAddBtn.classList.remove("hidden");
     }
+
+    // Recalculate accordion max-height so Save button isn't clipped
+    // Use rAF + short delay to account for image rendering
+    requestAnimationFrame(() => {
+      const logAccordion = document.getElementById("accordion-log");
+      if (logAccordion && logAccordion.classList.contains("open")) {
+        const body = logAccordion.querySelector(".accordion-body");
+        if (body) body.style.maxHeight = body.scrollHeight + "px";
+      }
+    });
   }
 
   async function handlePhotoFiles(files) {
