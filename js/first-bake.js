@@ -73,7 +73,12 @@ const PieLabFirstBake = (() => {
       title: "Start Your Bake Timer",
       body: "When your pizza goes in the oven, tap this button to start the timer. It pulls the bake time from your recipe automatically. Once running, use the \u221230s and +30s buttons to adjust on the fly.",
       target: ".timer-content",
-      delay: 400,
+      delay: 600,
+      beforeShow: () => {
+        // Open the timer modal so .timer-content is visible for highlighting
+        const overlay = document.getElementById("timer-overlay");
+        if (overlay) overlay.classList.remove("hidden");
+      },
     },
     {
       title: "Log Your Bake",
