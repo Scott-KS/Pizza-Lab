@@ -164,17 +164,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const { display } = formatPlace(place);
     cityInput.value = display;
     closeSuggestions();
-    // During onboarding, skip past oven (defaults to Home) and scroll to save
-    const params = new URLSearchParams(window.location.search);
-    const isOnboarding = params.get("onboarding") === "1";
-    setTimeout(() => {
-      if (isOnboarding) {
-        saveBtn.scrollIntoView({ behavior: "smooth", block: "center" });
-      } else {
+    // Skip auto-scroll when kitchen guide is walking through fields
+    if (!kitchenGuideActive) {
+      setTimeout(() => {
         ovenSelect.focus();
         ovenSelect.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    }, 200);
+      }, 200);
+    }
 
     cityStatus.textContent = "Resolving elevation\u2026";
     cityStatus.className   = "city-status resolving";
@@ -632,7 +628,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return urlParams.get("onboarding") === "1";
   }
 
+  let kitchenGuideActive = false;
+
   function startKitchenGuide() {
+    kitchenGuideActive = true;
     let kgStep = 0;
     let kgCleanup = null;
 
@@ -691,6 +690,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function close() {
+      kitchenGuideActive = false;
       kgHighlight.remove();
       kgOverlay.classList.remove("firstbake-overlay--visible");
       setTimeout(() => kgOverlay.remove(), 300);
