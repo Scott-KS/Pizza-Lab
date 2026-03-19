@@ -6422,6 +6422,7 @@ body[data-page="kitchen"] main {
   position: relative;
   display: inline-block;
   margin: 0 auto 1rem;
+  -webkit-tap-highlight-color: transparent;
 }
 .timer-ring-bg {
   stroke: var(--clr-border);
@@ -6440,6 +6441,8 @@ body[data-page="kitchen"] main {
   font-family: var(--font-body);
   color: var(--clr-text);
   letter-spacing: 1px;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 .timer-status {
   font-size: 0.82rem;
