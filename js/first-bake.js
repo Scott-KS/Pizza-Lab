@@ -103,9 +103,19 @@ const PieLabFirstBake = (() => {
       delay: 300,
     },
     {
+      title: "Save Your Dough Recipe",
+      body: "Love your custom settings? Tap Save Dough to name and save this recipe. It\u2019ll appear in your Dough Library so you can load it anytime.",
+      target: "#btn-save-profile",
+    },
+    {
       title: "Make It Yours",
       body: "Every time you calculate with My Style active, your custom percentages are used instead of the defaults. Hit Reset to go back to the original recipe anytime.",
       target: "#btn-reset-custom",
+    },
+    {
+      title: "Fermentation Tuning",
+      body: "Want to dial in your ferment? Switch to Plan My Bake mode to unlock fermentation controls \u2014 set your yeast type, ferment time, and temperature, and we\u2019ll adjust yeast amounts automatically.",
+      target: null,
     },
     {
       title: "Keep Exploring",

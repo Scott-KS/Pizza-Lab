@@ -56,135 +56,146 @@
 
       <!-- Tab Panel: Bakes -->
       <div class="journal-tab-panel active" id="tab-panel-bakes" role="tabpanel">
-        <div class="journal-toolbar">
-          <div class="journal-search">
-            <input type="search" id="journal-search-input" placeholder="Search bakes…" aria-label="Search journal entries" />
-          </div>
-          <div class="journal-filter">
-            <label for="journal-style-filter">Filter by style:</label>
-            <select id="journal-style-filter">
-              <option value="all">All Styles</option>
-            </select>
-          </div>
-          <div class="journal-sort">
-            <label for="journal-sort-select">Sort:</label>
-            <select id="journal-sort-select">
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="hydration-high">Highest Hydration</option>
-              <option value="hydration-low">Lowest Hydration</option>
-              <option value="rating-high">Highest Rating</option>
-              <option value="rating-low">Lowest Rating</option>
-            </select>
-          </div>
-          <button class="btn-compare" id="btn-compare" disabled>Compare</button>
-          <p class="compare-hint" id="compare-hint"></p>
-        </div>
 
-        <div class="journal-stats-section hidden" id="journal-stats-section">
-          <button class="stats-toggle" id="stats-toggle" type="button">
-            <span>Your Baking Stats</span>
-            <span class="stats-toggle-arrow" id="stats-toggle-arrow">▼</span>
+        <!-- Accordion: Log a Bake -->
+        <div class="accordion-item" id="accordion-log">
+          <button class="accordion-header" type="button" id="accordion-log-header">
+            <span class="accordion-title">Log a Bake</span>
+            <span class="accordion-arrow">&#9660;</span>
           </button>
-          <div class="stats-grid" id="stats-grid"></div>
+          <div class="accordion-body" id="accordion-log-body">
+            <div class="accordion-inner">
+              <div id="journal-form-wrapper">
+                <h3 id="journal-form-heading">Log a Bake</h3>
+                <form id="journal-form">
+                  <div class="form-group">
+                    <label for="j-bake-name">Bake Name <span class="field-hint">(optional)</span></label>
+                    <input type="text" id="j-bake-name" placeholder="e.g. Sunday Night Margherita" maxlength="80" />
+                  </div>
+                  <div class="journal-form-grid">
+                    <div class="form-group">
+                      <label for="j-style">Pizza Style</label>
+                      <select id="j-style" required>
+                        <option value="" disabled selected>Select a style&hellip;</option>
+                      </select>
+                      <p id="j-style-history" class="style-history-note hidden"></p>
+                    </div>
+                    <div class="form-group">
+                      <label for="j-date">Date</label>
+                      <input type="date" id="j-date" required />
+                    </div>
+                  </div>
+                  <div class="dough-snapshot" id="j-dough-snapshot">
+                    <span class="snapshot-label">Dough Snapshot:</span>
+                    <span class="snapshot-empty">Calculate a recipe first to capture dough settings</span>
+                  </div>
+                  <div class="journal-form-grid" id="j-bake-details-grid">
+                    <div class="form-group">
+                      <label for="j-bake-temp">Bake Temp (&deg;F)</label>
+                      <input type="number" id="j-bake-temp" min="300" max="1000" />
+                    </div>
+                    <div class="form-group">
+                      <label for="j-bake-time">Bake Time</label>
+                      <input type="text" inputmode="numeric" id="j-bake-time" placeholder="e.g. 8–12" />
+                    </div>
+                    <div class="form-group">
+                      <label for="j-oven-type">Oven Type</label>
+                      <select id="j-oven-type"></select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label id="rating-label">Rating</label>
+                    <div class="star-rating" id="j-star-rating" role="group" aria-labelledby="rating-label">
+                      <button type="button" class="star" data-value="1" aria-label="1 star">&#9733;</button>
+                      <button type="button" class="star" data-value="2" aria-label="2 stars">&#9733;</button>
+                      <button type="button" class="star" data-value="3" aria-label="3 stars">&#9733;</button>
+                      <button type="button" class="star" data-value="4" aria-label="4 stars">&#9733;</button>
+                      <button type="button" class="star" data-value="5" aria-label="5 stars">&#9733;</button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="j-notes">Notes</label>
+                    <textarea id="j-notes" rows="3" placeholder="How did it turn out? What would you change?"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>Photos <span class="photo-count-hint">(up to 4)</span></label>
+                    <input type="file" id="j-photo-input" accept="image/*" multiple class="sr-only" />
+                    <div class="photo-grid" id="j-photo-grid"></div>
+                    <label for="j-photo-input" class="photo-add-btn" id="j-photo-add-btn">
+                      <span class="photo-icon">&#128247;</span>
+                      <span>Add Photos</span>
+                    </label>
+                  </div>
+                  <div class="journal-form-actions">
+                    <button type="submit" class="btn-save-entry">Save Entry</button>
+                    <button type="button" class="btn-cancel-entry" id="btn-cancel-entry">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Bake Analytics (Pro) -->
-        <div class="analytics-section hidden" id="analytics-section">
-          <button class="analytics-toggle" id="analytics-toggle" type="button">
-            <span>Bake Analytics <span class="premium-tag">PRO</span></span>
-            <span class="analytics-toggle-arrow" id="analytics-toggle-arrow">&#9660;</span>
+        <!-- Accordion: History -->
+        <div class="accordion-item open" id="accordion-history">
+          <button class="accordion-header" type="button" id="accordion-history-header">
+            <span class="accordion-title">History</span>
+            <span class="accordion-arrow">&#9660;</span>
           </button>
-          <div class="analytics-body" id="analytics-body">
-            <div class="analytics-timeline" id="analytics-timeline"></div>
-            <div class="analytics-grid" id="analytics-grid"></div>
+          <div class="accordion-body" id="accordion-history-body">
+            <div class="accordion-inner">
+              <div class="journal-toolbar">
+                <div class="journal-search">
+                  <input type="search" id="journal-search-input" placeholder="Search bakes…" aria-label="Search journal entries" />
+                </div>
+                <div class="journal-filter">
+                  <label for="journal-style-filter">Filter by style:</label>
+                  <select id="journal-style-filter">
+                    <option value="all">All Styles</option>
+                  </select>
+                </div>
+                <div class="journal-sort">
+                  <label for="journal-sort-select">Sort:</label>
+                  <select id="journal-sort-select">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="hydration-high">Highest Hydration</option>
+                    <option value="hydration-low">Lowest Hydration</option>
+                    <option value="rating-high">Highest Rating</option>
+                    <option value="rating-low">Lowest Rating</option>
+                  </select>
+                </div>
+                <button class="btn-compare" id="btn-compare" disabled>Compare</button>
+                <p class="compare-hint" id="compare-hint"></p>
+              </div>
+              <div class="journal-entries" id="journal-entries"></div>
+              <div class="journal-comparison hidden" id="journal-comparison"></div>
+            </div>
           </div>
         </div>
 
-        <div class="journal-form-wrapper hidden" id="journal-form-wrapper">
-        <h3 id="journal-form-heading">Log a Bake</h3>
-        <form id="journal-form">
-          <div class="form-group">
-            <label for="j-bake-name">Bake Name <span class="field-hint">(optional)</span></label>
-            <input type="text" id="j-bake-name" placeholder="e.g. Sunday Night Margherita" maxlength="80" />
-          </div>
-
-          <div class="journal-form-grid">
-            <div class="form-group">
-              <label for="j-style">Pizza Style</label>
-              <select id="j-style" required>
-                <option value="" disabled selected>Select a style&hellip;</option>
-              </select>
-              <p id="j-style-history" class="style-history-note hidden"></p>
-            </div>
-            <div class="form-group">
-              <label for="j-date">Date</label>
-              <input type="date" id="j-date" required />
-            </div>
-          </div>
-
-          <div class="dough-snapshot" id="j-dough-snapshot">
-            <span class="snapshot-label">Dough Snapshot:</span>
-            <span class="snapshot-empty">Calculate a recipe first to capture dough settings</span>
-          </div>
-
-          <div class="journal-form-grid" id="j-bake-details-grid">
-            <div class="form-group">
-              <label for="j-bake-temp">Bake Temp (&deg;F)</label>
-              <input type="number" id="j-bake-temp" min="300" max="1000" />
-            </div>
-            <div class="form-group">
-              <label for="j-bake-time">Bake Time</label>
-              <input type="text" inputmode="numeric" id="j-bake-time" placeholder="e.g. 8–12" />
-            </div>
-            <div class="form-group">
-              <label for="j-oven-type">Oven Type</label>
-              <select id="j-oven-type">
-                <!-- Populated by populateOvenSelect() -->
-              </select>
+        <!-- Accordion: Bake Stats -->
+        <div class="accordion-item" id="accordion-stats">
+          <button class="accordion-header" type="button" id="accordion-stats-header">
+            <span class="accordion-title">Bake Stats</span>
+            <span class="accordion-arrow">&#9660;</span>
+          </button>
+          <div class="accordion-body" id="accordion-stats-body">
+            <div class="accordion-inner">
+              <div class="journal-stats-section" id="journal-stats-section">
+                <div class="stats-grid" id="stats-grid"></div>
+              </div>
+              <div class="analytics-section" id="analytics-section">
+                <h4>Bake Analytics <span class="premium-tag">PRO</span></h4>
+                <div class="analytics-body" id="analytics-body">
+                  <div class="analytics-timeline" id="analytics-timeline"></div>
+                  <div class="analytics-grid" id="analytics-grid"></div>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
 
-          <div class="form-group">
-            <label id="rating-label">Rating</label>
-            <div class="star-rating" id="j-star-rating" role="group" aria-labelledby="rating-label">
-              <button type="button" class="star" data-value="1" aria-label="1 star">&#9733;</button>
-              <button type="button" class="star" data-value="2" aria-label="2 stars">&#9733;</button>
-              <button type="button" class="star" data-value="3" aria-label="3 stars">&#9733;</button>
-              <button type="button" class="star" data-value="4" aria-label="4 stars">&#9733;</button>
-              <button type="button" class="star" data-value="5" aria-label="5 stars">&#9733;</button>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="j-notes">Notes</label>
-            <textarea id="j-notes" rows="3" placeholder="How did it turn out? What would you change?"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Photos <span class="photo-count-hint">(up to 4)</span></label>
-            <input type="file" id="j-photo-input" accept="image/*" multiple class="sr-only" />
-            <div class="photo-grid" id="j-photo-grid">
-              <!-- Thumbnails rendered by JS -->
-            </div>
-            <label for="j-photo-input" class="photo-add-btn" id="j-photo-add-btn">
-              <span class="photo-icon">&#128247;</span>
-              <span>Add Photos</span>
-            </label>
-          </div>
-
-          <div class="journal-form-actions">
-            <button type="submit" class="btn-save-entry">Save Entry</button>
-            <button type="button" class="btn-cancel-entry" id="btn-cancel-entry">Cancel</button>
-          </div>
-        </form>
-      </div>
-
-        <button class="btn-new-entry" id="btn-new-entry">+ Log a Bake</button>
-
-        <div class="journal-entries" id="journal-entries"></div>
-
-        <div class="journal-comparison hidden" id="journal-comparison"></div>
       </div>
 
       <!-- Tab Panel: Passport -->
