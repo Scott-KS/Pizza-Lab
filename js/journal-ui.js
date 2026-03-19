@@ -165,8 +165,14 @@
 
   function renderAnalytics() {
     if (!analyticsSection || !analyticsBody) return;
+    const hint = analyticsSection.querySelector(".section-hint");
     const entries = PieLabJournal.getAllEntries();
-    if (entries.length < 3) { analyticsBody.innerHTML = ""; return; }
+    if (entries.length < 3) {
+      analyticsBody.innerHTML = "";
+      if (hint) hint.classList.remove("hidden");
+      return;
+    }
+    if (hint) hint.classList.add("hidden");
 
     // Gate: show locked state if not premium
     if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
