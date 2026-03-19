@@ -650,6 +650,10 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
+    // Move card to body level so it escapes overlay's stacking context
+    const kgCardEl = kgOverlay.querySelector(".firstbake-card");
+    document.body.appendChild(kgCardEl);
+
     const kgHighlight = document.createElement("div");
     kgHighlight.className = "firstbake-highlight hidden";
     document.body.appendChild(kgHighlight);
@@ -692,6 +696,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function close() {
       kitchenGuideActive = false;
       kgHighlight.remove();
+      kgCardEl.remove();
       kgOverlay.classList.remove("firstbake-overlay--visible");
       setTimeout(() => kgOverlay.remove(), 300);
     }

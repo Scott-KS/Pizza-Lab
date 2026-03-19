@@ -58,6 +58,7 @@ const PieLabSchedulerGuide = (() => {
   ];
 
   let overlay = null;
+  let cardEl = null;
   let highlightEl = null;
   let currentStep = 0;
   let activeCleanup = null;
@@ -77,6 +78,10 @@ const PieLabSchedulerGuide = (() => {
         </div>
       </div>
     `;
+
+    // Move card to body level so it escapes overlay's stacking context
+    cardEl = overlay.querySelector(".firstbake-card");
+    document.body.appendChild(cardEl);
 
     highlightEl = document.createElement("div");
     highlightEl.className = "firstbake-highlight hidden";
@@ -186,6 +191,7 @@ const PieLabSchedulerGuide = (() => {
     document.removeEventListener("keydown", handleKey);
     clearHighlight();
     if (highlightEl) { highlightEl.remove(); highlightEl = null; }
+    if (cardEl) { cardEl.remove(); cardEl = null; }
     if (overlay) {
       overlay.classList.remove("firstbake-overlay--visible");
       setTimeout(() => {
