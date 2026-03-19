@@ -514,19 +514,21 @@ function showDataNotice() {
 
   function createMiniTimerBanner() {
     if (miniTimerBanner) return miniTimerBanner;
-    miniTimerBanner = document.createElement("div");
+    miniTimerBanner = document.createElement("button");
     miniTimerBanner.id = "nav-timer-banner";
-    miniTimerBanner.className = "timer-banner";
+    miniTimerBanner.className = "nav-timer-pill";
+    miniTimerBanner.type = "button";
     miniTimerBanner.innerHTML = `
-      <span class="timer-banner-icon">\uD83C\uDF55</span>
-      <span class="timer-banner-time" id="timer-banner-time"></span>
-      <span class="timer-banner-label">Bake Timer</span>
-      <button type="button" class="timer-banner-link" id="timer-banner-link">View</button>
+      <span class="nav-timer-icon">\uD83C\uDF55</span>
+      <span class="nav-timer-time" id="timer-banner-time"></span>
     `;
-    // Insert after the header
-    const header = document.querySelector(".site-header");
-    if (header && header.parentNode) {
-      header.parentNode.insertBefore(miniTimerBanner, header.nextSibling);
+    // Insert inside the header nav, after the logo
+    const nav = document.querySelector(".site-nav");
+    const navLinks = nav && nav.querySelector(".nav-links");
+    if (nav && navLinks) {
+      nav.insertBefore(miniTimerBanner, navLinks);
+    } else if (nav) {
+      nav.appendChild(miniTimerBanner);
     } else {
       document.body.prepend(miniTimerBanner);
     }
@@ -560,16 +562,12 @@ function showDataNotice() {
     const state = getTimerRemaining();
     if (!state) { removeMiniTimerBanner(); return; }
 
-    const banner = createMiniTimerBanner();
-    const timeEl = banner.querySelector("#timer-banner-time");
-    const labelEl = banner.querySelector(".timer-banner-label");
-    const linkEl = banner.querySelector("#timer-banner-link");
+    const pill = createMiniTimerBanner();
+    const timeEl = pill.querySelector("#timer-banner-time");
 
     if (state.remaining <= 0) {
-      timeEl.textContent = "00:00";
-      labelEl.textContent = "Pizza is done!";
-      banner.classList.add("done");
-      linkEl.textContent = "View";
+      timeEl.textContent = "Done!";
+      pill.classList.add("done");
       clearInterval(miniTimerInterval);
       miniTimerInterval = null;
       if (!isCalculatorPage) {
@@ -580,21 +578,18 @@ function showDataNotice() {
           });
         }
       }
-      linkEl.addEventListener("click", stopMiniAlarm, { once: true });
+      pill.addEventListener("click", stopMiniAlarm, { once: true });
       return;
     }
 
-    const pauseLabel = state.paused ? " (paused)" : "";
     timeEl.textContent = formatTimerMM(state.remaining);
-    labelEl.textContent = `Bake Timer${pauseLabel}`;
-    banner.classList.remove("done");
-    linkEl.textContent = "View";
+    pill.classList.remove("done");
 
-    // On calculator page, hide banner when full timer modal is visible
+    // On calculator page, hide pill when full timer modal is visible
     if (isCalculatorPage) {
       const overlay = document.getElementById("timer-overlay");
       const modalOpen = overlay && !overlay.classList.contains("hidden");
-      banner.classList.toggle("hidden", modalOpen);
+      pill.classList.toggle("hidden", modalOpen);
     }
   }
 
