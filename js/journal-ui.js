@@ -113,8 +113,7 @@
   function renderStats() {
     if (!statsSection || !statsGrid) return;
     const entries = PieLabJournal.getAllEntries();
-    if (entries.length < 2) { statsSection.classList.add("hidden"); return; }
-    statsSection.classList.remove("hidden");
+    if (entries.length < 2) { statsGrid.innerHTML = ""; return; }
 
     // Total Bakes
     const total = entries.length;
@@ -158,10 +157,6 @@
       `<div class="stat-card"><div class="stat-value">${c.value}</div><div class="stat-label">${c.label}</div></div>`
     ).join("");
 
-    // Restore collapse state
-    const collapsed = localStorage.getItem("pielab-stats-open") === "0";
-    statsGrid.classList.toggle("collapsed", collapsed);
-    statsArrow.style.transform = collapsed ? "rotate(0deg)" : "rotate(180deg)";
   }
 
   if (statsToggle) {
@@ -181,8 +176,7 @@
   function renderAnalytics() {
     if (!analyticsSection || !analyticsBody) return;
     const entries = PieLabJournal.getAllEntries();
-    if (entries.length < 3) { analyticsSection.classList.add("hidden"); return; }
-    analyticsSection.classList.remove("hidden");
+    if (entries.length < 3) { analyticsBody.innerHTML = ""; return; }
 
     // Gate: show locked state if not premium
     if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
@@ -376,8 +370,13 @@
 
   // ── Show/hide form ────────────────────────────────
   function showForm(prefill, derivedFrom) {
-    formWrapper.classList.remove("hidden");
-    btnNewEntry.classList.add("hidden");
+    // Expand the Log a Bake accordion
+    const logAccordion = document.getElementById("accordion-log");
+    if (logAccordion && !logAccordion.classList.contains("open")) {
+      logAccordion.classList.add("open");
+      const body = logAccordion.querySelector(".accordion-body");
+      if (body) body.style.maxHeight = body.scrollHeight + "px";
+    }
 
     // Set date to today
     document.getElementById("j-date").value = new Date().toISOString().split("T")[0];
@@ -469,12 +468,22 @@
       styleHistoryEl.classList.add("hidden");
     }
 
-    formWrapper.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Re-measure accordion height after form content changes and scroll to it
+    if (logAccordion) {
+      const logBody = logAccordion.querySelector(".accordion-body");
+      if (logBody) logBody.style.maxHeight = logBody.scrollHeight + "px";
+      logAccordion.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 
   function hideForm() {
-    formWrapper.classList.add("hidden");
-    btnNewEntry.classList.remove("hidden");
+    // Collapse the Log a Bake accordion
+    const logAccordion = document.getElementById("accordion-log");
+    if (logAccordion) {
+      logAccordion.classList.remove("open");
+      const body = logAccordion.querySelector(".accordion-body");
+      if (body) body.style.maxHeight = null;
+    }
     pendingDerivedFromId = null;
     formHeading.textContent = "Log a Bake";
     localStorage.removeItem("pielab-pending-bake");
@@ -506,8 +515,24 @@
     snapshotEl.innerHTML = chips;
   }
 
-  btnNewEntry.addEventListener("click", () => showForm(false));
+  // Accordion header click opens form (Log a Bake accordion)
+  if (btnNewEntry) btnNewEntry.addEventListener("click", () => showForm(false));
   btnCancel.addEventListener("click", hideForm);
+
+  // Journal accordion toggle handlers (allow multiple open)
+  document.querySelectorAll("#tab-panel-bakes > .accordion-item > .accordion-header").forEach(header => {
+    header.addEventListener("click", () => {
+      const item = header.parentElement;
+      const body = item.querySelector(".accordion-body");
+      if (item.classList.contains("open")) {
+        item.classList.remove("open");
+        body.style.maxHeight = null;
+      } else {
+        item.classList.add("open");
+        body.style.maxHeight = body.scrollHeight + "px";
+      }
+    });
+  });
 
   // Check for ?prefill=1 URL parameter
   const urlParams = new URLSearchParams(window.location.search);
@@ -582,6 +607,22 @@
         showSubmitNudge(saved);
       }
     }, guideDelay);
+
+    // Passport intro after 2nd bake ever
+    const PASSPORT_INTRO_KEY = "pielab-passport-intro-shown";
+    const allAfterSave = PieLabJournal.getAllEntries();
+    if (allAfterSave.length === 2 && localStorage.getItem(PASSPORT_INTRO_KEY) !== "1") {
+      const passportDelay = hasMilestone ? 5000 : 1200;
+      setTimeout(() => showPassportIntro(), passportDelay);
+    }
+
+    // "Almost there" nudge — 1 bake away from next tier
+    const NEXT_TIER_THRESHOLDS = [3, 8, 15, 25]; // one below 4, 9, 16, 26
+    if (NEXT_TIER_THRESHOLDS.includes(saved.skillCount)) {
+      const TIER_NAMES = { 3: "Getting Comfortable", 8: "Dialed In", 15: "Style Specialist", 25: "Master of the Oven" };
+      const nudgeDelay = hasMilestone ? 5500 : 1500;
+      setTimeout(() => showStatusNudge(saved.styleName, TIER_NAMES[saved.skillCount]), nudgeDelay);
+    }
   });
 
   // ── Empty state builder ──────────────────────────
@@ -1127,6 +1168,60 @@
     overlay.querySelector(".first-bake-dismiss").addEventListener("click", dismiss);
     overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
     setTimeout(dismiss, 8000);
+  }
+
+  // ── Passport Intro (shown after 2nd bake) ──────────────
+  function showPassportIntro() {
+    const PASSPORT_INTRO_KEY = "pielab-passport-intro-shown";
+    if (localStorage.getItem(PASSPORT_INTRO_KEY) === "1") return;
+
+    const overlay = document.createElement("div");
+    overlay.className = "first-bake-overlay";
+    overlay.innerHTML = `
+      <div class="first-bake-card" style="max-width: 360px;">
+        <span class="first-bake-emoji">\uD83C\uDFDF\uFE0F</span>
+        <h2 class="first-bake-title">Your Style Passport</h2>
+        <p class="first-bake-msg">Every style you bake earns progress toward mastery. Here\u2019s how it works:</p>
+        <div style="text-align:left;margin:0.75rem 0;font-size:0.9rem;line-height:1.6;">
+          <div>\uD83C\uDF55 <strong>1 bake</strong> \u2014 First Stretch</div>
+          <div>\uD83D\uDD25 <strong>4 bakes</strong> \u2014 Getting Comfortable</div>
+          <div>\u2B50 <strong>9 bakes</strong> \u2014 Dialed In</div>
+          <div>\uD83D\uDC68\u200D\uD83C\uDF73 <strong>16 bakes</strong> \u2014 Style Specialist</div>
+          <div>\uD83C\uDFC6 <strong>26 bakes</strong> \u2014 Master of the Oven</div>
+        </div>
+        <p class="first-bake-hint">Check the Passport tab to see your journey.</p>
+        <button class="first-bake-dismiss" id="passport-intro-btn">View Passport</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add("first-bake--visible"));
+
+    localStorage.setItem(PASSPORT_INTRO_KEY, "1");
+
+    const dismiss = () => {
+      overlay.classList.remove("first-bake--visible");
+      setTimeout(() => overlay.remove(), 400);
+    };
+    overlay.querySelector("#passport-intro-btn").addEventListener("click", () => {
+      dismiss();
+      // Switch to Passport tab
+      const passportTab = document.querySelector(".journal-tab[data-tab='passport']");
+      if (passportTab) passportTab.click();
+    });
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
+  }
+
+  // ── Status Nudge Toast (1 bake from next tier) ────────
+  function showStatusNudge(styleName, nextBadgeName) {
+    const toast = document.createElement("div");
+    toast.className = "status-nudge-toast";
+    toast.textContent = `One more ${styleName} bake and you\u2019ll hit ${nextBadgeName}!`;
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add("status-nudge--visible"));
+
+    setTimeout(() => {
+      toast.classList.remove("status-nudge--visible");
+      setTimeout(() => toast.remove(), 400);
+    }, 5000);
   }
 
   // ── Share Guide Popup (after saving a bake with photo) ──
@@ -2041,16 +2136,31 @@
         p.classList.toggle("active", p.id === "tab-panel-" + tabName);
       });
       localStorage.setItem("pielab-journal-tab", tabName);
+      // Recalculate accordion heights when Bakes tab becomes visible
+      if (tabName === "bakes") {
+        setTimeout(() => {
+          document.querySelectorAll("#tab-panel-bakes .accordion-item.open").forEach(item => {
+            const body = item.querySelector(".accordion-body");
+            if (body) body.style.maxHeight = body.scrollHeight + "px";
+          });
+        }, 50);
+      }
     }
 
     tabs.forEach(t => {
       t.addEventListener("click", () => switchTab(t.dataset.tab));
     });
 
-    // Restore saved tab
-    const savedTab = localStorage.getItem("pielab-journal-tab");
-    if (savedTab && document.getElementById("tab-panel-" + savedTab)) {
-      switchTab(savedTab);
+    // Force Bakes tab when coming from "Log This Bake" (prefill mode)
+    const tabParams = new URLSearchParams(window.location.search);
+    if (tabParams.get("prefill") === "1") {
+      switchTab("bakes");
+    } else {
+      // Restore saved tab
+      const savedTab = localStorage.getItem("pielab-journal-tab");
+      if (savedTab && document.getElementById("tab-panel-" + savedTab)) {
+        switchTab(savedTab);
+      }
     }
   }
 
@@ -2205,6 +2315,18 @@
   } else {
     initRender();
   }
+
+  // Initialize open accordion body heights after content renders
+  // Only works if Bakes tab is visible; otherwise switchTab handles it
+  setTimeout(() => {
+    const bakesPanel = document.getElementById("tab-panel-bakes");
+    if (bakesPanel && bakesPanel.classList.contains("active")) {
+      bakesPanel.querySelectorAll(".accordion-item.open").forEach(item => {
+        const body = item.querySelector(".accordion-body");
+        if (body) body.style.maxHeight = body.scrollHeight + "px";
+      });
+    }
+  }, 200);
 
   // Start journal guide if flagged by the first-bake guide
   if (shouldShowJournalGuide()) {

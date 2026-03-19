@@ -3500,6 +3500,32 @@ main {
 .first-bake-dismiss:hover { background: var(--clr-primary-dark); }
 .first-bake-dismiss:active { transform: scale(0.97); }
 
+/* ── Status Nudge Toast ──────────────────────── */
+.status-nudge-toast {
+  position: fixed;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(1rem);
+  background: var(--clr-card);
+  color: var(--clr-text);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--clr-gold);
+  opacity: 0;
+  transition: opacity 0.4s, transform 0.4s;
+  z-index: 9999;
+  text-align: center;
+  max-width: 90%;
+}
+.status-nudge-toast.status-nudge--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 /* ── Share Guide Popup ────────────────────────── */
 .share-guide-overlay {
   position: fixed; inset: 0;
