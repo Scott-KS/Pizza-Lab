@@ -519,6 +519,10 @@
         item.classList.remove("open");
         body.style.maxHeight = null;
       } else {
+        // Reset form when opening Log a Bake so stale data doesn't persist
+        if (item.id === "accordion-log") {
+          showForm(false);
+        }
         // Re-render stats when opening the stats accordion so content exists
         if (item.id === "accordion-stats") {
           renderStats();
@@ -1894,6 +1898,7 @@
   ];
 
   let jgOverlay = null;
+  let jgCardEl = null;
   let jgHighlight = null;
   let jgStep = 0;
   let jgCleanup = null;
@@ -1921,6 +1926,10 @@
         </div>
       </div>
     `;
+
+    // Move card to body level so it escapes overlay's stacking context
+    jgCardEl = jgOverlay.querySelector(".firstbake-card");
+    document.body.appendChild(jgCardEl);
 
     jgHighlight = document.createElement("div");
     jgHighlight.className = "firstbake-highlight hidden";
@@ -2004,6 +2013,7 @@
     localStorage.setItem(JOURNAL_GUIDE_DONE_KEY, "1");
     localStorage.removeItem(JOURNAL_GUIDE_KEY);
     if (jgHighlight) { jgHighlight.remove(); jgHighlight = null; }
+    if (jgCardEl) { jgCardEl.remove(); jgCardEl = null; }
     if (jgOverlay) {
       jgOverlay.classList.remove("firstbake-overlay--visible");
       setTimeout(() => { if (jgOverlay) { jgOverlay.remove(); jgOverlay = null; } }, 300);
