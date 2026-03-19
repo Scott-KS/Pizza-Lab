@@ -1881,8 +1881,7 @@
       title: "Save & Share",
       body: "Hit Save Entry to log this bake. Once saved, you can tap the bake card to share it with friends or save it to your camera roll.",
       target: ".btn-save-entry",
-      nextLabel: "Log This Bake",
-      submitOnComplete: true,
+      nextLabel: "Got It!",
     },
   ];
 
@@ -1988,12 +1987,7 @@
       jgStep++;
       jgRenderStep();
     } else {
-      const step = journalGuideSteps[jgStep];
       jgClose();
-      // Trigger form submit on final step if flagged
-      if (step.submitOnComplete && form) {
-        form.requestSubmit();
-      }
     }
   }
 

@@ -1116,14 +1116,14 @@ main {
   color: var(--clr-muted);
   vertical-align: middle;
   margin-left: 2px;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-body);
   font-weight: 400;
 }
 
 .style-library-link {
   font-size: 0.7rem;
   font-style: italic;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-body);
   font-weight: 400;
   color: var(--clr-accent);
   text-decoration: none;
@@ -1238,8 +1238,14 @@ main {
   transition: transform 0.3s;
 }
 
+.accordion-item.open .accordion-header {
+  background: var(--clr-primary);
+  color: #fff;
+}
+
 .accordion-item.open .accordion-arrow {
   transform: rotate(180deg);
+  color: #fff;
 }
 
 .accordion-body {
@@ -6386,7 +6392,7 @@ body[data-page="kitchen"] main {
 .modal-formula-section h4 {
   font-size: 0.88rem; color: var(--clr-text-light);
   text-transform: uppercase; letter-spacing: 0.04em;
-  margin-bottom: 0.5rem; font-family: var(--ff-body);
+  margin-bottom: 0.5rem; font-family: var(--font-body);
 }
 .formula-per-ball { font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 0.8rem; }
 .modal-formula-grid {
@@ -6419,13 +6425,13 @@ body[data-page="kitchen"] main {
   padding: 0.55rem 0.75rem; font-size: 0.88rem;
   border: 1px solid var(--clr-border); border-radius: 6px;
   background: var(--clr-card-bg); color: var(--clr-text);
-  font-family: var(--ff-body);
+  font-family: var(--font-body);
 }
 .btn-compare-go {
   padding: 0.55rem 1.25rem; font-size: 0.88rem; font-weight: 600;
   border: none; border-radius: 6px; cursor: pointer;
   background: var(--clr-primary); color: #fff;
-  font-family: var(--ff-body); transition: opacity 0.2s;
+  font-family: var(--font-body); transition: opacity 0.2s;
 }
 .btn-compare-go:disabled { opacity: 0.45; cursor: not-allowed; }
 .btn-compare-go:not(:disabled):hover { opacity: 0.88; }
@@ -6541,7 +6547,7 @@ body[data-page="kitchen"] main {
   padding-top: 0;
 }
 .passport-section h3 {
-  font-family: "Playfair Display", serif;
+  font-family: var(--font-display);
   font-size: 1.25rem;
   margin-bottom: 0.25rem;
 }
@@ -6629,7 +6635,7 @@ body[data-page="kitchen"] main {
   background: var(--clr-card-bg);
 }
 .passport-bake-list-title {
-  font-family: "Playfair Display", serif;
+  font-family: var(--font-display);
   font-size: 1.05rem;
   margin-bottom: 0.75rem;
 }
@@ -6705,7 +6711,7 @@ body[data-page="kitchen"] main {
   margin: 0;
 }
 .dough-library-heading {
-  font-family: "Playfair Display", serif;
+  font-family: var(--font-display);
   font-size: 1.25rem;
   margin-bottom: 0.75rem;
 }
