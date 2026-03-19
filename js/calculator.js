@@ -921,7 +921,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const ballRow = document.getElementById("dough-ball-row");
     const ballEl = document.getElementById("dough-ball-amount");
     if (ballRow && ballEl) {
-      const count = parseInt(document.getElementById("pizza-count")?.value) || 1;
+      const count = parseInt(document.getElementById("num-pizzas")?.value) || 1;
       if (count > 1) {
         ballEl.textContent = formatAmount(Math.round(totalGrams / count), "Total");
         ballRow.classList.remove("hidden");
@@ -1557,7 +1557,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!tips.length) {
       const li = document.createElement("li");
       li.textContent = "Calculate a recipe to see tips.";
-      li.style.color = "var(--clr-text-muted, #9a9690)";
+      li.classList.add("text-muted");
       tipsList.appendChild(li);
       return;
     }
@@ -1664,34 +1664,16 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.removeItem("pielab-bake-timer");
   }
 
-  /* ── Looping alarm sound ── */
-  let alarmCtx = null;
-  let alarmIntervalId = null;
+  /* ── Looping alarm sound (uses shared createAlarmBeep from nav.js) ── */
+  let alarmHandle = null;
 
   function startAlarmSound() {
-    stopAlarmSound(); // clean up any previous
-    try {
-      alarmCtx = new (window.AudioContext || window.webkitAudioContext)();
-    } catch { return; }
-    function beepBurst() {
-      if (!alarmCtx) return;
-      [0, 0.25, 0.5].forEach(offset => {
-        const osc = alarmCtx.createOscillator();
-        const gain = alarmCtx.createGain();
-        osc.connect(gain); gain.connect(alarmCtx.destination);
-        osc.frequency.value = 880;
-        gain.gain.value = 0.35;
-        osc.start(alarmCtx.currentTime + offset);
-        osc.stop(alarmCtx.currentTime + offset + 0.15);
-      });
-    }
-    beepBurst(); // play immediately
-    alarmIntervalId = setInterval(beepBurst, 1500); // repeat every 1.5s
+    stopAlarmSound();
+    alarmHandle = createAlarmBeep({ freq: 880, gain: 0.35, interval: 1500 });
   }
 
   function stopAlarmSound() {
-    if (alarmIntervalId) { clearInterval(alarmIntervalId); alarmIntervalId = null; }
-    if (alarmCtx) { try { alarmCtx.close(); } catch {} alarmCtx = null; }
+    if (alarmHandle) { alarmHandle.stop(); alarmHandle = null; }
   }
 
   function timerComplete() {

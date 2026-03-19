@@ -48,16 +48,7 @@
   // Form heading
   const formHeading = document.getElementById("journal-form-heading");
 
-  // ── HTML escaping — prevents XSS from user-supplied text ──
-  function escapeHtml(str) {
-    if (!str) return "";
-    return str
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
+  // escapeHtml() is defined globally in nav.js
 
   // ── Storage usage display ────────────────────────
   function updateStorageDisplay() {
@@ -1399,7 +1390,6 @@
         files.push(new File([wmBlob], `my-bake-${i + 1}.png`, { type: "image/png" }));
       }
     } catch (err) {
-      console.error("Share image generation failed:", err);
       showToast("Could not generate share image");
       return;
     }
@@ -1474,7 +1464,6 @@
       try { await navigator.clipboard.writeText(caption); } catch {}
       showToast("Saved! Caption copied — paste into your post");
     } catch (err) {
-      console.error("Save photos failed:", err);
       showToast("Could not save photos");
     }
   }

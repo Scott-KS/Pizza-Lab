@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=27" />
+  <link rel="stylesheet" href="style.css?v=28" />
 </head>
 <body data-page="calculator">
 
@@ -136,14 +136,14 @@
               <span>Use Preferment <span class="premium-tag">PRO</span></span>
             </div>
             <div id="preferment-options" class="preferment-options hidden">
-              <div class="form-group" style="flex:1 1 180px;margin:0">
+              <div class="form-group preferment-type-group">
                 <label for="preferment-type">Preferment Type</label>
                 <select id="preferment-type">
                   <option value="poolish">Poolish (100% hydration)</option>
                   <option value="biga">Biga (50% hydration)</option>
                 </select>
               </div>
-              <div class="setting-field" style="flex:0 1 200px">
+              <div class="setting-field preferment-pct-group">
                 <label for="preferment-pct">Flour in Preferment</label>
                 <input type="range" id="preferment-pct" min="20" max="40" value="25" step="5">
                 <span id="preferment-pct-label">25%</span>
@@ -395,17 +395,17 @@
   </footer>
 
   <!-- Scripts: Capacitor init first, then data files, then shared nav, then page features -->
-  <script src="js/capacitor-init.js"></script>
+  <script src="js/capacitor-init.js?v=1"></script>
   <script src="recipes.js?v=6"></script>
   <script src="knowledge-data.js?v=2"></script>
-  <script src="journal.js?v=3"></script>
+  <script src="journal.js?v=4"></script>
   <script src="js/nav.js?v=7"></script>
   <script src="js/premium.js?v=3"></script>
   <script src="js/user-profile.js?v=5"></script>
   <script src="scheduler-data.js?v=5"></script>
   <script src="tools-data.js?v=4"></script>
-  <script src="js/pie-notifications.js"></script>
+  <script src="js/pie-notifications.js?v=1"></script>
   <script src="js/calculator.js?v=16"></script>
-  <script src="js/first-bake.js"></script>
+  <script src="js/first-bake.js?v=1"></script>
 </body>
 </html>

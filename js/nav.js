@@ -3,6 +3,47 @@
    Loaded on every page before feature scripts.
    ══════════════════════════════════════════════════════ */
 
+// ── Shared Utilities ─────────────────────────────────
+function escapeHtml(str) {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+/**
+ * Shared alarm beep utility. Each caller can customise freq, gain, offsets, and interval.
+ * Returns { stop() } handle.
+ */
+function createAlarmBeep({ freq = 880, gain = 0.35, offsets = [0, 0.25, 0.5], interval = 1500 } = {}) {
+  let ctx = null;
+  let intervalId = null;
+  try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch { return { stop() {} }; }
+  function beep() {
+    if (!ctx) return;
+    offsets.forEach(offset => {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.connect(g); g.connect(ctx.destination);
+      osc.frequency.value = freq;
+      g.gain.value = gain;
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + 0.15);
+    });
+  }
+  beep();
+  intervalId = setInterval(beep, interval);
+  return {
+    stop() {
+      if (intervalId) { clearInterval(intervalId); intervalId = null; }
+      if (ctx) { try { ctx.close(); } catch {} ctx = null; }
+    }
+  };
+}
+
 // ── Register Service Worker (PWA offline support) ─────
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -415,7 +456,6 @@ function showDataNotice() {
   if (!tabBar) return;
 
   if (window.visualViewport) {
-    let lastHeight = window.visualViewport.height;
     const threshold = 150; // pixels — keyboards are typically 200px+
 
     window.visualViewport.addEventListener("resize", () => {
@@ -447,8 +487,7 @@ function showDataNotice() {
   const TIMER_KEY = "pielab-bake-timer";
   let miniTimerBanner = null;
   let miniTimerInterval = null;
-  let miniAlarmCtx = null;
-  let miniAlarmInterval = null;
+  let miniAlarmHandle = null;
   const isCalculatorPage = window.location.pathname.includes("calculator");
 
   function formatTimerMM(secs) {
@@ -510,26 +549,11 @@ function showDataNotice() {
 
   function startMiniAlarm() {
     stopMiniAlarm();
-    try { miniAlarmCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch { return; }
-    function beep() {
-      if (!miniAlarmCtx) return;
-      [0, 0.25, 0.5].forEach(offset => {
-        const osc = miniAlarmCtx.createOscillator();
-        const gain = miniAlarmCtx.createGain();
-        osc.connect(gain); gain.connect(miniAlarmCtx.destination);
-        osc.frequency.value = 880;
-        gain.gain.value = 0.35;
-        osc.start(miniAlarmCtx.currentTime + offset);
-        osc.stop(miniAlarmCtx.currentTime + offset + 0.15);
-      });
-    }
-    beep();
-    miniAlarmInterval = setInterval(beep, 1500);
+    miniAlarmHandle = createAlarmBeep({ freq: 880, gain: 0.35, interval: 1500 });
   }
 
   function stopMiniAlarm() {
-    if (miniAlarmInterval) { clearInterval(miniAlarmInterval); miniAlarmInterval = null; }
-    if (miniAlarmCtx) { try { miniAlarmCtx.close(); } catch {} miniAlarmCtx = null; }
+    if (miniAlarmHandle) { miniAlarmHandle.stop(); miniAlarmHandle = null; }
   }
 
   function miniTimerTick() {

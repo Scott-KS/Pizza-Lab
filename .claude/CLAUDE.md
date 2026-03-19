@@ -49,19 +49,25 @@ The Pie Lab is a premium pizza-making web app. Static HTML/CSS/JS — no framewo
 
 ### CSS
 - Never use inline styles unless dynamically required by JS logic.
-- Match the existing design system (CSS variables defined in `:root`):
-  - Light mode background: `#f3ebe2` (`--clr-bg`)
-  - Card surface: `#faf6f1` (`--clr-card`)
-  - Section bg: `#ede4da` (`--clr-section-bg`)
-  - Border: `#d5c9bc` (`--clr-border`)
-  - Text: `#1a1410` (`--clr-text`)
-  - Text light/muted: `#5a4e47` (`--clr-text-light`)
-  - Primary: `#8c3524` (`--clr-primary`)
-  - Accent: `#c9954a` (`--clr-accent`)
-  - Dark mode overrides are in `[data-theme="dark"]` block
-  - Border radius: `12px` (`--radius`)
-  - Transitions: `200ms ease` preferred, up to `400ms` for complex animations
-- Typography: Playfair Display for headings (`--font-display`), Inter for body (`--font-body`). Do not introduce new fonts.
+- Match the existing design system exactly. All colours use CSS custom properties defined in style.css:
+  - **Light mode** (default):
+    - Background: `#f3ebe2` (`--clr-bg`)
+    - Card/surface: `#faf6f1` (`--clr-card`)
+    - Border: `#d5c9bc` (`--clr-border`)
+    - Text: `#1a1410` (`--clr-text`)
+    - Muted text: `#5a4e47` (`--clr-text-light`)
+    - Primary (red): `#8c3524` (`--clr-primary`)
+    - Accent (gold): `#c9954a` (`--clr-accent`)
+  - **Dark mode** (`[data-theme="dark"]`):
+    - Background: `#1c1614`
+    - Card/surface: `#2a2220`
+    - Border: `#4d413a`
+    - Text: `#e8ddd4`
+    - Primary: `#c4604b`
+    - Accent: `#d9a85a`
+  - Border radius: `var(--radius)` (12px) for cards, 6–8px for inputs/buttons
+  - Transitions: `200ms ease` preferred; animations may use `0.3s` or cubic-bezier where appropriate
+- Typography: Playfair Display for headings, Inter for body. Do not introduce new fonts.
 - Mobile-first. New UI elements must stack cleanly on small screens. Test at 375px width mentally before submitting.
 
 ### HTML
@@ -92,7 +98,7 @@ The Pie Lab is a premium pizza-making web app. Static HTML/CSS/JS — no framewo
   - `carousel.js` → index.html (welcome carousel)
 - **Cross-page modules** (in `js/`):
   - `nav.js` — navigation, mobile tab bar, active schedule badge, data notice banner
-  - `premium.js` — trial/Pro gating system, upgrade modal (loaded on calculator.html, learn.html, kitchen.html)
+  - `premium.js` — trial/Pro gating system, upgrade modal (loaded on calculator.html, learn.html)
   - `user-profile.js` — PieLabProfile class, profile read/write
   - `pie-notifications.js` — push notification scheduling
   - `capacitor-init.js` — Capacitor bridge for native app wrapper
@@ -110,7 +116,7 @@ The Pie Lab is a premium pizza-making web app. Static HTML/CSS/JS — no framewo
 ## Paywall & Trial Rules
 
 - **Pricing:** One-time $4.99 purchase to unlock all Pro features permanently.
-- **Trial:** 7-day full-access trial starts when the user saves their Kitchen Profile (not on first bake or install).
+- **Trial:** 14-day full-access trial starts after the user's first bake (not on install).
 - Before building any gated feature, find and read the existing paywall/trial logic in `js/premium.js`. Build on top of it. Never create a parallel system.
 - Premium features are **visible but locked** to free/expired users — never hidden entirely.
 - Lock state: subtle lock icon + tooltip. Tapping triggers the existing upgrade modal.

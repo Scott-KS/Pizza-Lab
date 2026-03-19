@@ -382,7 +382,7 @@ function populateDDTCalculator() {
   const hintMixer = metric ? "Home mixer ≈ 14–17 · Commercial ≈ 19–25" : "Home mixer ≈ 25–30 · Commercial ≈ 35–45";
 
   panel.innerHTML = `
-    <p style="font-size:0.92rem;color:var(--clr-text-light);margin-bottom:1rem;line-height:1.5">
+    <p class="tool-description">
       Calculate the ideal water temperature to hit your Desired Dough Temperature (DDT).
       Consistent DDT leads to predictable fermentation.
     </p>
@@ -601,12 +601,12 @@ function populateVolumeConversion() {
         <select id="vol-ingredient">${optionsHtml}</select>
       </div>
       <div class="vol-input-row">
-        <div class="form-group" style="flex:1">
+        <div class="form-group vol-flex-col">
           <label for="vol-grams">Grams</label>
           <input type="number" id="vol-grams" min="0" step="1" placeholder="Enter grams">
         </div>
         <span class="vol-arrow">\u21C4</span>
-        <div class="form-group" style="flex:1">
+        <div class="form-group vol-flex-col">
           <label>Volume</label>
           <div class="vol-result" id="vol-result">—</div>
         </div>

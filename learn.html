@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=27" />
+  <link rel="stylesheet" href="style.css?v=28" />
 </head>
 <body data-page="learn">
 
@@ -43,17 +43,17 @@
       <h2>Pizza Toolkit</h2>
       <nav class="toolkit-tabs" role="tablist">
         <!-- Knowledge Hub tabs -->
-        <button class="toolkit-tab active" role="tab" aria-selected="true" data-tool="styles">Style Library</button>
-        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="cheese">Cheese &amp; Sauce</button>
-        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="flour">Flour &amp; Yeast</button>
-        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="fermentation">Fermentation</button>
+        <button class="toolkit-tab active" role="tab" aria-selected="true" aria-controls="tool-styles" data-tool="styles">Style Library</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" aria-controls="tool-cheese" data-tool="cheese">Cheese &amp; Sauce</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" aria-controls="tool-flour" data-tool="flour">Flour &amp; Yeast</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" aria-controls="tool-fermentation" data-tool="fermentation">Fermentation</button>
         <!-- Tool tabs -->
-        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="hydration">Hydration Guide <span class="premium-tag">PRO</span></button>
-        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="oven">Oven Guide</button>
-        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="troubleshoot">Troubleshooting <span class="premium-tag">PRO</span></button>
-        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="compare">Compare <span class="premium-tag">PRO</span></button>
-        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="ddt">DDT Calculator <span class="premium-tag">PRO</span></button>
-        <button class="toolkit-tab" role="tab" aria-selected="false" data-tool="volume">Volume Conversion</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" aria-controls="tool-hydration" data-tool="hydration">Hydration Guide <span class="premium-tag">PRO</span></button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" aria-controls="tool-oven" data-tool="oven">Oven Guide</button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" aria-controls="tool-troubleshoot" data-tool="troubleshoot">Troubleshooting <span class="premium-tag">PRO</span></button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" aria-controls="tool-compare" data-tool="compare">Compare <span class="premium-tag">PRO</span></button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" aria-controls="tool-ddt" data-tool="ddt">DDT Calculator <span class="premium-tag">PRO</span></button>
+        <button class="toolkit-tab" role="tab" aria-selected="false" aria-controls="tool-volume" data-tool="volume">Volume Conversion</button>
       </nav>
       <div class="toolkit-panels">
         <!-- Knowledge Hub panels -->
@@ -110,7 +110,7 @@
   </footer>
 
   <!-- Scripts: Capacitor init first, then data files, then shared nav, then page features -->
-  <script src="js/capacitor-init.js"></script>
+  <script src="js/capacitor-init.js?v=1"></script>
   <script src="recipes.js?v=6"></script>
   <script src="knowledge-data.js?v=2"></script>
   <script src="tools-data.js?v=4"></script>
