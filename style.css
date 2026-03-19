@@ -424,6 +424,8 @@ main {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .form-group select:focus,
@@ -7840,7 +7842,7 @@ body[data-page="kitchen"] main {
   border: 2px solid var(--clr-primary);
   border-radius: var(--radius);
   pointer-events: none;
-  z-index: 10600;
+  z-index: 10510;
   box-shadow: 0 0 12px rgba(140, 53, 36, 0.5);
   animation: firstbakePulse 1.5s ease-in-out infinite;
   transition: top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease;

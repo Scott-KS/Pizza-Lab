@@ -107,8 +107,6 @@
   // ── Journal Stats Dashboard ─────────────────────────
   const statsSection = document.getElementById("journal-stats-section");
   const statsGrid = document.getElementById("stats-grid");
-  const statsToggle = document.getElementById("stats-toggle");
-  const statsArrow = document.getElementById("stats-toggle-arrow");
 
   function renderStats() {
     if (!statsSection || !statsGrid) return;
@@ -157,14 +155,6 @@
       `<div class="stat-card"><div class="stat-value">${c.value}</div><div class="stat-label">${c.label}</div></div>`
     ).join("");
 
-  }
-
-  if (statsToggle) {
-    statsToggle.addEventListener("click", () => {
-      const isCollapsed = statsGrid.classList.toggle("collapsed");
-      statsArrow.style.transform = isCollapsed ? "rotate(0deg)" : "rotate(180deg)";
-      localStorage.setItem("pielab-stats-open", isCollapsed ? "0" : "1");
-    });
   }
 
   // ── Bake Analytics (Pro) ────────────────────────────
@@ -413,9 +403,10 @@
 
       // Don't copy photos or notes — user starts fresh for the new bake
     } else if (prefill) {
-      // New entry with calculator prefill
+      // New entry with calculator prefill — consume and clear so it doesn't persist
       try {
         const raw = localStorage.getItem("pielab-last-calc");
+        localStorage.removeItem("pielab-last-calc");
         if (raw) {
           const calc = JSON.parse(raw);
           document.getElementById("j-style").value = calc.styleKey;
@@ -528,8 +519,16 @@
         item.classList.remove("open");
         body.style.maxHeight = null;
       } else {
+        // Re-render stats when opening the stats accordion so content exists
+        if (item.id === "accordion-stats") {
+          renderStats();
+          renderAnalytics();
+        }
         item.classList.add("open");
-        body.style.maxHeight = body.scrollHeight + "px";
+        // Delay max-height calc so rendered content is measured
+        requestAnimationFrame(() => {
+          body.style.maxHeight = body.scrollHeight + "px";
+        });
       }
     });
   });
@@ -554,11 +553,14 @@
   }
 
   // ── Save entry ────────────────────────────────────
+  let isSaving = false;
   form.addEventListener("submit", (e) => {
     e.preventDefault();
+    if (isSaving) return; // prevent double submission
 
     const styleKey = document.getElementById("j-style").value;
     if (!styleKey) { alert("Please select a pizza style."); return; }
+    isSaving = true;
 
     const recipe = PIZZA_RECIPES[styleKey];
     const bakeName = document.getElementById("j-bake-name").value.trim();
@@ -580,7 +582,11 @@
 
     const saved = PieLabJournal.addEntry(entry);
     localStorage.removeItem("pielab-pending-bake");
+    localStorage.removeItem("pielab-last-calc");
     if (window.PieLabHaptics) PieLabHaptics.success();
+
+    // Close journal guide if still active (prevents stray highlight)
+    if (jgOverlay) jgClose();
 
     pendingDerivedFromId = null;
     hideForm();
@@ -623,6 +629,8 @@
       const nudgeDelay = hasMilestone ? 5500 : 1500;
       setTimeout(() => showStatusNudge(saved.styleName, TIER_NAMES[saved.skillCount]), nudgeDelay);
     }
+
+    isSaving = false;
   });
 
   // ── Empty state builder ──────────────────────────
