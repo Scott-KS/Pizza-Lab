@@ -1191,7 +1191,7 @@
 
     const dismiss = () => {
       overlay.classList.remove("first-bake--visible");
-      setTimeout(() => overlay.remove(), 400);
+      setTimeout(() => { overlay.remove(); window.scrollTo({ top: 0, behavior: "smooth" }); }, 400);
     };
     overlay.querySelector(".first-bake-dismiss").addEventListener("click", dismiss);
     overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
@@ -1302,7 +1302,7 @@
 
     const dismiss = () => {
       overlay.classList.remove("share-guide--visible");
-      setTimeout(() => overlay.remove(), 400);
+      setTimeout(() => { overlay.remove(); window.scrollTo({ top: 0, behavior: "smooth" }); }, 400);
     };
     overlay.querySelector(".share-guide-dismiss").addEventListener("click", dismiss);
     overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
@@ -1344,7 +1344,7 @@
 
     const dismiss = () => {
       overlay.classList.remove("share-guide--visible");
-      setTimeout(() => overlay.remove(), 400);
+      setTimeout(() => { overlay.remove(); window.scrollTo({ top: 0, behavior: "smooth" }); }, 400);
     };
     overlay.querySelector(".share-guide-dismiss").addEventListener("click", dismiss);
     overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });

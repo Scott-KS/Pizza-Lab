@@ -334,6 +334,23 @@ button,
 .carousel-arrow.prev { left: 24px; }
 .carousel-arrow.next { right: 24px; }
 
+.splash-legal {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  z-index: 3;
+}
+.splash-legal a {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.7rem;
+  text-decoration: none;
+}
+.splash-legal a:hover { color: rgba(255,255,255,0.8); }
+
 /* ── Splash Page ─────────────────────────────────── */
 .splash-page {
   overflow: hidden;
