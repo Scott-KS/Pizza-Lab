@@ -1755,13 +1755,13 @@
     {
       title: "Log Your Bake",
       body: "Your recipe is already filled in from the calculator. Add a rating, some photos, and any notes about how it turned out \u2014 then hit Save Entry.",
-      target: "#journal-form-wrapper",
+      target: "#journal-form-heading",
       waitFor: { selector: "#journal-form", event: "submit" },
     },
     {
       title: "Your Bake Is Saved!",
       body: "Tap the bake card below to open the full details \u2014 your recipe, photos, notes, and sharing options.",
-      target: "#journal-entries",
+      target: ".journal-entry-card",
       delay: 800,
       waitFor: { selector: "#journal-entries", event: "click" },
     },

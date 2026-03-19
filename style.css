@@ -409,6 +409,7 @@ main {
 .form-group input[type="text"],
 .form-group input[type="date"] {
   width: 100%;
+  min-width: 0;
   padding: 0.75rem 1rem;
   border: 2px solid var(--clr-border);
   border-radius: 8px;
@@ -2752,6 +2753,10 @@ main {
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
+}
+
+.journal-form-grid > .form-group {
+  min-width: 0;
 }
 
 .dough-snapshot {
@@ -7668,7 +7673,7 @@ body[data-page="kitchen"] main {
 .firstbake-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.55);
   z-index: 10500;
   opacity: 0;
   pointer-events: none;
@@ -7687,12 +7692,14 @@ body[data-page="kitchen"] main {
   left: 50%;
   transform: translateX(-50%) translateY(20px);
   background: var(--clr-card);
+  border: 1px solid var(--clr-border);
   border-radius: var(--radius);
   max-width: 440px;
   width: calc(100% - 2rem);
   padding: 2.5rem 2rem 2rem;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.4);
   pointer-events: auto;
+  z-index: 10700;
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
