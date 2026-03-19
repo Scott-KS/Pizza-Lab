@@ -1627,6 +1627,7 @@ document.addEventListener("DOMContentLoaded", () => {
     timer.remaining = 0;
     updateTimerDisplay();
     clearTimerState();
+    if (window.PieLabMiniTimer) window.PieLabMiniTimer.stop();
     // Swap to done controls (Stop Alarm button)
     document.getElementById("timer-running-controls").classList.add("hidden");
     document.getElementById("timer-done-controls").classList.remove("hidden");
@@ -1675,6 +1676,7 @@ document.addEventListener("DOMContentLoaded", () => {
     clearInterval(timer.intervalId);
     timer.intervalId = setInterval(timerTick, 1000);
     timerOverlay.classList.remove("hidden");
+    if (window.PieLabMiniTimer) window.PieLabMiniTimer.start();
   }
 
   function resumeTimer(saved) {
@@ -1751,6 +1753,7 @@ document.addEventListener("DOMContentLoaded", () => {
     clearTimerState();
     resetTimerControls();
     timerOverlay.classList.add("hidden");
+    if (window.PieLabMiniTimer) window.PieLabMiniTimer.stop();
   });
 
   // Stop Alarm
@@ -1758,6 +1761,7 @@ document.addEventListener("DOMContentLoaded", () => {
     stopAlarmSound();
     resetTimerControls();
     timerOverlay.classList.add("hidden");
+    if (window.PieLabMiniTimer) window.PieLabMiniTimer.stop();
   });
 
   // Resume timer on page load

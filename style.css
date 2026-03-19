@@ -6943,6 +6943,39 @@ body[data-page="kitchen"] main {
 }
 .premium-badge.hidden { display: none; }
 
+/* ── Mini Bake Timer Badge ───────────────────────────── */
+.timer-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.55rem;
+  border-radius: 20px;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  line-height: 1.4;
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
+  background: var(--clr-primary);
+  color: #fff;
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+.timer-badge:hover {
+  background: #a34030;
+}
+.timer-badge.done {
+  background: var(--clr-accent);
+  animation: timerBadgePulse 1s ease-in-out infinite;
+}
+.timer-badge.hidden { display: none; }
+
+@keyframes timerBadgePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
 /* ── Inline PRO Tag ───────────────────────────────────── */
 .premium-tag {
   display: inline-block;

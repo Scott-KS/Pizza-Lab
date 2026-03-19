@@ -72,13 +72,23 @@ const PieLabFirstBake = (() => {
     {
       title: "Start Your Bake Timer",
       body: "When your pizza goes in the oven, tap this button to start the timer. It pulls the bake time from your recipe automatically. Once running, use the \u221230s and +30s buttons to adjust on the fly.",
-      target: "#btn-start-timer",
+      target: ".timer-content",
+      delay: 400,
     },
     {
       title: "Log Your Bake",
       body: "When you\u2019re done baking, come back here and hit this button. It\u2019ll save your bake to your journal so you can track your progress and share it.",
       target: "#btn-log-bake",
       nextLabel: "Got It \u2014 Let\u2019s Bake!",
+      delay: 400,
+      beforeShow: () => {
+        // Close the bake timer modal so the Log button is visible
+        const timerOverlay = document.getElementById("timer-overlay");
+        if (timerOverlay && !timerOverlay.classList.contains("hidden")) {
+          const cancelBtn = document.getElementById("timer-cancel");
+          if (cancelBtn) cancelBtn.click();
+        }
+      },
     },
   ];
 
@@ -194,6 +204,9 @@ const PieLabFirstBake = (() => {
     const isLast = currentStep === total - 1;
     nextBtn.classList.remove("hidden");
     nextBtn.textContent = step.nextLabel || (isLast ? "Done" : "Next");
+
+    // Run any pre-step setup
+    if (step.beforeShow) step.beforeShow();
 
     // Highlight target element
     clearHighlight();

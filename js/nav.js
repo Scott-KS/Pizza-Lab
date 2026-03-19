@@ -438,4 +438,158 @@ function showDataNotice() {
       tabBar.classList.remove("keyboard-open");
     });
   }
+
+  // ── Mini Bake Timer Badge (cross-page) ────────────────
+  // Reads pielab-bake-timer from localStorage and shows a countdown
+  // badge in the header on every page. On calculator.html the full
+  // timer modal handles display; the mini badge hides when it's open.
+
+  const TIMER_KEY = "pielab-bake-timer";
+  let miniTimerBadge = null;
+  let miniTimerInterval = null;
+  let miniAlarmCtx = null;
+  let miniAlarmInterval = null;
+  const isCalculatorPage = window.location.pathname.includes("calculator");
+
+  function formatTimerMM(secs) {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  }
+
+  function getTimerRemaining() {
+    try {
+      const raw = localStorage.getItem(TIMER_KEY);
+      if (!raw) return null;
+      const saved = JSON.parse(raw);
+      if (!saved || !saved.startedAt) return null;
+      let pauseOffset = saved.pauseOffset || 0;
+      if (saved.paused && saved.pausedAt) {
+        pauseOffset += Date.now() - saved.pausedAt;
+      }
+      const elapsed = (Date.now() - saved.startedAt - pauseOffset) / 1000;
+      const remaining = Math.round(saved.total - elapsed);
+      return { remaining, paused: saved.paused || false, total: saved.total };
+    } catch { return null; }
+  }
+
+  function createMiniTimerBadge() {
+    if (miniTimerBadge) return miniTimerBadge;
+    miniTimerBadge = document.createElement("span");
+    miniTimerBadge.id = "nav-timer-badge";
+    miniTimerBadge.className = "timer-badge";
+    miniTimerBadge.addEventListener("click", () => {
+      if (isCalculatorPage) {
+        // Open the full timer modal
+        const overlay = document.getElementById("timer-overlay");
+        if (overlay) overlay.classList.remove("hidden");
+      } else {
+        window.location.href = "calculator.html";
+      }
+    });
+    // Insert after premium badge, or after nav-logo
+    const premBadge = document.getElementById("premium-badge");
+    if (premBadge && premBadge.parentNode) {
+      premBadge.parentNode.insertBefore(miniTimerBadge, premBadge.nextSibling);
+    } else {
+      const navLogo = document.querySelector(".nav-logo");
+      if (navLogo && navLogo.parentNode) {
+        navLogo.parentNode.insertBefore(miniTimerBadge, navLogo.nextSibling);
+      }
+    }
+    return miniTimerBadge;
+  }
+
+  function removeMiniTimerBadge() {
+    if (miniTimerBadge) { miniTimerBadge.remove(); miniTimerBadge = null; }
+    if (miniTimerInterval) { clearInterval(miniTimerInterval); miniTimerInterval = null; }
+    stopMiniAlarm();
+  }
+
+  function startMiniAlarm() {
+    stopMiniAlarm();
+    try { miniAlarmCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch { return; }
+    function beep() {
+      if (!miniAlarmCtx) return;
+      [0, 0.25, 0.5].forEach(offset => {
+        const osc = miniAlarmCtx.createOscillator();
+        const gain = miniAlarmCtx.createGain();
+        osc.connect(gain); gain.connect(miniAlarmCtx.destination);
+        osc.frequency.value = 880;
+        gain.gain.value = 0.35;
+        osc.start(miniAlarmCtx.currentTime + offset);
+        osc.stop(miniAlarmCtx.currentTime + offset + 0.15);
+      });
+    }
+    beep();
+    miniAlarmInterval = setInterval(beep, 1500);
+  }
+
+  function stopMiniAlarm() {
+    if (miniAlarmInterval) { clearInterval(miniAlarmInterval); miniAlarmInterval = null; }
+    if (miniAlarmCtx) { try { miniAlarmCtx.close(); } catch {} miniAlarmCtx = null; }
+  }
+
+  function miniTimerTick() {
+    const state = getTimerRemaining();
+    if (!state) { removeMiniTimerBadge(); return; }
+
+    const badge = createMiniTimerBadge();
+
+    if (state.remaining <= 0) {
+      // Timer complete
+      badge.textContent = "\uD83C\uDF55 Done!";
+      badge.classList.add("done");
+      clearInterval(miniTimerInterval);
+      miniTimerInterval = null;
+      // Only alarm on non-calculator pages (calculator has its own alarm)
+      if (!isCalculatorPage) {
+        startMiniAlarm();
+        if (typeof PieNotifications !== "undefined") {
+          PieNotifications.requestPermission().then(ok => {
+            if (ok) PieNotifications.schedule({ id: 9999, title: "Pizza is done! \uD83C\uDF55", body: "Your bake timer has finished.", at: new Date(Date.now() + 100) });
+          });
+        }
+      }
+      // Stop alarm on click
+      badge.addEventListener("click", stopMiniAlarm, { once: true });
+      return;
+    }
+
+    const pauseIcon = state.paused ? "\u23F8 " : "";
+    badge.textContent = `\uD83C\uDF55 ${pauseIcon}${formatTimerMM(state.remaining)}`;
+    badge.classList.remove("done");
+
+    // On calculator page, hide badge when full timer modal is visible
+    if (isCalculatorPage) {
+      const overlay = document.getElementById("timer-overlay");
+      const modalOpen = overlay && !overlay.classList.contains("hidden");
+      badge.classList.toggle("hidden", modalOpen);
+    }
+  }
+
+  function initMiniTimer() {
+    const state = getTimerRemaining();
+    if (!state || state.remaining <= 0) {
+      // Check if timer just completed
+      if (state && state.remaining <= 0) {
+        miniTimerTick(); // show "Done!" state
+      }
+      return;
+    }
+    miniTimerTick();
+    if (!miniTimerInterval) {
+      miniTimerInterval = setInterval(miniTimerTick, 1000);
+    }
+  }
+
+  // Expose globally so calculator.js can trigger badge updates
+  window.PieLabMiniTimer = {
+    start: () => { initMiniTimer(); },
+    stop: () => { removeMiniTimerBadge(); },
+    refresh: () => { miniTimerTick(); },
+  };
+
+  // Auto-init after a short delay (wait for premium badge to render first)
+  setTimeout(initMiniTimer, 500);
 })();
