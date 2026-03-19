@@ -1648,24 +1648,41 @@
 
   const journalGuideSteps = [
     {
-      title: "Log Your Bake",
-      body: "Your recipe is already filled in from the calculator. Add a rating, some photos, and any notes about how it turned out \u2014 then hit Save Entry.",
-      target: "#journal-form-wrapper",
-      waitFor: { selector: "#journal-form", event: "submit" },
+      title: "Name Your Bake",
+      body: "Give your bake a name \u2014 \u2018Sunday Night Margherita\u2019 or anything that helps you remember it. This is optional, so skip it if you want.",
+      target: "#j-bake-name",
     },
     {
-      title: "Your Bake Is Saved!",
-      body: "Tap the bake card below to open the full details \u2014 your recipe, photos, notes, and sharing options.",
-      target: "#journal-entries",
-      delay: 800,
-      waitFor: { selector: "#journal-entries", event: "click" },
+      title: "Verify Your Style",
+      body: "Make sure the style matches what you baked. We prefilled it from your recipe \u2014 change it if you switched things up.",
+      target: "#j-style",
     },
     {
-      title: "Share Your Bake",
-      body: "From here you can Share This Bake to send it to friends, or Save to Photos to post it on Instagram or Reddit. A caption is auto-copied to your clipboard.",
-      target: ".modal-content",
-      delay: 500,
-      nextLabel: "Got It!",
+      title: "Set the Date",
+      body: "Defaults to today. Change it if you\u2019re logging a past bake.",
+      target: "#j-date",
+    },
+    {
+      title: "Bake Details",
+      body: "Record your bake temp, time, and oven type. These help you dial in future bakes and see what worked best.",
+      target: "#j-bake-details-grid",
+    },
+    {
+      title: "Rate Your Bake",
+      body: "How\u2019d it turn out? Tap a star to rate this bake. You can compare ratings across styles in your journal over time.",
+      target: "#j-star-rating",
+    },
+    {
+      title: "Add Photos",
+      body: "Snap a photo of your finished pizza, or add photos from earlier steps. Up to 4 photos per bake \u2014 great for tracking your progress.",
+      target: "#j-photo-add-btn",
+    },
+    {
+      title: "Save & Share",
+      body: "Hit Save Entry to log this bake. Once saved, you can tap the bake card to share it with friends or save it to your camera roll.",
+      target: ".btn-save-entry",
+      nextLabel: "Log This Bake",
+      submitOnComplete: true,
     },
   ];
 
@@ -1771,7 +1788,12 @@
       jgStep++;
       jgRenderStep();
     } else {
+      const step = journalGuideSteps[jgStep];
       jgClose();
+      // Trigger form submit on final step if flagged
+      if (step.submitOnComplete && form) {
+        form.requestSubmit();
+      }
     }
   }
 

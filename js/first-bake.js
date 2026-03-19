@@ -70,6 +70,11 @@ const PieLabFirstBake = (() => {
       target: "#tips-level-control",
     },
     {
+      title: "Start Your Bake Timer",
+      body: "When your pizza goes in the oven, tap this button to start the timer. It pulls the bake time from your recipe automatically. Once running, use the \u221230s and +30s buttons to adjust on the fly.",
+      target: "#btn-start-timer",
+    },
+    {
       title: "Log Your Bake",
       body: "When you\u2019re done baking, come back here and hit this button. It\u2019ll save your bake to your journal so you can track your progress and share it.",
       target: "#btn-log-bake",
