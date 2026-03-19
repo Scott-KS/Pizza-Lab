@@ -770,6 +770,76 @@ main {
 
 /* ── Instructions & Tips ─────────────────────────── */
 /* ── Baking Instructions (step-based layout) ─── */
+/* ── Make Your Dough process ──────────────────────── */
+.dough-process-section {
+  margin-top: 2rem;
+  background: var(--clr-section-bg);
+  border-radius: var(--radius, 12px);
+  padding: 1.25rem;
+}
+.dough-process-section h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--clr-text);
+  margin-bottom: 0.25rem;
+}
+.dough-process-method {
+  font-size: 0.82rem;
+  color: var(--clr-text-light);
+  margin-bottom: 1rem;
+}
+.dough-process-steps {
+  list-style: none;
+  counter-reset: dough-step;
+  padding: 0;
+}
+.dough-process-step {
+  counter-increment: dough-step;
+  position: relative;
+  padding-left: 2.25rem;
+  margin-bottom: 1.1rem;
+}
+.dough-process-step::before {
+  content: counter(dough-step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--clr-primary);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dough-process-step-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--clr-text);
+  display: block;
+  margin-bottom: 0.15rem;
+}
+.dough-process-step p {
+  font-size: 0.88rem;
+  color: var(--clr-text-light);
+  line-height: 1.5;
+}
+.dough-process-cta {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(140, 53, 36, 0.1);
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: var(--clr-text-light);
+}
+.dough-process-cta a {
+  color: var(--clr-primary);
+  font-weight: 600;
+}
+
 .instructions-section {
   margin-top: 2rem;
   background: var(--clr-section-bg);
@@ -6602,6 +6672,27 @@ body[data-page="kitchen"] main {
 .bar-block:last-child { border-right: none; }
 .bar-block:hover { filter: brightness(1.1); }
 
+/* ── Scheduler Log This Bake prompt ──────────────── */
+.sched-log-bake {
+  text-align: center;
+  padding: 1.25rem;
+  margin: 1rem 0;
+  background: var(--clr-section-bg);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+}
+.sched-log-bake p {
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: var(--clr-text);
+}
+.btn-sched-log {
+  display: inline-block;
+  padding: 0.6rem 1.5rem;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
 .bar-block.step-upcoming {
   background: var(--clr-card-bg); color: var(--clr-text-light);
   border-right-color: var(--clr-border);
@@ -6943,37 +7034,49 @@ body[data-page="kitchen"] main {
 }
 .premium-badge.hidden { display: none; }
 
-/* ── Mini Bake Timer Badge ───────────────────────────── */
-.timer-badge {
-  display: inline-flex;
+/* ── Mini Bake Timer Banner ──────────────────────────── */
+.timer-banner {
+  display: flex;
   align-items: center;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  padding: 0.15rem 0.55rem;
-  border-radius: 20px;
-  margin-left: 0.5rem;
-  vertical-align: middle;
-  line-height: 1.4;
-  font-family: var(--font-body);
-  font-variant-numeric: tabular-nums;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
   background: var(--clr-primary);
   color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+.timer-banner-icon { font-size: 1rem; }
+.timer-banner-time {
+  font-weight: 700;
+  font-size: 1rem;
+  min-width: 3.5rem;
+}
+.timer-banner-label {
+  flex: 1;
+  font-weight: 500;
+  opacity: 0.85;
+}
+.timer-banner-link {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: #fff;
+  padding: 0.2rem 0.65rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 200ms ease;
 }
-.timer-badge:hover {
-  background: #a34030;
-}
-.timer-badge.done {
+.timer-banner-link:hover { background: rgba(255,255,255,0.3); }
+.timer-banner.done {
   background: var(--clr-accent);
-  animation: timerBadgePulse 1s ease-in-out infinite;
+  animation: timerBannerPulse 1s ease-in-out infinite;
 }
-.timer-badge.hidden { display: none; }
+.timer-banner.hidden { display: none; }
 
-@keyframes timerBadgePulse {
+@keyframes timerBannerPulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  50% { opacity: 0.75; }
 }
 
 /* ── Inline PRO Tag ───────────────────────────────────── */

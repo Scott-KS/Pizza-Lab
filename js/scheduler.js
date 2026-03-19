@@ -498,6 +498,12 @@
         if (window.PieLabHaptics) PieLabHaptics.light();
         renderScheduleTimeline(computedSchedule);
         renderVisualBar(computedSchedule);
+        // Show "Log This Bake" when all steps are complete
+        const logEl = document.getElementById("sched-log-bake");
+        if (logEl) {
+          const allDone = computedSchedule.every(s => s.checked);
+          logEl.classList.toggle("hidden", !allDone);
+        }
       });
     });
 

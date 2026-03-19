@@ -439,13 +439,13 @@ function showDataNotice() {
     });
   }
 
-  // ── Mini Bake Timer Badge (cross-page) ────────────────
-  // Reads pielab-bake-timer from localStorage and shows a countdown
-  // badge in the header on every page. On calculator.html the full
-  // timer modal handles display; the mini badge hides when it's open.
+  // ── Mini Bake Timer Banner (cross-page) ────────────────
+  // Shows a slim banner below the header with countdown on every page.
+  // On calculator.html the full timer modal handles display; the banner
+  // hides when the modal is open.
 
   const TIMER_KEY = "pielab-bake-timer";
-  let miniTimerBadge = null;
+  let miniTimerBanner = null;
   let miniTimerInterval = null;
   let miniAlarmCtx = null;
   let miniAlarmInterval = null;
@@ -473,35 +473,37 @@ function showDataNotice() {
     } catch { return null; }
   }
 
-  function createMiniTimerBadge() {
-    if (miniTimerBadge) return miniTimerBadge;
-    miniTimerBadge = document.createElement("span");
-    miniTimerBadge.id = "nav-timer-badge";
-    miniTimerBadge.className = "timer-badge";
-    miniTimerBadge.addEventListener("click", () => {
+  function createMiniTimerBanner() {
+    if (miniTimerBanner) return miniTimerBanner;
+    miniTimerBanner = document.createElement("div");
+    miniTimerBanner.id = "nav-timer-banner";
+    miniTimerBanner.className = "timer-banner";
+    miniTimerBanner.innerHTML = `
+      <span class="timer-banner-icon">\uD83C\uDF55</span>
+      <span class="timer-banner-time" id="timer-banner-time"></span>
+      <span class="timer-banner-label">Bake Timer</span>
+      <button type="button" class="timer-banner-link" id="timer-banner-link">View</button>
+    `;
+    // Insert after the header
+    const header = document.querySelector(".site-header");
+    if (header && header.parentNode) {
+      header.parentNode.insertBefore(miniTimerBanner, header.nextSibling);
+    } else {
+      document.body.prepend(miniTimerBanner);
+    }
+    miniTimerBanner.querySelector("#timer-banner-link").addEventListener("click", () => {
       if (isCalculatorPage) {
-        // Open the full timer modal
         const overlay = document.getElementById("timer-overlay");
         if (overlay) overlay.classList.remove("hidden");
       } else {
         window.location.href = "calculator.html";
       }
     });
-    // Insert after premium badge, or after nav-logo
-    const premBadge = document.getElementById("premium-badge");
-    if (premBadge && premBadge.parentNode) {
-      premBadge.parentNode.insertBefore(miniTimerBadge, premBadge.nextSibling);
-    } else {
-      const navLogo = document.querySelector(".nav-logo");
-      if (navLogo && navLogo.parentNode) {
-        navLogo.parentNode.insertBefore(miniTimerBadge, navLogo.nextSibling);
-      }
-    }
-    return miniTimerBadge;
+    return miniTimerBanner;
   }
 
-  function removeMiniTimerBadge() {
-    if (miniTimerBadge) { miniTimerBadge.remove(); miniTimerBadge = null; }
+  function removeMiniTimerBanner() {
+    if (miniTimerBanner) { miniTimerBanner.remove(); miniTimerBanner = null; }
     if (miniTimerInterval) { clearInterval(miniTimerInterval); miniTimerInterval = null; }
     stopMiniAlarm();
   }
@@ -532,17 +534,20 @@ function showDataNotice() {
 
   function miniTimerTick() {
     const state = getTimerRemaining();
-    if (!state) { removeMiniTimerBadge(); return; }
+    if (!state) { removeMiniTimerBanner(); return; }
 
-    const badge = createMiniTimerBadge();
+    const banner = createMiniTimerBanner();
+    const timeEl = banner.querySelector("#timer-banner-time");
+    const labelEl = banner.querySelector(".timer-banner-label");
+    const linkEl = banner.querySelector("#timer-banner-link");
 
     if (state.remaining <= 0) {
-      // Timer complete
-      badge.textContent = "\uD83C\uDF55 Done!";
-      badge.classList.add("done");
+      timeEl.textContent = "00:00";
+      labelEl.textContent = "Pizza is done!";
+      banner.classList.add("done");
+      linkEl.textContent = "View";
       clearInterval(miniTimerInterval);
       miniTimerInterval = null;
-      // Only alarm on non-calculator pages (calculator has its own alarm)
       if (!isCalculatorPage) {
         startMiniAlarm();
         if (typeof PieNotifications !== "undefined") {
@@ -551,30 +556,28 @@ function showDataNotice() {
           });
         }
       }
-      // Stop alarm on click
-      badge.addEventListener("click", stopMiniAlarm, { once: true });
+      linkEl.addEventListener("click", stopMiniAlarm, { once: true });
       return;
     }
 
-    const pauseIcon = state.paused ? "\u23F8 " : "";
-    badge.textContent = `\uD83C\uDF55 ${pauseIcon}${formatTimerMM(state.remaining)}`;
-    badge.classList.remove("done");
+    const pauseLabel = state.paused ? " (paused)" : "";
+    timeEl.textContent = formatTimerMM(state.remaining);
+    labelEl.textContent = `Bake Timer${pauseLabel}`;
+    banner.classList.remove("done");
+    linkEl.textContent = "View";
 
-    // On calculator page, hide badge when full timer modal is visible
+    // On calculator page, hide banner when full timer modal is visible
     if (isCalculatorPage) {
       const overlay = document.getElementById("timer-overlay");
       const modalOpen = overlay && !overlay.classList.contains("hidden");
-      badge.classList.toggle("hidden", modalOpen);
+      banner.classList.toggle("hidden", modalOpen);
     }
   }
 
   function initMiniTimer() {
     const state = getTimerRemaining();
     if (!state || state.remaining <= 0) {
-      // Check if timer just completed
-      if (state && state.remaining <= 0) {
-        miniTimerTick(); // show "Done!" state
-      }
+      if (state && state.remaining <= 0) miniTimerTick();
       return;
     }
     miniTimerTick();
@@ -583,13 +586,11 @@ function showDataNotice() {
     }
   }
 
-  // Expose globally so calculator.js can trigger badge updates
   window.PieLabMiniTimer = {
     start: () => { initMiniTimer(); },
-    stop: () => { removeMiniTimerBadge(); },
+    stop: () => { removeMiniTimerBanner(); },
     refresh: () => { miniTimerTick(); },
   };
 
-  // Auto-init after a short delay (wait for premium badge to render first)
   setTimeout(initMiniTimer, 500);
 })();

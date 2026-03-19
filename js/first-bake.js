@@ -72,22 +72,15 @@ const PieLabFirstBake = (() => {
     {
       title: "Start Your Bake Timer",
       body: "When your pizza goes in the oven, tap this button to start the timer. It pulls the bake time from your recipe automatically. Once running, use the \u221230s and +30s buttons to adjust on the fly.",
-      target: ".timer-content",
-      delay: 600,
-      beforeShow: () => {
-        // Open the timer modal so .timer-content is visible for highlighting
-        const overlay = document.getElementById("timer-overlay");
-        if (overlay) overlay.classList.remove("hidden");
-      },
+      target: "#btn-start-timer",
     },
     {
       title: "Log Your Bake",
       body: "When you\u2019re done baking, come back here and hit this button. It\u2019ll save your bake to your journal so you can track your progress and share it.",
       target: "#btn-log-bake",
       nextLabel: "Got It \u2014 Let\u2019s Bake!",
-      delay: 400,
       beforeShow: () => {
-        // Close the bake timer modal so the Log button is visible
+        // Close the bake timer modal if it was opened by the user
         const timerOverlay = document.getElementById("timer-overlay");
         if (timerOverlay && !timerOverlay.classList.contains("hidden")) {
           const cancelBtn = document.getElementById("timer-cancel");

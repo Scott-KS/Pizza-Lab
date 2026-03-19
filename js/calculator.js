@@ -545,6 +545,9 @@ document.addEventListener("DOMContentLoaded", () => {
       bakeTimeEl.innerHTML = bakeTimeHTML;
     }
 
+    // ── Make Your Dough — basic process steps ──
+    renderDoughProcess(type, numPizzas, adjustedRecipe.sizes[sizeKey].doughWeight);
+
     // ── Tips — init slider for this style, then render ──
     window._currentTips   = recipe.tips || [];
     window._currentStyleKey = type;
@@ -840,6 +843,60 @@ document.addEventListener("DOMContentLoaded", () => {
       tr.innerHTML = cols.map((c) => `<td>${c}</td>`).join("");
       tbody.appendChild(tr);
     });
+  }
+
+  // ── Make Your Dough — simplified process steps for beginners ──
+  // Per-style shaping instructions
+  const SHAPING_INSTRUCTIONS = {
+    "neapolitan":     "Gently flatten each ball with your fingertips, leaving a puffy rim. Drape over your knuckles and let gravity stretch it into a 10\u201312\u2033 round.",
+    "new-york":       "Press each ball flat, then use your knuckles to stretch into a 14\u201316\u2033 round. A rolling pin is fine for beginners \u2014 just don\u2019t crush the rim.",
+    "detroit":        "Press the dough into an oiled Detroit-style pan. Use flat palms with firm presses. Let it rest 15 min, then press again to fill corners.",
+    "chicago-deep":   "Press the dough into a buttered deep-dish pan, pushing it up the sides about 1.5\u2033. The dough should be slightly thicker at the edges.",
+    "chicago-tavern": "Run the dough through a sheeter or roll with a pin until paper-thin (~1/8\u2033). Dock the entire surface with a fork \u2014 no bubbles allowed.",
+    "sicilian":       "Press into an oiled sheet pan. Use flat palms and let the dough rest between presses. It should fill the pan evenly, slightly thicker at edges.",
+    "pan":            "Press into a well-oiled cast iron or cake pan. Push to the edges. The oil will fry the bottom during baking for a golden crust.",
+    "school-night":   "Pat or roll the dough into a rough round on a floured surface. This no-rise dough won\u2019t stretch like yeasted dough \u2014 just shape and go.",
+    "st-louis":       "Roll the dough very thin with a rolling pin on a floured surface. St. Louis style uses a cracker-thin, yeast-free crust.",
+    "grandma":        "Press into an oiled sheet pan. Dimple the surface with your fingertips. Let it proof in the pan 30\u201345 min before topping.",
+    "bar":            "Press into a well-oiled sheet pan or quarter sheet. The dough is thin and crispy \u2014 stretch it evenly to the edges.",
+    "roman":          "Stretch gently into a large oval or rectangle on a floured peel. Roman dough is very wet \u2014 use plenty of flour and work quickly.",
+    "coal-fired":     "Stretch by hand like Neapolitan but slightly larger and thinner. Coal-fired pizza cooks fast, so the dough should be thin and even.",
+  };
+
+  function renderDoughProcess(styleKey, numPizzas, doughBallWeight) {
+    const stepsEl = document.getElementById("dough-process-steps");
+    const methodEl = document.getElementById("dough-process-method");
+    if (!stepsEl || !methodEl) return;
+
+    const shapingNote = SHAPING_INSTRUCTIONS[styleKey] || "Flatten each ball gently, then stretch or roll to your desired size and shape.";
+    const ballText = numPizzas > 1
+      ? `Portion into <strong>${numPizzas} balls</strong> at <strong>${doughBallWeight}g each</strong>. Tuck edges underneath to form tight, smooth rounds.`
+      : `Shape into a tight, smooth ball by tucking edges underneath. Your dough ball is <strong>${doughBallWeight}g</strong>.`;
+
+    methodEl.textContent = "Same-day method \u00B7 ~4 hours total";
+
+    stepsEl.innerHTML = `
+      <li class="dough-process-step">
+        <span class="dough-process-step-title">Mix</span>
+        <p>Combine flour, water, salt, and yeast in a large bowl. Mix until no dry flour remains, then knead on a clean surface for 8\u201310 minutes until smooth and elastic.</p>
+      </li>
+      <li class="dough-process-step">
+        <span class="dough-process-step-title">Rise</span>
+        <p>Lightly oil the bowl, return the dough, and cover with plastic wrap or a damp towel. Let rest at room temperature for 2\u20134 hours until roughly doubled in size.</p>
+      </li>
+      <li class="dough-process-step">
+        <span class="dough-process-step-title">Divide</span>
+        <p>Turn the dough out onto a lightly floured surface. ${ballText}</p>
+      </li>
+      <li class="dough-process-step">
+        <span class="dough-process-step-title">Rest</span>
+        <p>Space the dough balls on a floured tray or in individual containers. Cover and let relax at room temperature for 30\u201360 minutes until soft and pliable.</p>
+      </li>
+      <li class="dough-process-step">
+        <span class="dough-process-step-title">Shape</span>
+        <p>${shapingNote}</p>
+      </li>
+    `;
   }
 
   function renderDoughTable(dough) {
