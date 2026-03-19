@@ -334,6 +334,23 @@ button,
 .carousel-arrow.prev { left: 24px; }
 .carousel-arrow.next { right: 24px; }
 
+.splash-legal {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  z-index: 3;
+}
+.splash-legal a {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.7rem;
+  text-decoration: none;
+}
+.splash-legal a:hover { color: rgba(255,255,255,0.8); }
+
 /* ── Splash Page ─────────────────────────────────── */
 .splash-page {
   overflow: hidden;
@@ -705,6 +722,13 @@ main {
 .dough-total-row {
   font-weight: 700;
   border-top: 2px solid var(--clr-border);
+}
+.dough-ball-row {
+  font-size: 0.9rem;
+  color: var(--clr-text-light);
+}
+.dough-ball-row td:first-child {
+  font-style: italic;
 }
 
 .three-col td:nth-child(2) {
@@ -6494,6 +6518,74 @@ body[data-page="kitchen"] main {
   .compare-grid-table { grid-template-columns: 90px repeat(var(--col-count), 1fr); font-size: 0.82rem; }
   .compare-label-cell { font-size: 0.68rem; padding: 0.45rem 0.5rem; }
   .compare-value-cell { font-size: 0.82rem; padding: 0.45rem 0.5rem; }
+}
+
+/* ── Schedule Recipe Summary ───────────────────────── */
+.sched-recipe-summary {
+  margin-bottom: 1rem;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.sched-recipe-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--clr-section-bg);
+  border: none;
+  color: var(--clr-text);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.sched-recipe-arrow {
+  font-size: 0.75rem;
+  transition: transform 200ms ease;
+}
+.sched-recipe-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 300ms ease;
+  padding: 0 1rem;
+}
+.sched-recipe-summary.open .sched-recipe-body {
+  max-height: 500px;
+  padding: 0.75rem 1rem 1rem;
+}
+.sched-recipe-note {
+  font-size: 0.85rem;
+  color: var(--clr-text-light);
+  margin-bottom: 0.5rem;
+}
+.sched-recipe-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.sched-recipe-table th {
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--clr-text-light);
+  border-bottom: 1px solid var(--clr-border);
+  padding: 0.25rem 0;
+}
+.sched-recipe-table td {
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.sched-recipe-table td:nth-child(2) {
+  text-align: right;
+  font-weight: 600;
+}
+.sched-recipe-table td:nth-child(3) {
+  text-align: right;
+  color: var(--clr-text-light);
+  font-size: 0.85rem;
 }
 
 /* ── Schedule Visual Overview Bar ───────────────────── */
