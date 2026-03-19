@@ -165,8 +165,14 @@
 
   function renderAnalytics() {
     if (!analyticsSection || !analyticsBody) return;
+    const hint = analyticsSection.querySelector(".section-hint");
     const entries = PieLabJournal.getAllEntries();
-    if (entries.length < 3) { analyticsBody.innerHTML = ""; return; }
+    if (entries.length < 3) {
+      analyticsBody.innerHTML = "";
+      if (hint) hint.classList.remove("hidden");
+      return;
+    }
+    if (hint) hint.classList.add("hidden");
 
     // Gate: show locked state if not premium
     if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
@@ -1225,9 +1231,10 @@
     };
     overlay.querySelector("#passport-intro-btn").addEventListener("click", () => {
       dismiss();
-      // Switch to Passport tab
+      // Switch to Passport tab and scroll to top
       const passportTab = document.querySelector(".journal-tab[data-tab='passport']");
       if (passportTab) passportTab.click();
+      setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
     });
     overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
   }
