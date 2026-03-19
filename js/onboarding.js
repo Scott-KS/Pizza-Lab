@@ -62,8 +62,8 @@ const PieLabOnboarding = (() => {
       icon: "👨‍🍳",
       title: "Your Kitchen Profile",
       page: "My Kitchen",
-      body: "Tell us about your oven, location, and preferences. We'll tailor every recipe to your specific setup.",
-      detail: "Your elevation, humidity, and oven type all affect how your dough behaves — we account for all of it.",
+      body: "Each setting personalizes your experience. Your city adjusts recipes for elevation — dough behaves differently at 5,000 ft vs sea level. Your oven type prefills every bake with the right temps and times. Your favorite style prepopulates the calculator so you can jump straight to baking.",
+      detail: "Measure in grams but cook in \u00B0F? Choose Hybrid for your measurement system.",
     },
     {
       icon: "🚀",
