@@ -1231,9 +1231,10 @@
     };
     overlay.querySelector("#passport-intro-btn").addEventListener("click", () => {
       dismiss();
-      // Switch to Passport tab
+      // Switch to Passport tab and scroll to top
       const passportTab = document.querySelector(".journal-tab[data-tab='passport']");
       if (passportTab) passportTab.click();
+      setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
     });
     overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
   }
