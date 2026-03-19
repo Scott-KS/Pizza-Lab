@@ -2,10 +2,7 @@
    The Pie Lab — My Kitchen
    Page: kitchen.html
    ══════════════════════════════════════════════════════ */
-function escapeHtml(str) {
-  if (!str) return "";
-  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
+// escapeHtml() is defined globally in nav.js
 
 document.addEventListener("DOMContentLoaded", () => {
   // ── Welcome banner for new users ───────────────────

@@ -626,6 +626,9 @@ main {
 .hidden {
   display: none !important;
 }
+.text-muted {
+  color: var(--clr-text-light);
+}
 
 @keyframes slideUp {
   from {
@@ -7223,6 +7226,9 @@ body[data-page="kitchen"] main {
   align-items: center;
   margin-bottom: 0.5rem;
 }
+.preferment-options .form-group {
+  margin: 0;
+}
 .preferment-options select {
   flex: 1 1 180px;
   padding: 0.5rem 0.65rem;
@@ -7376,6 +7382,14 @@ body[data-page="kitchen"] main {
   margin-top: 0.5rem;
 }
 
+/* ── Shared tool description ────────────────────────────── */
+.tool-description {
+  font-size: 0.92rem;
+  color: var(--clr-text-light);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
 /* ── DDT Calculator Panel ─────────────────────────────── */
 .ddt-tool-controls {
   display: grid;
@@ -7455,6 +7469,9 @@ body[data-page="kitchen"] main {
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
+}
+.vol-flex-col {
+  flex: 1;
 }
 .vol-arrow {
   font-size: 1.4rem;

@@ -47,35 +47,16 @@
   let notifiedSteps = new Set();
 
   // ── Step Alarm (Web Audio) ──
-  let alarmCtx = null;
-  let alarmIntervalId = null;
+  let alarmHandle = null;
 
   function startStepAlarm() {
     stopStepAlarm();
     if (window.PieLabHaptics) PieLabHaptics.warning();
-    try {
-      alarmCtx = new (window.AudioContext || window.webkitAudioContext)();
-    } catch { return; }
-    function beepBurst() {
-      if (!alarmCtx) return;
-      [0, 0.2, 0.4].forEach(offset => {
-        const osc = alarmCtx.createOscillator();
-        const gain = alarmCtx.createGain();
-        osc.connect(gain);
-        gain.connect(alarmCtx.destination);
-        osc.frequency.value = 660;
-        gain.gain.value = 0.3;
-        osc.start(alarmCtx.currentTime + offset);
-        osc.stop(alarmCtx.currentTime + offset + 0.12);
-      });
-    }
-    beepBurst();
-    alarmIntervalId = setInterval(beepBurst, 2000);
+    alarmHandle = createAlarmBeep({ freq: 660, gain: 0.3, offsets: [0, 0.2, 0.4], interval: 2000 });
   }
 
   function stopStepAlarm() {
-    if (alarmIntervalId) { clearInterval(alarmIntervalId); alarmIntervalId = null; }
-    if (alarmCtx) { try { alarmCtx.close(); } catch {} alarmCtx = null; }
+    if (alarmHandle) { alarmHandle.stop(); alarmHandle = null; }
   }
 
   function showStepAlert(stepLabel) {
@@ -969,7 +950,6 @@
     }).catch((err) => {
       target.style.background = origBg;
       target.style.padding = "";
-      console.error("Screenshot failed:", err);
       alert("Could not generate image. Try again.");
     });
   });

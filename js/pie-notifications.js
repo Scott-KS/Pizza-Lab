@@ -30,7 +30,7 @@ const PieNotifications = (() => {
         const result = await LocalNotifications.requestPermissions();
         return result.display === "granted";
       } catch (e) {
-        console.warn("PieNotifications: native permission request failed", e);
+        /* native permission request failed — swallowed */
         return false;
       }
     }
@@ -72,7 +72,7 @@ const PieNotifications = (() => {
           ],
         });
       } catch (e) {
-        console.warn("PieNotifications: native schedule failed", e);
+        /* native schedule failed — swallowed */
       }
       return;
     }
@@ -105,7 +105,7 @@ const PieNotifications = (() => {
           await LocalNotifications.cancel(pending);
         }
       } catch (e) {
-        console.warn("PieNotifications: native cancelAll failed", e);
+        /* native cancelAll failed — swallowed */
       }
       return;
     }
