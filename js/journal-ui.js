@@ -160,8 +160,6 @@
   // ── Bake Analytics (Pro) ────────────────────────────
   const analyticsSection = document.getElementById("analytics-section");
   const analyticsBody = document.getElementById("analytics-body");
-  const analyticsToggle = document.getElementById("analytics-toggle");
-  const analyticsArrow = document.getElementById("analytics-toggle-arrow");
 
   function renderAnalytics() {
     if (!analyticsSection || !analyticsBody) return;
@@ -259,22 +257,6 @@
       `;
     }
 
-    // Restore collapse state
-    const collapsed = localStorage.getItem("pielab-analytics-open") === "0";
-    analyticsBody.classList.toggle("collapsed", collapsed);
-    if (analyticsArrow) analyticsArrow.style.transform = collapsed ? "rotate(0deg)" : "rotate(180deg)";
-  }
-
-  if (analyticsToggle) {
-    analyticsToggle.addEventListener("click", () => {
-      if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
-        PieLabPremium.gate(() => renderAnalytics());
-        return;
-      }
-      const isCollapsed = analyticsBody.classList.toggle("collapsed");
-      if (analyticsArrow) analyticsArrow.style.transform = isCollapsed ? "rotate(0deg)" : "rotate(180deg)";
-      localStorage.setItem("pielab-analytics-open", isCollapsed ? "0" : "1");
-    });
   }
 
   // ── Star rating — click to set, hover to preview ──

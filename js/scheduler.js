@@ -354,6 +354,7 @@
 
     renderScheduleTimeline(computedSchedule);
     renderVisualBar(computedSchedule);
+    renderRecipeSummary(styleKey, numPizzas, doughBallWeight);
     goToStep(3);
 
     // Hide banner when viewing full schedule
@@ -510,6 +511,51 @@
   }
 
   // ── Visual Overview Bar ────────────────────────────
+  // ── Recipe Summary for Step 3 ──────────────────────
+  function renderRecipeSummary(styleKey, numPizzas, doughBallWeight) {
+    const summaryEl = document.getElementById("sched-recipe-summary");
+    const bodyEl = document.getElementById("sched-recipe-body");
+    const toggleEl = document.getElementById("sched-recipe-toggle");
+    if (!summaryEl || !bodyEl) return;
+
+    const recipe = PIZZA_RECIPES[styleKey];
+    if (!recipe) { summaryEl.classList.add("hidden"); return; }
+
+    const sizeKeys = Object.keys(recipe.sizes);
+    const sizeKey = recipe.defaultSize || (sizeKeys.includes("12") ? "12" : sizeKeys[0]);
+    const dough = calculateDough(recipe, numPizzas, sizeKey);
+
+    const rows = dough.map(d =>
+      `<tr><td>${d.ingredient}</td><td>${d.amount}g</td><td>${d.pct}%</td></tr>`
+    ).join("");
+
+    const totalWeight = dough.reduce((s, d) => s + d.amount, 0);
+    const ballNote = numPizzas > 1
+      ? `<p class="sched-recipe-note">${numPizzas} dough balls &times; ${doughBallWeight}g each &mdash; ${Math.round(totalWeight)}g total</p>`
+      : `<p class="sched-recipe-note">${doughBallWeight}g dough ball</p>`;
+
+    bodyEl.innerHTML = `
+      ${ballNote}
+      <table class="sched-recipe-table">
+        <thead><tr><th>Ingredient</th><th>Amount</th><th>%</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+
+    summaryEl.classList.remove("hidden");
+
+    // Toggle expand/collapse
+    if (toggleEl && !toggleEl._bound) {
+      toggleEl._bound = true;
+      toggleEl.addEventListener("click", () => {
+        const isOpen = summaryEl.classList.toggle("open");
+        toggleEl.querySelector(".sched-recipe-arrow").style.transform =
+          isOpen ? "rotate(180deg)" : "rotate(0deg)";
+      });
+      // Start expanded
+      summaryEl.classList.add("open");
+    }
+  }
+
   function renderVisualBar(steps) {
     if (!visualBarEl || !steps || steps.length < 2) {
       if (visualBarEl) visualBarEl.innerHTML = "";
@@ -865,6 +911,7 @@
     bannerEl.classList.add("hidden");
     renderScheduleTimeline(computedSchedule);
     renderVisualBar(computedSchedule);
+    renderRecipeSummary(data.styleKey, data.numPizzas, data.doughBallWeight);
     goToStep(3);
   }
 

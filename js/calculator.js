@@ -843,6 +843,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalGrams = dough.reduce((sum, d) => sum + d.amount, 0);
     const totalEl = document.getElementById("dough-total-amount");
     if (totalEl) totalEl.textContent = formatAmount(Math.round(totalGrams), "Total");
+
+    // Per dough ball weight (shown when making multiple pizzas)
+    const ballRow = document.getElementById("dough-ball-row");
+    const ballEl = document.getElementById("dough-ball-amount");
+    if (ballRow && ballEl) {
+      const count = parseInt(document.getElementById("pizza-count")?.value) || 1;
+      if (count > 1) {
+        ballEl.textContent = formatAmount(Math.round(totalGrams / count), "Total");
+        ballRow.classList.remove("hidden");
+      } else {
+        ballRow.classList.add("hidden");
+      }
+    }
   }
 
   function renderPrefermentTable(prefIngredients) {
