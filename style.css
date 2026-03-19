@@ -7040,47 +7040,37 @@ body[data-page="kitchen"] main {
 }
 .premium-badge.hidden { display: none; }
 
-/* ── Mini Bake Timer Banner ──────────────────────────── */
-.timer-banner {
-  display: flex;
+/* ── Nav Timer Pill (inside header) ──────────────────── */
+.nav-timer-pill {
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 1rem;
+  align-self: center;
+  gap: 0.35rem;
+  margin-left: auto;
+  padding: 0.2rem 0.6rem;
   background: var(--clr-primary);
   color: #fff;
-  font-family: var(--font-body);
-  font-size: 0.82rem;
-  font-variant-numeric: tabular-nums;
-}
-.timer-banner-icon { font-size: 1rem; }
-.timer-banner-time {
-  font-weight: 700;
-  font-size: 1rem;
-  min-width: 3.5rem;
-}
-.timer-banner-label {
-  flex: 1;
-  font-weight: 500;
-  opacity: 0.85;
-}
-.timer-banner-link {
-  background: rgba(255,255,255,0.2);
   border: none;
-  color: #fff;
-  padding: 0.2rem 0.65rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.4;
+  transition: background 200ms ease;
 }
-.timer-banner-link:hover { background: rgba(255,255,255,0.3); }
-.timer-banner.done {
+.nav-timer-pill:hover { opacity: 0.85; }
+.nav-timer-icon { font-size: 0.85rem; }
+.nav-timer-time { letter-spacing: 0.5px; }
+.nav-timer-pill.done {
   background: var(--clr-accent);
-  animation: timerBannerPulse 1s ease-in-out infinite;
+  animation: timerPillPulse 1s ease-in-out infinite;
 }
-.timer-banner.hidden { display: none; }
+.nav-timer-pill.hidden { display: none; }
 
-@keyframes timerBannerPulse {
+@keyframes timerPillPulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.75; }
 }
