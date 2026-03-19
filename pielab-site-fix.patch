@@ -1,0 +1,10 @@
+Fix: Add "School Night" to the styles note in pielab-site/index.html
+
+The heading says "13 styles" but only 12 are listed (6 in grid + 6 in note).
+School Night is the missing 13th style.
+
+Find this line:
+  Plus Detroit, Thin &amp; Crispy, Pan, St. Louis, New Haven, and Cast Iron.
+
+Replace with:
+  Plus Detroit, Thin &amp; Crispy, Pan, St. Louis, New Haven, Cast Iron, and School Night.
