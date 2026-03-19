@@ -32,13 +32,13 @@ const OVEN_KEY_MIGRATION = {
 function migrateOvenKeys() {
   // Migrate profile.preferredOven
   try {
-    const raw = localStorage.getItem("pielab-profile");
+    const raw = localStorage.getItem("pielab-user-profile");
     if (raw) {
       const profile = JSON.parse(raw);
       const mapped = OVEN_KEY_MIGRATION[profile.preferredOven];
       if (mapped) {
         profile.preferredOven = mapped;
-        localStorage.setItem("pielab-profile", JSON.stringify(profile));
+        localStorage.setItem("pielab-user-profile", JSON.stringify(profile));
       }
     }
   } catch { /* ignore */ }
@@ -149,6 +149,48 @@ function populateOvenSelect(selectEl) {
     selectEl.appendChild(opt);
   }
 }
+
+// ── localStorage Quota Warning ───────────────────────
+(function checkStorageQuota() {
+  try {
+    let totalBytes = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("pielab")) {
+        totalBytes += (localStorage.getItem(key) || "").length * 2; // UTF-16
+      }
+    }
+    const limitBytes = 5 * 1024 * 1024; // 5MB typical limit
+    const WARNED_KEY = "pielab-storage-warning-shown";
+    if (totalBytes > limitBytes * 0.8 && !sessionStorage.getItem(WARNED_KEY)) {
+      sessionStorage.setItem(WARNED_KEY, "1");
+      const usedMB = (totalBytes / (1024 * 1024)).toFixed(1);
+      // Show a non-blocking toast after page loads
+      setTimeout(() => {
+        const toast = document.createElement("div");
+        toast.className = "storage-warning-toast";
+        toast.innerHTML = `Storage ${usedMB} MB of ~5 MB used. <a href="kitchen.html">Export your data</a> as a backup.`;
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add("visible"));
+        setTimeout(() => {
+          toast.classList.remove("visible");
+          setTimeout(() => toast.remove(), 400);
+        }, 8000);
+      }, 2000);
+    }
+  } catch { /* ignore */ }
+})();
+
+// ── App Session Counter ──────────────────────────────
+// Increments once per browser session using sessionStorage as a dedup guard.
+(function trackAppSession() {
+  if (sessionStorage.getItem("pielab-session-counted")) return;
+  sessionStorage.setItem("pielab-session-counted", "1");
+  try {
+    const count = parseInt(localStorage.getItem("pielab-session-count") || "0", 10);
+    localStorage.setItem("pielab-session-count", String(count + 1));
+  } catch { /* ignore */ }
+})();
 
 // ── Navigation Active State + Schedule Badge ──────────
 (function initNav() {
@@ -288,7 +330,7 @@ function updateSessionBanner() {
 // class to all Pro-gated elements when trial is expired / not started.
 function applyProLockState() {
   const premium = typeof PieLabPremium !== "undefined" ? PieLabPremium : null;
-  const locked = premium ? !premium.canUse() : false;
+  const locked = premium ? !premium.canUse() : true;
 
   // Inject PRO tag into Schedule nav links (desktop + mobile)
   document.querySelectorAll('.nav-link[data-page="schedule"], .tab-item[data-page="schedule"]').forEach(link => {
@@ -366,3 +408,34 @@ function showDataNotice() {
     notice.remove();
   });
 }
+
+// ── Hide mobile tab bar when virtual keyboard is open ──
+(function initKeyboardDetection() {
+  const tabBar = document.querySelector(".mobile-tab-bar");
+  if (!tabBar) return;
+
+  if (window.visualViewport) {
+    let lastHeight = window.visualViewport.height;
+    const threshold = 150; // pixels — keyboards are typically 200px+
+
+    window.visualViewport.addEventListener("resize", () => {
+      const heightDiff = window.innerHeight - window.visualViewport.height;
+      if (heightDiff > threshold) {
+        tabBar.classList.add("keyboard-open");
+      } else {
+        tabBar.classList.remove("keyboard-open");
+      }
+    });
+  } else {
+    // Fallback: hide on focus of text inputs
+    document.addEventListener("focusin", (e) => {
+      const tag = e.target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") {
+        tabBar.classList.add("keyboard-open");
+      }
+    });
+    document.addEventListener("focusout", () => {
+      tabBar.classList.remove("keyboard-open");
+    });
+  }
+})();

@@ -108,9 +108,18 @@ const PieLabJournal = (() => {
     entry.skillCount = prevCount + 1;
     entry.skillBadge = getSkillBadge(entry.skillCount);
 
+    // Store photos in IndexedDB, keep only count in localStorage
+    const photos = entry.photos || [];
+    if (photos.length && typeof PieLabPhotos !== "undefined") {
+      entry.photoCount = photos.length;
+      PieLabPhotos.savePhotos(entry.id, photos).catch(() => {});
+    }
+    entry.photos = [];
+    entry.photo = null;
+
     entries.unshift(entry); // newest first
     saveAllEntries(entries);
-    return entry;
+    return { ...entry, photos }; // return with photos for immediate UI use
   }
 
   function updateEntry(id, updates) {
@@ -123,6 +132,10 @@ const PieLabJournal = (() => {
   }
 
   function deleteEntry(id) {
+    // Clean up photos from IndexedDB
+    if (typeof PieLabPhotos !== "undefined") {
+      PieLabPhotos.deletePhotos(id).catch(() => {});
+    }
     const entries = getAllEntries().filter((e) => e.id !== id);
     return saveAllEntries(entries);
   }

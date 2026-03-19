@@ -11,7 +11,6 @@ let lastSauce = null;
 let lastToppings = null;
 let lastPreferment = null;   // preferment ingredient split (if active)
 let currentUnit = "g";
-let currentMode = "quick"; // "quick" or "plan"
 
 // ── Preferment-eligible styles ──────────────────────
 const PREFERMENT_STYLES = ["neapolitan", "new-york", "sicilian", "grandma", "new-haven"];
@@ -130,125 +129,6 @@ document.addEventListener("DOMContentLoaded", () => {
     currentUnit = PieLabProfile.isMetricWeight() ? "g" : "oz";
   }
 
-  // ── Mode Toggle (Quick Calculate / Plan My Bake) ───
-  const modeToggleEl = document.getElementById("mode-toggle");
-  const planFieldsEl = document.getElementById("plan-fields");
-  const eatTimeInput = document.getElementById("eat-time");
-  const fermentSelect = document.getElementById("ferment-method");
-
-  // Restore mode from localStorage
-  try {
-    const savedMode = localStorage.getItem("pielab-calc-mode");
-    if (savedMode === "plan") currentMode = "plan";
-  } catch { /* ignore */ }
-
-  function setMode(mode) {
-    currentMode = mode;
-    modeToggleEl.querySelectorAll(".mode-btn").forEach((b) =>
-      b.classList.toggle("active", b.dataset.mode === mode)
-    );
-    planFieldsEl.classList.toggle("hidden", mode !== "plan");
-
-    // Show/hide yeast scaling controls based on mode
-    const yeastControls = document.getElementById("yeast-scaling-controls");
-    if (yeastControls) yeastControls.classList.toggle("hidden", mode !== "plan");
-
-    if (mode === "plan" && !eatTimeInput.value) {
-      // Default to tomorrow 6:30 PM local
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(18, 30, 0, 0);
-      eatTimeInput.value = toLocalDateTimeString(tomorrow);
-      updateFermentOptions();
-    }
-
-    try {
-      localStorage.setItem("pielab-calc-mode", mode);
-    } catch { /* ignore */ }
-  }
-
-  function toLocalDateTimeString(date) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, "0");
-    const d = String(date.getDate()).padStart(2, "0");
-    const h = String(date.getHours()).padStart(2, "0");
-    const min = String(date.getMinutes()).padStart(2, "0");
-    return `${y}-${m}-${d}T${h}:${min}`;
-  }
-
-  function updateFermentOptions() {
-    const eatTime = new Date(eatTimeInput.value);
-    const now = new Date();
-    const availableHours = (eatTime - now) / 3600000;
-    const styleKey = document.getElementById("pizza-type").value || "";
-
-    const methods = (typeof getAvailableFermentMethods === "function")
-      ? getAvailableFermentMethods(availableHours, styleKey)
-      : [{ id: "same-day", label: "Same-Day Room Temperature" }];
-
-    fermentSelect.innerHTML = "";
-    methods.forEach((m, i) => {
-      const opt = document.createElement("option");
-      opt.value = m.id;
-      opt.textContent = m.label;
-      if (i === 0) opt.selected = true;
-      fermentSelect.appendChild(opt);
-    });
-  }
-
-  modeToggleEl.addEventListener("click", (e) => {
-    const btn = e.target.closest(".mode-btn");
-    if (!btn) return;
-    if (btn.dataset.mode === "plan" && typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
-      PieLabPremium.gate(() => setMode("plan"));
-      return;
-    }
-    setMode(btn.dataset.mode);
-  });
-
-  eatTimeInput.addEventListener("change", updateFermentOptions);
-
-  // ── Sync Fermentation Tuning sliders when method dropdown changes ──
-  fermentSelect.addEventListener("change", () => {
-    const methodId = fermentSelect.value;
-    if (!fermentHoursSlider || !fermentTempSlider) return;
-
-    // Map method to default hours and temp
-    const methodDefaults = {
-      "cold-72": { hours: 72, tempF: 38 },
-      "cold-48": { hours: 48, tempF: 38 },
-      "cold-24": { hours: 24, tempF: 38 },
-      "same-day": { hours: 6,  tempF: 72 },
-      "cure-24":  { hours: 24, tempF: 38 },
-    };
-    const defaults = methodDefaults[methodId];
-    if (!defaults) return;
-
-    fermentHoursSlider.value = Math.max(
-      parseInt(fermentHoursSlider.min),
-      Math.min(parseInt(fermentHoursSlider.max), defaults.hours)
-    );
-    fermentHoursLabel.textContent = fermentHoursSlider.value + " hours";
-
-    fermentTempSlider.value = defaults.tempF;
-    if (typeof updateFermentTempLabel === "function") updateFermentTempLabel();
-    else {
-      const valF = parseFloat(fermentTempSlider.value);
-      const metricTemp = typeof PieLabProfile !== "undefined" && PieLabProfile.isMetricTemp();
-      fermentTempLabel.textContent = metricTemp
-        ? fToC(valF) + "°C"
-        : valF + "°F";
-    }
-  });
-
-  // Apply saved mode on load (only if user has premium access)
-  if (currentMode === "plan") {
-    if (typeof PieLabPremium === "undefined" || PieLabPremium.canUse()) {
-      setMode("plan");
-    } else {
-      currentMode = "quick";
-    }
-  }
 
   // ── URL params (used for style pre-select after handler is bound) ──
   const urlParams = new URLSearchParams(window.location.search);
@@ -432,12 +312,12 @@ document.addEventListener("DOMContentLoaded", () => {
         recipe.yeastPct * yeastMultiplier));
     }
 
-    // ── Dynamic Yeast Scaling (Exponential Q10 model, Plan mode + premium) ──
+    // ── Dynamic Yeast Scaling (Exponential Q10 model, premium) ──
     let dynamicYeastActive = false;
     let fermentHoursVal = null;
     let fermentTempVal = null;
     let yeastTypeLabel = "Instant Dry Yeast";
-    if (currentMode === "plan" && PieLabPremium.canUse()) {
+    if (typeof PieLabPremium !== "undefined" && PieLabPremium.canUse()) {
       const fhSlider = document.getElementById("ferment-hours");
       const ftSlider = document.getElementById("ferment-temp");
       const ytSelect = document.getElementById("yeast-type");
@@ -477,10 +357,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const sauce    = calculateSauce(adjustedRecipe, numPizzas, sizeKey);
     const toppings = calculateToppings(adjustedRecipe, numPizzas, sizeKey);
 
-    // ── Bowl Residue Compensation (+1.5%) ──
-    const residueOn = document.getElementById("bowl-residue-toggle")?.checked || false;
-    if (residueOn) {
+    // ── Bowl Residue Compensation (+1.5%, Pro) ──
+    const residueToggle = document.getElementById("bowl-residue-toggle");
+    const residueOn = residueToggle?.checked || false;
+    if (residueOn && typeof PieLabPremium !== "undefined" && PieLabPremium.canUse()) {
       dough.forEach(d => { d.amount = round1(d.amount * 1.015); });
+    } else if (residueToggle) {
+      residueToggle.checked = false;
     }
 
     // ── Preferment Split ──
@@ -590,7 +473,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderSimpleTable("sauce-table", sauce);
     renderSimpleTable("toppings-table", toppings);
 
-    // Baking instructions — dynamic preheat from oven type
+    // ── Step 1: Preheat ──
     const recTempF = bakingInfo.recommendedTemp;
     const recTempC = fToC(recTempF);
     const preheatMinutes = (typeof OVEN_PREHEAT_MINUTES !== "undefined" && OVEN_PREHEAT_MINUTES[ovenType])
@@ -601,34 +484,32 @@ document.addEventListener("DOMContentLoaded", () => {
     const tempDisplay = metricTempBake
       ? `${recTempC}°C`
       : `${recTempF}°F`;
-    // Oven recommendation + temp
+
     const preferredLabel = (typeof OVEN_TYPES !== "undefined" && recipe.preferredOven) ? OVEN_TYPES[recipe.preferredOven] : "";
     const secondaryLabel = (typeof OVEN_TYPES !== "undefined" && recipe.secondaryOven) ? OVEN_TYPES[recipe.secondaryOven] : "";
-    const ovenRecHtml = preferredLabel
-      ? `<p><strong>Best oven:</strong> ${preferredLabel}${secondaryLabel ? ` · Also works well: ${secondaryLabel}` : ""}</p>`
-      : "";
-    document.getElementById("baking-instructions").innerHTML =
-      ovenRecHtml +
-      `<p><strong>Preheat oven to:</strong> ${tempDisplay} (preheat for at least ${preheatMinutes} minutes)</p>`;
 
-    // Rack position
+    let preheatHtml = `<p>Set your oven to <strong>${tempDisplay}</strong>. Preheat for at least ${preheatMinutes} minutes with your steel or stone inside.</p>`;
+    if (preferredLabel) {
+      preheatHtml += `<p class="bake-step-detail">Best oven: ${preferredLabel}`;
+      if (secondaryLabel) preheatHtml += ` · Also works well: ${secondaryLabel}`;
+      preheatHtml += `</p>`;
+    }
+    document.getElementById("baking-instructions").innerHTML = preheatHtml;
+
+    // ── Step 2: Position ──
     const rackEl = document.getElementById("baking-rack");
     if (rackEl) {
       rackEl.innerHTML = recipe.rackPosition
-        ? `<p><strong>Rack position:</strong> ${recipe.rackPosition}</p>`
+        ? `<p>${recipe.rackPosition}</p>`
         : "";
+      // Hide the step entirely if no position data
+      const posStep = document.getElementById("step-position");
+      if (posStep) posStep.classList.toggle("hidden", !recipe.rackPosition);
     }
 
-    // Tiered tips — init slider for this style (sets level from profile/bakes), then render
-    window._currentTips   = recipe.tips || [];
-    window._currentStyleKey = type;
-    if (window.initTipsSlider) window.initTipsSlider(type);
-    if (window.renderTips)    window.renderTips();
-
-    // Bake time — prefer oven-specific times from OVEN_SETUPS (Oven Guide)
+    // ── Step 3: Bake ──
     const bakeTimeEl = document.getElementById("baking-time");
     if (bakeTimeEl) {
-      let bakeTimeHTML = "";
       const ovenSetup = typeof OVEN_SETUPS !== "undefined"
         ? OVEN_SETUPS.find(o => o.id === ovenType)
         : null;
@@ -636,16 +517,23 @@ document.addEventListener("DOMContentLoaded", () => {
         ? ovenSetup.styleBakeTimes[type]
         : null;
 
+      let bakeTimeHTML = "";
       if (ovenBake) {
-        bakeTimeHTML = `<p><strong>Bake time:</strong> ${ovenBake.time}</p>`;
+        bakeTimeHTML = `<p>Bake for <strong>${ovenBake.time}</strong> at ${tempDisplay}.</p>`;
         if (ovenBake.note) {
           bakeTimeHTML += `<p class="bake-time-note">${ovenBake.note}</p>`;
         }
       } else {
-        bakeTimeHTML = `<p><strong>Bake time:</strong> ${bakingInfo.bakeTime}</p>`;
+        bakeTimeHTML = `<p>Bake for <strong>${bakingInfo.bakeTime}</strong> at ${tempDisplay}.</p>`;
       }
       bakeTimeEl.innerHTML = bakeTimeHTML;
     }
+
+    // ── Tips — init slider for this style, then render ──
+    window._currentTips   = recipe.tips || [];
+    window._currentStyleKey = type;
+    if (window.initTipsSlider) window.initTipsSlider(type);
+    if (window.renderTips)    window.renderTips();
 
     // ── Contextual "Learn More" link (cross-page) ──
     const learnMoreEl = document.getElementById("results-learn-more");
@@ -712,54 +600,6 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("pielab-scaling-memory", JSON.stringify(mem));
     } catch { /* ignore */ }
 
-    // ── Plan preview (Plan My Bake mode) ──
-    const planPreviewEl = document.getElementById("plan-preview");
-    const planStepsEl = document.getElementById("plan-preview-steps");
-
-    if (currentMode === "plan" && eatTimeInput.value) {
-      const eatTime = new Date(eatTimeInput.value);
-      const methodKey = fermentSelect.value || "same-day";
-      const method = (typeof FERMENT_METHODS !== "undefined") ? FERMENT_METHODS[methodKey] : null;
-      const doughBallWeight = adjustedRecipe.sizes[sizeKey].doughWeight;
-      const ovenType = ovenSelect ? ovenSelect.value : "home";
-
-      if (method && typeof buildScheduleBackward === "function") {
-        const schedule = buildScheduleBackward(eatTime, ovenType, method, numPizzas, doughBallWeight, type);
-
-        // Render preview steps
-        const fmtOpts = { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" };
-        planStepsEl.innerHTML = schedule.steps.map((s) => {
-          const time = s.dateTime.toLocaleString(undefined, fmtOpts);
-          return `<div class="plan-step">
-            <span class="plan-step-time">${time}</span>
-            <span class="plan-step-label">${s.label}</span>
-          </div>`;
-        }).join("");
-
-        if (!schedule.isValid) {
-          planStepsEl.innerHTML += `<p class="plan-warning">${schedule.validationMsg}</p>`;
-        }
-
-        // Save to localStorage for schedule page prefill
-        try {
-          const planData = {
-            styleKey: type,
-            quantity: numPizzas,
-            eatTime: eatTimeInput.value,
-            fermentMethodKey: methodKey,
-            calcResult: { doughBallWeight },
-          };
-          localStorage.setItem("pielab-plan-prefill", JSON.stringify(planData));
-        } catch { /* ignore */ }
-
-        planPreviewEl.classList.remove("hidden");
-      } else {
-        planPreviewEl.classList.add("hidden");
-      }
-    } else {
-      planPreviewEl.classList.add("hidden");
-    }
-
     // ── Flour substitution row ──
     lastCalcContext = { adjustedRecipe, numPizzas, sizeKey };
 
@@ -789,16 +629,84 @@ document.addEventListener("DOMContentLoaded", () => {
       flourSubNote.innerHTML = "";
     }
 
+    // ── Yeast substitution row ──
+    const yeastSubRow = document.getElementById("yeast-sub-row");
+    const yeastSubSelect = document.getElementById("yeast-sub-select");
+
+    const YEAST_OPTIONS = [
+      { value: "idy", label: "Instant Dry Yeast" },
+      { value: "ady", label: "Active Dry Yeast" },
+      { value: "fresh", label: "Fresh Yeast" },
+    ];
+
+    // Determine recipe's base yeast key
+    const recYeast = (adjustedRecipe.yeast || "Instant Dry Yeast").toLowerCase().trim();
+    let recYeastKey = "idy";
+    if (recYeast.includes("active dry")) recYeastKey = "ady";
+    else if (recYeast.includes("fresh")) recYeastKey = "fresh";
+
+    // Populate options excluding recipe's own yeast type
+    yeastSubSelect.innerHTML = '<option value="">— Use recommended yeast —</option>';
+    for (const opt of YEAST_OPTIONS) {
+      if (opt.value === recYeastKey) continue;
+      const el = document.createElement("option");
+      el.value = opt.value;
+      el.textContent = opt.label;
+      yeastSubSelect.appendChild(el);
+    }
+    yeastSubRow.classList.remove("hidden");
+    yeastSubSelect.value = "";
+
+    // Clear any previous yeast sub note
+    const yeastSubNote = document.getElementById("yeast-sub-note");
+    if (yeastSubNote) {
+      yeastSubNote.className = "flour-sub-note hidden";
+      yeastSubNote.innerHTML = "";
+    }
+
     // Show results
     const resultsEl = document.getElementById("results");
     resultsEl.classList.remove("hidden");
     resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (window.PieLabHaptics) PieLabHaptics.success();
+  });
+
+  // ── "Schedule This Bake" prefills scheduler ──────────
+  document.getElementById("btn-schedule-bake").addEventListener("click", () => {
+    if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
+      PieLabPremium.gate(() => document.getElementById("btn-schedule-bake").click());
+      return;
+    }
+    if (!lastCalcContext) return;
+    const { adjustedRecipe, numPizzas, sizeKey } = lastCalcContext;
+    const type = document.getElementById("pizza-type").value;
+    const doughBallWeight = adjustedRecipe.sizes[sizeKey].doughWeight;
+    try {
+      const planData = {
+        styleKey: type,
+        quantity: numPizzas,
+        calcResult: { doughBallWeight },
+      };
+      localStorage.setItem("pielab-plan-prefill", JSON.stringify(planData));
+    } catch { /* ignore */ }
+    window.location.href = "schedule.html?prefill=1";
   });
 
   // ── "Log This Bake" navigates to journal page ────────
   document.getElementById("btn-log-bake").addEventListener("click", () => {
     window.location.href = "journal.html?prefill=1";
   });
+
+  // ── Bowl Residue Pro gate ─────────────────────────────
+  const bowlResidueToggle = document.getElementById("bowl-residue-toggle");
+  if (bowlResidueToggle) {
+    bowlResidueToggle.addEventListener("change", () => {
+      if (bowlResidueToggle.checked && typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
+        bowlResidueToggle.checked = false;
+        PieLabPremium.gate(() => { bowlResidueToggle.checked = true; });
+      }
+    });
+  }
 
   // ── Flour Substitution Handler ───────────────────────
   document.getElementById("flour-sub-select").addEventListener("change", () => {
@@ -1021,6 +929,142 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 
+  // ── Tools & Equipment Popover ──────────────────────
+  document.getElementById("tools-info-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    // Close any existing popover
+    const existing = document.querySelector(".tools-popover");
+    if (existing) { existing.remove(); return; }
+
+    const type = document.getElementById("pizza-type").value;
+    if (!type || typeof STYLE_TOOLS === "undefined") return;
+
+    const styleTools = STYLE_TOOLS[type];
+    const commonTools = STYLE_TOOLS._common || [];
+    if (!styleTools) return;
+
+    const styleName = PIZZA_RECIPES[type] ? PIZZA_RECIPES[type].name : type;
+
+    const commonHtml = commonTools
+      .map((t) => `<li><strong>${t.name}</strong> \u2014 ${t.desc}</li>`)
+      .join("");
+
+    const styleHtml = styleTools.tools
+      .map((t) => `<li><strong>${t.name}</strong> \u2014 ${t.desc}</li>`)
+      .join("");
+
+    const popover = document.createElement("div");
+    popover.className = "tools-popover";
+    popover.innerHTML = `
+      <div class="popover-header">
+        <span class="popover-title">Tools & Equipment</span>
+        <button class="popover-close" type="button" aria-label="Close">&times;</button>
+      </div>
+      <div class="popover-body">
+        <div class="popover-section">
+          <h4>${styleName} Essentials</h4>
+          <ul class="tools-list">${styleHtml}</ul>
+        </div>
+        <div class="popover-section">
+          <h4>Every Bake</h4>
+          <ul class="tools-list">${commonHtml}</ul>
+        </div>
+      </div>
+    `;
+
+    const anchor = document.getElementById("tools-info-btn").closest(".form-group");
+    anchor.style.position = "relative";
+    anchor.appendChild(popover);
+
+    popover.querySelector(".popover-close").addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      popover.remove();
+    });
+
+    document.addEventListener("click", function closeOnOutside(ev) {
+      if (!popover.contains(ev.target) && ev.target !== e.target) {
+        popover.remove();
+        document.removeEventListener("click", closeOnOutside);
+      }
+    });
+  });
+
+  // ── Yeast Substitution Handler ────────────────────
+  document.getElementById("yeast-sub-select").addEventListener("change", () => {
+    if (!lastCalcContext) return;
+
+    const select = document.getElementById("yeast-sub-select");
+    const selectedYeast = select.value;
+    const { adjustedRecipe, numPizzas, sizeKey } = lastCalcContext;
+
+    // Yeast conversion factors relative to IDY (1g IDY base)
+    const YEAST_FACTORS = { idy: 1, ady: 1.25, fresh: 3 };
+    const YEAST_LABELS = { idy: "Instant Dry Yeast", ady: "Active Dry Yeast", fresh: "Fresh Yeast" };
+
+    // Determine recipe's base yeast type key
+    const recipeYeastName = (adjustedRecipe.yeast || "Instant Dry Yeast").toLowerCase().trim();
+    let recipeYeastKey = "idy";
+    if (recipeYeastName.includes("active dry")) recipeYeastKey = "ady";
+    else if (recipeYeastName.includes("fresh")) recipeYeastKey = "fresh";
+
+    // Manage the yeast-sub-note element
+    let noteEl = document.getElementById("yeast-sub-note");
+    if (!noteEl) {
+      noteEl = document.createElement("div");
+      noteEl.id = "yeast-sub-note";
+      const doughTable = document.getElementById("dough-table");
+      doughTable.parentNode.insertBefore(noteEl, doughTable);
+    }
+
+    // Reset: restore original dough table
+    if (!selectedYeast) {
+      const dough = calculateDough(adjustedRecipe, numPizzas, sizeKey);
+      lastDough = dough;
+      renderDoughTable(dough);
+      noteEl.className = "flour-sub-note hidden";
+      noteEl.innerHTML = "";
+      return;
+    }
+
+    // Hide the option matching the recipe's own yeast type
+    // (already filtered out below)
+    if (selectedYeast === recipeYeastKey) {
+      select.value = "";
+      return;
+    }
+
+    // Recalculate dough with converted yeast amount
+    const conversionFactor = YEAST_FACTORS[selectedYeast] / YEAST_FACTORS[recipeYeastKey];
+    const subRecipe = { ...adjustedRecipe };
+    subRecipe.yeastPct = adjustedRecipe.yeastPct * conversionFactor;
+
+    const dough = calculateDough(subRecipe, numPizzas, sizeKey);
+
+    // Rename the yeast ingredient row
+    dough.forEach((d) => {
+      if (/yeast/i.test(d.ingredient)) {
+        d.ingredient = YEAST_LABELS[selectedYeast];
+      }
+    });
+
+    lastDough = dough;
+    renderDoughTable(dough);
+
+    const origLabel = YEAST_LABELS[recipeYeastKey];
+    const subLabel = YEAST_LABELS[selectedYeast];
+    const noteText = selectedYeast === "ady"
+      ? "Active Dry Yeast should be dissolved in warm water (100\u2013110\u00B0F) for 5\u201310 minutes before adding to the dough."
+      : selectedYeast === "fresh"
+        ? "Crumble Fresh Yeast directly into the flour or dissolve in lukewarm water. Use within 2 weeks of purchase."
+        : "Instant Dry Yeast can be mixed directly into the flour \u2014 no activation needed.";
+
+    noteEl.className = "flour-sub-note compat-great";
+    noteEl.innerHTML =
+      `Using <strong>${subLabel}</strong> instead of <strong>${origLabel}</strong>. ` +
+      `Amount adjusted automatically. <br><em>${noteText}</em>`;
+  });
+
   // ══════════════════════════════════════════════════════
   // ── Settings Toggle ─────────────────────────────────
   // ══════════════════════════════════════════════════════
@@ -1086,6 +1130,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       editor.classList.remove("hidden");
+
+      // Show fermentation tuning if user has Pro access
+      const yeastControls = document.getElementById("yeast-scaling-controls");
+      if (yeastControls) {
+        const isPro = typeof PieLabPremium !== "undefined" && PieLabPremium.canUse();
+        yeastControls.classList.toggle("hidden", !isPro);
+      }
     }
 
     function saveCurrentSettings() {
@@ -1492,10 +1543,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const timer = { running: false, paused: false, total: 0, remaining: 0, startedAt: 0, pauseOffset: 0, intervalId: null };
 
   function parseBakeTimeString(str) {
-    const m = str.match(/(\d+)[–\u2013-](\d+)\s*(seconds?|minutes?)/i);
-    if (!m) return 300; // fallback 5 min
-    const lo = parseInt(m[1], 10);
-    const multiplier = m[3].toLowerCase().startsWith("minute") ? 60 : 1;
+    // Handles: "6–18 min", "60–90 seconds", "90 sec–3 min", "3–5 minutes"
+    const range = str.match(/(\d+)\s*(seconds?|minutes?|min|sec)?\s*[–\u2013-]\s*(\d+)\s*(seconds?|minutes?|min|sec)/i);
+    if (!range) return 300; // fallback 5 min
+    const lo = parseInt(range[1], 10);
+    const loUnit = range[2] || range[4]; // use first unit if present, else the trailing unit
+    const multiplier = loUnit.toLowerCase().startsWith("s") ? 1 : 60;
     return lo * multiplier;
   }
 
@@ -1565,6 +1618,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("timer-running-controls").classList.add("hidden");
     document.getElementById("timer-done-controls").classList.remove("hidden");
     timerStatusEl.textContent = "Pizza is done! 🍕";
+    if (window.PieLabHaptics) PieLabHaptics.warning();
     // Start looping alarm
     startAlarmSound();
     // Browser notification

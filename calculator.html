@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=26" />
+  <link rel="stylesheet" href="style.css?v=27" />
 </head>
 <body data-page="calculator">
 
@@ -41,46 +41,6 @@
     <section class="calculator-card">
       <h2>Build Your Recipe</h2>
 
-      <div class="mode-toggle" id="mode-toggle">
-        <button type="button" class="mode-btn active" data-mode="quick">Quick Calculate</button>
-        <button type="button" class="mode-btn" data-mode="plan">Plan My Bake <span class="premium-tag">PRO</span></button>
-      </div>
-
-      <div id="plan-fields" class="plan-fields hidden">
-        <div class="form-group">
-          <label for="eat-time">When do you want to eat?</label>
-          <input type="datetime-local" id="eat-time" />
-        </div>
-        <div class="form-group">
-          <label for="ferment-method">Fermentation Method</label>
-          <select id="ferment-method">
-            <option value="" disabled selected>Select eat time first</option>
-          </select>
-        </div>
-
-        <!-- Dynamic Yeast Scaling (premium, Plan mode only) -->
-        <div id="yeast-scaling-controls" class="yeast-scaling-controls hidden">
-          <h4>Fermentation Tuning <span class="premium-tag">PRO</span></h4>
-          <div class="setting-field">
-            <label for="yeast-type">Yeast Type</label>
-            <select id="yeast-type">
-              <option value="idy" selected>Instant Dry Yeast</option>
-              <option value="ady">Active Dry Yeast</option>
-              <option value="fresh">Fresh Yeast</option>
-            </select>
-          </div>
-          <div class="setting-field">
-            <label for="ferment-hours">Fermentation Time</label>
-            <input type="range" id="ferment-hours" min="2" max="72" value="24" step="1">
-            <span id="ferment-hours-label">24 hours</span>
-          </div>
-          <div class="setting-field">
-            <label for="ferment-temp">Fermentation Temp</label>
-            <input type="range" id="ferment-temp" min="38" max="80" value="72" step="1">
-            <span id="ferment-temp-label">72°F</span>
-          </div>
-        </div>
-      </div>
 
       <div class="settings-toggle-row">
         <span class="toggle-label" id="toggle-label-rec">Recommended</span>
@@ -94,6 +54,10 @@
       <form id="pizza-form" novalidate>
         <div class="form-group">
           <label for="pizza-type">Pizza Style</label>
+          <div class="form-info-row">
+            <button class="tools-info-btn" id="tools-info-btn" type="button" aria-label="Tools &amp; equipment needed">&#x24D8;</button><span class="tools-info-label">Tools &amp; Equip</span>
+            <a class="style-library-link" href="learn.html#styles">&#x24D8; Style Library</a>
+          </div>
           <select id="pizza-type" required>
             <option value="" disabled selected>Select a style&hellip;</option>
           </select>
@@ -187,14 +151,54 @@
             </div>
           </div>
 
-          <!-- Bowl Residue Toggle (free) -->
+          <!-- Fermentation Tuning (premium) -->
+          <div id="yeast-scaling-controls" class="yeast-scaling-controls hidden">
+            <h4>Fermentation Tuning <span class="premium-tag">PRO</span></h4>
+            <div class="setting-field">
+              <label for="yeast-type">Yeast Type</label>
+              <select id="yeast-type">
+                <option value="idy" selected>Instant Dry Yeast</option>
+                <option value="ady">Active Dry Yeast</option>
+                <option value="fresh">Fresh Yeast</option>
+              </select>
+            </div>
+            <div class="setting-field">
+              <label for="ferment-hours">Fermentation Time</label>
+              <input type="range" id="ferment-hours" min="2" max="72" value="24" step="1">
+              <span id="ferment-hours-label">24 hours</span>
+            </div>
+            <div class="setting-field">
+              <label for="ferment-temp">Fermentation Temp</label>
+              <input type="range" id="ferment-temp" min="38" max="80" value="72" step="1">
+              <span id="ferment-temp-label">72&deg;F</span>
+            </div>
+          </div>
+
+          <!-- Bowl Residue Toggle (pro) -->
           <div class="residue-toggle-row">
             <label class="toggle-switch">
               <input type="checkbox" id="bowl-residue-toggle">
               <span class="toggle-slider"></span>
             </label>
-            <span>Add +1.5% for bowl residue</span>
+            <span>Add +1.5% for bowl residue <span class="premium-tag">PRO</span></span>
           </div>
+        </div>
+
+        <div id="flour-sub-row" class="flour-sub-row hidden">
+          <label for="flour-sub-select">Substitute Flour</label>
+          <select id="flour-sub-select">
+            <option value="">— Use recommended flour —</option>
+          </select>
+        </div>
+
+        <div id="yeast-sub-row" class="flour-sub-row hidden">
+          <label for="yeast-sub-select">Substitute Yeast</label>
+          <select id="yeast-sub-select">
+            <option value="">— Use recommended yeast —</option>
+            <option value="idy">Instant Dry Yeast</option>
+            <option value="ady">Active Dry Yeast</option>
+            <option value="fresh">Fresh Yeast</option>
+          </select>
         </div>
 
         <button type="submit" class="btn-calculate">Calculate Recipe</button>
@@ -257,9 +261,23 @@
       </div>
 
       <div class="instructions-section">
-        <h3>Baking Instructions</h3>
-        <div id="baking-instructions"></div>
-        <div id="baking-rack"></div>
+        <h3>How to Bake</h3>
+
+        <ol class="bake-steps">
+          <li class="bake-step" id="step-preheat">
+            <span class="bake-step-title">Preheat</span>
+            <div class="bake-step-body" id="baking-instructions"></div>
+          </li>
+          <li class="bake-step" id="step-position">
+            <span class="bake-step-title">Position</span>
+            <div class="bake-step-body" id="baking-rack"></div>
+          </li>
+          <li class="bake-step" id="step-bake">
+            <span class="bake-step-title">Bake</span>
+            <div class="bake-step-body" id="baking-time"></div>
+            <button class="btn-start-timer" id="btn-start-timer" type="button">Start Bake Timer</button>
+          </li>
+        </ol>
 
         <div class="tips-subsection">
           <div class="tips-header">
@@ -282,30 +300,15 @@
           </div>
           <ul id="pro-tips"></ul>
         </div>
-
-        <div id="baking-time"></div>
-        <button class="btn-start-timer" id="btn-start-timer" type="button">⏱ Start Bake Timer</button>
       </div>
 
       <div class="results-learn-more" id="results-learn-more"></div>
 
-      <div id="flour-sub-row" class="flour-sub-row hidden">
-        <label for="flour-sub-select">Substitute Flour</label>
-        <select id="flour-sub-select">
-          <option value="">— Use recommended flour —</option>
-        </select>
-      </div>
-
-      <div id="plan-preview" class="plan-preview hidden">
-        <h3>Your Bake Plan</h3>
-        <div id="plan-preview-steps" class="plan-preview-steps"></div>
-        <a href="schedule.html?prefill=1" class="btn-view-schedule" id="btn-view-schedule">View Full Schedule &rarr;</a>
-      </div>
-
       <div class="results-actions">
-        <button class="btn-print" id="btn-print">Print Recipe</button>
-        <button class="btn-log-bake" id="btn-log-bake">Log This Bake</button>
-        <button class="btn-reset" id="btn-reset">New Recipe</button>
+        <button type="button" class="btn-schedule-bake" id="btn-schedule-bake">Schedule This Bake <span class="premium-tag">PRO</span></button>
+        <button type="button" class="btn-print" id="btn-print">Print Recipe</button>
+        <button type="button" class="btn-log-bake" id="btn-log-bake">Log This Bake</button>
+        <button type="button" class="btn-reset" id="btn-reset">New Recipe</button>
       </div>
     </section>
   </main>

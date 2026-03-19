@@ -48,4 +48,57 @@
       }
     }
   });
+
+  // ── Haptic feedback helper ───────────────────────────
+  // Exposes window.PieLabHaptics for use across modules.
+  // Falls back silently on devices that don't support it.
+  window.PieLabHaptics = {
+    light() {
+      try {
+        const { Haptics } = Capacitor.Plugins;
+        Haptics.impact({ style: "LIGHT" });
+      } catch { /* not critical */ }
+    },
+    medium() {
+      try {
+        const { Haptics } = Capacitor.Plugins;
+        Haptics.impact({ style: "MEDIUM" });
+      } catch { /* not critical */ }
+    },
+    success() {
+      try {
+        const { Haptics } = Capacitor.Plugins;
+        Haptics.notification({ type: "SUCCESS" });
+      } catch { /* not critical */ }
+    },
+    warning() {
+      try {
+        const { Haptics } = Capacitor.Plugins;
+        Haptics.notification({ type: "WARNING" });
+      } catch { /* not critical */ }
+    },
+  };
+
+  // ── Native share helper ──────────────────────────────
+  // Wraps Capacitor Share plugin for reliable native sheet.
+  // Falls back to Web Share API if plugin unavailable.
+  window.PieLabNativeShare = async function (opts) {
+    try {
+      const { Share } = Capacitor.Plugins;
+      await Share.share({
+        title: opts.title || "",
+        text: opts.text || "",
+        url: opts.url || "",
+        dialogTitle: opts.dialogTitle || "Share",
+      });
+      return true;
+    } catch {
+      // Fall back to Web Share API
+      if (navigator.share) {
+        await navigator.share(opts);
+        return true;
+      }
+      return false;
+    }
+  };
 })();

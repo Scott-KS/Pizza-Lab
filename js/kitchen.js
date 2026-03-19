@@ -2,6 +2,11 @@
    The Pie Lab — My Kitchen
    Page: kitchen.html
    ══════════════════════════════════════════════════════ */
+function escapeHtml(str) {
+  if (!str) return "";
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // ── Welcome banner for new users ───────────────────
   const urlParams = new URLSearchParams(window.location.search);
@@ -40,15 +45,21 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedHumidity = profile.humidity || "normal";
 
   humidityGrp.querySelectorAll(".toggle-btn").forEach((btn) => {
-    btn.classList.toggle("selected", btn.dataset.value === selectedHumidity);
+    const isActive = btn.dataset.value === selectedHumidity;
+    btn.classList.toggle("selected", isActive);
+    btn.setAttribute("aria-pressed", isActive);
   });
 
   humidityGrp.addEventListener("click", (e) => {
     const btn = e.target.closest(".toggle-btn");
     if (!btn) return;
 
-    humidityGrp.querySelectorAll(".toggle-btn").forEach((b) => b.classList.remove("selected"));
+    humidityGrp.querySelectorAll(".toggle-btn").forEach((b) => {
+      b.classList.remove("selected");
+      b.setAttribute("aria-pressed", "false");
+    });
     btn.classList.add("selected");
+    btn.setAttribute("aria-pressed", "true");
     selectedHumidity = btn.dataset.value;
   });
 
@@ -57,16 +68,31 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedUnits = profile.unitSystem || "standard";
 
   unitsGrp.querySelectorAll(".toggle-btn").forEach((btn) => {
-    btn.classList.toggle("selected", btn.dataset.value === selectedUnits);
+    const isActive = btn.dataset.value === selectedUnits;
+    btn.classList.toggle("selected", isActive);
+    btn.setAttribute("aria-pressed", isActive);
   });
 
   unitsGrp.addEventListener("click", (e) => {
     const btn = e.target.closest(".toggle-btn");
     if (!btn) return;
 
-    unitsGrp.querySelectorAll(".toggle-btn").forEach((b) => b.classList.remove("selected"));
+    unitsGrp.querySelectorAll(".toggle-btn").forEach((b) => {
+      b.classList.remove("selected");
+      b.setAttribute("aria-pressed", "false");
+    });
     btn.classList.add("selected");
+    btn.setAttribute("aria-pressed", "true");
     selectedUnits = btn.dataset.value;
+  });
+
+  // ── Onboarding flow: Enter key advances to next field ──
+  nameInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      cityInput.focus();
+      cityInput.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
   });
 
   // ── Location autocomplete & elevation ────────────────
@@ -138,6 +164,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const { display } = formatPlace(place);
     cityInput.value = display;
     closeSuggestions();
+    // During onboarding, skip past oven (defaults to Home) and scroll to save
+    const params = new URLSearchParams(window.location.search);
+    const isOnboarding = params.get("onboarding") === "1";
+    setTimeout(() => {
+      if (isOnboarding) {
+        saveBtn.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else {
+        ovenSelect.focus();
+        ovenSelect.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 200);
 
     cityStatus.textContent = "Resolving elevation\u2026";
     cityStatus.className   = "city-status resolving";
@@ -172,8 +209,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const isUS = place.country_code?.toUpperCase() === "US" && abbr;
 
       li.innerHTML = isUS
-        ? `<span class="ac-city">${place.name}</span>, <span class="ac-region">${abbr}</span>`
-        : `<span class="ac-city">${place.name}</span>${region ? `, <span class="ac-region">${region}</span>` : ""}${place.country && place.country !== "United States" ? `, <span class="ac-region">${place.country}</span>` : ""}`;
+        ? `<span class="ac-city">${escapeHtml(place.name)}</span>, <span class="ac-region">${escapeHtml(abbr)}</span>`
+        : `<span class="ac-city">${escapeHtml(place.name)}</span>${region ? `, <span class="ac-region">${escapeHtml(region)}</span>` : ""}${place.country && place.country !== "United States" ? `, <span class="ac-region">${escapeHtml(place.country)}</span>` : ""}`;
 
       li.addEventListener("mousedown", (e) => {
         e.preventDefault();          // prevent blur from firing first
@@ -271,6 +308,12 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     PieLabProfile.saveProfile(updates);
+    if (window.PieLabHaptics) PieLabHaptics.success();
+
+    // Start Pro trial on first profile save (14-day trial)
+    if (typeof PieLabPremium !== "undefined" && updates.displayName) {
+      PieLabPremium.startTrial();
+    }
 
     // Update stored city so subsequent edits compare to latest save
     storedCity = currentCity;
@@ -296,6 +339,49 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2500);
   });
 
+  // ── Restore Purchase ─────────────────────────────────
+  const restoreBtn = document.getElementById("btn-restore-purchase");
+  const restoreStatus = document.getElementById("restore-status");
+  const restoreRow = document.getElementById("restore-purchase-row");
+
+  // Only show if premium system is loaded and user is not already Pro
+  if (restoreRow && typeof PieLabPremium !== "undefined") {
+    if (PieLabPremium.isPro()) {
+      restoreRow.classList.add("hidden");
+    }
+  }
+
+  if (restoreBtn) {
+    restoreBtn.addEventListener("click", async () => {
+      if (typeof PieLabPremium === "undefined") return;
+      restoreBtn.disabled = true;
+      restoreBtn.textContent = "Restoring\u2026";
+
+      const restored = await PieLabPremium.restorePurchases();
+
+      if (restored) {
+        restoreStatus.textContent = "Pro access restored!";
+        restoreStatus.classList.remove("hidden");
+        restoreBtn.textContent = "Restored";
+        if (window.PieLabHaptics) PieLabHaptics.success();
+      } else {
+        restoreStatus.textContent = "No previous purchase found.";
+        restoreStatus.classList.remove("hidden");
+        restoreBtn.textContent = "Restore Purchase";
+        restoreBtn.disabled = false;
+      }
+
+      setTimeout(() => {
+        restoreStatus.classList.add("fade-out");
+        restoreStatus.addEventListener(
+          "transitionend",
+          () => { restoreStatus.classList.add("hidden"); restoreStatus.classList.remove("fade-out"); },
+          { once: true }
+        );
+      }, 3000);
+    });
+  }
+
   // ── Clear any saved theme override — always use system preference ──
   localStorage.removeItem("pielab-theme");
   const prefersDark = matchMedia("(prefers-color-scheme:dark)").matches;
@@ -309,12 +395,17 @@ document.addEventListener("DOMContentLoaded", () => {
     "pielab-style-levels",
   ];
 
-  document.getElementById("btn-export").addEventListener("click", () => {
-    const backup = { _version: 1, _exportedAt: new Date().toISOString() };
+  document.getElementById("btn-export").addEventListener("click", async () => {
+    const backup = { _version: 2, _exportedAt: new Date().toISOString() };
     BACKUP_KEYS.forEach((key) => {
       const raw = localStorage.getItem(key);
       try { backup[key] = raw ? JSON.parse(raw) : null; } catch { backup[key] = raw; }
     });
+
+    // Include IndexedDB photos in backup
+    if (typeof PieLabPhotos !== "undefined") {
+      try { backup._photos = await PieLabPhotos.getAllPhotos(); } catch {}
+    }
 
     const json = JSON.stringify(backup, null, 2);
     const blob = new Blob([json], { type: "application/json" });
@@ -364,7 +455,15 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem(key, JSON.stringify(data[key]));
           }
         });
-        window.location.reload();
+
+        // Restore IndexedDB photos if present in backup
+        if (data._photos && typeof PieLabPhotos !== "undefined") {
+          PieLabPhotos.importPhotos(data._photos)
+            .catch(() => {})
+            .finally(() => window.location.reload());
+        } else {
+          window.location.reload();
+        }
       } catch {
         alert("Could not read backup file. Make sure it\u2019s a valid JSON file.");
       }
@@ -398,25 +497,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const screen  = `${window.screen.width}x${window.screen.height}`;
     const theme   = document.documentElement.dataset.theme || "light";
 
-    const subject = encodeURIComponent(`[Pie Lab] ${label}`);
-    const body    = encodeURIComponent(
-      `${message}\n\n` +
-      `--- App Context (auto-generated) ---\n` +
-      `Type: ${label}\n` +
-      `Name: ${profile.displayName || "—"}\n` +
-      `Location: ${profile.city || "—"}\n` +
-      `Units: ${profile.unitSystem || "standard"}\n` +
-      `Theme: ${theme}\n` +
-      `Screen: ${screen}\n` +
-      `Device: ${device}\n`
-    );
+    // Build query params and open feedback on pielab.app
+    const params = new URLSearchParams({
+      type:     label,
+      message:  message,
+      name:     profile.displayName || "",
+      location: profile.city || "",
+      units:    profile.unitSystem || "standard",
+      theme:    theme,
+      screen:   screen,
+      device:   device
+    });
 
-    const mailto = `mailto:feedback@thepielab.app?subject=${subject}&body=${body}`;
-    window.location.href = mailto;
+    window.open(`https://www.pielab.app/feedback?${params.toString()}`, "_blank");
 
     // Show confirmation + clear form
     fbMessage.value = "";
-    fbStatus.textContent = "Thanks! Your email client should open with the feedback ready to send.";
+    fbStatus.textContent = "Thanks! A feedback page has opened — please submit it there.";
     fbStatus.classList.remove("hidden");
     fbStatus.classList.remove("fade-out");
 
@@ -430,29 +527,62 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 5000);
   });
 
-  // ── Delete All Data ─────────────────────────────────
+  // ── Delete All Data (two-step confirmation) ─────────
   const deleteBtn     = document.getElementById("k-delete-data");
   const deleteModal   = document.getElementById("delete-data-modal");
-  const deleteCancel  = document.getElementById("delete-cancel");
+  const deleteStep1   = document.getElementById("delete-step-1");
+  const deleteStep2   = document.getElementById("delete-step-2");
   const deleteConfirm = document.getElementById("delete-confirm");
+
+  function resetDeleteModal() {
+    deleteModal.classList.add("hidden");
+    if (deleteStep1) deleteStep1.classList.remove("hidden");
+    if (deleteStep2) deleteStep2.classList.add("hidden");
+  }
 
   if (deleteBtn && deleteModal) {
     deleteBtn.addEventListener("click", () => {
+      resetDeleteModal();
       deleteModal.classList.remove("hidden");
     });
 
-    if (deleteCancel) deleteCancel.addEventListener("click", () => {
-      deleteModal.classList.add("hidden");
+    // Step 1 → Step 2
+    const stepNext = document.getElementById("delete-step-next");
+    if (stepNext) stepNext.addEventListener("click", () => {
+      deleteStep1.classList.add("hidden");
+      deleteStep2.classList.remove("hidden");
     });
+
+    // Cancel buttons
+    const deleteCancel = document.getElementById("delete-cancel");
+    if (deleteCancel) deleteCancel.addEventListener("click", resetDeleteModal);
+
+    const deleteCancel2 = document.getElementById("delete-cancel-2");
+    if (deleteCancel2) deleteCancel2.addEventListener("click", () => {
+      deleteStep2.classList.add("hidden");
+      deleteStep1.classList.remove("hidden");
+    });
+
+    const deleteClose = document.getElementById("delete-modal-close");
+    if (deleteClose) deleteClose.addEventListener("click", resetDeleteModal);
 
     deleteModal.addEventListener("click", (e) => {
-      if (e.target === deleteModal) deleteModal.classList.add("hidden");
+      if (e.target === deleteModal) resetDeleteModal();
     });
 
+    // Step 2: confirmed — delete everything
     if (deleteConfirm) deleteConfirm.addEventListener("click", () => {
+      if (window.PieLabHaptics) PieLabHaptics.warning();
       const keys = Object.keys(localStorage).filter((k) => k.startsWith("pielab"));
       keys.forEach((k) => localStorage.removeItem(k));
-      window.location.href = "index.html";
+      // Clear IndexedDB photo storage (does not affect camera roll)
+      if (typeof PieLabPhotos !== "undefined") {
+        PieLabPhotos.deleteAll().catch(() => {}).finally(() => {
+          window.location.href = "index.html";
+        });
+      } else {
+        window.location.href = "index.html";
+      }
     });
   }
 });

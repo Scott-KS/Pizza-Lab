@@ -1,10 +1,11 @@
 /*  The Pie Lab — Service Worker  */
-const CACHE_NAME = "pielab-v32";
+const CACHE_NAME = "pielab-v48";
 
 /* ── Derive base path so caching works on both localhost and /Pizza-Lab/ ── */
 const BASE = self.registration.scope;
 
 /* ── Shell assets (app skeleton — always cached) ── */
+/* Version query strings MUST match the <script>/<link> tags in HTML pages */
 const APP_SHELL_PATHS = [
   "",
   "index.html",
@@ -14,31 +15,39 @@ const APP_SHELL_PATHS = [
   "kitchen.html",
   "learn.html",
   "legal.html",
-  "style.css?v=26",
-  "js/premium.js",
-  "js/toolkit.js",
-  "js/calculator.js",
+  "style.css?v=28",
+  "js/premium.js?v=3",
+  "js/toolkit.js?v=5",
+  "js/calculator.js?v=16",
   "js/scheduler.js",
-  "js/journal-ui.js",
-  "js/kitchen.js",
-  "js/knowledge.js",
-  "js/nav.js",
+  "js/scheduler-guide.js",
+  "js/photo-store.js?v=1",
+  "js/journal-ui.js?v=16",
+  "js/kitchen.js?v=10",
+  "js/knowledge.js?v=3",
+  "js/nav.js?v=7",
   "js/carousel.js",
   "js/onboarding.js",
   "js/first-bake.js",
-  "js/user-profile.js",
+  "js/user-profile.js?v=5",
   "js/pie-notifications.js",
   "js/capacitor-init.js",
   "js/vendor/html2canvas.min.js",
-  "recipes.js",
-  "knowledge-data.js",
-  "tools-data.js",
-  "scheduler-data.js",
-  "journal.js",
+  "recipes.js?v=6",
+  "knowledge-data.js?v=2",
+  "tools-data.js?v=4",
+  "scheduler-data.js?v=5",
+  "journal.js?v=4",
   "assets/logos/favicon-32.svg",
   "assets/logos/logo-monogram-512.svg",
   "assets/logos/logo-horizontal.svg",
+  "assets/logos/logo-transparent.svg",
   "manifest.json",
+];
+
+/* ── External fonts (cached on first successful load) ── */
+const FONT_URLS = [
+  "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap",
 ];
 
 /* ── Images (cached on first load, not blocking install) ── */
@@ -62,6 +71,10 @@ self.addEventListener("install", (e) => {
       // Cache images in background (don't block install)
       IMAGE_PATHS.forEach((p) =>
         cache.add(BASE + p).catch(() => {/* non-critical */})
+      );
+      // Cache Google Fonts in background (for offline use)
+      FONT_URLS.forEach((url) =>
+        cache.add(url).catch(() => {/* non-critical */})
       );
       // App shell must succeed
       return cache.addAll(APP_SHELL_PATHS.map((p) => BASE + p));

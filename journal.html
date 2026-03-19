@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=27" />
+  <link rel="stylesheet" href="style.css?v=28" />
 </head>
 <body data-page="journal">
 
@@ -146,8 +146,8 @@
           </div>
 
           <div class="form-group">
-            <label>Rating</label>
-            <div class="star-rating" id="j-star-rating">
+            <label id="rating-label">Rating</label>
+            <div class="star-rating" id="j-star-rating" role="group" aria-labelledby="rating-label">
               <button type="button" class="star" data-value="1" aria-label="1 star">&#9733;</button>
               <button type="button" class="star" data-value="2" aria-label="2 stars">&#9733;</button>
               <button type="button" class="star" data-value="3" aria-label="3 stars">&#9733;</button>
@@ -219,7 +219,7 @@
   <!-- Journal Detail Modal -->
   <div class="modal-overlay hidden" id="journal-detail-modal">
     <div class="modal-content">
-      <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+      <button type="button" class="modal-close" id="modal-close" aria-label="Close">&times;</button>
       <div id="modal-body"></div>
     </div>
   </div>
@@ -264,11 +264,12 @@
   <!-- Scripts: Capacitor init first, then data files, then shared nav, then page features -->
   <script src="js/capacitor-init.js"></script>
   <script src="recipes.js?v=6"></script>
-  <script src="journal.js?v=3"></script>
+  <script src="js/photo-store.js?v=1"></script>
+  <script src="journal.js?v=4"></script>
   <script src="knowledge-data.js?v=2"></script>
   <script src="js/nav.js?v=7"></script>
   <script src="js/user-profile.js?v=5"></script>
   <script src="js/premium.js?v=3"></script>
-  <script src="js/journal-ui.js?v=15"></script>
+  <script src="js/journal-ui.js?v=16"></script>
 </body>
 </html>

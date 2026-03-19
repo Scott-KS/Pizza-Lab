@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=26" />
+  <link rel="stylesheet" href="style.css?v=27" />
 </head>
 <body data-page="legal">
 
@@ -65,13 +65,14 @@
         </ul>
 
         <h3>Where Your Data Lives</h3>
-        <p>All of your data is stored <strong>locally on your device</strong> using your browser's localStorage. It is never uploaded to our servers. We do not operate a backend database, and we have no ability to access, read, or recover your data remotely.</p>
-        <p>Photos attached to journal entries are compressed and stored as base64 data within localStorage on your device. They are never uploaded anywhere.</p>
+        <p>All of your data is stored <strong>locally on your device</strong> using your browser's localStorage and IndexedDB. It is never uploaded to our servers. We do not operate a backend database, and we have no ability to access, read, or recover your data remotely.</p>
+        <p>Photos attached to journal entries are compressed and stored in IndexedDB on your device. They are never uploaded anywhere.</p>
 
         <h3>Third-Party Services</h3>
         <p>The Pie Lab uses a small number of external services:</p>
         <ul>
-          <li><strong>Stripe</strong> &mdash; processes Pro upgrade payments. Stripe handles all payment information directly. The Pie Lab never sees, receives, or stores your credit card number or banking details. See <a href="https://stripe.com/privacy" target="_blank" rel="noopener">Stripe's Privacy Policy</a>.</li>
+          <li><strong>Apple App Store / Google Play Store</strong> &mdash; processes Pro upgrade payments on mobile. All payment information is handled entirely by Apple or Google. The Pie Lab never sees, receives, or stores your credit card number or banking details.</li>
+          <li><strong>RevenueCat</strong> &mdash; manages purchase verification and entitlement delivery. RevenueCat receives only an anonymous user ID and purchase receipt to validate your Pro status. No personal information is shared. See <a href="https://www.revenuecat.com/privacy" target="_blank" rel="noopener">RevenueCat's Privacy Policy</a>.</li>
           <li><strong>Open-Meteo API</strong> &mdash; used to look up elevation data when you set your city in My Kitchen. Only the city name is sent; no personal information is transmitted.</li>
           <li><strong>Google Fonts</strong> &mdash; loads the Playfair Display and Inter typefaces. See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google's Privacy Policy</a>.</li>
         </ul>
@@ -114,7 +115,7 @@
         <p>The Pie Lab is a pizza-making companion app that provides dough recipe calculations, bake scheduling, a baking journal, and educational content about pizza styles, flours, and techniques. The app is available as a web application and may be available as a mobile app.</p>
 
         <h3>Free & Pro Tiers</h3>
-        <p>The Pie Lab offers a free tier with core features and a Pro tier with additional tools. New users receive a 14-day full-access trial of all Pro features starting after their first bake. After the trial, Pro features require a one-time purchase to unlock permanently.</p>
+        <p>The Pie Lab offers a free tier with core features and a Pro tier with additional tools. New users receive a 14-day full-access trial of all Pro features starting when they save their Kitchen Profile. After the trial, Pro features require a one-time in-app purchase to unlock permanently.</p>
 
         <h3>User Responsibilities</h3>
         <ul>
@@ -135,6 +136,12 @@
         <h3>Termination</h3>
         <p>You may stop using The Pie Lab at any time. You can delete all your data using the Delete All My Data option in My Kitchen. We reserve the right to suspend or terminate access to the service for violations of these terms.</p>
 
+        <h3>Age Requirement</h3>
+        <p>You must be at least 13 years old to use The Pie Lab. By using the app, you represent that you meet this age requirement.</p>
+
+        <h3>Governing Law</h3>
+        <p>These Terms shall be governed by and construed in accordance with the laws of the United States. Any disputes arising from these terms or your use of the app shall be resolved in the courts of the state in which The Pie Lab is operated.</p>
+
         <h3>Modifications</h3>
         <p>We may update these Terms of Service from time to time. Changes will be posted on this page. Continued use of the app after changes constitutes acceptance of the revised terms.</p>
 
@@ -152,8 +159,8 @@
         <h3>Apple App Store Purchases</h3>
         <p>If you purchased Pro through the Apple App Store, refunds are handled by Apple in accordance with their refund policy. To request a refund, visit <a href="https://support.apple.com/en-us/HT204084" target="_blank" rel="noopener">Apple's support page</a> or contact Apple directly through your purchase history.</p>
 
-        <h3>Web Purchases (Stripe)</h3>
-        <p>For purchases made through our website via Stripe, we offer a <strong>7-day no-questions-asked refund policy</strong>. If you are not satisfied with your Pro upgrade, contact us within 7 days of purchase for a full refund.</p>
+        <h3>Google Play Store Purchases</h3>
+        <p>If you purchased Pro through Google Play, refunds are handled by Google in accordance with their refund policy. To request a refund, visit the <a href="https://support.google.com/googleplay/answer/2479637" target="_blank" rel="noopener">Google Play support page</a> or contact Google through your order history.</p>
 
         <h3>How to Request a Refund</h3>
         <p>Email <a href="mailto:support@thepielab.app">support@thepielab.app</a> with the email address associated with your purchase and a brief description of the issue. We will process your refund within 5&ndash;7 business days.</p>

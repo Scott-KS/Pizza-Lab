@@ -523,6 +523,7 @@ const OVEN_SETUPS = [
 // has options that lead to a fix or another question.
 
 const TROUBLESHOOTING_TREE = {
+  // ── 1. DOUGH IS STICKY ───────────────────────────────
   sticky: {
     symptom: "Dough is Sticky",
     icon: "🫠",
@@ -531,16 +532,30 @@ const TROUBLESHOOTING_TREE = {
       q1: {
         text: "When is it sticky?",
         options: [
-          { label: "During mixing / kneading", next: "fix-mixing" },
-          { label: "After fermentation", next: "q2" },
-          { label: "When stretching", next: "fix-stretching-sticky" },
+          { label: "During mixing / kneading", next: "q2" },
+          { label: "After fermentation", next: "q3" },
+          { label: "When stretching", next: "q4" },
         ],
       },
       q2: {
+        text: "How long have you been kneading?",
+        options: [
+          { label: "Less than 5 minutes", next: "fix-mixing" },
+          { label: "Over 10 minutes and still sticky", next: "fix-too-much-water" },
+        ],
+      },
+      q3: {
         text: "Did you measure the water accurately?",
         options: [
           { label: "I may have added too much", next: "fix-too-much-water" },
           { label: "I measured carefully", next: "fix-flour-humidity" },
+        ],
+      },
+      q4: {
+        text: "Is the dough also very slack and hard to hold?",
+        options: [
+          { label: "Yes, it's floppy and loose", next: "fix-overfermented-sticky" },
+          { label: "No, it just sticks to my hands", next: "fix-stretching-sticky" },
         ],
       },
     },
@@ -576,6 +591,16 @@ const TROUBLESHOOTING_TREE = {
           "Store flour in an airtight container to prevent moisture absorption.",
         ],
       },
+      "fix-overfermented-sticky": {
+        title: "Over-Fermented — Gluten Breaking Down",
+        steps: [
+          "Slack, sticky dough after a long rise usually means fermentation went too far.",
+          "The gluten network has weakened — the dough can't hold its shape anymore.",
+          "You can try: fold it gently a few times, then shape and bake immediately.",
+          "Don't add flour at this stage — it won't integrate properly and will create dry spots.",
+          "For next time: shorten your bulk fermentation or use less yeast. Cold-ferment in the fridge for more control.",
+        ],
+      },
       "fix-stretching-sticky": {
         title: "Sticky When Stretching",
         steps: [
@@ -589,6 +614,7 @@ const TROUBLESHOOTING_TREE = {
     },
   },
 
+  // ── 2. DOUGH IS TOO TIGHT ────────────────────────────
   tight: {
     symptom: "Dough is Too Tight",
     icon: "💪",
@@ -597,9 +623,16 @@ const TROUBLESHOOTING_TREE = {
       q1: {
         text: "When is it resisting?",
         options: [
-          { label: "Right after mixing", next: "fix-fresh-mix" },
+          { label: "Right after mixing", next: "q2" },
           { label: "After refrigeration", next: "fix-cold-dough" },
           { label: "After balling", next: "fix-post-ball" },
+        ],
+      },
+      q2: {
+        text: "What flour are you using?",
+        options: [
+          { label: "Bread flour / high-gluten", next: "fix-strong-flour" },
+          { label: "AP or 00 flour", next: "fix-fresh-mix" },
         ],
       },
     },
@@ -612,6 +645,16 @@ const TROUBLESHOOTING_TREE = {
           "After resting, try shaping again. It should be noticeably more cooperative.",
           "If it's still very tight, your hydration may be too low. Next time, add 2–3% more water.",
           "For very stiff doughs (like tavern-style), a short rest is essential before rolling.",
+        ],
+      },
+      "fix-strong-flour": {
+        title: "Strong Flour — Extra Rest Needed",
+        steps: [
+          "High-protein flour (bread flour, high-gluten) develops very strong, tight gluten networks.",
+          "Give the dough at least 20–30 minutes of rest after mixing before attempting to shape.",
+          "Consider increasing hydration by 2–5% — strong flour absorbs more water.",
+          "Use the 'stretch and fold' method instead of aggressive kneading to build structure more gently.",
+          "For styles like Neapolitan, switch to 00 flour (lower protein) for a more extensible dough.",
         ],
       },
       "fix-cold-dough": {
@@ -637,6 +680,7 @@ const TROUBLESHOOTING_TREE = {
     },
   },
 
+  // ── 3. WON'T STRETCH / SHRINKS BACK ──────────────────
   stretch: {
     symptom: "Won't Stretch / Shrinks Back",
     icon: "🔄",
@@ -646,7 +690,7 @@ const TROUBLESHOOTING_TREE = {
         text: "What happens when you try to stretch?",
         options: [
           { label: "It springs back to a smaller size", next: "q2" },
-          { label: "It stretches but slowly returns", next: "fix-gluten-tension" },
+          { label: "It stretches but slowly returns", next: "q3" },
           { label: "The center stretches but edges are thick", next: "fix-thick-edges" },
         ],
       },
@@ -655,6 +699,13 @@ const TROUBLESHOOTING_TREE = {
         options: [
           { label: "Yes, from the fridge", next: "fix-cold-stretch" },
           { label: "No, it's room temperature", next: "fix-underproofed" },
+        ],
+      },
+      q3: {
+        text: "How long has the dough been resting since balling?",
+        options: [
+          { label: "Less than 30 minutes", next: "fix-gluten-tension" },
+          { label: "Over an hour", next: "fix-low-hydration-stretch" },
         ],
       },
     },
@@ -677,6 +728,16 @@ const TROUBLESHOOTING_TREE = {
           "Very strong flour (high-gluten, bread flour) creates more tension and needs more rest.",
           "If you over-handled the dough, it's fighting back. Walk away for 15 minutes.",
           "Gently press from center outward rather than pulling the edges.",
+        ],
+      },
+      "fix-low-hydration-stretch": {
+        title: "Hydration May Be Too Low",
+        steps: [
+          "If the dough has rested plenty and is still fighting you, the hydration is likely too low.",
+          "Drier doughs (under 58% hydration) are inherently stiffer and resist stretching.",
+          "For this bake: try lightly misting your hands and the dough surface with water.",
+          "Next time: increase hydration by 2–3%. Even a small bump makes dough more extensible.",
+          "Check your flour — bread flour and high-gluten flour absorb more water and need higher hydration.",
         ],
       },
       "fix-thick-edges": {
@@ -703,6 +764,7 @@ const TROUBLESHOOTING_TREE = {
     },
   },
 
+  // ── 4. DOUGH IS TEARING ──────────────────────────────
   tearing: {
     symptom: "Dough is Tearing",
     icon: "😫",
@@ -711,9 +773,17 @@ const TROUBLESHOOTING_TREE = {
       q1: {
         text: "When does it tear?",
         options: [
-          { label: "During initial stretch", next: "fix-weak-gluten" },
+          { label: "During initial stretch", next: "q2" },
           { label: "At thin spots or edges", next: "fix-thin-spots" },
           { label: "It rips apart immediately", next: "fix-overproofed" },
+        ],
+      },
+      q2: {
+        text: "Does the dough pass the windowpane test?",
+        options: [
+          { label: "What's the windowpane test?", next: "fix-weak-gluten" },
+          { label: "No — it breaks before going thin", next: "fix-weak-gluten" },
+          { label: "Yes — it stretches thin without tearing", next: "fix-cold-tear" },
         ],
       },
     },
@@ -722,10 +792,19 @@ const TROUBLESHOOTING_TREE = {
         title: "Under-Developed Gluten",
         steps: [
           "The dough wasn't kneaded enough to build gluten structure.",
-          "Try the 'windowpane test': stretch a small piece thin. If it tears before going translucent, knead more.",
+          "The windowpane test: stretch a small piece thin between your fingers. If it tears before becoming translucent, the gluten isn't ready.",
           "Fold the dough over itself a few times and let it rest 15–20 minutes, then try again.",
           "Next time, knead for a full 10–12 minutes, or use the stretch-and-fold method over 2 hours.",
           "High-hydration doughs benefit from the stretch-and-fold technique rather than traditional kneading.",
+        ],
+      },
+      "fix-cold-tear": {
+        title: "Dough is Too Cold to Stretch",
+        steps: [
+          "Good news — your gluten is developed! The dough is just too cold and brittle.",
+          "Let it warm at room temperature for 1–2 hours. Cold dough tears instead of stretching.",
+          "Avoid stretching dough that's still fridge-cold — it needs to be soft and pliable first.",
+          "The poke test: when a gentle poke fills back in slowly (not instantly), it's ready.",
         ],
       },
       "fix-thin-spots": {
@@ -753,10 +832,696 @@ const TROUBLESHOOTING_TREE = {
       },
     },
   },
+
+  // ── 5. DOUGH DIDN'T RISE ─────────────────────────────
+  norise: {
+    symptom: "Dough Didn't Rise",
+    icon: "😐",
+    initial: "q1",
+    questions: {
+      q1: {
+        text: "How long has the dough been fermenting?",
+        options: [
+          { label: "Less than 2 hours at room temp", next: "fix-patience" },
+          { label: "Several hours and barely any rise", next: "q2" },
+          { label: "Overnight in the fridge, no change", next: "fix-cold-no-rise" },
+        ],
+      },
+      q2: {
+        text: "What type of yeast did you use?",
+        options: [
+          { label: "Instant dry yeast", next: "q3" },
+          { label: "Active dry yeast", next: "fix-ady-activation" },
+          { label: "Fresh yeast", next: "fix-fresh-yeast" },
+        ],
+      },
+      q3: {
+        text: "Did the water feel hot when you added it?",
+        options: [
+          { label: "Yes, it was quite warm/hot", next: "fix-killed-yeast" },
+          { label: "No, it was lukewarm or cool", next: "fix-expired-yeast" },
+        ],
+      },
+    },
+    fixes: {
+      "fix-patience": {
+        title: "Give It More Time",
+        steps: [
+          "Most pizza doughs need 1.5–4 hours at room temperature to double in size.",
+          "Kitchen temperature matters enormously — at 65°F, expect 3–4 hours. At 78°F, expect 1.5–2 hours.",
+          "Check that the dough is in a warm, draft-free spot. Near a preheating oven works well.",
+          "Cover tightly with plastic wrap or a lid — dry air on the surface will inhibit rising.",
+          "Don't judge too early. Sometimes dough appears flat for the first hour, then takes off.",
+        ],
+      },
+      "fix-killed-yeast": {
+        title: "Water Was Too Hot — Yeast Is Dead",
+        steps: [
+          "Water above 120°F (49°C) kills yeast. This is the most common cause of no rise.",
+          "The dough can't be rescued — you'll need to start over with new yeast.",
+          "For next time: use water between 95–105°F (35–40°C). It should feel warm, not hot.",
+          "If you don't have a thermometer, test on your wrist — it should feel like a warm bath, not uncomfortable.",
+          "Instant yeast is more heat-tolerant than active dry, but both die above 120°F.",
+        ],
+      },
+      "fix-expired-yeast": {
+        title: "Yeast May Be Expired or Inactive",
+        steps: [
+          "Test your yeast: dissolve 1 tsp in ½ cup warm water (105°F) with a pinch of sugar. Wait 10 minutes.",
+          "If it foams and bubbles, the yeast is alive — your issue is elsewhere (temperature, salt contact).",
+          "If nothing happens, the yeast is dead. Discard and buy fresh.",
+          "Yeast expires! Check the date on the package. Store opened yeast in the freezer for longest life.",
+          "Did you mix yeast directly with salt? Salt in direct contact can inhibit or kill yeast. Add them to different sides of the flour.",
+        ],
+      },
+      "fix-ady-activation": {
+        title: "Active Dry Yeast Needs Activation",
+        steps: [
+          "Active dry yeast (ADY) needs to be dissolved in warm water (105°F) for 5–10 minutes before use.",
+          "If you added ADY directly to flour without activating, it may not have hydrated properly.",
+          "Look for foam on the water surface after 10 minutes — that means the yeast is alive and active.",
+          "If there's no foam, the yeast is dead. Start over with fresh yeast.",
+          "Tip: instant dry yeast (IDY) doesn't require activation and can go straight into flour.",
+        ],
+      },
+      "fix-fresh-yeast": {
+        title: "Fresh Yeast — Check Freshness",
+        steps: [
+          "Fresh yeast has a short shelf life — only 2–3 weeks refrigerated.",
+          "Good fresh yeast is moist, crumbly, and has a pleasant yeasty smell.",
+          "If it's dry, dark, or smells sour, it's dead. Discard it.",
+          "Fresh yeast should be crumbled into lukewarm water or directly into flour.",
+          "Use roughly 3× the weight of fresh yeast compared to instant dry yeast (e.g., 3g IDY = 9g fresh).",
+        ],
+      },
+      "fix-cold-no-rise": {
+        title: "Cold Fermentation — Slow Is Normal",
+        steps: [
+          "In the fridge (38–40°F), dough rises very slowly. A visible rise may take 12–24 hours.",
+          "After 24 hours, you should see at least some expansion and small bubbles under the surface.",
+          "If there's zero change after 24+ hours, the yeast may be dead (see 'expired yeast' issues).",
+          "Make sure you used enough yeast for a cold ferment — some recipes reduce yeast too aggressively.",
+          "Take the dough out 2 hours before baking and let it warm up. It will puff noticeably at room temperature.",
+        ],
+      },
+    },
+  },
+
+  // ── 6. SMELLS LIKE ALCOHOL ────────────────────────────
+  alcohol: {
+    symptom: "Smells Like Alcohol",
+    icon: "🍺",
+    initial: "q1",
+    questions: {
+      q1: {
+        text: "How strong is the smell?",
+        options: [
+          { label: "Mild — slightly yeasty / beery", next: "fix-mild-alcohol" },
+          { label: "Strong — sharp, boozy, or sour", next: "q2" },
+        ],
+      },
+      q2: {
+        text: "How long has the dough been fermenting?",
+        options: [
+          { label: "Long room temp rise (6+ hours)", next: "fix-over-room-temp" },
+          { label: "Multi-day cold ferment (48+ hours)", next: "fix-over-cold-ferment" },
+          { label: "Normal time, but I used a lot of yeast", next: "fix-too-much-yeast" },
+        ],
+      },
+    },
+    fixes: {
+      "fix-mild-alcohol": {
+        title: "Normal — Fermentation Is Working",
+        steps: [
+          "A mild yeasty or beery aroma is completely normal and actually a good sign.",
+          "This means the yeast is active and producing CO₂ (for rise) and alcohol (for flavor).",
+          "The alcohol smell bakes off entirely in the oven — it won't affect the final taste.",
+          "Your dough is likely ready or close to ready. Do the poke test and shape when it passes.",
+          "Cold-fermented dough often smells slightly beery after 24 hours — this is desirable.",
+        ],
+      },
+      "fix-over-room-temp": {
+        title: "Over-Fermented at Room Temperature",
+        steps: [
+          "A long room-temperature rise (especially in a warm kitchen) can push dough past its peak.",
+          "The yeast has consumed most of the sugars and produced excess alcohol.",
+          "If the dough still has structure (can hold shape), bake it now — the flavor will be slightly tangy.",
+          "If it's completely slack and won't hold shape, it's too far gone. Make focaccia or flatbread.",
+          "Next time: use less yeast for long room-temp rises, or move the dough to the fridge after 2 hours.",
+          "Rule of thumb: if you can't tend to your dough, put it in the fridge. Cold slows everything down.",
+        ],
+      },
+      "fix-over-cold-ferment": {
+        title: "Cold Ferment Went Too Long",
+        steps: [
+          "Cold-fermenting beyond 72 hours can push dough past peak, especially with higher yeast amounts.",
+          "Check the dough: if it still has bubbles and springs back when poked, it's probably still usable.",
+          "If it smells strongly of acetone (nail polish remover), it's too far gone.",
+          "For usable dough: shape gently and bake soon. The flavor will be more sour and complex.",
+          "Next time: for 48–72 hour cold ferments, reduce yeast to 0.1–0.2% of flour weight.",
+        ],
+      },
+      "fix-too-much-yeast": {
+        title: "Too Much Yeast — Fast Fermentation",
+        steps: [
+          "Excess yeast speeds up fermentation dramatically, producing more alcohol in less time.",
+          "The dough may look ready (doubled) but smell boozy because the yeast worked overtime.",
+          "If the dough is properly risen, bake it now — the alcohol bakes off in the oven.",
+          "Next time: reduce yeast. For a same-day dough, 0.5–1% of flour weight is plenty.",
+          "For overnight cold ferments, you need very little: 0.1–0.3% of flour weight.",
+          "More yeast ≠ better rise. It just means faster, less flavorful fermentation.",
+        ],
+      },
+    },
+  },
+
+  // ── 7. CRUST TOO HARD / TOUGH ────────────────────────
+  hardcrust: {
+    symptom: "Crust Too Hard / Tough",
+    icon: "🪨",
+    initial: "q1",
+    questions: {
+      q1: {
+        text: "Which part is too hard?",
+        options: [
+          { label: "The bottom is rock-hard", next: "q2" },
+          { label: "The crust rim (cornicione) is tough", next: "q3" },
+          { label: "The whole thing is like a cracker", next: "fix-overbaked" },
+        ],
+      },
+      q2: {
+        text: "What are you baking on?",
+        options: [
+          { label: "Baking steel or stone", next: "fix-hard-bottom-steel" },
+          { label: "Baking sheet or pan", next: "fix-hard-bottom-pan" },
+        ],
+      },
+      q3: {
+        text: "How would you describe the crust interior?",
+        options: [
+          { label: "Dense with no air pockets", next: "fix-dense-crust" },
+          { label: "Dry and crumbly", next: "fix-low-hydration-crust" },
+        ],
+      },
+    },
+    fixes: {
+      "fix-hard-bottom-steel": {
+        title: "Bottom Over-Baked on Steel / Stone",
+        steps: [
+          "Steel and stone transfer heat very efficiently — the bottom can over-bake before the top finishes.",
+          "Move your oven rack up one position to put the pizza further from the bottom element.",
+          "Reduce bake time by 1–2 minutes. Check the bottom at the halfway mark by lifting with a peel.",
+          "If using a steel, try preheating at a lower temp (475°F instead of 550°F) and using the broiler for the top.",
+          "A thin dusting of semolina under the dough adds a slight buffer and a nice crunch.",
+        ],
+      },
+      "fix-hard-bottom-pan": {
+        title: "Bottom Over-Baked in Pan",
+        steps: [
+          "Dark-colored pans absorb more heat and can burn the bottom. Use a light-colored or aluminum pan.",
+          "Oil the pan well — the oil fries the bottom slightly and prevents it from getting hard and dry.",
+          "Place the pan on a higher oven rack, especially during the second half of baking.",
+          "If the top needs more time but the bottom is done, finish under the broiler for 1–2 minutes.",
+          "For pan and Detroit styles, the buttery/oily bottom should be golden, not dark brown.",
+        ],
+      },
+      "fix-dense-crust": {
+        title: "Dense Crust — Under-Proofed or Over-Worked",
+        steps: [
+          "A tough, dense crust rim usually means the dough wasn't proofed enough.",
+          "The cornicione gets its airy texture from gas bubbles. No gas = no air pockets = tough crust.",
+          "Make sure your dough has at least doubled before shaping.",
+          "When shaping, press gas from the center toward the edges — the rim should feel puffy.",
+          "Don't roll Neapolitan or NY dough with a rolling pin — it crushes the gas out of the rim.",
+          "Try a longer cold ferment (24–48 hours) for better oven spring and a lighter crust.",
+        ],
+      },
+      "fix-low-hydration-crust": {
+        title: "Low Hydration — Crust is Too Dry",
+        steps: [
+          "Dry, crumbly crust usually means the hydration is too low for the style.",
+          "Most pizza styles need at least 60% hydration for a tender crumb.",
+          "Next time: increase water by 2–3% and see how the texture improves.",
+          "Adding a small amount of olive oil (2–3% of flour weight) also helps tenderize the crust.",
+          "Check your flour — very high-protein bread flour absorbs more water and can make dry doughs.",
+        ],
+      },
+      "fix-overbaked": {
+        title: "Over-Baked — Too Long in the Oven",
+        steps: [
+          "If the whole pizza is hard and cracker-like, it simply baked too long.",
+          "Pizza bakes fast — most home oven pizzas are done in 6–10 minutes at 500–550°F.",
+          "Watch for the crust to be golden (not dark brown) and cheese fully melted with light spotting.",
+          "Set a timer! Even 2 extra minutes can turn a great pizza into a dry one.",
+          "Thinner pizzas (tavern, thin-crust) need less time than thick ones (Sicilian, Detroit).",
+          "Your oven may run hot — use an oven thermometer to verify the actual temperature.",
+        ],
+      },
+    },
+  },
+
+  // ── 8. SOGGY / UNDERCOOKED BOTTOM ────────────────────
+  soggy: {
+    symptom: "Soggy / Undercooked",
+    icon: "💧",
+    initial: "q1",
+    questions: {
+      q1: {
+        text: "Where is it soggy?",
+        options: [
+          { label: "The bottom is pale and soft", next: "q2" },
+          { label: "The center is wet and doughy", next: "q3" },
+          { label: "The whole pizza is undercooked", next: "fix-oven-temp" },
+        ],
+      },
+      q2: {
+        text: "What are you baking on?",
+        options: [
+          { label: "A baking sheet", next: "fix-no-thermal-mass" },
+          { label: "A stone or steel", next: "fix-preheat-surface" },
+          { label: "In a pan (Detroit, pan, Sicilian)", next: "fix-pan-soggy" },
+        ],
+      },
+      q3: {
+        text: "Did you use a lot of sauce or wet toppings?",
+        options: [
+          { label: "Yes — heavy sauce or fresh veggies", next: "fix-wet-toppings" },
+          { label: "No — normal amount of toppings", next: "fix-center-raw" },
+        ],
+      },
+    },
+    fixes: {
+      "fix-no-thermal-mass": {
+        title: "No Thermal Mass — Use a Stone or Steel",
+        steps: [
+          "A thin baking sheet doesn't store enough heat to crisp the bottom before the top finishes.",
+          "The single best upgrade: a baking steel or pizza stone. Preheat it for at least 45–60 minutes.",
+          "If you don't have one, flip a heavy baking sheet upside down and preheat it — it helps.",
+          "Place the pizza directly on the hot surface (use parchment or semolina to prevent sticking).",
+          "A cast iron skillet preheated in the oven also works as a great pizza surface.",
+        ],
+      },
+      "fix-preheat-surface": {
+        title: "Stone / Steel Not Hot Enough",
+        steps: [
+          "A pizza stone needs at least 45 minutes at max oven temp to fully saturate with heat.",
+          "A baking steel needs 30–45 minutes. Steel transfers heat faster but still needs time.",
+          "Don't open the oven door repeatedly while preheating — you lose a lot of heat each time.",
+          "After one pizza, let the stone/steel reheat for 5–10 minutes before launching the next one.",
+          "Consider using the broiler for the last 1–2 minutes to help the top catch up to the bottom.",
+        ],
+      },
+      "fix-pan-soggy": {
+        title: "Pan Pizza — Bottom Not Crisping",
+        steps: [
+          "Oil is essential — use a generous layer (2–3 tbsp) of olive oil or butter in the pan.",
+          "The oil fries the bottom of the dough, creating that crispy golden crust.",
+          "Place the pan on the lowest oven rack or directly on a preheated stone/steel.",
+          "For Detroit-style: the pan should be well-oiled and the cheese pressed to the edges to fry the sides.",
+          "If the bottom is done but the top isn't, finish under the broiler for 1–2 minutes.",
+        ],
+      },
+      "fix-wet-toppings": {
+        title: "Too Much Moisture from Toppings",
+        steps: [
+          "Excess sauce or wet toppings release steam that makes the center soggy — this is very common.",
+          "Sauce: use 2–3 tablespoons per pizza, spread thin. Thicker sauce = more moisture.",
+          "Fresh mozzarella: slice it and pat dry with paper towels 15 minutes before using.",
+          "Fresh vegetables (tomatoes, mushrooms, peppers, spinach): pre-cook or salt and drain first.",
+          "Tomato slices: salt them on a paper towel for 15–20 minutes to draw out moisture.",
+          "Consider putting wet toppings on after baking (like fresh tomatoes, arugula, basil).",
+        ],
+      },
+      "fix-center-raw": {
+        title: "Center Undercooked — Dough Issue",
+        steps: [
+          "If the center is raw but the edges are done, the dough is thicker in the middle than you think.",
+          "Press the center thinner when shaping — it should be the thinnest part of the pizza.",
+          "Try stretching the dough a bit larger overall, which thins the center.",
+          "Oven temperature may be too high — the outside bakes before heat reaches the center.",
+          "For thick styles (Sicilian, Detroit): use a lower temperature (425–450°F) for a longer bake.",
+        ],
+      },
+      "fix-oven-temp": {
+        title: "Oven Temperature Too Low",
+        steps: [
+          "Pizza needs high heat. Most styles bake at 475–550°F (245–288°C).",
+          "Use an oven thermometer — most home ovens are off by 25–50°F.",
+          "Preheat for a full 30–45 minutes, longer if using a stone or steel.",
+          "Place the oven rack in the upper third for better top browning.",
+          "If your oven maxes at 500°F, you can still make great pizza — just adjust timing and expectations.",
+        ],
+      },
+    },
+  },
+
+  // ── 9. NO FLAVOR IN CRUST ────────────────────────────
+  bland: {
+    symptom: "No Flavor in Crust",
+    icon: "😶",
+    initial: "q1",
+    questions: {
+      q1: {
+        text: "How long did the dough ferment?",
+        options: [
+          { label: "Same-day (under 6 hours)", next: "q2" },
+          { label: "Overnight or longer", next: "q3" },
+        ],
+      },
+      q2: {
+        text: "Did you use much yeast?",
+        options: [
+          { label: "Yes, to speed things up", next: "fix-fast-ferment" },
+          { label: "Normal recipe amount", next: "fix-needs-salt" },
+        ],
+      },
+      q3: {
+        text: "Does the crust taste like anything at all?",
+        options: [
+          { label: "Flat — like plain bread", next: "fix-needs-salt" },
+          { label: "Slightly sour but otherwise bland", next: "fix-needs-fat-sugar" },
+        ],
+      },
+    },
+    fixes: {
+      "fix-fast-ferment": {
+        title: "Too Fast — Flavor Needs Time",
+        steps: [
+          "Flavor in pizza dough comes from slow fermentation, not fast rising.",
+          "Using a lot of yeast makes dough rise quickly, but yeast consumes sugars faster than flavor compounds develop.",
+          "The fix: use less yeast and give it more time. Cut yeast by 50–75% and let it cold-ferment 24–72 hours.",
+          "A 24-hour cold ferment with 0.1–0.2% yeast produces dramatically more flavor than a 2-hour room temp rise.",
+          "Even a same-day dough benefits from 1–2 hours at room temp followed by 8+ hours in the fridge.",
+          "Patience is the most important pizza ingredient.",
+        ],
+      },
+      "fix-needs-salt": {
+        title: "Needs More Salt",
+        steps: [
+          "Salt is the #1 flavor enhancer in dough. Without enough, everything tastes flat.",
+          "Most pizza dough needs 2.5–3% salt (by flour weight). That's about 7.5g per 250g flour.",
+          "If you forgot the salt, there's no fix for this dough — but it'll still work structurally.",
+          "Sea salt and kosher salt have different densities — always measure salt by weight, not volume.",
+          "Don't put salt directly on yeast before mixing. Add it to the flour first, then add yeast separately.",
+        ],
+      },
+      "fix-needs-fat-sugar": {
+        title: "Consider Adding Oil or Sugar",
+        steps: [
+          "Some pizza styles benefit from a small amount of fat and/or sugar for flavor.",
+          "Olive oil (2–3% of flour weight) adds richness, improves browning, and tenderizes the crumb.",
+          "Sugar (1–2% of flour weight) feeds browning (Maillard reaction) and adds subtle sweetness.",
+          "Neapolitan purists use zero fat or sugar — but NY, Detroit, and pan styles all benefit from both.",
+          "For cold-fermented doughs, the long rise develops enough sugars naturally for good browning.",
+          "Try brushing the crust rim with olive oil or garlic butter after baking for an instant flavor boost.",
+        ],
+      },
+    },
+  },
+
+  // ── 10. UNEVEN BAKE / BURNT SPOTS ────────────────────
+  uneven: {
+    symptom: "Uneven Bake / Burnt Spots",
+    icon: "🔥",
+    initial: "q1",
+    questions: {
+      q1: {
+        text: "What's happening?",
+        options: [
+          { label: "One side is darker than the other", next: "fix-hotspots" },
+          { label: "Bottom burns before top is done", next: "fix-bottom-burns" },
+          { label: "Top burns before bottom crisps", next: "fix-top-burns" },
+          { label: "Charred spots on the crust", next: "q2" },
+        ],
+      },
+      q2: {
+        text: "Are the charred spots small leopard-like dots, or large black patches?",
+        options: [
+          { label: "Small dots (leoparding)", next: "fix-leoparding" },
+          { label: "Large burnt patches", next: "fix-scorched" },
+        ],
+      },
+    },
+    fixes: {
+      "fix-hotspots": {
+        title: "Oven Hot Spots — Rotate the Pizza",
+        steps: [
+          "Most home ovens have uneven heat distribution — one side runs hotter.",
+          "Rotate the pizza 180° halfway through baking. Set a timer for the halfway point.",
+          "If using a stone or steel, make sure it's centered on the rack, not pushed to one side.",
+          "An oven thermometer in different positions can reveal where your hot spots are.",
+          "Convection (fan) mode helps distribute heat more evenly if your oven has it.",
+        ],
+      },
+      "fix-bottom-burns": {
+        title: "Bottom Burning Before Top Is Done",
+        steps: [
+          "Move the oven rack up — you're too close to the bottom heating element.",
+          "If using a stone or steel, it may be absorbing too much heat. Try a thinner surface or lower temp.",
+          "Use the broiler for the last 1–2 minutes to quickly finish the top while the bottom coasts.",
+          "Reduce oven temperature by 25°F and bake slightly longer.",
+          "A thin layer of semolina under the dough helps buffer heat slightly.",
+        ],
+      },
+      "fix-top-burns": {
+        title: "Top Burning Before Bottom Crisps",
+        steps: [
+          "Move the oven rack down to put more distance between the pizza and the top element / broiler.",
+          "If using the broiler, watch carefully — it can go from perfect to burnt in 30 seconds.",
+          "Make sure your stone or steel is fully preheated (45–60 min) so it crisps the bottom quickly.",
+          "Consider starting the pizza on a lower rack and moving it up at the end for final browning.",
+          "Reduce the amount of sugar in the dough — sugar promotes browning and can cause burning.",
+        ],
+      },
+      "fix-leoparding": {
+        title: "Leopard Spotting — This Is Desirable!",
+        steps: [
+          "Small charred spots ('leoparding') on the crust are a sign of excellent fermentation and high heat.",
+          "This is the hallmark of great Neapolitan pizza — it's intentional, not a problem.",
+          "The spots come from gas bubbles in well-fermented dough meeting intense heat.",
+          "If you want more leoparding: longer cold fermentation, higher hydration, and hotter oven.",
+          "If you want less: reduce oven temp slightly or use a shorter fermentation time.",
+        ],
+      },
+      "fix-scorched": {
+        title: "Large Burnt Patches — Too Much Heat",
+        steps: [
+          "Large black patches (not small spots) mean the heat is too intense or the dough sat too long.",
+          "Reduce oven temperature by 25–50°F. Home ovens in the 500–525°F range work well for most styles.",
+          "Check for flour or semolina stuck to the stone — old flour burns and smokes at high temps.",
+          "If the dough had flour-heavy spots from shaping, those areas burn faster. Shake off excess.",
+          "Make sure the dough isn't sitting on the peel too long before launching — it can stick and tear, creating thin spots that burn.",
+          "Clean your baking stone or steel between pizzas — burnt bits from the last bake cause scorching.",
+        ],
+      },
+    },
+  },
+
+  // ── 11. TOPPING PROBLEMS ─────────────────────────────
+  toppings: {
+    symptom: "Topping Problems",
+    icon: "🍕",
+    initial: "q1",
+    questions: {
+      q1: {
+        text: "What's the issue with your toppings?",
+        options: [
+          { label: "Pizza is drowning in sauce / too wet", next: "q2" },
+          { label: "Fresh veggies made it soggy", next: "q3" },
+          { label: "Cheese isn't melting right", next: "fix-cheese-issues" },
+          { label: "Toppings are sliding off", next: "fix-sliding" },
+        ],
+      },
+      q2: {
+        text: "What kind of sauce are you using?",
+        options: [
+          { label: "Canned crushed / pureed tomatoes", next: "fix-thin-sauce" },
+          { label: "Homemade or thicker sauce", next: "fix-too-much-sauce" },
+        ],
+      },
+      q3: {
+        text: "Which vegetables are causing problems?",
+        options: [
+          { label: "Mushrooms, spinach, or zucchini", next: "fix-high-moisture-veg" },
+          { label: "Fresh tomatoes, peppers, or onions", next: "fix-fresh-veg" },
+        ],
+      },
+    },
+    fixes: {
+      "fix-thin-sauce": {
+        title: "Sauce is Too Thin and Watery",
+        steps: [
+          "Canned crushed tomatoes contain a lot of liquid. Strain them through a fine mesh sieve for 15–20 minutes.",
+          "Alternatively, simmer the sauce on the stove for 15–20 minutes to reduce and thicken it.",
+          "San Marzano tomatoes (hand-crushed) tend to be thicker than regular crushed tomatoes.",
+          "Use less sauce — 2–3 tablespoons per 12\" pizza is usually enough. Spread it thin.",
+          "A thick sauce creates a moisture barrier between dough and toppings, leading to a soggy center.",
+          "For Neapolitan: crush whole canned tomatoes by hand. The chunky texture holds less free liquid.",
+        ],
+      },
+      "fix-too-much-sauce": {
+        title: "Too Much Sauce — Scale It Back",
+        steps: [
+          "Over-saucing is one of the most common home pizza mistakes.",
+          "Use a 2–3 oz ladle (about ¼ cup) per 12\" pizza. Spread it in a thin, even layer.",
+          "Leave a ½\" border for the crust — sauce touching the edge makes it hard to get a crispy rim.",
+          "The sauce should barely cover the dough — you should still see the dough through it.",
+          "If you want saucy pizza, add a drizzle of sauce after baking instead of overloading before.",
+          "For styles like Grandma or Sicilian, sauce goes on top of the cheese to protect it from burning.",
+        ],
+      },
+      "fix-high-moisture-veg": {
+        title: "High-Moisture Vegetables — Pre-Cook Them",
+        steps: [
+          "Mushrooms, spinach, and zucchini are full of water. Raw on a pizza, they steam and sog everything out.",
+          "Mushrooms: sauté in a dry pan on high heat until golden and all moisture has evaporated (5–7 min).",
+          "Spinach: wilt in a pan, then squeeze out all excess water in a clean towel. Squeeze hard.",
+          "Zucchini: salt slices heavily, let sit on paper towels for 20 minutes, then pat dry.",
+          "Eggplant: same as zucchini — salt, drain, pat dry. Or roast slices until lightly golden first.",
+          "Rule of thumb: if a vegetable releases water when you squeeze it raw, it needs pre-cooking for pizza.",
+        ],
+      },
+      "fix-fresh-veg": {
+        title: "Fresh Vegetables — Prep to Remove Moisture",
+        steps: [
+          "Fresh tomato slices are the #1 cause of soggy center pizza. They release a ton of water in the oven.",
+          "Slice tomatoes thin, salt them, and lay on paper towels for 15–20 minutes to draw out moisture.",
+          "Better yet: add fresh tomato slices after baking for bright flavor without the sogginess.",
+          "Raw onions release moisture and can steam the top. Slice very thin or sauté briefly first.",
+          "Bell peppers: slice thin and use sparingly. Thick slices release more water.",
+          "Fresh basil goes on after baking — it burns and turns black in the oven.",
+        ],
+      },
+      "fix-cheese-issues": {
+        title: "Cheese Not Melting or Browning Right",
+        steps: [
+          "Fresh mozzarella: slice and pat dry on paper towels for 15 minutes. Tear into pieces, don't shred.",
+          "Low-moisture mozzarella: shred it yourself — pre-shredded has anti-caking agents that affect melting.",
+          "Cheese burning before the bottom is done? Start the pizza lower in the oven, move up at the end.",
+          "For a blend, mix low-moisture mozz (melts well) with provolone (adds flavor) at a 70/30 ratio.",
+          "Don't overload cheese — too much insulates the dough below and prevents it from cooking.",
+          "For Detroit-style: press cheese cubes to the edges. They fry against the pan for crispy cheese walls.",
+        ],
+      },
+      "fix-sliding": {
+        title: "Toppings Sliding Off",
+        steps: [
+          "Too much sauce acts as a slip layer. Reduce sauce and spread it thinner.",
+          "Put cheese directly on the dough first, then sauce on top (Grandma/Detroit style) to anchor everything.",
+          "Don't sauce all the way to the edges — the bare crust rim acts as a wall.",
+          "Make sure your dough surface isn't oily before topping — oil makes cheese slide.",
+          "Heavier toppings (sausage, thick veggie slices) should go under the cheese to stay anchored.",
+          "Let the pizza cool for 60–90 seconds before cutting — the cheese firms up and holds toppings in place.",
+        ],
+      },
+    },
+  },
 };
 
 // ══════════════════════════════════════════════════════
-// 5. DDT (Desired Dough Temperature) PRESETS
+// 5. TOOLS & EQUIPMENT PER STYLE
+// ══════════════════════════════════════════════════════
+// Each entry lists essential tools for the style, grouped by category.
+// Designed to help novices know exactly what they need before starting.
+
+const STYLE_TOOLS = {
+  _common: [
+    { name: "Kitchen Scale", desc: "Weigh ingredients in grams for accuracy" },
+    { name: "Large Mixing Bowl", desc: "For combining and resting dough" },
+    { name: "Bench Scraper", desc: "Dividing dough and cleaning your work surface" },
+    { name: "Plastic Wrap or Damp Towel", desc: "Cover dough during fermentation" },
+    { name: "Cutting Board", desc: "A stable surface for slicing and serving" },
+    { name: "Wire Cooling Rack", desc: "Prevents a soggy bottom by letting air circulate under the pie" },
+    { name: "Pizza Cutter", desc: "Wheel or rocker blade for clean, even slices" },
+  ],
+  neapolitan: {
+    tools: [
+      { name: "Baking Steel or Pizza Stone", desc: "Essential for high-heat baking and a charred bottom" },
+      { name: "Pizza Peel", desc: "Launch and retrieve pizza from the oven" },
+      { name: "Semolina or Flour for Dusting", desc: "Prevents dough from sticking to the peel" },
+    ],
+  },
+  "new-york": {
+    tools: [
+      { name: "Baking Steel or Pizza Stone", desc: "Provides the thermal mass for a crispy, foldable crust" },
+      { name: "Pizza Peel", desc: "Launch and retrieve pizza from the oven" },
+      { name: "Pizza Screen or Parchment Paper", desc: "Helpful for beginners to transfer the pie" },
+    ],
+  },
+  "chicago-tavern": {
+    tools: [
+      { name: "Round Pizza Pan or Baking Sheet", desc: "14\u2033 thin-gauge pan for a cracker-thin crust" },
+      { name: "Rolling Pin", desc: "Roll dough thin and even \u2014 this style is not hand-stretched" },
+      { name: "Pizza Cutter or Rocker Blade", desc: "Tavern-cut into squares (party cut)" },
+    ],
+  },
+  detroit: {
+    tools: [
+      { name: "Detroit-Style Pan (10\u00D714 blue steel)", desc: "The signature rectangular pan with tall, straight sides" },
+      { name: "Offset Spatula or Bench Scraper", desc: "Spread dough into corners and layer cheese to the edges" },
+    ],
+  },
+  sicilian: {
+    tools: [
+      { name: "Half-Sheet Pan (18\u00D713)", desc: "Standard rimmed baking sheet for thick, airy slices" },
+      { name: "Offset Spatula", desc: "Spread dough evenly across the oiled pan" },
+    ],
+  },
+  grandma: {
+    tools: [
+      { name: "Half-Sheet Pan (18\u00D713)", desc: "Oiled sheet pan for a thin, crispy bottom" },
+      { name: "Offset Spatula", desc: "Spread dough thin and even in the pan" },
+    ],
+  },
+  "thin-crust": {
+    tools: [
+      { name: "Baking Steel or Pizza Stone", desc: "High heat transfer for a crispy thin base" },
+      { name: "Pizza Peel", desc: "Launch and retrieve pizza from the oven" },
+      { name: "Rolling Pin", desc: "Roll dough uniformly thin" },
+    ],
+  },
+  pan: {
+    tools: [
+      { name: "Cast Iron Skillet or Round Cake Pan", desc: "10\u201312\u2033 oven-safe pan, well-oiled" },
+      { name: "Offset Spatula", desc: "Press dough evenly into the pan" },
+    ],
+  },
+  "st-louis": {
+    tools: [
+      { name: "Round Pizza Pan or Baking Sheet", desc: "Thin-gauge pan for a cracker-thin crust" },
+      { name: "Rolling Pin", desc: "Roll dough paper-thin and uniform" },
+      { name: "Pizza Cutter", desc: "Cut into squares (St. Louis party cut)" },
+    ],
+  },
+  "new-haven": {
+    tools: [
+      { name: "Baking Steel or Pizza Stone", desc: "Critical for the charred, blistered bottom" },
+      { name: "Pizza Peel", desc: "Launch and retrieve pizza from the oven" },
+      { name: "Semolina for Dusting", desc: "Prevents sticking \u2014 New Haven style uses a generous dusting" },
+    ],
+  },
+  "ohio-valley": {
+    tools: [
+      { name: "Half-Sheet Pan (18\u00D713)", desc: "Bake the crust and sauce first, then add cold toppings" },
+      { name: "Pizza Cutter", desc: "Cut into squares" },
+    ],
+  },
+  "cast-iron": {
+    tools: [
+      { name: "Cast Iron Skillet (10\u201312\u2033)", desc: "The pan IS the tool \u2014 preheat it for a crispy bottom" },
+      { name: "Oven Mitts (heavy-duty)", desc: "Cast iron gets extremely hot" },
+    ],
+  },
+  "school-night": {
+    tools: [
+      { name: "Baking Sheet or Cast Iron Skillet", desc: "Whatever you have \u2014 this style is forgiving" },
+      { name: "Rolling Pin or Your Hands", desc: "Shape however you like, no technique required" },
+    ],
+  },
+};
+
+// ══════════════════════════════════════════════════════
+// 6. DDT (Desired Dough Temperature) PRESETS
 // ══════════════════════════════════════════════════════
 const DDT_PRESETS = {
   "":            { ddt: 76, friction: 28, label: "General (default)" },

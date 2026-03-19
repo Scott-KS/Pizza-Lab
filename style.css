@@ -24,7 +24,12 @@
   --brand-charcoal: #3a3a3a;
   --brand-white: #ffffff;
   --font-display: 'Playfair Display', Georgia, serif;
+  --font-heading: 'Playfair Display', Georgia, serif;
   --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --ff-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --clr-muted: #5a4e47;
+  --clr-gold: #c9a84c;
+  --clr-card-bg: #faf6f1;
 }
 
 /* ── Dark Mode ───────────────────────────────────── */
@@ -37,12 +42,15 @@
   --clr-text: #e8ddd4;
   --clr-display: #f0e6dd;
   --clr-text-light: #9a8e85;
-  --clr-border: #3d332e;
+  --clr-border: #4d413a;
   --clr-section-bg: #241e1b;
   --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.4);
   --brand-charcoal: #e0d6cc;
   --brand-white: #1c1614;
+  --clr-muted: #9a8e85;
+  --clr-gold: #d4b85c;
+  --clr-card-bg: #2a2220;
   color-scheme: dark;
 }
 
@@ -402,6 +410,7 @@ main {
 .form-group input[type="date"] {
   width: 100%;
   max-width: 100%;
+  min-width: 0;
   padding: 0.75rem 1rem;
   border: 2px solid var(--clr-border);
   border-radius: 2px;
@@ -734,26 +743,99 @@ main {
 }
 
 /* ── Instructions & Tips ─────────────────────────── */
+/* ── Baking Instructions (step-based layout) ─── */
 .instructions-section {
   margin-top: 2rem;
   background: var(--clr-section-bg);
-  border-radius: 8px;
+  border-radius: var(--radius, 12px);
   padding: 1.25rem;
 }
 
 .instructions-section h3 {
-  font-family: var(--font-body);
-  font-size: 1rem;
-  color: var(--clr-text-light);
-  margin-bottom: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--clr-text);
+  margin-bottom: 1rem;
 }
 
+/* ── Numbered bake steps ─── */
+.bake-steps {
+  list-style: none;
+  counter-reset: bake-step;
+  padding: 0;
+  margin: 0;
+}
+
+.bake-step {
+  counter-increment: bake-step;
+  position: relative;
+  padding-left: 2.5rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 0;
+  border-left: 2px solid var(--clr-border);
+  margin-left: 0.75rem;
+}
+
+.bake-step:last-child {
+  border-left-color: transparent;
+  padding-bottom: 0;
+}
+
+.bake-step::before {
+  content: counter(bake-step);
+  position: absolute;
+  left: -0.85rem;
+  top: -0.1rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--clr-primary);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+}
+
+.bake-step-title {
+  display: block;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--clr-primary);
+  margin-bottom: 0.35rem;
+}
+
+.bake-step-body p {
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.bake-step-detail {
+  color: var(--clr-text-light);
+  font-size: 0.85rem !important;
+}
+
+.bake-time-note {
+  color: var(--clr-text-light);
+  font-size: 0.85rem !important;
+  font-style: italic;
+  margin-top: -0.15rem;
+}
+
+.bake-step .btn-start-timer {
+  margin-top: 0.5rem;
+}
+
+/* ── Tips subsection below steps ─── */
 .tips-subsection {
-  margin-top: 1rem;
-  padding-top: 1rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
   border-top: 1px solid var(--clr-border);
 }
 
@@ -767,26 +849,6 @@ main {
   font-weight: 700;
 }
 
-#baking-instructions p,
-#baking-rack p,
-#baking-time p {
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
-}
-
-#baking-time {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--clr-border);
-}
-
-#baking-time .bake-time-note {
-  color: var(--clr-text-light);
-  font-size: 0.85rem;
-  font-style: italic;
-  margin-top: -0.25rem;
-}
-
 #pro-tips {
   list-style: none;
 }
@@ -796,6 +858,7 @@ main {
   padding-left: 1.5rem;
   margin-bottom: 0.5rem;
   font-size: 0.95rem;
+  line-height: 1.55;
 }
 
 #pro-tips li::before {
@@ -809,6 +872,7 @@ main {
 /* ── Action Buttons ──────────────────────────────── */
 .results-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-top: 2rem;
 }
@@ -1010,6 +1074,115 @@ main {
       opacity: 1;
       transform: translateY(0);
     }
+  }
+}
+
+/* ── Form Info Row (below label, above input) ──── */
+.form-info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  margin-bottom: 0.35rem;
+}
+
+/* ── Tools & Equipment Info Button ──────────────── */
+.tools-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: none;
+  color: var(--clr-accent);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 6px;
+  border-radius: 50%;
+  transition: color 200ms ease, background 200ms ease;
+  vertical-align: middle;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.tools-info-btn:hover {
+  color: var(--clr-primary);
+  background: rgba(140, 53, 36, 0.08);
+}
+
+.tools-info-label {
+  font-size: 0.7rem;
+  color: var(--clr-muted);
+  vertical-align: middle;
+  margin-left: 2px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+}
+
+.style-library-link {
+  font-size: 0.7rem;
+  font-style: italic;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  color: var(--clr-accent);
+  text-decoration: none;
+  vertical-align: middle;
+  margin-left: 10px;
+  transition: color 200ms ease;
+}
+.style-library-link:hover {
+  color: var(--clr-primary);
+}
+
+/* ── Tools Popover ─────────────────────────────── */
+.tools-popover {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 360px;
+  max-height: 460px;
+  overflow-y: auto;
+  background: var(--clr-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  margin-top: 8px;
+  animation: popoverIn 0.25s ease-out;
+}
+
+.tools-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tools-list li {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--clr-text);
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.tools-list li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+@media (max-width: 480px) {
+  .tools-popover {
+    position: fixed;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 70vh;
+    margin-top: 0;
+    border-radius: var(--radius) var(--radius) 0 0;
+    animation: sheetSlideUp 0.3s ease-out;
   }
 }
 
@@ -1402,23 +1575,29 @@ main {
 
 /* ── Toolkit Tab Strip ───────────────────────────── */
 .toolkit-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  margin-bottom: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.35rem;
+  margin-bottom: 0;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.toolkit-panels {
+  padding-top: 1.25rem;
 }
 
 .toolkit-tab {
-  padding: 0.5rem 1rem;
+  padding: 0.55rem 0.75rem;
   border: 1.5px solid var(--clr-border);
   border-radius: 6px;
   background: var(--clr-card);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--clr-text-light);
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s, background 0.2s;
-  white-space: nowrap;
+  text-align: center;
 }
 
 .toolkit-tab:hover {
@@ -1882,69 +2061,22 @@ main {
   margin-bottom: 1.5rem;
 }
 
-.oven-cards {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.25rem;
+.oven-accordion {
+  display: flex;
+  flex-direction: column;
 }
 
-@media (min-width: 700px) {
-  .oven-cards {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.oven-card {
-  background: var(--clr-section-bg);
-  border-radius: var(--radius);
-  overflow: hidden;
-  position: relative;
-  border: 2px solid transparent;
-  transition: border-color 0.2s;
-}
-
-.oven-card.oven-recommended {
-  border-color: #5a7a4a;
-}
-
-.oven-rec-badge {
-  display: block;
+.oven-rec-badge-inline {
+  display: inline-block;
   background: #5a7a4a;
   color: #fff;
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  text-align: center;
-  padding: 0.3rem;
-  letter-spacing: 0.5px;
-}
-
-.oven-card-header {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  padding: 1.25rem;
-  border-bottom: 1px solid var(--clr-border);
-}
-
-.oven-icon {
-  font-size: 1.5rem;
-  flex-shrink: 0;
-}
-
-.oven-card-header h3 {
-  font-size: 1rem;
-  color: var(--clr-text);
-  margin-bottom: 0.15rem;
-}
-
-.oven-temp-range {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--clr-primary);
-}
-
-.oven-card-body {
-  padding: 1.25rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.4px;
+  vertical-align: middle;
+  margin-left: 0.4rem;
 }
 
 .oven-stat {
@@ -1967,7 +2099,7 @@ main {
   color: var(--clr-text);
 }
 
-.oven-card-body h4 {
+.oven-accordion .accordion-inner h4 {
   font-size: 0.85rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -2005,13 +2137,14 @@ main {
 
 .oven-bake-table td:first-child {
   font-weight: 600;
-  white-space: nowrap;
 }
 
 .bake-note {
-  font-size: 0.78rem;
-  color: var(--clr-text-light);
+  font-size: 0.75rem;
+  color: var(--clr-muted);
+  font-weight: 400;
   font-style: italic;
+  margin-top: 2px;
 }
 
 .oven-tips {
@@ -2049,11 +2182,17 @@ main {
 .symptom-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
+  gap: 0.6rem;
   margin-bottom: 1.5rem;
 }
 
-@media (min-width: 600px) {
+@media (min-width: 480px) {
+  .symptom-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
   .symptom-grid {
     grid-template-columns: repeat(4, 1fr);
   }
@@ -2063,8 +2202,8 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1.25rem 1rem;
+  gap: 0.35rem;
+  padding: 1rem 0.75rem;
   background: var(--clr-section-bg);
   border: 2px solid var(--clr-border);
   border-radius: var(--radius);
@@ -2088,9 +2227,10 @@ main {
 }
 
 .symptom-label {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--clr-text);
+  line-height: 1.3;
 }
 
 .troubleshoot-flow.hidden {
@@ -2369,24 +2509,27 @@ main {
 }
 
 .settings-actions {
+  display: flex;
+  gap: 0.5rem;
   margin-top: 0.75rem;
-  text-align: right;
 }
 
 .btn-reset-settings {
-  padding: 0.4rem 1rem;
-  border: 1px solid var(--clr-border);
+  flex: 1;
+  padding: 0.55rem 1rem;
+  border: 2px solid var(--clr-primary);
   border-radius: 6px;
   background: none;
-  color: var(--clr-text-light);
+  color: var(--clr-primary);
   font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .btn-reset-settings:hover {
-  border-color: var(--clr-primary);
-  color: var(--clr-primary);
+  background: var(--clr-primary);
+  color: #fff;
 }
 
 /* ══════════════════════════════════════════════════ */
@@ -2614,9 +2757,13 @@ main {
 
 .journal-form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
+}
+
+.journal-form-grid > .form-group {
+  min-width: 0;
 }
 
 .dough-snapshot {
@@ -2875,6 +3022,27 @@ main {
   flex-shrink: 0;
 }
 
+/* Photo loading shimmer */
+.entry-thumb-shimmer {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  background: linear-gradient(
+    90deg,
+    var(--clr-border) 25%,
+    var(--clr-section-bg) 50%,
+    var(--clr-border) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 .entry-info {
   flex: 1;
   min-width: 0;
@@ -3010,13 +3178,32 @@ main {
   color: #fff;
 }
 
+/* ── Schedule This Bake Button ──────────────────── */
+.btn-schedule-bake {
+  flex: 1;
+  padding: 0.85rem 1rem;
+  border: 2px solid var(--clr-accent);
+  border-radius: 8px;
+  background: none;
+  color: var(--clr-accent);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-schedule-bake:hover {
+  background: var(--clr-accent);
+  color: #fff;
+}
+
 /* ── Detail Modal ────────────────────────────────── */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3198,19 +3385,6 @@ main {
   flex-wrap: wrap;
   gap: 0.75rem;
   padding-bottom: env(safe-area-inset-bottom, 0);
-}
-
-.share-stats-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 0.5rem 0;
-}
-
-.share-stats-label {
-  font-size: 0.85rem;
-  color: var(--clr-muted);
 }
 
 .btn-modal-iterate,
@@ -3409,6 +3583,33 @@ main {
 .share-guide-dismiss:hover { background: var(--clr-primary-dark); }
 .share-guide-dismiss:active { transform: scale(0.97); }
 
+.submit-nudge-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+.submit-nudge-btn {
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+  width: 100%;
+  max-width: 220px;
+}
+.submit-nudge-actions .share-guide-dismiss {
+  background: transparent;
+  color: var(--clr-text-light);
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+}
+.submit-nudge-actions .share-guide-dismiss:hover {
+  background: transparent;
+  color: var(--clr-text);
+}
+
+/* ── Share Destination Chooser ────────────────────── */
+
 /* ── Toast Notification ─────────────────────────── */
 .toast {
   position: fixed;
@@ -3431,11 +3632,6 @@ main {
 .toast--visible {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Comparison View ─────────────────────────────── */
@@ -4233,6 +4429,28 @@ footer {
   margin-top: 0.3rem;
 }
 
+/* Bake timer button on bake steps */
+.btn-sched-bake-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  background: var(--clr-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+
+.btn-sched-bake-timer:hover {
+  background: var(--clr-primary-hover, #a33d2a);
+}
+
 /* Countdown on next step */
 .sched-step-countdown {
   display: inline-block;
@@ -4247,12 +4465,71 @@ footer {
 
 .sched-step-countdown.countdown-now {
   background: #2e7d32;
-  animation: pulse 1s infinite;
+  animation: pulseOpacity 1s infinite;
 }
 
-@keyframes pulse {
+@keyframes pulseOpacity {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
+}
+
+/* ── Step Alarm Alert Overlay ──────────────────── */
+
+.sched-step-alert-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  animation: fadeIn 200ms ease;
+}
+
+.sched-step-alert-card {
+  background: var(--clr-card);
+  border-radius: var(--radius);
+  padding: 2rem 2.5rem;
+  text-align: center;
+  max-width: 340px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+.sched-alert-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  animation: pulseOpacity 1s infinite;
+}
+
+.sched-alert-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--clr-primary);
+  margin: 0 0 0.5rem;
+}
+
+.sched-alert-label {
+  font-size: 1.1rem;
+  color: var(--clr-text);
+  margin: 0 0 1.5rem;
+}
+
+.sched-alert-dismiss {
+  background: var(--clr-primary);
+  color: #fff;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+
+.sched-alert-dismiss:hover {
+  background: var(--clr-primary-dark, #6e2819);
 }
 
 /* ── Active Schedule Banner ──────────────────────── */
@@ -4580,6 +4857,7 @@ footer {
     align-items: center;
     justify-content: space-around;
     padding: 0 0.5rem;
+    transition: transform 200ms ease;
   }
 
   .tab-item {
@@ -4640,6 +4918,12 @@ footer {
   /* Give main content clearance above the tab bar */
   main {
     padding-bottom: 72px !important;
+  }
+
+  /* Hide tab bar when virtual keyboard is open */
+  .mobile-tab-bar.keyboard-open {
+    transform: translateY(100%);
+    pointer-events: none;
   }
 
   /* Keep header logo centered on mobile */
@@ -4923,6 +5207,32 @@ body[data-page="journal"] main {
 
 .save-confirm.fade-out {
   opacity: 0;
+}
+
+/* ── Restore Purchase Row ──────────────────────── */
+.restore-purchase-row {
+  text-align: center;
+  margin-top: 0.75rem;
+}
+
+.btn-restore-purchase {
+  background: none;
+  border: none;
+  color: var(--clr-text-light);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0.4rem 0.6rem;
+}
+
+.btn-restore-purchase:hover {
+  color: var(--clr-primary);
+}
+
+.btn-restore-purchase:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 /* ── Kitchen Welcome Banner ──────────────────────── */
@@ -5585,8 +5895,42 @@ body[data-page="kitchen"] main {
   .instructions-section {
     font-size: 9pt;
   }
-  .instructions-section p,
-  .tips-subsection li {
+  .instructions-section h3 {
+    font-size: 11pt;
+  }
+  .bake-steps {
+    counter-reset: bake-step;
+  }
+  .bake-step {
+    border-left: 1px solid #ccc;
+    padding-left: 1.5rem;
+    padding-bottom: 0.5rem;
+    margin-left: 0.5rem;
+  }
+  .bake-step:last-child {
+    border-left-color: transparent;
+  }
+  .bake-step::before {
+    background: #333;
+    width: 1.2rem;
+    height: 1.2rem;
+    font-size: 7pt;
+    left: -0.65rem;
+  }
+  .bake-step-title {
+    font-size: 8pt;
+    color: #333;
+  }
+  .bake-step-body p {
+    margin-bottom: 0.1rem;
+    font-size: 9pt;
+  }
+  .bake-step-detail,
+  .bake-time-note {
+    font-size: 8pt !important;
+  }
+  .tips-subsection li,
+  .instructions-section p {
     margin-bottom: 0.15rem;
   }
 
@@ -5823,8 +6167,9 @@ body[data-page="kitchen"] main {
 
 /* ── Custom Dough Profiles ───────────────────────── */
 .btn-save-profile {
-  padding: 0.4rem 1rem;
-  border: 1px solid var(--clr-accent);
+  flex: 1;
+  padding: 0.55rem 1rem;
+  border: 2px solid var(--clr-accent);
   border-radius: 6px;
   background: var(--clr-accent);
   color: #fff;
@@ -5832,7 +6177,6 @@ body[data-page="kitchen"] main {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  margin-left: 0.5rem;
 }
 .btn-save-profile:hover {
   background: #b55524;
@@ -6562,6 +6906,21 @@ body[data-page="kitchen"] main {
   color: var(--clr-text-light, #999);
   margin-top: 0.75rem;
 }
+.premium-modal-error {
+  font-size: 0.8rem;
+  color: #c0392b;
+  margin-top: 0.5rem;
+}
+.premium-restore-link {
+  background: none;
+  border: none;
+  color: var(--clr-primary, #8c3524);
+  font-size: 0.8rem;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0;
+}
 .premium-modal-close {
   position: absolute;
   top: 0.75rem;
@@ -7044,13 +7403,13 @@ body[data-page="kitchen"] main {
 
 .btn-delete-data {
   display: inline-block;
-  padding: 0.6rem 1.25rem;
-  border: 2px solid #c0392b;
-  border-radius: 8px;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid #c0392b;
+  border-radius: 4px;
   background: none;
   color: #c0392b;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.65rem;
+  font-weight: 500;
   cursor: pointer;
   transition: background 200ms ease, color 200ms ease;
 }
@@ -7321,7 +7680,7 @@ body[data-page="kitchen"] main {
 .firstbake-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.55);
   z-index: 10500;
   opacity: 0;
   pointer-events: none;
@@ -7340,12 +7699,14 @@ body[data-page="kitchen"] main {
   left: 50%;
   transform: translateX(-50%) translateY(20px);
   background: var(--clr-card);
+  border: 1px solid var(--clr-border);
   border-radius: var(--radius);
   max-width: 440px;
   width: calc(100% - 2rem);
   padding: 2.5rem 2rem 2rem;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.4);
   pointer-events: auto;
+  z-index: 10700;
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -7493,4 +7854,41 @@ body[data-page="kitchen"] main {
   .firstbake-body {
     font-size: 0.88rem;
   }
+}
+
+/* ══════════════════════════════════════════════════════
+   STORAGE WARNING TOAST
+   ══════════════════════════════════════════════════════ */
+
+.storage-warning-toast {
+  position: fixed;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(1rem);
+  background: var(--clr-text, #1a1410);
+  color: #fff;
+  padding: 0.65rem 1.1rem;
+  border-radius: var(--radius, 12px);
+  font-family: var(--font-body, Inter, sans-serif);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  max-width: 360px;
+  width: calc(100% - 2rem);
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transition: opacity 350ms ease, transform 350ms ease;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.storage-warning-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.storage-warning-toast a {
+  color: var(--clr-accent, #c9954a);
+  text-decoration: underline;
 }
