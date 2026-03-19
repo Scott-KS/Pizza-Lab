@@ -8,6 +8,7 @@
 
   // ── DOM Refs ──
   const styleSelect = document.getElementById("sched-style");
+  const sizeSelect = document.getElementById("sched-size");
   const countInput = document.getElementById("sched-count");
   const datetimeInput = document.getElementById("sched-datetime");
   const ovenSelect = document.getElementById("sched-oven");
@@ -105,6 +106,26 @@
   populateStyleSelect(styleSelect);
   populateOvenSelect(ovenSelect);
 
+  // Populate size dropdown based on selected style
+  function updateSizeOptions() {
+    if (!sizeSelect) return;
+    sizeSelect.innerHTML = "";
+    const styleKey = styleSelect.value;
+    const recipe = styleKey ? PIZZA_RECIPES[styleKey] : null;
+    if (!recipe) return;
+    const sizes = recipe.sizes || {};
+    const defaultSize = recipe.defaultSize || Object.keys(sizes)[0];
+    Object.keys(sizes).forEach(key => {
+      const opt = document.createElement("option");
+      opt.value = key;
+      opt.textContent = sizes[key].label;
+      if (key === defaultSize) opt.selected = true;
+      sizeSelect.appendChild(opt);
+    });
+  }
+  styleSelect.addEventListener("change", updateSizeOptions);
+  updateSizeOptions();
+
   // Default to user's preferred oven from My Kitchen profile
   const kitchenProfile = PieLabProfile.getProfile();
   if (kitchenProfile.preferredOven &&
@@ -173,9 +194,8 @@
     const styleKey = styleSelect.value;
     const recipe = PIZZA_RECIPES[styleKey];
     if (!recipe) return;
-    const sizeKeys = Object.keys(recipe.sizes);
-    const defaultSize = recipe.defaultSize || (sizeKeys.includes("12") ? "12" : sizeKeys[0]);
-    const doughBallWeight = recipe.sizes[defaultSize].doughWeight;
+    const sizeKey = (sizeSelect && sizeSelect.value) || recipe.defaultSize || Object.keys(recipe.sizes)[0];
+    const doughBallWeight = recipe.sizes[sizeKey].doughWeight;
     const numPizzas = parseInt(countInput.value, 10);
 
     const result = buildScheduleBackward(
@@ -297,9 +317,8 @@
     const styleKey = styleSelect.value;
     const recipe = PIZZA_RECIPES[styleKey];
     if (!recipe) return;
-    const sizeKeys = Object.keys(recipe.sizes);
-    const defaultSize = recipe.defaultSize || (sizeKeys.includes("12") ? "12" : sizeKeys[0]);
-    const doughBallWeight = recipe.sizes[defaultSize].doughWeight;
+    const sizeKey = (sizeSelect && sizeSelect.value) || recipe.defaultSize || Object.keys(recipe.sizes)[0];
+    const doughBallWeight = recipe.sizes[sizeKey].doughWeight;
     const numPizzas = parseInt(countInput.value, 10);
 
     const result = buildScheduleBackward(
@@ -329,6 +348,7 @@
       createdAt: new Date().toISOString(),
       styleKey,
       styleName: recipe.name,
+      sizeKey,
       numPizzas,
       ovenType: ovenSelect.value,
       methodId: selectedMethod.id,

@@ -488,6 +488,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const preferredLabel = (typeof OVEN_TYPES !== "undefined" && recipe.preferredOven) ? OVEN_TYPES[recipe.preferredOven] : "";
     const secondaryLabel = (typeof OVEN_TYPES !== "undefined" && recipe.secondaryOven) ? OVEN_TYPES[recipe.secondaryOven] : "";
 
+    // ── Step 0: Divide (multi-pizza only) ──
+    const divideStep = document.getElementById("step-divide");
+    const divideBody = document.getElementById("baking-divide");
+    if (divideStep && divideBody) {
+      if (numPizzas > 1) {
+        const ballWt = adjustedRecipe.sizes[sizeKey].doughWeight;
+        const metricWt = typeof PieLabProfile !== "undefined" && PieLabProfile.isMetricWeight();
+        const wtDisplay = metricWt !== false ? `${ballWt}g` : `${Math.round(ballWt * 0.03527 * 10) / 10} oz`;
+        divideBody.innerHTML = `<p>Divide your dough into <strong>${numPizzas} balls</strong> at <strong>${wtDisplay}</strong> each. Shape into tight rounds and let them rest covered before stretching.</p>`;
+        divideStep.classList.remove("hidden");
+      } else {
+        divideStep.classList.add("hidden");
+      }
+    }
+
+    // ── Step 1: Preheat ──
     let preheatHtml = `<p>Set your oven to <strong>${tempDisplay}</strong>. Preheat for at least ${preheatMinutes} minutes with your steel or stone inside.</p>`;
     if (preferredLabel) {
       preheatHtml += `<p class="bake-step-detail">Best oven: ${preferredLabel}`;
