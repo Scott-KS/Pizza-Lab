@@ -409,6 +409,7 @@ main {
 .form-group input[type="text"],
 .form-group input[type="date"] {
   width: 100%;
+  min-width: 0;
   padding: 0.75rem 1rem;
   border: 2px solid var(--clr-border);
   border-radius: 8px;
@@ -2752,6 +2753,10 @@ main {
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
+}
+
+.journal-form-grid > .form-group {
+  min-width: 0;
 }
 
 .dough-snapshot {
