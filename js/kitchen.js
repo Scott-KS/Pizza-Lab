@@ -585,4 +585,140 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // ── Kitchen Profile Guide (onboarding only) ────────────
+  // Walks new users through each field, explaining why it matters.
+
+  const kitchenGuideSteps = [
+    {
+      title: "What Should We Call You?",
+      body: "Your display name shows up on shared bake cards and your journal. It\u2019s how your pizza friends will know you.",
+      target: "#k-display-name",
+    },
+    {
+      title: "Where\u2019s Your Kitchen?",
+      body: "Your city tells us your elevation. Dough behaves differently at 5,000 ft vs sea level \u2014 we adjust yeast and hydration automatically.",
+      target: "#k-city",
+    },
+    {
+      title: "What Oven Do You Use?",
+      body: "Your oven type prefills every bake with the right temps and cook times. Home oven, Ooni, Roccbox \u2014 we\u2019ve got you covered.",
+      target: "#k-oven",
+    },
+    {
+      title: "How Humid Is It?",
+      body: "Humidity affects how much water your flour absorbs. If you\u2019re in a dry or humid climate, we\u2019ll fine-tune hydration for you.",
+      target: "#k-humidity",
+    },
+    {
+      title: "Pick Your Go-To Style",
+      body: "Your favorite style prepopulates the calculator so you can jump straight to baking. You can always switch styles later.",
+      target: "#k-style",
+    },
+    {
+      title: "How Do You Measure?",
+      body: "Standard uses ounces and \u00B0F. Metric uses grams and \u00B0C. Measure in grams but cook in \u00B0F? Choose Hybrid.",
+      target: "#k-units",
+    },
+    {
+      title: "You\u2019re All Set!",
+      body: "Fill in your details above and hit Save My Kitchen. We\u2019ll use these settings to personalize every recipe.",
+      target: "#k-save",
+      nextLabel: "Got It!",
+    },
+  ];
+
+  function shouldShowKitchenGuide() {
+    return urlParams.get("onboarding") === "1";
+  }
+
+  function startKitchenGuide() {
+    let kgStep = 0;
+    let kgCleanup = null;
+
+    const kgOverlay = document.createElement("div");
+    kgOverlay.className = "firstbake-overlay";
+    kgOverlay.innerHTML = `
+      <div class="firstbake-card">
+        <button class="firstbake-skip" id="kg-skip" aria-label="Close guide">Skip</button>
+        <div class="firstbake-step-count" id="kg-step-count"></div>
+        <h3 class="firstbake-title" id="kg-title"></h3>
+        <p class="firstbake-body" id="kg-body"></p>
+        <div class="firstbake-actions">
+          <button class="firstbake-btn firstbake-btn--back hidden" id="kg-back">Back</button>
+          <button class="firstbake-btn firstbake-btn--next" id="kg-next">Next</button>
+        </div>
+      </div>
+    `;
+
+    const kgHighlight = document.createElement("div");
+    kgHighlight.className = "firstbake-highlight hidden";
+    document.body.appendChild(kgHighlight);
+    document.body.appendChild(kgOverlay);
+
+    function renderStep() {
+      const step = kitchenGuideSteps[kgStep];
+      const total = kitchenGuideSteps.length;
+
+      document.getElementById("kg-step-count").textContent = `Step ${kgStep + 1} of ${total}`;
+      document.getElementById("kg-title").textContent = step.title;
+      document.getElementById("kg-body").textContent = step.body;
+
+      const backBtn = document.getElementById("kg-back");
+      backBtn.classList.toggle("hidden", kgStep === 0);
+
+      const nextBtn = document.getElementById("kg-next");
+      nextBtn.textContent = step.nextLabel || (kgStep === total - 1 ? "Done" : "Next");
+
+      kgHighlight.classList.add("hidden");
+      if (step.target) {
+        setTimeout(() => {
+          const el = document.querySelector(step.target);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            setTimeout(() => {
+              const rect = el.getBoundingClientRect();
+              const pad = 6;
+              kgHighlight.style.top = (rect.top + window.scrollY - pad) + "px";
+              kgHighlight.style.left = (rect.left - pad) + "px";
+              kgHighlight.style.width = (rect.width + pad * 2) + "px";
+              kgHighlight.style.height = (rect.height + pad * 2) + "px";
+              kgHighlight.classList.remove("hidden");
+            }, 350);
+          }
+        }, 50);
+      }
+    }
+
+    function close() {
+      kgHighlight.remove();
+      kgOverlay.classList.remove("firstbake-overlay--visible");
+      setTimeout(() => kgOverlay.remove(), 300);
+    }
+
+    document.getElementById("kg-next").addEventListener("click", () => {
+      if (kgStep < kitchenGuideSteps.length - 1) {
+        kgStep++;
+        renderStep();
+      } else {
+        close();
+      }
+    });
+
+    document.getElementById("kg-back").addEventListener("click", () => {
+      if (kgStep > 0) {
+        kgStep--;
+        renderStep();
+      }
+    });
+
+    document.getElementById("kg-skip").addEventListener("click", close);
+
+    requestAnimationFrame(() => kgOverlay.classList.add("firstbake-overlay--visible"));
+    renderStep();
+  }
+
+  if (shouldShowKitchenGuide()) {
+    setTimeout(() => startKitchenGuide(), 600);
+  }
 });
