@@ -24,6 +24,9 @@ import { PieNotifications } from './pie-notifications.js';
 
 const STORAGE_KEY = 'pielab-active-schedule';
 
+// Mark that user has visited the scheduler (suppresses nudge on calculator page)
+localStorage.setItem('pielab-scheduler-used', '1');
+
 // ── DOM Refs ──
 const styleSelect = document.getElementById('sched-style');
 const sizeSelect = document.getElementById('sched-size');

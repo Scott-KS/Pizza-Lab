@@ -89,6 +89,13 @@ const PieLabFirstBake = (() => {
           const cancelBtn = document.getElementById('timer-cancel');
           if (cancelBtn) cancelBtn.click();
         }
+        // Briefly highlight the timer adjustment controls to teach the user
+        const controls = document.getElementById('timer-running-controls');
+        if (controls) {
+          controls.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          controls.classList.add('guide-flash');
+          setTimeout(() => controls.classList.remove('guide-flash'), 2000);
+        }
       },
     },
   ];

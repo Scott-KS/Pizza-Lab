@@ -8,7 +8,24 @@ if ('serviceWorker' in navigator)
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   });
 
-document.getElementById('btn-start').addEventListener('click', function (e) {
+// Route new users to Kitchen Profile instead of calculator
+const _btnStart = document.getElementById('btn-start');
+
+const _onboardingDone = localStorage.getItem('pielab-onboarding-complete');
+const _profileSaved = (() => {
+  try {
+    const p = JSON.parse(localStorage.getItem('pielab-user-profile') || '{}');
+    return !!(p.displayName && p.displayName.trim());
+  } catch {
+    return false;
+  }
+})();
+
+if (!_onboardingDone && !_profileSaved) {
+  _btnStart.href = 'kitchen.html?welcome=1&onboarding=1';
+}
+
+_btnStart.addEventListener('click', function (e) {
   e.preventDefault();
   try {
     let profile = PieLabStorage.getJSON('pielab-user-profile');

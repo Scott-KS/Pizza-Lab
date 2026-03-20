@@ -338,7 +338,18 @@ const PieLabPremium = (function () {
       btn.disabled = false;
       btn.classList.remove('btn-disabled');
       desc.textContent = 'Your 14-day trial has ended. Unlock all Pro features permanently.';
-      footer.textContent = 'One-time $4.99 purchase. No subscription.';
+      // Try to personalize with bake count
+      import('../journal.js')
+        .then(({ PieLabJournal }) => {
+          const bakeCount = PieLabJournal.getAllEntries().length;
+          if (bakeCount > 0) {
+            desc.textContent = `You\u2019ve logged ${bakeCount} bake${bakeCount !== 1 ? 's' : ''} \u2014 unlock Pro to keep your streak and access bake analytics.`;
+          }
+        })
+        .catch(() => {
+          /* fall back to static string */
+        });
+      footer.textContent = 'One-time $4.99 \u2014 yours forever. No subscription, no renewal.';
       restoreBtn.classList.remove('hidden');
     } else if (canUse()) {
       btn.textContent = 'Continue with Trial';
@@ -408,6 +419,32 @@ const PieLabPremium = (function () {
       const d = daysLeft();
       badge.className = 'premium-badge trial';
       badge.textContent = `Trial: ${d}d left`;
+
+      // Trial expiry banner at 3 days or fewer
+      if (
+        d <= 3 &&
+        d > 0 &&
+        !sessionStorage.getItem('pielab-trial-banner-dismissed') &&
+        !document.getElementById('trial-expiry-banner')
+      ) {
+        const mainEl = document.querySelector('main');
+        if (mainEl) {
+          const banner = document.createElement('div');
+          banner.className = 'trial-expiry-banner';
+          banner.id = 'trial-expiry-banner';
+          banner.innerHTML = `
+            \u23F3 Your Pro trial ends in ${d} day${d !== 1 ? 's' : ''}.
+            <button class="btn-unlock-now">Unlock Pro \u2014 $4.99</button>
+            <button class="trial-banner-dismiss" aria-label="Dismiss">\u00D7</button>
+          `;
+          mainEl.insertBefore(banner, mainEl.firstChild);
+          banner.querySelector('.btn-unlock-now').addEventListener('click', () => showModal());
+          banner.querySelector('.trial-banner-dismiss').addEventListener('click', () => {
+            sessionStorage.setItem('pielab-trial-banner-dismissed', '1');
+            banner.remove();
+          });
+        }
+      }
     } else if (isExpired()) {
       badge.className = 'premium-badge expired';
       badge.textContent = 'Trial Expired';

@@ -763,6 +763,29 @@ document.addEventListener('DOMContentLoaded', () => {
     resultsEl.classList.remove('hidden');
     resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     if (window.PieLabHaptics) PieLabHaptics.success();
+
+    // ── Scheduler nudge ──────────────────────────────
+    const calcCount = parseInt(localStorage.getItem('pielab-calc-count') || '0', 10) + 1;
+    localStorage.setItem('pielab-calc-count', String(calcCount));
+
+    const schedulerUsed = localStorage.getItem('pielab-scheduler-used');
+    const nudgeDismissed = localStorage.getItem('pielab-scheduler-nudge-dismissed');
+    const existingNudge = document.getElementById('sched-nudge');
+    if (!schedulerUsed && !nudgeDismissed && calcCount >= 2 && !existingNudge) {
+      const nudge = document.createElement('div');
+      nudge.className = 'sched-nudge';
+      nudge.id = 'sched-nudge';
+      nudge.innerHTML = `
+        <span>\u23F1 Want better flavor? Cold ferment takes 5 minutes to set up.</span>
+        <a href="schedule.html" class="sched-nudge-link">Try the Scheduler \u2192</a>
+        <button type="button" class="sched-nudge-dismiss" aria-label="Dismiss">\u00D7</button>
+      `;
+      resultsEl.insertBefore(nudge, resultsEl.firstChild);
+      nudge.querySelector('.sched-nudge-dismiss').addEventListener('click', () => {
+        localStorage.setItem('pielab-scheduler-nudge-dismissed', '1');
+        nudge.remove();
+      });
+    }
   });
 
   // ── "Schedule This Bake" prefills scheduler ──────────

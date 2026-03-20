@@ -2966,6 +2966,11 @@ main {
   min-width: 0;
 }
 
+#j-date {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 .dough-snapshot {
   margin-bottom: 1rem;
   padding: 0.75rem 1rem;
@@ -3893,6 +3898,49 @@ main {
 .submit-nudge-actions .share-guide-dismiss:hover {
   background: transparent;
   color: var(--clr-text);
+}
+.submit-nudge-optout {
+  font-family: var(--font-body);
+  background: transparent;
+  color: var(--clr-text-light);
+  border: none;
+  padding: 0.3rem 1rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 200ms ease;
+}
+.submit-nudge-optout:hover {
+  opacity: 1;
+}
+
+/* ── Scheduler Nudge ─────────────────────────────── */
+.sched-nudge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--clr-card);
+  border: 1px solid var(--clr-primary);
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.sched-nudge-link {
+  color: var(--clr-primary);
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.sched-nudge-dismiss {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: var(--clr-text-light);
+  padding: 0 0.25rem;
 }
 
 /* ── Share Destination Chooser ────────────────────── */
@@ -8933,6 +8981,46 @@ body[data-page='kitchen'] main {
 
 .firstbake-highlight.hidden {
   display: none;
+}
+
+/* ── Trial Expiry Banner ──────────────────────────── */
+.trial-expiry-banner {
+  background: var(--clr-primary);
+  color: #fff;
+  text-align: center;
+  padding: 0.6rem 1rem;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.btn-unlock-now {
+  background: #fff;
+  color: var(--clr-primary);
+  border: none;
+  border-radius: 20px;
+  padding: 0.3rem 0.85rem;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.trial-banner-dismiss {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin-left: 0.25rem;
+}
+
+.guide-flash {
+  animation: guideFlash 2s ease-in-out;
+}
+@keyframes guideFlash {
+  0%, 100% { box-shadow: none; }
+  25%, 75% { box-shadow: 0 0 0 4px var(--clr-primary), 0 0 12px rgba(192, 57, 43, 0.4); }
 }
 
 /* ── Onboarding responsive ──────────────────────────── */

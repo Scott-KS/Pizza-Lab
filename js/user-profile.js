@@ -17,6 +17,7 @@ const PieLabProfile = (() => {
     preferredOven: '',
     ovenTempOffset: 0, // signed °F: positive = runs hot, negative = runs cold
     unitSystem: 'standard', // "standard" (oz/°F), "metric" (g/°C), or "hybrid" (g/°F)
+    skillLevel: 1, // 0 = beginner, 1 = intermediate, 2 = pro
     createdAt: null,
     updatedAt: null,
   };

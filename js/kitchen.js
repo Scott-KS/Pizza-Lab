@@ -122,6 +122,31 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedUnits = btn.dataset.value;
   });
 
+  // ── Skill Level toggle ────────────────────────────
+  const skillGrp = document.getElementById('k-skill-level');
+  let selectedSkillLevel = profile.skillLevel ?? 1;
+
+  if (skillGrp) {
+    skillGrp.querySelectorAll('.toggle-btn').forEach((btn) => {
+      const isActive = btn.dataset.value === String(selectedSkillLevel);
+      btn.classList.toggle('selected', isActive);
+      btn.setAttribute('aria-pressed', isActive);
+    });
+
+    skillGrp.addEventListener('click', (e) => {
+      const btn = e.target.closest('.toggle-btn');
+      if (!btn) return;
+
+      skillGrp.querySelectorAll('.toggle-btn').forEach((b) => {
+        b.classList.remove('selected');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('selected');
+      btn.setAttribute('aria-pressed', 'true');
+      selectedSkillLevel = parseInt(btn.dataset.value, 10);
+    });
+  }
+
   // ── Onboarding flow: Enter key advances to next field ──
   nameInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
@@ -382,6 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ovenTempOffset,
       favoriteStyle: styleSelect.value,
       unitSystem: selectedUnits,
+      skillLevel: selectedSkillLevel,
     };
 
     PieLabProfile.saveProfile(updates);

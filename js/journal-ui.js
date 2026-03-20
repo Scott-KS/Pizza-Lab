@@ -1459,22 +1459,26 @@ function showShareGuide(entry) {
   });
 }
 
-// ── Instagram Submit Nudge (every 3rd bake) ──────
+// ── Instagram Submit Nudge (bake 3, then every 5th) ──────
 
 function showSubmitNudge(entry) {
   const hasPhotos = (entry.photos && entry.photos.length) || entry.photo;
   if (!hasPhotos) return;
 
+  const OPTOUT_KEY = 'pielab-submit-submit-nudge-optout';
+  if (localStorage.getItem(OPTOUT_KEY)) return;
+
   const totalBakes = PieLabJournal.getAllEntries().length;
-  // Show on every 3rd bake, but not the 1st (share guide covers that)
-  if (totalBakes < 3 || totalBakes % 3 !== 0) return;
+  // Show on bake 3, then every 5th after that (8, 13, 18...)
+  if (totalBakes < 3) return;
+  if (totalBakes !== 3 && (totalBakes - 3) % 5 !== 0) return;
 
   const overlay = document.createElement('div');
   overlay.className = 'share-guide-overlay';
   overlay.innerHTML = `
     <div class="share-guide-card">
       <h2 class="share-guide-title">Feature Your Bake?</h2>
-      <p class="share-guide-subtitle">You\u2019ve logged ${totalBakes} bakes! Submit your best to <strong>@pielab.app</strong> on Instagram.</p>
+      <p class="share-guide-subtitle">${totalBakes === 3 ? '\uD83C\uDF89 3 bakes in! You\u2019re on a roll.' : '\uD83D\uDCF8 Another great bake logged!'} Submit your best to <strong>@pielab.app</strong> on Instagram.</p>
       <div class="share-guide-options">
         <div class="share-guide-option">
           <span class="share-guide-icon">&#128247;</span>
@@ -1487,6 +1491,7 @@ function showSubmitNudge(entry) {
       <div class="submit-nudge-actions">
         <a href="${SUBMIT_FORM_URL}" target="_blank" rel="noopener" class="btn-primary submit-nudge-btn">Submit My Bake</a>
         <button class="share-guide-dismiss">Not Now</button>
+        <button class="submit-nudge-optout">Don\u2019t Show Again</button>
       </div>
     </div>`;
   document.body.appendChild(overlay);
@@ -1500,6 +1505,10 @@ function showSubmitNudge(entry) {
     }, 400);
   };
   overlay.querySelector('.share-guide-dismiss').addEventListener('click', dismiss);
+  overlay.querySelector('.submit-nudge-optout').addEventListener('click', () => {
+    localStorage.setItem(OPTOUT_KEY, '1');
+    dismiss();
+  });
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) dismiss();
   });
