@@ -349,6 +349,30 @@
       })),
     });
 
+    // Save calc data so journal can prefill when "Log This Bake" is clicked
+    try {
+      const dough = calculateDough(recipe, numPizzas, sizeKey);
+      localStorage.setItem("pielab-last-calc", JSON.stringify({
+        styleKey,
+        styleName: recipe.name,
+        sizeKey,
+        numPizzas,
+        ovenType: ovenSelect.value,
+        doughSnapshot: {
+          hydration: recipe.hydration,
+          saltPct: recipe.saltPct,
+          oilPct: recipe.oilPct,
+          sugarPct: recipe.sugarPct,
+          yeastPct: recipe.yeastPct,
+          doughBallWeight,
+          flourType: recipe.flour || null,
+        },
+        bakeTemp: recipe.idealTemp ? recipe.idealTemp.max : null,
+        totalDoughWeight: Math.round(doughBallWeight * numPizzas),
+        timestamp: Date.now(),
+      }));
+    } catch { /* ignore storage errors */ }
+
     // Update schedule badge in nav
     updateScheduleBadge();
     if (window.PieLabHaptics) PieLabHaptics.success();
@@ -357,6 +381,10 @@
     renderVisualBar(computedSchedule);
     renderRecipeSummary(styleKey, numPizzas, doughBallWeight, sizeKey);
     goToStep(3);
+
+    // Show "Log This Bake" immediately
+    const logEl = document.getElementById("sched-log-bake");
+    if (logEl) logEl.classList.remove("hidden");
 
     // Hide banner when viewing full schedule
     bannerEl.classList.add("hidden");
@@ -479,12 +507,6 @@
         if (window.PieLabHaptics) PieLabHaptics.light();
         renderScheduleTimeline(computedSchedule);
         renderVisualBar(computedSchedule);
-        // Show "Log This Bake" when all steps are complete
-        const logEl = document.getElementById("sched-log-bake");
-        if (logEl) {
-          const allDone = computedSchedule.every(s => s.checked);
-          logEl.classList.toggle("hidden", !allDone);
-        }
       });
     });
 
@@ -921,6 +943,36 @@
     renderVisualBar(computedSchedule);
     renderRecipeSummary(data.styleKey, data.numPizzas, data.doughBallWeight, data.sizeKey);
     goToStep(3);
+
+    // Show "Log This Bake" immediately
+    const logEl = document.getElementById("sched-log-bake");
+    if (logEl) logEl.classList.remove("hidden");
+
+    // Ensure journal prefill data exists for this schedule
+    try {
+      const recipe = PIZZA_RECIPES[data.styleKey];
+      if (recipe && !localStorage.getItem("pielab-last-calc")) {
+        localStorage.setItem("pielab-last-calc", JSON.stringify({
+          styleKey: data.styleKey,
+          styleName: data.styleName,
+          sizeKey: data.sizeKey,
+          numPizzas: data.numPizzas,
+          ovenType: data.ovenType,
+          doughSnapshot: {
+            hydration: recipe.hydration,
+            saltPct: recipe.saltPct,
+            oilPct: recipe.oilPct,
+            sugarPct: recipe.sugarPct,
+            yeastPct: recipe.yeastPct,
+            doughBallWeight: data.doughBallWeight,
+            flourType: recipe.flour || null,
+          },
+          bakeTemp: recipe.idealTemp ? recipe.idealTemp.max : null,
+          totalDoughWeight: Math.round(data.doughBallWeight * data.numPizzas),
+          timestamp: Date.now(),
+        }));
+      }
+    } catch { /* ignore */ }
   }
 
   // ── Save as Image ──
