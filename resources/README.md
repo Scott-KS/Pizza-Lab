@@ -3,12 +3,14 @@
 Place the following files in this directory before running `npx @capacitor/assets generate`:
 
 ## icon.png
+
 - **Size:** 1024 x 1024 px
 - **Source:** Upscale `assets/logos/logo-monogram-512.svg` to 1024px
 - **Format:** PNG with transparency
 - Capacitor Assets will auto-generate all Android/iOS icon sizes from this single file
 
 ## splash.png
+
 - **Size:** 2732 x 2732 px
 - **Background:** #f3ebe2 (Pie Lab cream)
 - **Content:** Centered logo (from `assets/logos/logo-stacked.svg`)

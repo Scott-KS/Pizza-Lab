@@ -2,163 +2,207 @@
    The Pie Lab — My Kitchen
    Page: kitchen.html
    ══════════════════════════════════════════════════════ */
-// escapeHtml() is defined globally in nav.js
+import { PieLabStorage } from './storage.js';
+import { populateOvenSelect, populateStyleSelect, escapeHtml } from './nav.js';
+import { PieLabProfile } from './user-profile.js';
+import { PieLabPremium } from './premium.js';
+import { PieLabPhotos } from './photo-store.js';
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   // ── Welcome banner for new users ───────────────────
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.has("welcome")) {
-    const banner = document.getElementById("welcome-banner");
+  if (urlParams.has('welcome')) {
+    const banner = document.getElementById('welcome-banner');
     if (banner) {
-      banner.classList.remove("hidden");
-      if (urlParams.get("onboarding") === "1") {
-        banner.innerHTML = '<p>👨‍🍳 <strong>Almost there!</strong> Fill out your kitchen profile below and hit <em>Save My Kitchen</em>. Then we\'ll guide you through your first bake.</p>';
+      banner.classList.remove('hidden');
+      if (urlParams.get('onboarding') === '1') {
+        banner.innerHTML =
+          "<p>👨‍🍳 <strong>Almost there!</strong> Fill out your kitchen profile below and hit <em>Save My Kitchen</em>. Then we'll guide you through your first bake.</p>";
       }
     }
   }
 
   // ── DOM refs ─────────────────────────────────────────
-  const nameInput   = document.getElementById("k-display-name");
-  const cityInput   = document.getElementById("k-city");
-  const cityStatus  = document.getElementById("k-city-status");
-  const ovenSelect  = document.getElementById("k-oven");
-  const humidityGrp = document.getElementById("k-humidity");
-  const styleSelect = document.getElementById("k-style");
-  const saveBtn     = document.getElementById("k-save");
-  const saveConfirm = document.getElementById("k-save-confirm");
+  const nameInput = document.getElementById('k-display-name');
+  const cityInput = document.getElementById('k-city');
+  const cityStatus = document.getElementById('k-city-status');
+  const ovenSelect = document.getElementById('k-oven');
+  const humidityGrp = document.getElementById('k-humidity');
+  const styleSelect = document.getElementById('k-style');
+  const saveBtn = document.getElementById('k-save');
+  const saveConfirm = document.getElementById('k-save-confirm');
 
   // ── Populate selects, then load profile values ───────
   populateOvenSelect(ovenSelect);
-  populateStyleSelect(styleSelect, { placeholder: "Select a style\u2026" });
+  populateStyleSelect(styleSelect, { placeholder: 'Select a style\u2026' });
 
   const profile = PieLabProfile.getProfile();
 
-  nameInput.value   = profile.displayName || "";
-  cityInput.value   = profile.city || "";
-  ovenSelect.value  = profile.preferredOven || ovenSelect.options[0]?.value || "";
-  styleSelect.value = profile.favoriteStyle || "";
+  nameInput.value = profile.displayName || '';
+  cityInput.value = profile.city || '';
+  ovenSelect.value = profile.preferredOven || ovenSelect.options[0]?.value || '';
+  styleSelect.value = profile.favoriteStyle || '';
 
   // ── Humidity toggle ──────────────────────────────────
-  let selectedHumidity = profile.humidity || "normal";
+  let selectedHumidity = profile.humidity || 'normal';
 
-  humidityGrp.querySelectorAll(".toggle-btn").forEach((btn) => {
+  humidityGrp.querySelectorAll('.toggle-btn').forEach((btn) => {
     const isActive = btn.dataset.value === selectedHumidity;
-    btn.classList.toggle("selected", isActive);
-    btn.setAttribute("aria-pressed", isActive);
+    btn.classList.toggle('selected', isActive);
+    btn.setAttribute('aria-pressed', isActive);
   });
 
-  humidityGrp.addEventListener("click", (e) => {
-    const btn = e.target.closest(".toggle-btn");
+  humidityGrp.addEventListener('click', (e) => {
+    const btn = e.target.closest('.toggle-btn');
     if (!btn) return;
 
-    humidityGrp.querySelectorAll(".toggle-btn").forEach((b) => {
-      b.classList.remove("selected");
-      b.setAttribute("aria-pressed", "false");
+    humidityGrp.querySelectorAll('.toggle-btn').forEach((b) => {
+      b.classList.remove('selected');
+      b.setAttribute('aria-pressed', 'false');
     });
-    btn.classList.add("selected");
-    btn.setAttribute("aria-pressed", "true");
+    btn.classList.add('selected');
+    btn.setAttribute('aria-pressed', 'true');
     selectedHumidity = btn.dataset.value;
   });
 
   // ── Oven Calibration offset ─────────────────────────
-  const ovenOffsetInput = document.getElementById("k-oven-offset");
-  const ovenDirGrp = document.getElementById("k-oven-direction");
-  let ovenDirection = (profile.ovenTempOffset || 0) >= 0 ? "hot" : "cold";
+  const ovenOffsetInput = document.getElementById('k-oven-offset');
+  const ovenDirGrp = document.getElementById('k-oven-direction');
+  let ovenDirection = (profile.ovenTempOffset || 0) >= 0 ? 'hot' : 'cold';
 
   if (ovenOffsetInput) {
     ovenOffsetInput.value = Math.abs(profile.ovenTempOffset || 0);
-    ovenDirGrp.querySelectorAll(".toggle-btn").forEach(btn => {
-      const isActive = btn.dataset.value === (profile.ovenTempOffset > 0 ? "hot" : "cold");
-      btn.classList.toggle("selected", isActive);
+    ovenDirGrp.querySelectorAll('.toggle-btn').forEach((btn) => {
+      const isActive = btn.dataset.value === (profile.ovenTempOffset > 0 ? 'hot' : 'cold');
+      btn.classList.toggle('selected', isActive);
     });
-    ovenDirGrp.addEventListener("click", (e) => {
-      const btn = e.target.closest(".toggle-btn");
+    ovenDirGrp.addEventListener('click', (e) => {
+      const btn = e.target.closest('.toggle-btn');
       if (!btn) return;
-      ovenDirGrp.querySelectorAll(".toggle-btn").forEach(b => b.classList.remove("selected"));
-      btn.classList.add("selected");
+      ovenDirGrp.querySelectorAll('.toggle-btn').forEach((b) => b.classList.remove('selected'));
+      btn.classList.add('selected');
       ovenDirection = btn.dataset.value;
     });
   }
 
   // ── Measurement System toggle ──────────────────────
-  const unitsGrp = document.getElementById("k-units");
-  let selectedUnits = profile.unitSystem || "standard";
+  const unitsGrp = document.getElementById('k-units');
+  let selectedUnits = profile.unitSystem || 'standard';
 
-  unitsGrp.querySelectorAll(".toggle-btn").forEach((btn) => {
+  unitsGrp.querySelectorAll('.toggle-btn').forEach((btn) => {
     const isActive = btn.dataset.value === selectedUnits;
-    btn.classList.toggle("selected", isActive);
-    btn.setAttribute("aria-pressed", isActive);
+    btn.classList.toggle('selected', isActive);
+    btn.setAttribute('aria-pressed', isActive);
   });
 
-  unitsGrp.addEventListener("click", (e) => {
-    const btn = e.target.closest(".toggle-btn");
+  unitsGrp.addEventListener('click', (e) => {
+    const btn = e.target.closest('.toggle-btn');
     if (!btn) return;
 
-    unitsGrp.querySelectorAll(".toggle-btn").forEach((b) => {
-      b.classList.remove("selected");
-      b.setAttribute("aria-pressed", "false");
+    unitsGrp.querySelectorAll('.toggle-btn').forEach((b) => {
+      b.classList.remove('selected');
+      b.setAttribute('aria-pressed', 'false');
     });
-    btn.classList.add("selected");
-    btn.setAttribute("aria-pressed", "true");
+    btn.classList.add('selected');
+    btn.setAttribute('aria-pressed', 'true');
     selectedUnits = btn.dataset.value;
   });
 
   // ── Onboarding flow: Enter key advances to next field ──
-  nameInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
+  nameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
       e.preventDefault();
       cityInput.focus();
-      cityInput.scrollIntoView({ behavior: "smooth", block: "center" });
+      cityInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   });
 
   // ── Location autocomplete & elevation ────────────────
-  const suggestList = document.getElementById("k-city-suggestions");
-  let storedCity         = profile.city || "";
-  let resolvedElevation  = profile.elevation ?? null;
-  let searchTimer        = null;
-  let cityResolved       = false;
-  let activeIndex        = -1;
+  const suggestList = document.getElementById('k-city-suggestions');
+  let storedCity = profile.city || '';
+  let resolvedElevation = profile.elevation ?? null;
+  let searchTimer = null;
+  let cityResolved = false;
+  let activeIndex = -1;
 
   // US state abbreviation map
   const US_STATES = {
-    Alabama:"AL",Alaska:"AK",Arizona:"AZ",Arkansas:"AR",California:"CA",
-    Colorado:"CO",Connecticut:"CT",Delaware:"DE",Florida:"FL",Georgia:"GA",
-    Hawaii:"HI",Idaho:"ID",Illinois:"IL",Indiana:"IN",Iowa:"IA",Kansas:"KS",
-    Kentucky:"KY",Louisiana:"LA",Maine:"ME",Maryland:"MD",Massachusetts:"MA",
-    Michigan:"MI",Minnesota:"MN",Mississippi:"MS",Missouri:"MO",Montana:"MT",
-    Nebraska:"NE",Nevada:"NV","New Hampshire":"NH","New Jersey":"NJ",
-    "New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND",
-    Ohio:"OH",Oklahoma:"OK",Oregon:"OR",Pennsylvania:"PA","Rhode Island":"RI",
-    "South Carolina":"SC","South Dakota":"SD",Tennessee:"TN",Texas:"TX",
-    Utah:"UT",Vermont:"VT",Virginia:"VA",Washington:"WA","West Virginia":"WV",
-    Wisconsin:"WI",Wyoming:"WY",
-    "District of Columbia":"DC"
+    Alabama: 'AL',
+    Alaska: 'AK',
+    Arizona: 'AZ',
+    Arkansas: 'AR',
+    California: 'CA',
+    Colorado: 'CO',
+    Connecticut: 'CT',
+    Delaware: 'DE',
+    Florida: 'FL',
+    Georgia: 'GA',
+    Hawaii: 'HI',
+    Idaho: 'ID',
+    Illinois: 'IL',
+    Indiana: 'IN',
+    Iowa: 'IA',
+    Kansas: 'KS',
+    Kentucky: 'KY',
+    Louisiana: 'LA',
+    Maine: 'ME',
+    Maryland: 'MD',
+    Massachusetts: 'MA',
+    Michigan: 'MI',
+    Minnesota: 'MN',
+    Mississippi: 'MS',
+    Missouri: 'MO',
+    Montana: 'MT',
+    Nebraska: 'NE',
+    Nevada: 'NV',
+    'New Hampshire': 'NH',
+    'New Jersey': 'NJ',
+    'New Mexico': 'NM',
+    'New York': 'NY',
+    'North Carolina': 'NC',
+    'North Dakota': 'ND',
+    Ohio: 'OH',
+    Oklahoma: 'OK',
+    Oregon: 'OR',
+    Pennsylvania: 'PA',
+    'Rhode Island': 'RI',
+    'South Carolina': 'SC',
+    'South Dakota': 'SD',
+    Tennessee: 'TN',
+    Texas: 'TX',
+    Utah: 'UT',
+    Vermont: 'VT',
+    Virginia: 'VA',
+    Washington: 'WA',
+    'West Virginia': 'WV',
+    Wisconsin: 'WI',
+    Wyoming: 'WY',
+    'District of Columbia': 'DC',
   };
 
   // Show saved elevation on load
   if (storedCity && resolvedElevation != null) {
     cityStatus.textContent = `\uD83D\uDCCD ${storedCity} \u2014 ${resolvedElevation.toLocaleString()} ft`;
-    cityStatus.className   = "city-status resolved";
+    cityStatus.className = 'city-status resolved';
   }
 
   function closeSuggestions() {
-    suggestList.classList.add("hidden");
-    suggestList.innerHTML = "";
-    cityInput.classList.remove("ac-open");
+    suggestList.classList.add('hidden');
+    suggestList.innerHTML = '';
+    cityInput.classList.remove('ac-open');
     activeIndex = -1;
   }
 
   function formatPlace(place) {
-    const region = place.admin1 || "";
+    const region = place.admin1 || '';
     const abbr = US_STATES[region];
-    if (place.country_code?.toUpperCase() === "US" && abbr) {
-      return { display: `${place.name}, ${abbr}`, detail: "" };
+    if (place.country_code?.toUpperCase() === 'US' && abbr) {
+      return { display: `${place.name}, ${abbr}`, detail: '' };
     }
     const parts = [place.name];
     if (region) parts.push(region);
-    if (place.country && place.country !== "United States") parts.push(place.country);
-    return { display: parts.join(", "), detail: "" };
+    if (place.country && place.country !== 'United States') parts.push(place.country);
+    return { display: parts.join(', '), detail: '' };
   }
 
   async function resolveElevationForPlace(place) {
@@ -185,28 +229,28 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!kitchenGuideActive) {
       setTimeout(() => {
         ovenSelect.focus();
-        ovenSelect.scrollIntoView({ behavior: "smooth", block: "center" });
+        ovenSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 200);
     }
 
-    cityStatus.textContent = "Resolving elevation\u2026";
-    cityStatus.className   = "city-status resolving";
+    cityStatus.textContent = 'Resolving elevation\u2026';
+    cityStatus.className = 'city-status resolving';
 
     resolveElevationForPlace(place).then((feet) => {
       if (feet != null) {
-        resolvedElevation  = feet;
-        cityResolved       = true;
+        resolvedElevation = feet;
+        cityResolved = true;
         cityStatus.textContent = `\uD83D\uDCCD ${display} \u2014 ${feet.toLocaleString()} ft`;
-        cityStatus.className   = "city-status resolved";
+        cityStatus.className = 'city-status resolved';
       } else {
-        cityStatus.textContent = "Could not resolve elevation";
-        cityStatus.className   = "city-status error";
+        cityStatus.textContent = 'Could not resolve elevation';
+        cityStatus.className = 'city-status error';
       }
     });
   }
 
   function renderSuggestions(results) {
-    suggestList.innerHTML = "";
+    suggestList.innerHTML = '';
     activeIndex = -1;
 
     if (!results.length) {
@@ -214,40 +258,40 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    results.forEach((place, i) => {
-      const li = document.createElement("li");
-      const { display } = formatPlace(place);
-      const region = place.admin1 || "";
+    results.forEach((place) => {
+      const li = document.createElement('li');
+      const { display: _display } = formatPlace(place);
+      const region = place.admin1 || '';
       const abbr = US_STATES[region];
-      const isUS = place.country_code?.toUpperCase() === "US" && abbr;
+      const isUS = place.country_code?.toUpperCase() === 'US' && abbr;
 
       li.innerHTML = isUS
         ? `<span class="ac-city">${escapeHtml(place.name)}</span>, <span class="ac-region">${escapeHtml(abbr)}</span>`
-        : `<span class="ac-city">${escapeHtml(place.name)}</span>${region ? `, <span class="ac-region">${escapeHtml(region)}</span>` : ""}${place.country && place.country !== "United States" ? `, <span class="ac-region">${escapeHtml(place.country)}</span>` : ""}`;
+        : `<span class="ac-city">${escapeHtml(place.name)}</span>${region ? `, <span class="ac-region">${escapeHtml(region)}</span>` : ''}${place.country && place.country !== 'United States' ? `, <span class="ac-region">${escapeHtml(place.country)}</span>` : ''}`;
 
-      li.addEventListener("mousedown", (e) => {
-        e.preventDefault();          // prevent blur from firing first
+      li.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // prevent blur from firing first
         selectPlace(place);
       });
       suggestList.appendChild(li);
     });
 
-    suggestList.classList.remove("hidden");
-    cityInput.classList.add("ac-open");
+    suggestList.classList.remove('hidden');
+    cityInput.classList.add('ac-open');
   }
 
-  cityInput.addEventListener("input", () => {
+  cityInput.addEventListener('input', () => {
     clearTimeout(searchTimer);
     const q = cityInput.value.trim();
 
-    cityResolved      = false;
+    cityResolved = false;
     resolvedElevation = null;
 
     if (q.length < 2) {
       closeSuggestions();
       if (!q) {
-        cityStatus.textContent = "";
-        cityStatus.className   = "city-status";
+        cityStatus.textContent = '';
+        cityStatus.className = 'city-status';
       }
       return;
     }
@@ -259,42 +303,44 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!res.ok) return;
         const data = await res.json();
         renderSuggestions(data.results || []);
-      } catch { /* network error — ignore */ }
+      } catch {
+        /* network error — ignore */
+      }
     }, 300);
   });
 
   // Keyboard navigation in dropdown
-  cityInput.addEventListener("keydown", (e) => {
-    const items = suggestList.querySelectorAll("li");
+  cityInput.addEventListener('keydown', (e) => {
+    const items = suggestList.querySelectorAll('li');
     if (!items.length) return;
 
-    if (e.key === "ArrowDown") {
+    if (e.key === 'ArrowDown') {
       e.preventDefault();
       activeIndex = Math.min(activeIndex + 1, items.length - 1);
-    } else if (e.key === "ArrowUp") {
+    } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       activeIndex = Math.max(activeIndex - 1, 0);
-    } else if (e.key === "Enter" && activeIndex >= 0) {
+    } else if (e.key === 'Enter' && activeIndex >= 0) {
       e.preventDefault();
-      items[activeIndex].dispatchEvent(new MouseEvent("mousedown"));
+      items[activeIndex].dispatchEvent(new window.MouseEvent('mousedown'));
       return;
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
       closeSuggestions();
       return;
     } else {
       return;
     }
 
-    items.forEach((li, i) => li.classList.toggle("active", i === activeIndex));
+    items.forEach((li, i) => li.classList.toggle('active', i === activeIndex));
   });
 
-  cityInput.addEventListener("blur", () => {
+  cityInput.addEventListener('blur', () => {
     // Short delay to let mousedown on suggestion fire first
     setTimeout(() => closeSuggestions(), 150);
   });
 
   // ── Save ─────────────────────────────────────────────
-  saveBtn.addEventListener("click", () => {
+  saveBtn.addEventListener('click', () => {
     const currentCity = cityInput.value.trim();
 
     // Determine elevation to save:
@@ -311,24 +357,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const rawOffset = parseInt(ovenOffsetInput?.value, 10) || 0;
-    const ovenTempOffset = ovenDirection === "hot" ? rawOffset : -rawOffset;
+    const ovenTempOffset = ovenDirection === 'hot' ? rawOffset : -rawOffset;
 
     const updates = {
-      displayName:   nameInput.value.trim(),
-      city:          currentCity,
-      elevation:     elevation,
-      humidity:      selectedHumidity,
+      displayName: nameInput.value.trim(),
+      city: currentCity,
+      elevation: elevation,
+      humidity: selectedHumidity,
       preferredOven: ovenSelect.value,
       ovenTempOffset,
       favoriteStyle: styleSelect.value,
-      unitSystem:    selectedUnits,
+      unitSystem: selectedUnits,
     };
 
     PieLabProfile.saveProfile(updates);
     if (window.PieLabHaptics) PieLabHaptics.success();
 
     // Start Pro trial on first profile save (14-day trial)
-    if (typeof PieLabPremium !== "undefined" && updates.displayName) {
+    if (updates.displayName) {
       PieLabPremium.startTrial();
     }
 
@@ -337,62 +383,62 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // If this is part of onboarding, redirect to first bake guide
     const params = new URLSearchParams(window.location.search);
-    if (params.get("onboarding") === "1" && updates.displayName) {
-      window.location.href = "calculator.html?firstbake=1";
+    if (params.get('onboarding') === '1' && updates.displayName) {
+      window.location.href = 'calculator.html?firstbake=1';
       return;
     }
 
     // Show confirmation with fade-out
-    saveConfirm.classList.remove("hidden");
-    saveConfirm.classList.remove("fade-out");
+    saveConfirm.classList.remove('hidden');
+    saveConfirm.classList.remove('fade-out');
 
     setTimeout(() => {
-      saveConfirm.classList.add("fade-out");
-      saveConfirm.addEventListener(
-        "transitionend",
-        () => saveConfirm.classList.add("hidden"),
-        { once: true }
-      );
+      saveConfirm.classList.add('fade-out');
+      saveConfirm.addEventListener('transitionend', () => saveConfirm.classList.add('hidden'), {
+        once: true,
+      });
     }, 2500);
   });
 
   // ── Restore Purchase ─────────────────────────────────
-  const restoreBtn = document.getElementById("btn-restore-purchase");
-  const restoreStatus = document.getElementById("restore-status");
-  const restoreRow = document.getElementById("restore-purchase-row");
+  const restoreBtn = document.getElementById('btn-restore-purchase');
+  const restoreStatus = document.getElementById('restore-status');
+  const restoreRow = document.getElementById('restore-purchase-row');
 
-  // Only show if premium system is loaded and user is not already Pro
-  if (restoreRow && typeof PieLabPremium !== "undefined") {
+  // Only show if user is not already Pro
+  if (restoreRow) {
     if (PieLabPremium.isPro()) {
-      restoreRow.classList.add("hidden");
+      restoreRow.classList.add('hidden');
     }
   }
 
   if (restoreBtn) {
-    restoreBtn.addEventListener("click", async () => {
-      if (typeof PieLabPremium === "undefined") return;
+    restoreBtn.addEventListener('click', async () => {
       restoreBtn.disabled = true;
-      restoreBtn.textContent = "Restoring\u2026";
+      restoreBtn.textContent = 'Restoring\u2026';
 
       const restored = await PieLabPremium.restorePurchases();
 
       if (restored) {
-        restoreStatus.textContent = "Pro access restored!";
-        restoreStatus.classList.remove("hidden");
-        restoreBtn.textContent = "Restored";
+        restoreStatus.textContent = 'Pro access restored!';
+        restoreStatus.classList.remove('hidden');
+        restoreBtn.textContent = 'Restored';
         if (window.PieLabHaptics) PieLabHaptics.success();
       } else {
-        restoreStatus.textContent = "No previous purchase found.";
-        restoreStatus.classList.remove("hidden");
-        restoreBtn.textContent = "Restore Purchase";
+        restoreStatus.textContent = 'No previous purchase found.';
+        restoreStatus.classList.remove('hidden');
+        restoreBtn.textContent = 'Restore Purchase';
         restoreBtn.disabled = false;
       }
 
       setTimeout(() => {
-        restoreStatus.classList.add("fade-out");
+        restoreStatus.classList.add('fade-out');
         restoreStatus.addEventListener(
-          "transitionend",
-          () => { restoreStatus.classList.add("hidden"); restoreStatus.classList.remove("fade-out"); },
+          'transitionend',
+          () => {
+            restoreStatus.classList.add('hidden');
+            restoreStatus.classList.remove('fade-out');
+          },
           { once: true }
         );
       }, 3000);
@@ -400,38 +446,44 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ── Clear any saved theme override — always use system preference ──
-  localStorage.removeItem("pielab-theme");
-  const prefersDark = matchMedia("(prefers-color-scheme:dark)").matches;
-  document.documentElement.dataset.theme = prefersDark ? "dark" : "light";
+  localStorage.removeItem('pielab-theme');
+  const prefersDark = matchMedia('(prefers-color-scheme:dark)').matches;
+  document.documentElement.dataset.theme = prefersDark ? 'dark' : 'light';
 
   // ── Data Export / Import ──────────────────────────
   const BACKUP_KEYS = [
-    "pielab-journal",
-    "pielab-personal-settings",
-    "pielab-user-profile",
-    "pielab-style-levels",
+    'pielab-journal',
+    'pielab-personal-settings',
+    'pielab-user-profile',
+    'pielab-style-levels',
   ];
 
-  document.getElementById("btn-export").addEventListener("click", async () => {
+  document.getElementById('btn-export').addEventListener('click', async () => {
     const backup = { _version: 2, _exportedAt: new Date().toISOString() };
     BACKUP_KEYS.forEach((key) => {
-      const raw = localStorage.getItem(key);
-      try { backup[key] = raw ? JSON.parse(raw) : null; } catch { backup[key] = raw; }
+      const raw = PieLabStorage.get(key);
+      try {
+        backup[key] = raw ? JSON.parse(raw) : null;
+      } catch {
+        backup[key] = raw;
+      }
     });
 
     // Include IndexedDB photos in backup
-    if (typeof PieLabPhotos !== "undefined") {
-      try { backup._photos = await PieLabPhotos.getAllPhotos(); } catch {}
+    try {
+      backup._photos = await PieLabPhotos.getAllPhotos();
+    } catch {
+      /* ignore */
     }
 
     const json = JSON.stringify(backup, null, 2);
-    const blob = new Blob([json], { type: "application/json" });
+    const blob = new Blob([json], { type: 'application/json' });
     const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
-    const dateStr = new Date().toISOString().split("T")[0];
-    const filename = "pielab-backup-" + dateStr + ".json";
+    const dateStr = new Date().toISOString().split('T')[0];
+    const filename = 'pielab-backup-' + dateStr + '.json';
 
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
     a.download = filename;
     document.body.appendChild(a);
@@ -439,12 +491,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-    const status = document.getElementById("export-status");
-    status.textContent = "Exported " + filename + " (" + sizeMB + " MB)";
-    status.classList.remove("hidden");
+    const status = document.getElementById('export-status');
+    status.textContent = 'Exported ' + filename + ' (' + sizeMB + ' MB)';
+    status.classList.remove('hidden');
   });
 
-  document.getElementById("import-file").addEventListener("change", (e) => {
+  document.getElementById('import-file').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -454,27 +506,29 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = JSON.parse(evt.target.result);
         const hasValidKey = BACKUP_KEYS.some((key) => key in data);
         if (!hasValidKey) {
-          alert("This file doesn\u2019t appear to be a valid Pie Lab backup.");
+          alert('This file doesn\u2019t appear to be a valid Pie Lab backup.');
           return;
         }
-        const journalCount = Array.isArray(data["pielab-journal"])
-          ? data["pielab-journal"].length
+        const journalCount = Array.isArray(data['pielab-journal'])
+          ? data['pielab-journal'].length
           : 0;
         const msg =
-          "This will replace your current data with:\n" +
-          "- " + journalCount + " journal entries\n" +
-          "- Kitchen settings & profile\n\n" +
-          "Your current data will be overwritten. Continue?";
+          'This will replace your current data with:\n' +
+          '- ' +
+          journalCount +
+          ' journal entries\n' +
+          '- Kitchen settings & profile\n\n' +
+          'Your current data will be overwritten. Continue?';
         if (!confirm(msg)) return;
 
         BACKUP_KEYS.forEach((key) => {
           if (data[key] != null) {
-            localStorage.setItem(key, JSON.stringify(data[key]));
+            PieLabStorage.set(key, data[key]);
           }
         });
 
         // Restore IndexedDB photos if present in backup
-        if (data._photos && typeof PieLabPhotos !== "undefined") {
+        if (data._photos) {
           PieLabPhotos.importPhotos(data._photos)
             .catch(() => {})
             .finally(() => window.location.reload());
@@ -482,125 +536,126 @@ document.addEventListener("DOMContentLoaded", () => {
           window.location.reload();
         }
       } catch {
-        alert("Could not read backup file. Make sure it\u2019s a valid JSON file.");
+        alert('Could not read backup file. Make sure it\u2019s a valid JSON file.');
       }
     };
     reader.readAsText(file);
-    e.target.value = "";
+    e.target.value = '';
   });
 
   // ── Feedback Form ─────────────────────────────────
-  const fbType    = document.getElementById("fb-type");
-  const fbMessage = document.getElementById("fb-message");
-  const fbSend    = document.getElementById("btn-send-feedback");
-  const fbStatus  = document.getElementById("feedback-status");
+  const fbType = document.getElementById('fb-type');
+  const fbMessage = document.getElementById('fb-message');
+  const fbSend = document.getElementById('btn-send-feedback');
+  const fbStatus = document.getElementById('feedback-status');
 
-  fbSend.addEventListener("click", () => {
+  fbSend.addEventListener('click', () => {
     const message = fbMessage.value.trim();
     if (!message) {
       fbMessage.focus();
-      fbMessage.classList.add("input-error");
-      setTimeout(() => fbMessage.classList.remove("input-error"), 1500);
+      fbMessage.classList.add('input-error');
+      setTimeout(() => fbMessage.classList.remove('input-error'), 1500);
       return;
     }
 
-    const type   = fbType.value;
-    const labels = { bug: "Bug Report", feature: "Feature Request", general: "General Feedback" };
-    const label  = labels[type] || "Feedback";
+    const type = fbType.value;
+    const labels = { bug: 'Bug Report', feature: 'Feature Request', general: 'General Feedback' };
+    const label = labels[type] || 'Feedback';
 
     // Gather context automatically
     const profile = PieLabProfile.getProfile();
-    const device  = navigator.userAgent;
-    const screen  = `${window.screen.width}x${window.screen.height}`;
-    const theme   = document.documentElement.dataset.theme || "light";
+    const device = navigator.userAgent;
+    const screen = `${window.screen.width}x${window.screen.height}`;
+    const theme = document.documentElement.dataset.theme || 'light';
 
     // Build query params and open feedback on pielab.app
     const params = new URLSearchParams({
-      type:     label,
-      message:  message,
-      name:     profile.displayName || "",
-      location: profile.city || "",
-      units:    profile.unitSystem || "standard",
-      theme:    theme,
-      screen:   screen,
-      device:   device
+      type: label,
+      message: message,
+      name: profile.displayName || '',
+      location: profile.city || '',
+      units: profile.unitSystem || 'standard',
+      theme: theme,
+      screen: screen,
+      device: device,
     });
 
-    window.open(`https://www.pielab.app/feedback?${params.toString()}`, "_blank");
+    window.open(`https://www.pielab.app/feedback?${params.toString()}`, '_blank');
 
     // Show confirmation + clear form
-    fbMessage.value = "";
-    fbStatus.textContent = "Thanks! A feedback page has opened — please submit it there.";
-    fbStatus.classList.remove("hidden");
-    fbStatus.classList.remove("fade-out");
+    fbMessage.value = '';
+    fbStatus.textContent = 'Thanks! A feedback page has opened — please submit it there.';
+    fbStatus.classList.remove('hidden');
+    fbStatus.classList.remove('fade-out');
 
     setTimeout(() => {
-      fbStatus.classList.add("fade-out");
-      fbStatus.addEventListener(
-        "transitionend",
-        () => fbStatus.classList.add("hidden"),
-        { once: true }
-      );
+      fbStatus.classList.add('fade-out');
+      fbStatus.addEventListener('transitionend', () => fbStatus.classList.add('hidden'), {
+        once: true,
+      });
     }, 5000);
   });
 
   // ── Delete All Data (two-step confirmation) ─────────
-  const deleteBtn     = document.getElementById("k-delete-data");
-  const deleteModal   = document.getElementById("delete-data-modal");
-  const deleteStep1   = document.getElementById("delete-step-1");
-  const deleteStep2   = document.getElementById("delete-step-2");
-  const deleteConfirm = document.getElementById("delete-confirm");
+  const deleteBtn = document.getElementById('k-delete-data');
+  const deleteModal = document.getElementById('delete-data-modal');
+  const deleteStep1 = document.getElementById('delete-step-1');
+  const deleteStep2 = document.getElementById('delete-step-2');
+  const deleteConfirm = document.getElementById('delete-confirm');
 
   function resetDeleteModal() {
-    deleteModal.classList.add("hidden");
-    if (deleteStep1) deleteStep1.classList.remove("hidden");
-    if (deleteStep2) deleteStep2.classList.add("hidden");
+    deleteModal.classList.add('hidden');
+    if (deleteStep1) deleteStep1.classList.remove('hidden');
+    if (deleteStep2) deleteStep2.classList.add('hidden');
   }
 
   if (deleteBtn && deleteModal) {
-    deleteBtn.addEventListener("click", () => {
+    deleteBtn.addEventListener('click', () => {
       resetDeleteModal();
-      deleteModal.classList.remove("hidden");
+      deleteModal.classList.remove('hidden');
     });
 
     // Step 1 → Step 2
-    const stepNext = document.getElementById("delete-step-next");
-    if (stepNext) stepNext.addEventListener("click", () => {
-      deleteStep1.classList.add("hidden");
-      deleteStep2.classList.remove("hidden");
-    });
+    const stepNext = document.getElementById('delete-step-next');
+    if (stepNext)
+      stepNext.addEventListener('click', () => {
+        deleteStep1.classList.add('hidden');
+        deleteStep2.classList.remove('hidden');
+      });
 
     // Cancel buttons
-    const deleteCancel = document.getElementById("delete-cancel");
-    if (deleteCancel) deleteCancel.addEventListener("click", resetDeleteModal);
+    const deleteCancel = document.getElementById('delete-cancel');
+    if (deleteCancel) deleteCancel.addEventListener('click', resetDeleteModal);
 
-    const deleteCancel2 = document.getElementById("delete-cancel-2");
-    if (deleteCancel2) deleteCancel2.addEventListener("click", () => {
-      deleteStep2.classList.add("hidden");
-      deleteStep1.classList.remove("hidden");
-    });
+    const deleteCancel2 = document.getElementById('delete-cancel-2');
+    if (deleteCancel2)
+      deleteCancel2.addEventListener('click', () => {
+        deleteStep2.classList.add('hidden');
+        deleteStep1.classList.remove('hidden');
+      });
 
-    const deleteClose = document.getElementById("delete-modal-close");
-    if (deleteClose) deleteClose.addEventListener("click", resetDeleteModal);
+    const deleteClose = document.getElementById('delete-modal-close');
+    if (deleteClose) deleteClose.addEventListener('click', resetDeleteModal);
 
-    deleteModal.addEventListener("click", (e) => {
+    deleteModal.addEventListener('click', (e) => {
       if (e.target === deleteModal) resetDeleteModal();
     });
 
     // Step 2: confirmed — delete everything
-    if (deleteConfirm) deleteConfirm.addEventListener("click", () => {
-      if (window.PieLabHaptics) PieLabHaptics.warning();
-      const keys = Object.keys(localStorage).filter((k) => k.startsWith("pielab"));
-      keys.forEach((k) => localStorage.removeItem(k));
-      // Clear IndexedDB photo storage (does not affect camera roll)
-      if (typeof PieLabPhotos !== "undefined") {
-        PieLabPhotos.deleteAll().catch(() => {}).finally(() => {
-          window.location.href = "index.html";
-        });
-      } else {
-        window.location.href = "index.html";
-      }
-    });
+    if (deleteConfirm)
+      deleteConfirm.addEventListener('click', () => {
+        if (window.PieLabHaptics) PieLabHaptics.warning();
+        const keys = Object.keys(localStorage).filter((k) => k.startsWith('pielab'));
+        keys.forEach((k) => localStorage.removeItem(k));
+        // Also clear Preferences (native persistent storage)
+        PieLabStorage.removeAll().catch(() => {});
+        // Clear IndexedDB photo storage (does not affect camera roll)
+        PieLabPhotos.deleteAll()
+          .catch(() => {})
+          .finally(() => {
+            window.location.href = 'index.html';
+          });
+      });
   }
 
   // ── Kitchen Profile Guide (onboarding only) ────────────
@@ -608,45 +663,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const kitchenGuideSteps = [
     {
-      title: "What Should We Call You?",
-      body: "Your display name shows up on shared bake cards and your journal. It\u2019s how your pizza friends will know you.",
-      target: "#k-display-name",
+      title: 'What Should We Call You?',
+      body: 'Your display name shows up on shared bake cards and your journal. It\u2019s how your pizza friends will know you.',
+      target: '#k-display-name',
     },
     {
-      title: "Where\u2019s Your Kitchen?",
-      body: "Your city tells us your elevation. Dough behaves differently at 5,000 ft vs sea level \u2014 we adjust yeast and hydration automatically.",
-      target: "#k-city",
+      title: 'Where\u2019s Your Kitchen?',
+      body: 'Your city tells us your elevation. Dough behaves differently at 5,000 ft vs sea level \u2014 we adjust yeast and hydration automatically.',
+      target: '#k-city',
     },
     {
-      title: "What Oven Do You Use?",
-      body: "Your oven type prefills every bake with the right temps and cook times. Home oven, Ooni, Roccbox \u2014 we\u2019ve got you covered.",
-      target: "#k-oven",
+      title: 'What Oven Do You Use?',
+      body: 'Your oven type prefills every bake with the right temps and cook times. Home oven, Ooni, Roccbox \u2014 we\u2019ve got you covered.',
+      target: '#k-oven',
     },
     {
-      title: "How Humid Is It?",
-      body: "Humidity affects how much water your flour absorbs. If you\u2019re in a dry or humid climate, we\u2019ll fine-tune hydration for you.",
-      target: "#k-humidity",
+      title: 'How Humid Is It?',
+      body: 'Humidity affects how much water your flour absorbs. If you\u2019re in a dry or humid climate, we\u2019ll fine-tune hydration for you.',
+      target: '#k-humidity',
     },
     {
-      title: "Pick Your Go-To Style",
-      body: "Your favorite style prepopulates the calculator so you can jump straight to baking. You can always switch styles later.",
-      target: "#k-style",
+      title: 'Pick Your Go-To Style',
+      body: 'Your favorite style prepopulates the calculator so you can jump straight to baking. You can always switch styles later.',
+      target: '#k-style',
     },
     {
-      title: "How Do You Measure?",
-      body: "Standard uses ounces and \u00B0F. Metric uses grams and \u00B0C. Measure in grams but cook in \u00B0F? Choose Hybrid.",
-      target: "#k-units",
+      title: 'How Do You Measure?',
+      body: 'Standard uses ounces and \u00B0F. Metric uses grams and \u00B0C. Measure in grams but cook in \u00B0F? Choose Hybrid.',
+      target: '#k-units',
     },
     {
-      title: "You\u2019re All Set!",
-      body: "Fill in your details above and hit Save My Kitchen. We\u2019ll use these settings to personalize every recipe.",
-      target: "#k-save",
-      nextLabel: "Got It!",
+      title: 'You\u2019re All Set!',
+      body: 'Fill in your details above and hit Save My Kitchen. We\u2019ll use these settings to personalize every recipe.',
+      target: '#k-save',
+      nextLabel: 'Got It!',
     },
   ];
 
   function shouldShowKitchenGuide() {
-    return urlParams.get("onboarding") === "1";
+    return urlParams.get('onboarding') === '1';
   }
 
   let kitchenGuideActive = false;
@@ -654,10 +709,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function startKitchenGuide() {
     kitchenGuideActive = true;
     let kgStep = 0;
-    let kgCleanup = null;
+    let _kgCleanup = null;
 
-    const kgOverlay = document.createElement("div");
-    kgOverlay.className = "firstbake-overlay";
+    const kgOverlay = document.createElement('div');
+    kgOverlay.className = 'firstbake-overlay';
     kgOverlay.innerHTML = `
       <div class="firstbake-card">
         <button class="firstbake-skip" id="kg-skip" aria-label="Close guide">Skip</button>
@@ -672,11 +727,11 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     // Move card to body level so it escapes overlay's stacking context
-    const kgCardEl = kgOverlay.querySelector(".firstbake-card");
+    const kgCardEl = kgOverlay.querySelector('.firstbake-card');
     document.body.appendChild(kgCardEl);
 
-    const kgHighlight = document.createElement("div");
-    kgHighlight.className = "firstbake-highlight hidden";
+    const kgHighlight = document.createElement('div');
+    kgHighlight.className = 'firstbake-highlight hidden';
     document.body.appendChild(kgHighlight);
     document.body.appendChild(kgOverlay);
 
@@ -684,30 +739,30 @@ document.addEventListener("DOMContentLoaded", () => {
       const step = kitchenGuideSteps[kgStep];
       const total = kitchenGuideSteps.length;
 
-      document.getElementById("kg-step-count").textContent = `Step ${kgStep + 1} of ${total}`;
-      document.getElementById("kg-title").textContent = step.title;
-      document.getElementById("kg-body").textContent = step.body;
+      document.getElementById('kg-step-count').textContent = `Step ${kgStep + 1} of ${total}`;
+      document.getElementById('kg-title').textContent = step.title;
+      document.getElementById('kg-body').textContent = step.body;
 
-      const backBtn = document.getElementById("kg-back");
-      backBtn.classList.toggle("hidden", kgStep === 0);
+      const backBtn = document.getElementById('kg-back');
+      backBtn.classList.toggle('hidden', kgStep === 0);
 
-      const nextBtn = document.getElementById("kg-next");
-      nextBtn.textContent = step.nextLabel || (kgStep === total - 1 ? "Done" : "Next");
+      const nextBtn = document.getElementById('kg-next');
+      nextBtn.textContent = step.nextLabel || (kgStep === total - 1 ? 'Done' : 'Next');
 
-      kgHighlight.classList.add("hidden");
+      kgHighlight.classList.add('hidden');
       if (step.target) {
         setTimeout(() => {
           const el = document.querySelector(step.target);
           if (el) {
-            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
             setTimeout(() => {
               const rect = el.getBoundingClientRect();
               const pad = 6;
-              kgHighlight.style.top = (rect.top + window.scrollY - pad) + "px";
-              kgHighlight.style.left = (rect.left - pad) + "px";
-              kgHighlight.style.width = (rect.width + pad * 2) + "px";
-              kgHighlight.style.height = (rect.height + pad * 2) + "px";
-              kgHighlight.classList.remove("hidden");
+              kgHighlight.style.top = rect.top + window.scrollY - pad + 'px';
+              kgHighlight.style.left = rect.left - pad + 'px';
+              kgHighlight.style.width = rect.width + pad * 2 + 'px';
+              kgHighlight.style.height = rect.height + pad * 2 + 'px';
+              kgHighlight.classList.remove('hidden');
             }, 350);
           }
         }, 50);
@@ -718,11 +773,11 @@ document.addEventListener("DOMContentLoaded", () => {
       kitchenGuideActive = false;
       kgHighlight.remove();
       kgCardEl.remove();
-      kgOverlay.classList.remove("firstbake-overlay--visible");
+      kgOverlay.classList.remove('firstbake-overlay--visible');
       setTimeout(() => kgOverlay.remove(), 300);
     }
 
-    document.getElementById("kg-next").addEventListener("click", () => {
+    document.getElementById('kg-next').addEventListener('click', () => {
       if (kgStep < kitchenGuideSteps.length - 1) {
         kgStep++;
         renderStep();
@@ -731,16 +786,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    document.getElementById("kg-back").addEventListener("click", () => {
+    document.getElementById('kg-back').addEventListener('click', () => {
       if (kgStep > 0) {
         kgStep--;
         renderStep();
       }
     });
 
-    document.getElementById("kg-skip").addEventListener("click", close);
+    document.getElementById('kg-skip').addEventListener('click', close);
 
-    requestAnimationFrame(() => kgOverlay.classList.add("firstbake-overlay--visible"));
+    requestAnimationFrame(() => kgOverlay.classList.add('firstbake-overlay--visible'));
     renderStep();
   }
 

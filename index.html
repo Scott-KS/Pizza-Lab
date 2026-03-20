@@ -1,91 +1,119 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Pie Lab — Make</title>
-  <link rel="icon" type="image/svg+xml" href="assets/logos/favicon-32.svg">
-  <link rel="apple-touch-icon" href="assets/logos/logo-monogram-512.svg">
-  <meta property="og:image" content="assets/logos/logo-stacked.svg">
-  <meta name="description" content="Pizza recipe calculator, dough scheduler, and baking journal.">
-  <meta name="theme-color" content="#c0392b">
-  <link rel="manifest" href="manifest.json">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=29" />
-</head>
-<body data-page="welcome" class="splash-page">
-
-  <!-- Pizza Carousel Hero -->
-  <section class="pizza-hero">
-    <div class="carousel-track">
-      <div class="carousel-slide active" data-style="neapolitan" role="img" aria-label="Neapolitan pizza" style="background-image: url('Images/Neapolitan.webp')">
-        <span class="slide-label">Neapolitan</span>
-      </div>
-      <div class="carousel-slide" data-style="new-york" role="img" aria-label="New York pizza" style="background-image: url('Images/New-York.webp')">
-        <span class="slide-label">New York</span>
-      </div>
-      <div class="carousel-slide" data-style="grandma" role="img" aria-label="Grandma pizza" style="background-image: url('Images/Grandma.webp')">
-        <span class="slide-label">Grandma</span>
-      </div>
-      <div class="carousel-slide" data-style="chicago-tavern" role="img" aria-label="Chicago Tavern pizza" style="background-image: url('Images/Chicago-Tavern.webp')">
-        <span class="slide-label">Chicago Tavern</span>
-      </div>
-      <div class="carousel-slide" data-style="sicilian" role="img" aria-label="Sicilian pizza" style="background-image: url('Images/Sicilian.webp')">
-        <span class="slide-label">Sicilian</span>
-      </div>
-      <div class="carousel-slide" data-style="ohio-valley" role="img" aria-label="Ohio Valley pizza" style="background-image: url('Images/Ohio-Valley.webp')">
-        <span class="slide-label">Ohio Valley</span>
-      </div>
-    </div>
-    <div class="carousel-overlay"></div>
-    <div class="carousel-content">
-      <img src="assets/logos/logo-transparent.svg" alt="The Pie Lab" class="hero-logo" />
-      <p class="hero-subtitle">Every style. Every crust. Every craving.</p>
-      <a href="calculator.html" class="btn-start-baking" id="btn-start">Start Baking</a>
-    </div>
-    <div class="carousel-dots">
-      <button type="button" class="dot active" data-index="0" aria-label="Slide 1"></button>
-      <button type="button" class="dot" data-index="1" aria-label="Slide 2"></button>
-      <button type="button" class="dot" data-index="2" aria-label="Slide 3"></button>
-      <button type="button" class="dot" data-index="3" aria-label="Slide 4"></button>
-      <button type="button" class="dot" data-index="4" aria-label="Slide 5"></button>
-      <button type="button" class="dot" data-index="5" aria-label="Slide 6"></button>
-    </div>
-    <button type="button" class="carousel-arrow prev" aria-label="Previous">&#8592;</button>
-    <button type="button" class="carousel-arrow next" aria-label="Next">&#8594;</button>
-    <footer class="splash-legal">
-      <a href="legal.html#privacy">Privacy</a>
-      <a href="legal.html#terms">Terms</a>
-      <a href="legal.html#refund">Refund Policy</a>
-    </footer>
-  </section>
-
-  <script src="js/capacitor-init.js?v=1"></script>
-  <script src="js/carousel.js?v=1"></script>
-  <script src="js/onboarding.js?v=1"></script>
-  <script>if("serviceWorker"in navigator)window.addEventListener("load",()=>{navigator.serviceWorker.register("/sw.js").catch(()=>{})})</script>
-  <script>
-    // Route new users through onboarding, returning users to Calculator
-    document.getElementById("btn-start").addEventListener("click", function(e) {
-      e.preventDefault();
-      try {
-        var raw = localStorage.getItem("pielab-user-profile");
-        var profile = raw ? JSON.parse(raw) : null;
-        var hasProfile = profile && profile.displayName && profile.displayName.trim() !== "";
-        if (hasProfile) {
-          window.location.href = "calculator.html";
-        } else if (PieLabOnboarding.shouldShow()) {
-          PieLabOnboarding.start();
-        } else {
-          window.location.href = "kitchen.html?welcome=1";
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Pie Lab — Make</title>
+    <link rel="icon" type="image/svg+xml" href="assets/logos/favicon-32.svg" />
+    <link rel="apple-touch-icon" href="assets/logos/logo-monogram-512.svg" />
+    <meta property="og:image" content="assets/logos/logo-stacked.svg" />
+    <meta
+      name="description"
+      content="Pizza recipe calculator, dough scheduler, and baking journal."
+    />
+    <meta name="theme-color" content="#c0392b" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var t = localStorage.getItem('pielab-theme'),
+          d = t === 'dark' || (!t && matchMedia('(prefers-color-scheme:dark)').matches);
+        if (d) {
+          document.documentElement.dataset.theme = 'dark';
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.content = '#1a1a1a';
         }
-      } catch(err) {
-        window.location.href = "calculator.html";
-      }
-    });
-  </script>
-</body>
+      })();
+    </script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="welcome" class="splash-page">
+    <!-- Pizza Carousel Hero -->
+    <section class="pizza-hero">
+      <div class="carousel-track">
+        <div
+          class="carousel-slide active"
+          data-style="neapolitan"
+          role="img"
+          aria-label="Neapolitan pizza"
+          style="background-image: url('Images/Neapolitan.webp')"
+        >
+          <span class="slide-label">Neapolitan</span>
+        </div>
+        <div
+          class="carousel-slide"
+          data-style="new-york"
+          role="img"
+          aria-label="New York pizza"
+          style="background-image: url('Images/New-York.webp')"
+        >
+          <span class="slide-label">New York</span>
+        </div>
+        <div
+          class="carousel-slide"
+          data-style="grandma"
+          role="img"
+          aria-label="Grandma pizza"
+          style="background-image: url('Images/Grandma.webp')"
+        >
+          <span class="slide-label">Grandma</span>
+        </div>
+        <div
+          class="carousel-slide"
+          data-style="chicago-tavern"
+          role="img"
+          aria-label="Chicago Tavern pizza"
+          style="background-image: url('Images/Chicago-Tavern.webp')"
+        >
+          <span class="slide-label">Chicago Tavern</span>
+        </div>
+        <div
+          class="carousel-slide"
+          data-style="sicilian"
+          role="img"
+          aria-label="Sicilian pizza"
+          style="background-image: url('Images/Sicilian.webp')"
+        >
+          <span class="slide-label">Sicilian</span>
+        </div>
+        <div
+          class="carousel-slide"
+          data-style="ohio-valley"
+          role="img"
+          aria-label="Ohio Valley pizza"
+          style="background-image: url('Images/Ohio-Valley.webp')"
+        >
+          <span class="slide-label">Ohio Valley</span>
+        </div>
+      </div>
+      <div class="carousel-overlay"></div>
+      <div class="carousel-content">
+        <img src="assets/logos/logo-transparent.svg" alt="The Pie Lab" class="hero-logo" />
+        <p class="hero-subtitle">Every style. Every crust. Every craving.</p>
+        <a href="calculator.html" class="btn-start-baking" id="btn-start">Start Baking</a>
+      </div>
+      <div class="carousel-dots">
+        <button type="button" class="dot active" data-index="0" aria-label="Slide 1"></button>
+        <button type="button" class="dot" data-index="1" aria-label="Slide 2"></button>
+        <button type="button" class="dot" data-index="2" aria-label="Slide 3"></button>
+        <button type="button" class="dot" data-index="3" aria-label="Slide 4"></button>
+        <button type="button" class="dot" data-index="4" aria-label="Slide 5"></button>
+        <button type="button" class="dot" data-index="5" aria-label="Slide 6"></button>
+      </div>
+      <button type="button" class="carousel-arrow prev" aria-label="Previous">&#8592;</button>
+      <button type="button" class="carousel-arrow next" aria-label="Next">&#8594;</button>
+      <footer class="splash-legal">
+        <a href="legal.html#privacy">Privacy</a>
+        <a href="legal.html#terms">Terms</a>
+        <a href="legal.html#refund">Refund Policy</a>
+      </footer>
+    </section>
+
+    <script type="module" src="js/pages/index.js"></script>
+  </body>
 </html>

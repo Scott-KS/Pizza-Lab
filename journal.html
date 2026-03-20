@@ -1,287 +1,369 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Pie Lab — Pizza Journal</title>
-  <link rel="icon" type="image/svg+xml" href="assets/logos/favicon-32.svg">
-  <link rel="apple-touch-icon" href="assets/logos/logo-monogram-512.svg">
-  <meta property="og:image" content="assets/logos/logo-stacked.svg">
-  <meta name="description" content="Pizza recipe calculator, dough scheduler, and baking journal.">
-  <meta name="theme-color" content="#c0392b">
-  <link rel="manifest" href="manifest.json">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=29" />
-</head>
-<body data-page="journal">
-
-  <!-- Shared Navigation -->
-  <header class="site-header">
-    <nav class="site-nav">
-      <a href="index.html" class="nav-logo">
-        <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" />
-      </a>
-      <div class="nav-links">
-        <a href="calculator.html" class="nav-link" data-page="calculator">Make</a>
-        <a href="schedule.html" class="nav-link" data-page="schedule">
-          Schedule
-          <span class="schedule-badge hidden"></span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Pie Lab — Pizza Journal</title>
+    <link rel="icon" type="image/svg+xml" href="assets/logos/favicon-32.svg" />
+    <link rel="apple-touch-icon" href="assets/logos/logo-monogram-512.svg" />
+    <meta property="og:image" content="assets/logos/logo-stacked.svg" />
+    <meta
+      name="description"
+      content="Pizza recipe calculator, dough scheduler, and baking journal."
+    />
+    <meta name="theme-color" content="#c0392b" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var t = localStorage.getItem('pielab-theme'),
+          d = t === 'dark' || (!t && matchMedia('(prefers-color-scheme:dark)').matches);
+        if (d) {
+          document.documentElement.dataset.theme = 'dark';
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.content = '#1a1a1a';
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="journal">
+    <!-- Shared Navigation -->
+    <header class="site-header">
+      <nav class="site-nav">
+        <a href="index.html" class="nav-logo">
+          <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" />
         </a>
-        <a href="journal.html" class="nav-link" data-page="journal">Journal</a>
-        <a href="learn.html" class="nav-link" data-page="learn">Learn</a>
-        <a href="kitchen.html" class="nav-link" data-page="kitchen">My Kitchen</a>
-      </div>
-    </nav>
-  </header>
-
-  <main>
-    <!-- Pizza Journal -->
-    <section class="pizza-journal" id="pizza-journal">
-      <h2>Pizza Journal</h2>
-
-      <div class="journal-storage" id="journal-storage">
-        <div class="storage-label" id="storage-label">Storage: calculating…</div>
-        <div class="storage-bar"><div class="storage-bar-fill" id="storage-bar-fill"></div></div>
-      </div>
-
-      <!-- Journal Tab Bar -->
-      <nav class="journal-tabs" id="journal-tabs" role="tablist">
-        <button class="journal-tab active" data-tab="bakes" role="tab" aria-selected="true" aria-controls="tab-panel-bakes">Bakes</button>
-        <button class="journal-tab" data-tab="passport" role="tab" aria-selected="false" aria-controls="tab-panel-passport">Passport</button>
-        <button class="journal-tab" data-tab="library" role="tab" aria-selected="false" aria-controls="tab-panel-library">Library</button>
+        <div class="nav-links">
+          <a href="calculator.html" class="nav-link" data-page="calculator">Make</a>
+          <a href="schedule.html" class="nav-link" data-page="schedule">
+            Schedule
+            <span class="schedule-badge hidden"></span>
+          </a>
+          <a href="journal.html" class="nav-link" data-page="journal">Journal</a>
+          <a href="learn.html" class="nav-link" data-page="learn">Learn</a>
+          <a href="kitchen.html" class="nav-link" data-page="kitchen">My Kitchen</a>
+        </div>
       </nav>
+    </header>
 
-      <!-- Tab Panel: Bakes -->
-      <div class="journal-tab-panel active" id="tab-panel-bakes" role="tabpanel">
+    <main>
+      <!-- Pizza Journal -->
+      <section class="pizza-journal" id="pizza-journal">
+        <h2>Pizza Journal</h2>
 
-        <!-- Accordion: Log a Bake -->
-        <div class="accordion-item" id="accordion-log">
-          <button class="accordion-header" type="button" id="accordion-log-header">
-            <span class="accordion-title">Log a Bake</span>
-            <span class="accordion-arrow">&#9660;</span>
+        <div class="journal-storage" id="journal-storage">
+          <div class="storage-label" id="storage-label">Storage: calculating…</div>
+          <div class="storage-bar"><div class="storage-bar-fill" id="storage-bar-fill"></div></div>
+        </div>
+
+        <!-- Journal Tab Bar -->
+        <nav class="journal-tabs" id="journal-tabs" role="tablist">
+          <button
+            class="journal-tab active"
+            data-tab="bakes"
+            role="tab"
+            aria-selected="true"
+            aria-controls="tab-panel-bakes"
+          >
+            Bakes
           </button>
-          <div class="accordion-body" id="accordion-log-body">
-            <div class="accordion-inner">
-              <div id="journal-form-wrapper">
-                <h3 id="journal-form-heading">Log a Bake</h3>
-                <form id="journal-form">
-                  <div class="form-group">
-                    <label for="j-bake-name">Bake Name <span class="field-hint">(optional)</span></label>
-                    <input type="text" id="j-bake-name" placeholder="e.g. Sunday Night Margherita" maxlength="80" />
-                  </div>
-                  <div class="journal-form-grid">
-                    <div class="form-group">
-                      <label for="j-style">Pizza Style</label>
-                      <select id="j-style" required>
-                        <option value="" disabled selected>Select a style&hellip;</option>
-                      </select>
-                      <p id="j-style-history" class="style-history-note hidden"></p>
-                    </div>
-                    <div class="form-group">
-                      <label for="j-date">Date</label>
-                      <input type="date" id="j-date" required />
-                    </div>
-                  </div>
-                  <div class="dough-snapshot" id="j-dough-snapshot">
-                    <span class="snapshot-label">Dough Snapshot:</span>
-                    <span class="snapshot-empty">Calculate a recipe first to capture dough settings</span>
-                  </div>
-                  <div class="journal-form-grid" id="j-bake-details-grid">
-                    <div class="form-group">
-                      <label for="j-bake-temp">Bake Temp (&deg;F)</label>
-                      <input type="number" id="j-bake-temp" min="300" max="1000" />
-                    </div>
-                    <div class="form-group">
-                      <label for="j-bake-time">Bake Time</label>
-                      <input type="text" inputmode="numeric" id="j-bake-time" placeholder="e.g. 8–12" />
-                    </div>
-                    <div class="form-group">
-                      <label for="j-oven-type">Oven Type</label>
-                      <select id="j-oven-type"></select>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label id="rating-label">Rating</label>
-                    <div class="star-rating" id="j-star-rating" role="group" aria-labelledby="rating-label">
-                      <button type="button" class="star" data-value="1" aria-label="1 star">&#9733;</button>
-                      <button type="button" class="star" data-value="2" aria-label="2 stars">&#9733;</button>
-                      <button type="button" class="star" data-value="3" aria-label="3 stars">&#9733;</button>
-                      <button type="button" class="star" data-value="4" aria-label="4 stars">&#9733;</button>
-                      <button type="button" class="star" data-value="5" aria-label="5 stars">&#9733;</button>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="j-notes">Notes</label>
-                    <textarea id="j-notes" rows="3" placeholder="How did it turn out? What would you change?"></textarea>
-                  </div>
-                  <div class="form-group">
-                    <label>Photos <span class="photo-count-hint">(up to 4)</span></label>
-                    <input type="file" id="j-photo-input" accept="image/*" multiple class="sr-only" />
-                    <div class="photo-grid" id="j-photo-grid"></div>
-                    <label for="j-photo-input" class="photo-add-btn" id="j-photo-add-btn">
-                      <span class="photo-icon">&#128247;</span>
-                      <span>Add Photos</span>
-                    </label>
-                  </div>
-                  <div class="journal-form-actions">
-                    <button type="submit" class="btn-save-entry">Save Entry</button>
-                    <button type="button" class="btn-cancel-entry" id="btn-cancel-entry">Cancel</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Accordion: History -->
-        <div class="accordion-item open" id="accordion-history">
-          <button class="accordion-header" type="button" id="accordion-history-header">
-            <span class="accordion-title">History</span>
-            <span class="accordion-arrow">&#9660;</span>
+          <button
+            class="journal-tab"
+            data-tab="passport"
+            role="tab"
+            aria-selected="false"
+            aria-controls="tab-panel-passport"
+          >
+            Passport
           </button>
-          <div class="accordion-body" id="accordion-history-body">
-            <div class="accordion-inner">
-              <div class="journal-toolbar">
-                <div class="journal-search">
-                  <input type="search" id="journal-search-input" placeholder="Search bakes…" aria-label="Search journal entries" />
-                </div>
-                <div class="journal-filter">
-                  <label for="journal-style-filter">Filter by style:</label>
-                  <select id="journal-style-filter">
-                    <option value="all">All Styles</option>
-                  </select>
-                </div>
-                <div class="journal-sort">
-                  <label for="journal-sort-select">Sort:</label>
-                  <select id="journal-sort-select">
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="hydration-high">Highest Hydration</option>
-                    <option value="hydration-low">Lowest Hydration</option>
-                    <option value="rating-high">Highest Rating</option>
-                    <option value="rating-low">Lowest Rating</option>
-                  </select>
-                </div>
-                <button class="btn-compare" id="btn-compare" disabled>Compare</button>
-                <p class="compare-hint" id="compare-hint"></p>
-              </div>
-              <div class="journal-entries" id="journal-entries"></div>
-              <div class="journal-comparison hidden" id="journal-comparison"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Accordion: Bake Stats -->
-        <div class="accordion-item" id="accordion-stats">
-          <button class="accordion-header" type="button" id="accordion-stats-header">
-            <span class="accordion-title">Bake Stats</span>
-            <span class="accordion-arrow">&#9660;</span>
+          <button
+            class="journal-tab"
+            data-tab="library"
+            role="tab"
+            aria-selected="false"
+            aria-controls="tab-panel-library"
+          >
+            Library
           </button>
-          <div class="accordion-body" id="accordion-stats-body">
-            <div class="accordion-inner">
-              <div class="journal-stats-section" id="journal-stats-section">
-                <div class="stats-grid" id="stats-grid"></div>
+        </nav>
+
+        <!-- Tab Panel: Bakes -->
+        <div class="journal-tab-panel active" id="tab-panel-bakes" role="tabpanel">
+          <!-- Accordion: Log a Bake -->
+          <div class="accordion-item" id="accordion-log">
+            <button class="accordion-header" type="button" id="accordion-log-header">
+              <span class="accordion-title">Log a Bake</span>
+              <span class="accordion-arrow">&#9660;</span>
+            </button>
+            <div class="accordion-body" id="accordion-log-body">
+              <div class="accordion-inner">
+                <div id="journal-form-wrapper">
+                  <h3 id="journal-form-heading">Log a Bake</h3>
+                  <form id="journal-form">
+                    <div class="form-group">
+                      <label for="j-bake-name"
+                        >Bake Name <span class="field-hint">(optional)</span></label
+                      >
+                      <input
+                        type="text"
+                        id="j-bake-name"
+                        placeholder="e.g. Sunday Night Margherita"
+                        maxlength="80"
+                      />
+                    </div>
+                    <div class="journal-form-grid">
+                      <div class="form-group">
+                        <label for="j-style">Pizza Style</label>
+                        <select id="j-style" required>
+                          <option value="" disabled selected>Select a style&hellip;</option>
+                        </select>
+                        <p id="j-style-history" class="style-history-note hidden"></p>
+                      </div>
+                      <div class="form-group">
+                        <label for="j-date">Date</label>
+                        <input type="date" id="j-date" required />
+                      </div>
+                    </div>
+                    <div class="dough-snapshot" id="j-dough-snapshot">
+                      <span class="snapshot-label">Dough Snapshot:</span>
+                      <span class="snapshot-empty"
+                        >Calculate a recipe first to capture dough settings</span
+                      >
+                    </div>
+                    <div class="journal-form-grid" id="j-bake-details-grid">
+                      <div class="form-group">
+                        <label for="j-bake-temp">Bake Temp (&deg;F)</label>
+                        <input type="number" id="j-bake-temp" min="300" max="1000" />
+                      </div>
+                      <div class="form-group">
+                        <label for="j-bake-time">Bake Time</label>
+                        <input
+                          type="text"
+                          inputmode="numeric"
+                          id="j-bake-time"
+                          placeholder="e.g. 8–12"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="j-oven-type">Oven Type</label>
+                        <select id="j-oven-type"></select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label id="rating-label">Rating</label>
+                      <div
+                        class="star-rating"
+                        id="j-star-rating"
+                        role="group"
+                        aria-labelledby="rating-label"
+                      >
+                        <button type="button" class="star" data-value="1" aria-label="1 star">
+                          &#9733;
+                        </button>
+                        <button type="button" class="star" data-value="2" aria-label="2 stars">
+                          &#9733;
+                        </button>
+                        <button type="button" class="star" data-value="3" aria-label="3 stars">
+                          &#9733;
+                        </button>
+                        <button type="button" class="star" data-value="4" aria-label="4 stars">
+                          &#9733;
+                        </button>
+                        <button type="button" class="star" data-value="5" aria-label="5 stars">
+                          &#9733;
+                        </button>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="j-notes">Notes</label>
+                      <textarea
+                        id="j-notes"
+                        rows="3"
+                        placeholder="How did it turn out? What would you change?"
+                      ></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>Photos <span class="photo-count-hint">(up to 4)</span></label>
+                      <input
+                        type="file"
+                        id="j-photo-input"
+                        accept="image/*"
+                        multiple
+                        class="sr-only"
+                      />
+                      <div class="photo-grid" id="j-photo-grid"></div>
+                      <label for="j-photo-input" class="photo-add-btn" id="j-photo-add-btn">
+                        <span class="photo-icon">&#128247;</span>
+                        <span>Add Photos</span>
+                      </label>
+                    </div>
+                    <div class="journal-form-actions">
+                      <button type="submit" class="btn-save-entry">Save Entry</button>
+                      <button type="button" class="btn-cancel-entry" id="btn-cancel-entry">
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
-              <div class="analytics-section" id="analytics-section">
-                <h4>Bake Analytics <span class="premium-tag">PRO</span></h4>
-                <p class="section-hint">Unlocks after 3 bakes</p>
-                <div class="analytics-body" id="analytics-body">
-                  <div class="analytics-timeline" id="analytics-timeline"></div>
-                  <div class="analytics-grid" id="analytics-grid"></div>
+            </div>
+          </div>
+
+          <!-- Accordion: History -->
+          <div class="accordion-item open" id="accordion-history">
+            <button class="accordion-header" type="button" id="accordion-history-header">
+              <span class="accordion-title">History</span>
+              <span class="accordion-arrow">&#9660;</span>
+            </button>
+            <div class="accordion-body" id="accordion-history-body">
+              <div class="accordion-inner">
+                <div class="journal-toolbar">
+                  <div class="journal-search">
+                    <input
+                      type="search"
+                      id="journal-search-input"
+                      placeholder="Search bakes…"
+                      aria-label="Search journal entries"
+                    />
+                  </div>
+                  <div class="journal-filter">
+                    <label for="journal-style-filter">Filter by style:</label>
+                    <select id="journal-style-filter">
+                      <option value="all">All Styles</option>
+                    </select>
+                  </div>
+                  <div class="journal-sort">
+                    <label for="journal-sort-select">Sort:</label>
+                    <select id="journal-sort-select">
+                      <option value="newest">Newest First</option>
+                      <option value="oldest">Oldest First</option>
+                      <option value="hydration-high">Highest Hydration</option>
+                      <option value="hydration-low">Lowest Hydration</option>
+                      <option value="rating-high">Highest Rating</option>
+                      <option value="rating-low">Lowest Rating</option>
+                    </select>
+                  </div>
+                  <button class="btn-compare" id="btn-compare" disabled>Compare</button>
+                  <p class="compare-hint" id="compare-hint"></p>
+                </div>
+                <div class="journal-entries" id="journal-entries"></div>
+                <div class="journal-comparison hidden" id="journal-comparison"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Accordion: Bake Stats -->
+          <div class="accordion-item" id="accordion-stats">
+            <button class="accordion-header" type="button" id="accordion-stats-header">
+              <span class="accordion-title">Bake Stats</span>
+              <span class="accordion-arrow">&#9660;</span>
+            </button>
+            <div class="accordion-body" id="accordion-stats-body">
+              <div class="accordion-inner">
+                <div class="journal-stats-section" id="journal-stats-section">
+                  <div class="stats-grid" id="stats-grid"></div>
+                </div>
+                <div class="analytics-section" id="analytics-section">
+                  <h4>Bake Analytics <span class="premium-tag">PRO</span></h4>
+                  <p class="section-hint">Unlocks after 3 bakes</p>
+                  <div class="analytics-body" id="analytics-body">
+                    <div class="analytics-timeline" id="analytics-timeline"></div>
+                    <div class="analytics-grid" id="analytics-grid"></div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-      </div>
-
-      <!-- Tab Panel: Passport -->
-      <div class="journal-tab-panel" id="tab-panel-passport" role="tabpanel">
-        <div class="passport-section" id="passport-section">
-          <h3>Style Passport</h3>
-          <p class="kitchen-subtitle">Log a bake in every style to fill your passport.</p>
-          <div class="passport-progress" id="passport-progress"><span id="passport-count">0</span> of 13 unlocked</div>
-          <div class="passport-grid" id="passport-grid"></div>
-        </div>
-      </div>
-
-      <!-- Tab Panel: Library -->
-      <div class="journal-tab-panel" id="tab-panel-library" role="tabpanel">
-        <div class="dough-library-section" id="dough-library-section">
-          <h3 class="dough-library-heading">Dough Library <span class="premium-tag">PRO</span></h3>
-          <div class="dough-library-body" id="dough-library-body">
-            <div class="dough-library-filter">
-              <label for="dough-library-style-filter">Filter by style:</label>
-              <select id="dough-library-style-filter">
-                <option value="all">All Styles</option>
-              </select>
+        <!-- Tab Panel: Passport -->
+        <div class="journal-tab-panel" id="tab-panel-passport" role="tabpanel">
+          <div class="passport-section" id="passport-section">
+            <h3>Style Passport</h3>
+            <p class="kitchen-subtitle">Log a bake in every style to fill your passport.</p>
+            <div class="passport-progress" id="passport-progress">
+              <span id="passport-count">0</span> of 13 unlocked
             </div>
-            <div class="dough-library-grid" id="dough-library-grid"></div>
-            <p class="dough-library-empty hidden" id="dough-library-empty">No saved doughs yet. Use Save Dough in the calculator to add one.</p>
+            <div class="passport-grid" id="passport-grid"></div>
           </div>
         </div>
-      </div>
-    </section>
-  </main>
 
-  <!-- Journal Detail Modal -->
-  <div class="modal-overlay hidden" id="journal-detail-modal">
-    <div class="modal-content">
-      <button type="button" class="modal-close" id="modal-close" aria-label="Close">&times;</button>
-      <div id="modal-body"></div>
+        <!-- Tab Panel: Library -->
+        <div class="journal-tab-panel" id="tab-panel-library" role="tabpanel">
+          <div class="dough-library-section" id="dough-library-section">
+            <h3 class="dough-library-heading">
+              Dough Library <span class="premium-tag">PRO</span>
+            </h3>
+            <div class="dough-library-body" id="dough-library-body">
+              <div class="dough-library-filter">
+                <label for="dough-library-style-filter">Filter by style:</label>
+                <select id="dough-library-style-filter">
+                  <option value="all">All Styles</option>
+                </select>
+              </div>
+              <div class="dough-library-grid" id="dough-library-grid"></div>
+              <p class="dough-library-empty hidden" id="dough-library-empty">
+                No saved doughs yet. Use Save Dough in the calculator to add one.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Journal Detail Modal -->
+    <div class="modal-overlay hidden" id="journal-detail-modal">
+      <div class="modal-content">
+        <button type="button" class="modal-close" id="modal-close" aria-label="Close">
+          &times;
+        </button>
+        <div id="modal-body"></div>
+      </div>
     </div>
-  </div>
 
-  <!-- Mobile Tab Bar -->
-  <nav class="mobile-tab-bar">
-    <a href="calculator.html" class="tab-item" data-page="calculator">
-      <span class="tab-icon">&#127829;</span>
-      <span class="tab-label">Make</span>
-    </a>
-    <a href="schedule.html" class="tab-item" data-page="schedule">
-      <span class="tab-icon">&#128197;</span>
-      <span class="tab-label">Schedule</span>
-      <span class="schedule-badge hidden"></span>
-    </a>
-    <a href="journal.html" class="tab-item" data-page="journal">
-      <span class="tab-icon">&#128211;</span>
-      <span class="tab-label">Journal</span>
-    </a>
-    <a href="learn.html" class="tab-item" data-page="learn">
-      <span class="tab-icon">&#128214;</span>
-      <span class="tab-label">Learn</span>
-    </a>
-    <a href="kitchen.html" class="tab-item" data-page="kitchen">
-      <span class="tab-icon">&#9881;&#65039;</span>
-      <span class="tab-label">My Kitchen</span>
-    </a>
-  </nav>
+    <!-- Mobile Tab Bar -->
+    <nav class="mobile-tab-bar">
+      <a href="calculator.html" class="tab-item" data-page="calculator">
+        <span class="tab-icon">&#127829;</span>
+        <span class="tab-label">Make</span>
+      </a>
+      <a href="schedule.html" class="tab-item" data-page="schedule">
+        <span class="tab-icon">&#128197;</span>
+        <span class="tab-label">Schedule</span>
+        <span class="schedule-badge hidden"></span>
+      </a>
+      <a href="journal.html" class="tab-item" data-page="journal">
+        <span class="tab-icon">&#128211;</span>
+        <span class="tab-label">Journal</span>
+      </a>
+      <a href="learn.html" class="tab-item" data-page="learn">
+        <span class="tab-icon">&#128214;</span>
+        <span class="tab-label">Learn</span>
+      </a>
+      <a href="kitchen.html" class="tab-item" data-page="kitchen">
+        <span class="tab-icon">&#9881;&#65039;</span>
+        <span class="tab-label">My Kitchen</span>
+      </a>
+    </nav>
 
-  <footer>
-    <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" class="footer-logo" />
-    <p class="footer-legal-links">
-      <a href="legal.html#privacy">Privacy</a>
-      <span class="footer-sep">&middot;</span>
-      <a href="legal.html#terms">Terms</a>
-      <span class="footer-sep">&middot;</span>
-      <a href="legal.html#refund">Refunds</a>
-    </p>
-    <p>&copy; 2026 The Pie Lab. All rights reserved.</p>
-  </footer>
+    <footer>
+      <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" class="footer-logo" />
+      <p class="footer-legal-links">
+        <a href="legal.html#privacy">Privacy</a>
+        <span class="footer-sep">&middot;</span>
+        <a href="legal.html#terms">Terms</a>
+        <span class="footer-sep">&middot;</span>
+        <a href="legal.html#refund">Refunds</a>
+      </p>
+      <p>&copy; 2026 The Pie Lab. All rights reserved.</p>
+    </footer>
 
-  <!-- Scripts: Capacitor init first, then data files, then shared nav, then page features -->
-  <script src="js/capacitor-init.js?v=1"></script>
-  <script src="recipes.js?v=6"></script>
-  <script src="js/photo-store.js?v=1"></script>
-  <script src="journal.js?v=4"></script>
-  <script src="knowledge-data.js?v=2"></script>
-  <script src="js/nav.js?v=8"></script>
-  <script src="js/user-profile.js?v=6"></script>
-  <script src="js/premium.js?v=3"></script>
-  <script src="js/journal-ui.js?v=17"></script>
-</body>
+    <script type="module" src="js/pages/journal-page.js"></script>
+  </body>
 </html>

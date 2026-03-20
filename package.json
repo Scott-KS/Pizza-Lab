@@ -2,19 +2,30 @@
   "name": "the-pie-lab",
   "version": "1.0.0",
   "description": "The Pie Lab — Pizza recipe calculator, dough scheduler, and baking journal",
+  "type": "module",
   "private": true,
   "scripts": {
-    "build": "node scripts/build-web.js",
+    "build": "node scripts/build-web.cjs",
     "cap:sync": "npm run build && npx cap sync",
     "cap:android": "npx cap open android",
     "cap:ios": "npx cap open ios",
-    "dev": "python -m http.server 8080"
+    "dev": "python -m http.server 8080",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "format": "prettier --write '**/*.{js,json,css,html,md}'",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "author": "Scott",
   "license": "UNLICENSED",
   "dependencies": {
+    "@capacitor/android": "^8.2.0",
     "@capacitor/app": "^8.0.1",
-    "@capacitor/cli": "^8.2.0",
     "@capacitor/core": "^8.2.0",
     "@capacitor/haptics": "^8.0.1",
     "@capacitor/local-notifications": "^8.0.2",
@@ -22,5 +33,16 @@
     "@capacitor/splash-screen": "^8.0.1",
     "@capacitor/status-bar": "^8.0.1",
     "@revenuecat/purchases-capacitor": "^11.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.2.0",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
   }
 }

@@ -7,30 +7,30 @@
    Falls back to localStorage-only on web.
    ══════════════════════════════════════════════════════ */
 
-window.PieLabPremium = (function () {
-  const STORAGE_KEY = "pielab-premium";
+import { PieLabStorage } from './storage.js';
+
+const PieLabPremium = (function () {
+  const STORAGE_KEY = 'pielab-premium';
   const TRIAL_DAYS = 14;
-  const PRODUCT_ID = "pielab_pro_lifetime";
+  const _PRODUCT_ID = 'pielab_pro_lifetime';
 
   // ── Persistence helpers ──────────────────────────────
   function load() {
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-    } catch { return {}; }
+    return PieLabStorage.getJSON(STORAGE_KEY) || {};
   }
 
-  function save(data) {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
+  async function save(data) {
+    await PieLabStorage.set(STORAGE_KEY, data);
   }
 
   // ── Native store detection ─────────────────────────
   function isNative() {
-    return typeof Capacitor !== "undefined" && Capacitor.isNativePlatform();
+    return typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
   }
 
   function getRevenueCat() {
-    if (typeof Purchases !== "undefined") return Purchases;
-    if (typeof window.Purchases !== "undefined") return window.Purchases;
+    if (typeof Purchases !== 'undefined') return Purchases;
+    if (typeof window.Purchases !== 'undefined') return window.Purchases;
     return null;
   }
 
@@ -45,9 +45,10 @@ window.PieLabPremium = (function () {
     try {
       // API keys — replace with your actual RevenueCat project keys
       const platform = Capacitor.getPlatform();
-      const apiKey = platform === "ios"
-        ? "appl_YOUR_REVENUECAT_IOS_API_KEY"
-        : "goog_YOUR_REVENUECAT_ANDROID_API_KEY";
+      const apiKey =
+        platform === 'ios'
+          ? 'appl_YOUR_REVENUECAT_IOS_API_KEY'
+          : 'goog_YOUR_REVENUECAT_ANDROID_API_KEY';
 
       await rc.configure({ apiKey });
       rcInitialized = true;
@@ -69,18 +70,18 @@ window.PieLabPremium = (function () {
 
     try {
       const { customerInfo } = await rc.getCustomerInfo();
-      const entitlement = customerInfo.entitlements.active["pro"];
+      const entitlement = customerInfo.entitlements.active['pro'];
       const data = load();
 
       if (entitlement) {
         data.isPro = true;
         data.store = entitlement.store;
-        save(data);
+        await save(data);
       } else if (data.store) {
         // Entitlement was revoked (refund) — remove Pro
         data.isPro = false;
         delete data.store;
-        save(data);
+        await save(data);
       }
     } catch {
       // Network error — keep current localStorage state
@@ -109,37 +110,37 @@ window.PieLabPremium = (function () {
     }
 
     try {
-      updateModalState("purchasing");
+      updateModalState('purchasing');
       const { offerings } = await rc.getOfferings();
       const pkg = offerings.current && offerings.current.lifetime;
 
       if (!pkg) {
-        showPurchaseError("Product not available. Please try again later.");
+        showPurchaseError('Product not available. Please try again later.');
         return false;
       }
 
       const { customerInfo } = await rc.purchasePackage({ aPackage: pkg });
-      const entitled = customerInfo.entitlements.active["pro"];
+      const entitled = customerInfo.entitlements.active['pro'];
 
       if (entitled) {
         const data = load();
         data.isPro = true;
         data.store = entitled.store;
-        save(data);
+        await save(data);
         renderBadge();
         hideModal();
         if (window.PieLabHaptics) PieLabHaptics.success();
         return true;
       }
 
-      showPurchaseError("Purchase could not be verified. Please restart the app.");
+      showPurchaseError('Purchase could not be verified. Please restart the app.');
       return false;
     } catch (err) {
       if (err.userCancelled) {
-        updateModalState("expired");
+        updateModalState('expired');
         return false;
       }
-      showPurchaseError("Purchase failed. Please try again.");
+      showPurchaseError('Purchase failed. Please try again.');
       return false;
     }
   }
@@ -151,13 +152,13 @@ window.PieLabPremium = (function () {
 
     try {
       const { customerInfo } = await rc.restorePurchases();
-      const entitled = customerInfo.entitlements.active["pro"];
+      const entitled = customerInfo.entitlements.active['pro'];
 
       if (entitled) {
         const data = load();
         data.isPro = true;
         data.store = entitled.store;
-        save(data);
+        await save(data);
         renderBadge();
         return true;
       }
@@ -198,7 +199,7 @@ window.PieLabPremium = (function () {
     return daysLeft() > 0;
   }
 
-  function startTrial() {
+  async function startTrial() {
     const data = load();
     if (!data.trialStart) {
       data.trialStart = Date.now();
@@ -215,8 +216,8 @@ window.PieLabPremium = (function () {
   function createModal() {
     if (modalOverlay) return;
 
-    modalOverlay = document.createElement("div");
-    modalOverlay.className = "premium-modal-overlay";
+    modalOverlay = document.createElement('div');
+    modalOverlay.className = 'premium-modal-overlay';
     modalOverlay.innerHTML = `
       <div class="premium-modal-card">
         <span class="premium-modal-icon">\u{1F513}</span>
@@ -235,17 +236,17 @@ window.PieLabPremium = (function () {
     document.body.appendChild(modalOverlay);
 
     // Close handlers
-    modalOverlay.querySelector(".premium-modal-close").addEventListener("click", hideModal);
-    modalOverlay.addEventListener("click", (e) => {
+    modalOverlay.querySelector('.premium-modal-close').addEventListener('click', hideModal);
+    modalOverlay.addEventListener('click', (e) => {
       if (e.target === modalOverlay) hideModal();
     });
 
     // Action button handler
-    modalOverlay.querySelector("#btn-premium-trial").addEventListener("click", async () => {
+    modalOverlay.querySelector('#btn-premium-trial').addEventListener('click', async () => {
       if (!trialStart() && !isPro()) {
         // No trial yet — send to Kitchen Profile to start trial
         hideModal();
-        window.location.href = "kitchen.html";
+        window.location.href = 'kitchen.html';
         return;
       }
 
@@ -270,7 +271,7 @@ window.PieLabPremium = (function () {
     });
 
     // Restore purchases handler
-    modalOverlay.querySelector("#btn-premium-restore").addEventListener("click", async () => {
+    modalOverlay.querySelector('#btn-premium-restore').addEventListener('click', async () => {
       const restored = await restorePurchases();
       if (restored) {
         hideModal();
@@ -280,86 +281,87 @@ window.PieLabPremium = (function () {
           cb();
         }
       } else {
-        showPurchaseError("No previous purchase found.");
+        showPurchaseError('No previous purchase found.');
       }
     });
   }
 
   function updateModalState(state) {
     if (!modalOverlay) return;
-    const btn = modalOverlay.querySelector("#btn-premium-trial");
-    const errorEl = modalOverlay.querySelector("#premium-purchase-error");
+    const btn = modalOverlay.querySelector('#btn-premium-trial');
+    const errorEl = modalOverlay.querySelector('#premium-purchase-error');
 
-    if (state === "purchasing") {
-      btn.textContent = "Processing\u2026";
+    if (state === 'purchasing') {
+      btn.textContent = 'Processing\u2026';
       btn.disabled = true;
-      btn.classList.add("btn-disabled");
-      errorEl.classList.add("hidden");
-    } else if (state === "expired") {
-      btn.textContent = "Unlock Pro \u2014 $4.99";
+      btn.classList.add('btn-disabled');
+      errorEl.classList.add('hidden');
+    } else if (state === 'expired') {
+      btn.textContent = 'Unlock Pro \u2014 $4.99';
       btn.disabled = false;
-      btn.classList.remove("btn-disabled");
+      btn.classList.remove('btn-disabled');
     }
   }
 
   function showPurchaseError(msg) {
     if (!modalOverlay) return;
-    const btn = modalOverlay.querySelector("#btn-premium-trial");
-    const errorEl = modalOverlay.querySelector("#premium-purchase-error");
-    btn.textContent = "Unlock Pro \u2014 $4.99";
+    const btn = modalOverlay.querySelector('#btn-premium-trial');
+    const errorEl = modalOverlay.querySelector('#premium-purchase-error');
+    btn.textContent = 'Unlock Pro \u2014 $4.99';
     btn.disabled = false;
-    btn.classList.remove("btn-disabled");
+    btn.classList.remove('btn-disabled');
     errorEl.textContent = msg;
-    errorEl.classList.remove("hidden");
+    errorEl.classList.remove('hidden');
   }
 
   function showPurchaseUnavailable() {
     if (!modalOverlay) createModal();
-    const errorEl = modalOverlay.querySelector("#premium-purchase-error");
-    errorEl.textContent = "In-app purchases are only available in the mobile app.";
-    errorEl.classList.remove("hidden");
+    const errorEl = modalOverlay.querySelector('#premium-purchase-error');
+    errorEl.textContent = 'In-app purchases are only available in the mobile app.';
+    errorEl.classList.remove('hidden');
   }
 
   function showModal() {
     createModal();
 
-    const btn = modalOverlay.querySelector("#btn-premium-trial");
-    const desc = modalOverlay.querySelector(".premium-modal-desc");
-    const footer = modalOverlay.querySelector(".premium-modal-footer");
-    const errorEl = modalOverlay.querySelector("#premium-purchase-error");
-    const restoreBtn = modalOverlay.querySelector("#btn-premium-restore");
+    const btn = modalOverlay.querySelector('#btn-premium-trial');
+    const desc = modalOverlay.querySelector('.premium-modal-desc');
+    const footer = modalOverlay.querySelector('.premium-modal-footer');
+    const errorEl = modalOverlay.querySelector('#premium-purchase-error');
+    const restoreBtn = modalOverlay.querySelector('#btn-premium-restore');
 
     // Reset error state
-    errorEl.classList.add("hidden");
+    errorEl.classList.add('hidden');
 
     if (isExpired()) {
-      btn.textContent = "Unlock Pro \u2014 $4.99";
+      btn.textContent = 'Unlock Pro \u2014 $4.99';
       btn.disabled = false;
-      btn.classList.remove("btn-disabled");
-      desc.textContent = "Your 14-day trial has ended. Unlock all Pro features permanently.";
-      footer.textContent = "One-time $4.99 purchase. No subscription.";
-      restoreBtn.classList.remove("hidden");
+      btn.classList.remove('btn-disabled');
+      desc.textContent = 'Your 14-day trial has ended. Unlock all Pro features permanently.';
+      footer.textContent = 'One-time $4.99 purchase. No subscription.';
+      restoreBtn.classList.remove('hidden');
     } else if (canUse()) {
-      btn.textContent = "Continue with Trial";
+      btn.textContent = 'Continue with Trial';
       btn.disabled = false;
-      btn.classList.remove("btn-disabled");
-      restoreBtn.classList.add("hidden");
+      btn.classList.remove('btn-disabled');
+      restoreBtn.classList.add('hidden');
     } else {
       // No trial started — direct to Kitchen Profile
-      btn.textContent = "Set Up My Kitchen";
+      btn.textContent = 'Set Up My Kitchen';
       btn.disabled = false;
-      btn.classList.remove("btn-disabled");
-      desc.textContent = "Fill out your Kitchen Profile to unlock a free 14-day trial of all Pro features.";
-      footer.textContent = "No credit card required. $4.99 one-time purchase after trial.";
-      restoreBtn.classList.add("hidden");
+      btn.classList.remove('btn-disabled');
+      desc.textContent =
+        'Fill out your Kitchen Profile to unlock a free 14-day trial of all Pro features.';
+      footer.textContent = 'No credit card required. $4.99 one-time purchase after trial.';
+      restoreBtn.classList.add('hidden');
     }
 
-    modalOverlay.classList.add("premium-modal--visible");
+    modalOverlay.classList.add('premium-modal--visible');
   }
 
   function hideModal() {
     if (modalOverlay) {
-      modalOverlay.classList.remove("premium-modal--visible");
+      modalOverlay.classList.remove('premium-modal--visible');
       pendingCallback = null;
     }
   }
@@ -390,34 +392,34 @@ window.PieLabPremium = (function () {
   // ── Header Badge ─────────────────────────────────────
 
   function renderBadge() {
-    let badge = document.getElementById("premium-badge");
+    let badge = document.getElementById('premium-badge');
     if (!badge) {
-      const nav = document.querySelector(".nav-logo");
+      const nav = document.querySelector('.nav-logo');
       if (!nav) return;
-      badge = document.createElement("span");
-      badge.id = "premium-badge";
+      badge = document.createElement('span');
+      badge.id = 'premium-badge';
       nav.parentNode.insertBefore(badge, nav.nextSibling);
     }
 
     if (isPro()) {
-      badge.className = "premium-badge pro";
-      badge.textContent = "PRO";
+      badge.className = 'premium-badge pro';
+      badge.textContent = 'PRO';
     } else if (canUse()) {
       const d = daysLeft();
-      badge.className = "premium-badge trial";
+      badge.className = 'premium-badge trial';
       badge.textContent = `Trial: ${d}d left`;
     } else if (isExpired()) {
-      badge.className = "premium-badge expired";
-      badge.textContent = "Trial Expired";
+      badge.className = 'premium-badge expired';
+      badge.textContent = 'Trial Expired';
     } else {
       // No trial started — hide badge
-      badge.className = "premium-badge hidden";
-      badge.textContent = "";
+      badge.className = 'premium-badge hidden';
+      badge.textContent = '';
     }
   }
 
   // ── Init on load ─────────────────────────────────────
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener('DOMContentLoaded', () => {
     renderBadge();
     initRevenueCat();
   });
@@ -437,3 +439,5 @@ window.PieLabPremium = (function () {
     syncEntitlements,
   };
 })();
+
+export { PieLabPremium };

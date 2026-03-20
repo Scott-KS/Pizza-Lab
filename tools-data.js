@@ -11,510 +11,995 @@
 // Each step has: label, offsetMinutes (from mix start),
 // duration (display text), and description.
 
-const FERMENTATION_SCHEDULES = {
+export const FERMENTATION_SCHEDULES = {
   neapolitan: {
-    name: "Neapolitan",
-    method: "Room Temperature",
-    totalTime: "10–26 hours",
+    name: 'Neapolitan',
+    method: 'Room Temperature',
+    totalTime: '10–26 hours',
     steps: [
-      { label: "Mix & Knead", offsetMin: 0, desc: "Combine flour, water, salt, yeast. Knead until smooth and elastic (10–15 min)." },
-      { label: "Bulk Ferment", offsetMin: 30, desc: "Cover and rest at room temperature. The dough should double in size." },
-      { label: "Ball the Dough", offsetMin: 480, desc: "Divide and shape into tight balls. This is 8 hours in — adjust to your schedule." },
-      { label: "Final Proof", offsetMin: 480, desc: "Let dough balls rest at room temp, covered, for 2 more hours." },
-      { label: "Preheat Oven", offsetMin: 540, desc: "Get your oven as hot as possible. Preheat for at least 45–60 minutes." },
-      { label: "Ready to Bake", offsetMin: 600, desc: "Stretch, top, and bake. The dough should be puffy, soft, and room temp." },
+      {
+        label: 'Mix & Knead',
+        offsetMin: 0,
+        desc: 'Combine flour, water, salt, yeast. Knead until smooth and elastic (10–15 min).',
+      },
+      {
+        label: 'Bulk Ferment',
+        offsetMin: 30,
+        desc: 'Cover and rest at room temperature. The dough should double in size.',
+      },
+      {
+        label: 'Ball the Dough',
+        offsetMin: 480,
+        desc: 'Divide and shape into tight balls. This is 8 hours in — adjust to your schedule.',
+      },
+      {
+        label: 'Final Proof',
+        offsetMin: 480,
+        desc: 'Let dough balls rest at room temp, covered, for 2 more hours.',
+      },
+      {
+        label: 'Preheat Oven',
+        offsetMin: 540,
+        desc: 'Get your oven as hot as possible. Preheat for at least 45–60 minutes.',
+      },
+      {
+        label: 'Ready to Bake',
+        offsetMin: 600,
+        desc: 'Stretch, top, and bake. The dough should be puffy, soft, and room temp.',
+      },
     ],
   },
 
-  "new-york": {
-    name: "New York Style",
-    method: "Cold Ferment",
-    totalTime: "26–74 hours",
+  'new-york': {
+    name: 'New York Style',
+    method: 'Cold Ferment',
+    totalTime: '26–74 hours',
     steps: [
-      { label: "Mix & Knead", offsetMin: 0, desc: "Combine flour, water, salt, oil, sugar, yeast. Knead 10–12 minutes until smooth." },
-      { label: "Bulk Ferment (RT)", offsetMin: 15, desc: "Rest at room temperature for 1–2 hours until dough relaxes and starts rising." },
-      { label: "Ball & Refrigerate", offsetMin: 90, desc: "Divide into balls, oil lightly, place in airtight containers. Refrigerate." },
-      { label: "Cold Ferment", offsetMin: 120, desc: "Leave in fridge for 24–72 hours. This is where the flavor develops." },
-      { label: "Pull from Fridge", offsetMin: 1560, desc: "Remove dough 2 hours before baking. Let it come to room temperature." },
-      { label: "Preheat Oven", offsetMin: 1620, desc: "Preheat oven with steel or stone for at least 1 hour at max temp." },
-      { label: "Ready to Bake", offsetMin: 1680, desc: "Stretch thin — it should be foldable. Top lightly and bake." },
+      {
+        label: 'Mix & Knead',
+        offsetMin: 0,
+        desc: 'Combine flour, water, salt, oil, sugar, yeast. Knead 10–12 minutes until smooth.',
+      },
+      {
+        label: 'Bulk Ferment (RT)',
+        offsetMin: 15,
+        desc: 'Rest at room temperature for 1–2 hours until dough relaxes and starts rising.',
+      },
+      {
+        label: 'Ball & Refrigerate',
+        offsetMin: 90,
+        desc: 'Divide into balls, oil lightly, place in airtight containers. Refrigerate.',
+      },
+      {
+        label: 'Cold Ferment',
+        offsetMin: 120,
+        desc: 'Leave in fridge for 24–72 hours. This is where the flavor develops.',
+      },
+      {
+        label: 'Pull from Fridge',
+        offsetMin: 1560,
+        desc: 'Remove dough 2 hours before baking. Let it come to room temperature.',
+      },
+      {
+        label: 'Preheat Oven',
+        offsetMin: 1620,
+        desc: 'Preheat oven with steel or stone for at least 1 hour at max temp.',
+      },
+      {
+        label: 'Ready to Bake',
+        offsetMin: 1680,
+        desc: 'Stretch thin — it should be foldable. Top lightly and bake.',
+      },
     ],
   },
 
-  "chicago-tavern": {
-    name: "Chicago Tavern",
-    method: "Cold Cure",
-    totalTime: "2–4 days",
+  'chicago-tavern': {
+    name: 'Chicago Tavern',
+    method: 'Cold Cure',
+    totalTime: '2–4 days',
     steps: [
-      { label: "Mix & Knead", offsetMin: 0, desc: "Combine flour, water, salt, oil, sugar, yeast. Mix until smooth — dough will be stiff." },
-      { label: "Proof", offsetMin: 15, desc: "Cover and proof at room temperature for 2 hours." },
-      { label: "Roll Thin", offsetMin: 135, desc: "Roll dough ¼\" thin on parchment paper." },
-      { label: "Cold Cure", offsetMin: 150, desc: "Stack on parchment on a cookie sheet, cover. Refrigerate 2–4 days." },
-      { label: "Pull from Fridge", offsetMin: 2880, desc: "Remove 1 hour before baking. Flip over and dress to the edge." },
-      { label: "Preheat Oven", offsetMin: 2925, desc: "Preheat oven to 500°F+ with stone or steel for 45 minutes." },
-      { label: "Ready to Bake", offsetMin: 2940, desc: "Top edge to edge. Bake until cracker-crisp bottom and bubbly cheese." },
+      {
+        label: 'Mix & Knead',
+        offsetMin: 0,
+        desc: 'Combine flour, water, salt, oil, sugar, yeast. Mix until smooth — dough will be stiff.',
+      },
+      { label: 'Proof', offsetMin: 15, desc: 'Cover and proof at room temperature for 2 hours.' },
+      { label: 'Roll Thin', offsetMin: 135, desc: 'Roll dough ¼" thin on parchment paper.' },
+      {
+        label: 'Cold Cure',
+        offsetMin: 150,
+        desc: 'Stack on parchment on a cookie sheet, cover. Refrigerate 2–4 days.',
+      },
+      {
+        label: 'Pull from Fridge',
+        offsetMin: 2880,
+        desc: 'Remove 1 hour before baking. Flip over and dress to the edge.',
+      },
+      {
+        label: 'Preheat Oven',
+        offsetMin: 2925,
+        desc: 'Preheat oven to 500°F+ with stone or steel for 45 minutes.',
+      },
+      {
+        label: 'Ready to Bake',
+        offsetMin: 2940,
+        desc: 'Top edge to edge. Bake until cracker-crisp bottom and bubbly cheese.',
+      },
     ],
   },
 
   detroit: {
-    name: "Detroit Deep Dish",
-    method: "Pan Proof",
-    totalTime: "4–26 hours",
+    name: 'Detroit Deep Dish',
+    method: 'Pan Proof',
+    totalTime: '4–26 hours',
     steps: [
-      { label: "Mix & Knead", offsetMin: 0, desc: "Combine flour, water, salt, oil, sugar, yeast. Mix until shaggy, then knead until smooth." },
-      { label: "Bulk Ferment", offsetMin: 15, desc: "Cover and rest at room temperature for 1–2 hours." },
-      { label: "Pan & Stretch", offsetMin: 90, desc: "Oil the blue steel pan generously. Press dough into pan, pushing to edges." },
-      { label: "Pan Proof", offsetMin: 120, desc: "Cover the pan. Let dough proof 2–4 hours at room temp (or overnight in fridge)." },
-      { label: "Preheat Oven", offsetMin: 300, desc: "Preheat to 500–550°F for 45 minutes." },
-      { label: "Top & Bake", offsetMin: 360, desc: "Push cheese to edges for the frico crust. Add sauce in racing stripes on top. Bake." },
+      {
+        label: 'Mix & Knead',
+        offsetMin: 0,
+        desc: 'Combine flour, water, salt, oil, sugar, yeast. Mix until shaggy, then knead until smooth.',
+      },
+      {
+        label: 'Bulk Ferment',
+        offsetMin: 15,
+        desc: 'Cover and rest at room temperature for 1–2 hours.',
+      },
+      {
+        label: 'Pan & Stretch',
+        offsetMin: 90,
+        desc: 'Oil the blue steel pan generously. Press dough into pan, pushing to edges.',
+      },
+      {
+        label: 'Pan Proof',
+        offsetMin: 120,
+        desc: 'Cover the pan. Let dough proof 2–4 hours at room temp (or overnight in fridge).',
+      },
+      { label: 'Preheat Oven', offsetMin: 300, desc: 'Preheat to 500–550°F for 45 minutes.' },
+      {
+        label: 'Top & Bake',
+        offsetMin: 360,
+        desc: 'Push cheese to edges for the frico crust. Add sauce in racing stripes on top. Bake.',
+      },
     ],
   },
 
   sicilian: {
-    name: "Sicilian",
-    method: "Pan Proof",
-    totalTime: "4–6 hours",
+    name: 'Sicilian',
+    method: 'Pan Proof',
+    totalTime: '4–6 hours',
     steps: [
-      { label: "Mix & Knead", offsetMin: 0, desc: "Combine flour, water, salt, oil, sugar, yeast. Knead until smooth and elastic." },
-      { label: "Bulk Ferment", offsetMin: 15, desc: "Cover and rest at room temperature for 1–2 hours." },
-      { label: "Pan & Stretch", offsetMin: 90, desc: "Oil the sheet pan generously. Press dough into pan — it may spring back." },
-      { label: "Rest & Re-stretch", offsetMin: 110, desc: "Let dough rest 20 minutes, then push it to the edges again." },
-      { label: "Pan Proof", offsetMin: 130, desc: "Cover the pan. Let it rise 2–3 hours until thick and airy." },
-      { label: "Preheat Oven", offsetMin: 270, desc: "Preheat to 475–525°F for 45 minutes." },
-      { label: "Top & Bake", offsetMin: 310, desc: "Add toppings. The dough should be focaccia-like. Bake until golden." },
+      {
+        label: 'Mix & Knead',
+        offsetMin: 0,
+        desc: 'Combine flour, water, salt, oil, sugar, yeast. Knead until smooth and elastic.',
+      },
+      {
+        label: 'Bulk Ferment',
+        offsetMin: 15,
+        desc: 'Cover and rest at room temperature for 1–2 hours.',
+      },
+      {
+        label: 'Pan & Stretch',
+        offsetMin: 90,
+        desc: 'Oil the sheet pan generously. Press dough into pan — it may spring back.',
+      },
+      {
+        label: 'Rest & Re-stretch',
+        offsetMin: 110,
+        desc: 'Let dough rest 20 minutes, then push it to the edges again.',
+      },
+      {
+        label: 'Pan Proof',
+        offsetMin: 130,
+        desc: 'Cover the pan. Let it rise 2–3 hours until thick and airy.',
+      },
+      { label: 'Preheat Oven', offsetMin: 270, desc: 'Preheat to 475–525°F for 45 minutes.' },
+      {
+        label: 'Top & Bake',
+        offsetMin: 310,
+        desc: 'Add toppings. The dough should be focaccia-like. Bake until golden.',
+      },
     ],
   },
 
   grandma: {
-    name: "Grandma",
-    method: "Quick Rise",
-    totalTime: "1.5–2 hours",
+    name: 'Grandma',
+    method: 'Quick Rise',
+    totalTime: '1.5–2 hours',
     steps: [
-      { label: "Mix & Knead", offsetMin: 0, desc: "Combine flour, water, salt, oil, sugar, yeast. Mix until smooth — no long knead needed." },
-      { label: "Brief Rest", offsetMin: 15, desc: "Let dough rest 30 minutes, covered." },
-      { label: "Oil Pan & Press", offsetMin: 45, desc: "Oil the sheet pan very generously. Press dough to fill the pan." },
-      { label: "Preheat Oven", offsetMin: 50, desc: "Preheat to 450–500°F." },
-      { label: "Top & Bake", offsetMin: 90, desc: "Layer provolone, then sauce on top, then Pecorino. Bake until golden and bubbly." },
+      {
+        label: 'Mix & Knead',
+        offsetMin: 0,
+        desc: 'Combine flour, water, salt, oil, sugar, yeast. Mix until smooth — no long knead needed.',
+      },
+      { label: 'Brief Rest', offsetMin: 15, desc: 'Let dough rest 30 minutes, covered.' },
+      {
+        label: 'Oil Pan & Press',
+        offsetMin: 45,
+        desc: 'Oil the sheet pan very generously. Press dough to fill the pan.',
+      },
+      { label: 'Preheat Oven', offsetMin: 50, desc: 'Preheat to 450–500°F.' },
+      {
+        label: 'Top & Bake',
+        offsetMin: 90,
+        desc: 'Layer provolone, then sauce on top, then Pecorino. Bake until golden and bubbly.',
+      },
     ],
   },
 
-  "thin-crust": {
-    name: "Thin & Crispy",
-    method: "Quick Rest",
-    totalTime: "1.5–2 hours",
+  'thin-crust': {
+    name: 'Thin & Crispy',
+    method: 'Quick Rest',
+    totalTime: '1.5–2 hours',
     steps: [
-      { label: "Mix & Knead", offsetMin: 0, desc: "Combine flour, water, salt, oil, yeast. Mix until smooth — no extensive kneading." },
-      { label: "Rest", offsetMin: 15, desc: "Cover and rest at room temperature for 1 hour. Gluten needs to relax." },
-      { label: "Roll Thin", offsetMin: 75, desc: "Roll as thin as possible with a rolling pin. Dock with a fork to prevent bubbles." },
-      { label: "Preheat Oven", offsetMin: 45, desc: "Preheat to 475–525°F with stone or steel for 45 minutes." },
-      { label: "Top & Bake", offsetMin: 90, desc: "Keep toppings light — less is more. Bake until cracker-crisp." },
+      {
+        label: 'Mix & Knead',
+        offsetMin: 0,
+        desc: 'Combine flour, water, salt, oil, yeast. Mix until smooth — no extensive kneading.',
+      },
+      {
+        label: 'Rest',
+        offsetMin: 15,
+        desc: 'Cover and rest at room temperature for 1 hour. Gluten needs to relax.',
+      },
+      {
+        label: 'Roll Thin',
+        offsetMin: 75,
+        desc: 'Roll as thin as possible with a rolling pin. Dock with a fork to prevent bubbles.',
+      },
+      {
+        label: 'Preheat Oven',
+        offsetMin: 45,
+        desc: 'Preheat to 475–525°F with stone or steel for 45 minutes.',
+      },
+      {
+        label: 'Top & Bake',
+        offsetMin: 90,
+        desc: 'Keep toppings light — less is more. Bake until cracker-crisp.',
+      },
     ],
   },
 
   pan: {
-    name: "Pan Pizza",
-    method: "Cold Ferment",
-    totalTime: "26–50 hours",
+    name: 'Pan Pizza',
+    method: 'Cold Ferment',
+    totalTime: '26–50 hours',
     steps: [
-      { label: "Mix & Knead", offsetMin: 0, desc: "Combine flour, water, salt, oil, sugar, yeast. Mix until shaggy, then knead until smooth." },
-      { label: "Bulk Ferment (RT)", offsetMin: 15, desc: "Cover and rest at room temperature for 1 hour." },
-      { label: "Refrigerate", offsetMin: 75, desc: "Place dough in oiled container. Refrigerate for 24–48 hours." },
-      { label: "Pull from Fridge", offsetMin: 1515, desc: "Remove dough from fridge. Let it warm for 30 minutes." },
-      { label: "Pan & Proof", offsetMin: 1545, desc: "Oil cast iron pan. Press dough in, let it rest 20 min, press again. Proof 1–2 hours." },
-      { label: "Preheat Oven", offsetMin: 1665, desc: "Preheat to 450–500°F for 45 minutes." },
-      { label: "Top & Bake", offsetMin: 1725, desc: "Cheese goes under the sauce. Bake until edges are deeply golden." },
+      {
+        label: 'Mix & Knead',
+        offsetMin: 0,
+        desc: 'Combine flour, water, salt, oil, sugar, yeast. Mix until shaggy, then knead until smooth.',
+      },
+      {
+        label: 'Bulk Ferment (RT)',
+        offsetMin: 15,
+        desc: 'Cover and rest at room temperature for 1 hour.',
+      },
+      {
+        label: 'Refrigerate',
+        offsetMin: 75,
+        desc: 'Place dough in oiled container. Refrigerate for 24–48 hours.',
+      },
+      {
+        label: 'Pull from Fridge',
+        offsetMin: 1515,
+        desc: 'Remove dough from fridge. Let it warm for 30 minutes.',
+      },
+      {
+        label: 'Pan & Proof',
+        offsetMin: 1545,
+        desc: 'Oil cast iron pan. Press dough in, let it rest 20 min, press again. Proof 1–2 hours.',
+      },
+      { label: 'Preheat Oven', offsetMin: 1665, desc: 'Preheat to 450–500°F for 45 minutes.' },
+      {
+        label: 'Top & Bake',
+        offsetMin: 1725,
+        desc: 'Cheese goes under the sauce. Bake until edges are deeply golden.',
+      },
     ],
   },
 
-  "st-louis": {
-    name: "St. Louis",
-    method: "No Rise",
-    totalTime: "30 minutes – 1 hour",
+  'st-louis': {
+    name: 'St. Louis',
+    method: 'No Rise',
+    totalTime: '30 minutes – 1 hour',
     steps: [
-      { label: "Mix Dough", offsetMin: 0, desc: "Combine flour, water, salt (no yeast). Mix until a stiff, smooth dough forms — this is a cracker crust." },
-      { label: "Rest", offsetMin: 10, desc: "Cover and rest 15–20 minutes. The gluten relaxes for easier rolling." },
-      { label: "Roll Very Thin", offsetMin: 30, desc: "Roll the dough as thin as possible — 1/8 inch or less. Use a rolling pin, not hands." },
-      { label: "Preheat Oven", offsetMin: 15, desc: "Preheat to 475–525°F with a stone or steel for even bottom heat." },
-      { label: "Top & Bake", offsetMin: 45, desc: "Add sweet sauce, Provel cheese, and toppings. Bake until cracker-crisp bottom and bubbly cheese." },
+      {
+        label: 'Mix Dough',
+        offsetMin: 0,
+        desc: 'Combine flour, water, salt (no yeast). Mix until a stiff, smooth dough forms — this is a cracker crust.',
+      },
+      {
+        label: 'Rest',
+        offsetMin: 10,
+        desc: 'Cover and rest 15–20 minutes. The gluten relaxes for easier rolling.',
+      },
+      {
+        label: 'Roll Very Thin',
+        offsetMin: 30,
+        desc: 'Roll the dough as thin as possible — 1/8 inch or less. Use a rolling pin, not hands.',
+      },
+      {
+        label: 'Preheat Oven',
+        offsetMin: 15,
+        desc: 'Preheat to 475–525°F with a stone or steel for even bottom heat.',
+      },
+      {
+        label: 'Top & Bake',
+        offsetMin: 45,
+        desc: 'Add sweet sauce, Provel cheese, and toppings. Bake until cracker-crisp bottom and bubbly cheese.',
+      },
     ],
   },
 
-  "new-haven": {
-    name: "New Haven Apizza",
-    method: "Room Temperature",
-    totalTime: "8–24 hours",
+  'new-haven': {
+    name: 'New Haven Apizza',
+    method: 'Room Temperature',
+    totalTime: '8–24 hours',
     steps: [
-      { label: "Mix & Knead", offsetMin: 0, desc: "Combine high-gluten flour, water, salt, yeast. Knead until smooth and elastic (10–15 min)." },
-      { label: "Bulk Ferment", offsetMin: 30, desc: "Cover and rest at room temperature for 6–8 hours. The dough should more than double." },
-      { label: "Ball the Dough", offsetMin: 480, desc: "Divide into larger balls (New Haven pies tend to be big). Shape tightly." },
-      { label: "Final Proof", offsetMin: 510, desc: "Rest dough balls at room temp for 2–4 hours until puffy and relaxed." },
-      { label: "Preheat Oven", offsetMin: 600, desc: "Get your oven as hot as possible. Coal-fired ovens hit 600–800°F. Home ovens — max temp with steel." },
-      { label: "Ready to Bake", offsetMin: 660, desc: "Stretch into an oblong shape (not a perfect circle). Top sparingly — the crust is the star." },
+      {
+        label: 'Mix & Knead',
+        offsetMin: 0,
+        desc: 'Combine high-gluten flour, water, salt, yeast. Knead until smooth and elastic (10–15 min).',
+      },
+      {
+        label: 'Bulk Ferment',
+        offsetMin: 30,
+        desc: 'Cover and rest at room temperature for 6–8 hours. The dough should more than double.',
+      },
+      {
+        label: 'Ball the Dough',
+        offsetMin: 480,
+        desc: 'Divide into larger balls (New Haven pies tend to be big). Shape tightly.',
+      },
+      {
+        label: 'Final Proof',
+        offsetMin: 510,
+        desc: 'Rest dough balls at room temp for 2–4 hours until puffy and relaxed.',
+      },
+      {
+        label: 'Preheat Oven',
+        offsetMin: 600,
+        desc: 'Get your oven as hot as possible. Coal-fired ovens hit 600–800°F. Home ovens — max temp with steel.',
+      },
+      {
+        label: 'Ready to Bake',
+        offsetMin: 660,
+        desc: 'Stretch into an oblong shape (not a perfect circle). Top sparingly — the crust is the star.',
+      },
     ],
   },
 
-  "ohio-valley": {
-    name: "Ohio Valley",
-    method: "Room Temperature",
-    totalTime: "2–3 hours",
+  'ohio-valley': {
+    name: 'Ohio Valley',
+    method: 'Room Temperature',
+    totalTime: '2–3 hours',
     steps: [
-      { label: "Mix & Knead", offsetMin: 0, desc: "Combine bread flour, water, salt, oil, sugar, yeast. Knead until smooth." },
-      { label: "Bulk Ferment", offsetMin: 15, desc: "Cover and rest at room temperature for 1–2 hours until doubled." },
-      { label: "Sheet & Rest", offsetMin: 90, desc: "Press dough into an oiled sheet pan. Let rest 20 minutes if it springs back." },
-      { label: "Preheat Oven", offsetMin: 75, desc: "Preheat to 475–525°F." },
-      { label: "Top & Bake", offsetMin: 120, desc: "Add sauce and pepperoni (baked on). Bake until crust is golden." },
-      { label: "Add Cold Cheese", offsetMin: 135, desc: "Immediately after removing from oven, pile on shredded provolone. Serve right away." },
+      {
+        label: 'Mix & Knead',
+        offsetMin: 0,
+        desc: 'Combine bread flour, water, salt, oil, sugar, yeast. Knead until smooth.',
+      },
+      {
+        label: 'Bulk Ferment',
+        offsetMin: 15,
+        desc: 'Cover and rest at room temperature for 1–2 hours until doubled.',
+      },
+      {
+        label: 'Sheet & Rest',
+        offsetMin: 90,
+        desc: 'Press dough into an oiled sheet pan. Let rest 20 minutes if it springs back.',
+      },
+      { label: 'Preheat Oven', offsetMin: 75, desc: 'Preheat to 475–525°F.' },
+      {
+        label: 'Top & Bake',
+        offsetMin: 120,
+        desc: 'Add sauce and pepperoni (baked on). Bake until crust is golden.',
+      },
+      {
+        label: 'Add Cold Cheese',
+        offsetMin: 135,
+        desc: 'Immediately after removing from oven, pile on shredded provolone. Serve right away.',
+      },
     ],
   },
 
-  "cast-iron": {
-    name: "Cast Iron",
-    method: "Quick Rise",
-    totalTime: "1.5–3 hours",
+  'cast-iron': {
+    name: 'Cast Iron',
+    method: 'Quick Rise',
+    totalTime: '1.5–3 hours',
     steps: [
-      { label: "Mix & Knead", offsetMin: 0, desc: "Combine flour, water, salt, yeast, and a touch of sugar. Mix until smooth." },
-      { label: "Bulk Ferment", offsetMin: 15, desc: "Cover and rest at room temperature for 1–2 hours until puffy." },
-      { label: "Butter the Skillet", offsetMin: 90, desc: "Generously butter a 10 or 12-inch cast iron skillet. Press dough into the pan." },
-      { label: "Pan Proof", offsetMin: 100, desc: "Let the dough rest in the buttered skillet for 20–30 minutes." },
-      { label: "Stovetop Start", offsetMin: 130, desc: "Place skillet on stovetop over medium heat for 2–3 minutes to start crisping the bottom." },
-      { label: "Top & Oven Finish", offsetMin: 135, desc: "Add toppings, transfer to a preheated 475–500°F oven. Bake until cheese is bubbly and crust is golden." },
+      {
+        label: 'Mix & Knead',
+        offsetMin: 0,
+        desc: 'Combine flour, water, salt, yeast, and a touch of sugar. Mix until smooth.',
+      },
+      {
+        label: 'Bulk Ferment',
+        offsetMin: 15,
+        desc: 'Cover and rest at room temperature for 1–2 hours until puffy.',
+      },
+      {
+        label: 'Butter the Skillet',
+        offsetMin: 90,
+        desc: 'Generously butter a 10 or 12-inch cast iron skillet. Press dough into the pan.',
+      },
+      {
+        label: 'Pan Proof',
+        offsetMin: 100,
+        desc: 'Let the dough rest in the buttered skillet for 20–30 minutes.',
+      },
+      {
+        label: 'Stovetop Start',
+        offsetMin: 130,
+        desc: 'Place skillet on stovetop over medium heat for 2–3 minutes to start crisping the bottom.',
+      },
+      {
+        label: 'Top & Oven Finish',
+        offsetMin: 135,
+        desc: 'Add toppings, transfer to a preheated 475–500°F oven. Bake until cheese is bubbly and crust is golden.',
+      },
     ],
   },
 
-  "school-night": {
-    name: "School Night (No Rise)",
-    method: "No Rise",
-    totalTime: "30 minutes",
+  'school-night': {
+    name: 'School Night (No Rise)',
+    method: 'No Rise',
+    totalTime: '30 minutes',
     steps: [
-      { label: "Mix Dough", offsetMin: 0, desc: "Combine flour, water, salt, oil, and extra yeast. Mix just until smooth — don't overwork." },
-      { label: "Brief Rest", offsetMin: 8, desc: "Let dough rest 5 minutes while you prep toppings and preheat." },
-      { label: "Preheat Oven", offsetMin: 5, desc: "Preheat to 475–500°F. Use a stone or steel if you have one." },
-      { label: "Shape & Top", offsetMin: 15, desc: "Press or roll the dough directly on parchment. Add sauce, cheese, and toppings." },
-      { label: "Bake", offsetMin: 20, desc: "Bake 8–12 minutes until cheese is melted and crust is golden. Dinner is served." },
+      {
+        label: 'Mix Dough',
+        offsetMin: 0,
+        desc: "Combine flour, water, salt, oil, and extra yeast. Mix just until smooth — don't overwork.",
+      },
+      {
+        label: 'Brief Rest',
+        offsetMin: 8,
+        desc: 'Let dough rest 5 minutes while you prep toppings and preheat.',
+      },
+      {
+        label: 'Preheat Oven',
+        offsetMin: 5,
+        desc: 'Preheat to 475–500°F. Use a stone or steel if you have one.',
+      },
+      {
+        label: 'Shape & Top',
+        offsetMin: 15,
+        desc: 'Press or roll the dough directly on parchment. Add sauce, cheese, and toppings.',
+      },
+      {
+        label: 'Bake',
+        offsetMin: 20,
+        desc: 'Bake 8–12 minutes until cheese is melted and crust is golden. Dinner is served.',
+      },
     ],
   },
 };
-
 
 // ══════════════════════════════════════════════════════
 // 2. HYDRATION RANGES BY STYLE
 // ══════════════════════════════════════════════════════
 
-const HYDRATION_RANGES = {
+export const HYDRATION_RANGES = {
   neapolitan: {
-    name: "Neapolitan",
-    min: 58, max: 72, default: 65,
+    name: 'Neapolitan',
+    min: 58,
+    max: 72,
+    default: 65,
     sweet: { low: 62, high: 67 },
     effects: {
-      low: "Stiffer dough, easier to handle, denser crumb. Can feel rubbery if too low. Good for beginners.",
-      mid: "The sweet spot — soft, pliable dough with open crumb and good oven spring. Classic leopard spotting.",
-      high: "Very soft, sticky dough. Beautiful open crumb but hard to handle. Requires strong shaping skills.",
+      low: 'Stiffer dough, easier to handle, denser crumb. Can feel rubbery if too low. Good for beginners.',
+      mid: 'The sweet spot — soft, pliable dough with open crumb and good oven spring. Classic leopard spotting.',
+      high: 'Very soft, sticky dough. Beautiful open crumb but hard to handle. Requires strong shaping skills.',
     },
-    notes: "Traditional Neapolitan specs (AVPN) call for 55.5–62% hydration, but most modern pizzaiolos push 63–68% for a lighter crumb.",
+    notes:
+      'Traditional Neapolitan specs (AVPN) call for 55.5–62% hydration, but most modern pizzaiolos push 63–68% for a lighter crumb.',
   },
-  "new-york": {
-    name: "New York Style",
-    min: 56, max: 68, default: 63,
+  'new-york': {
+    name: 'New York Style',
+    min: 56,
+    max: 68,
+    default: 63,
     sweet: { low: 61, high: 65 },
     effects: {
-      low: "Stiff, easier to stretch thin. Chewier final texture. More cracker-like crunch.",
-      mid: "Classic foldable NY slice. Chewy but with some airiness. Good balance of structure and tenderness.",
-      high: "Softer, more bread-like crumb. Harder to stretch thin. Can sag when folded.",
+      low: 'Stiff, easier to stretch thin. Chewier final texture. More cracker-like crunch.',
+      mid: 'Classic foldable NY slice. Chewy but with some airiness. Good balance of structure and tenderness.',
+      high: 'Softer, more bread-like crumb. Harder to stretch thin. Can sag when folded.',
     },
-    notes: "NY dough needs enough structure to hold a fold. High-gluten flour can handle more water than AP — start at 63% and adjust.",
+    notes:
+      'NY dough needs enough structure to hold a fold. High-gluten flour can handle more water than AP — start at 63% and adjust.',
   },
-  "chicago-tavern": {
-    name: "Chicago Tavern",
-    min: 42, max: 55, default: 50,
+  'chicago-tavern': {
+    name: 'Chicago Tavern',
+    min: 42,
+    max: 55,
+    default: 50,
     sweet: { low: 48, high: 52 },
     effects: {
-      low: "Very stiff, cracker-like. Easy to roll thin but can be tough. Classic tavern texture.",
-      mid: "Perfect cracker-crisp crust. Rolls easily, holds its shape, snaps when you bite.",
-      high: "Still crispable but slightly more tender. A bit harder to roll paper-thin.",
+      low: 'Very stiff, cracker-like. Easy to roll thin but can be tough. Classic tavern texture.',
+      mid: 'Perfect cracker-crisp crust. Rolls easily, holds its shape, snaps when you bite.',
+      high: 'Still crispable but slightly more tender. A bit harder to roll paper-thin.',
     },
-    notes: "Tavern-style intentionally runs dry. The low hydration is what creates the cracker crunch. Don't fight it — embrace the stiff dough.",
+    notes:
+      "Tavern-style intentionally runs dry. The low hydration is what creates the cracker crunch. Don't fight it — embrace the stiff dough.",
   },
   detroit: {
-    name: "Detroit Deep Dish",
-    min: 65, max: 80, default: 72,
+    name: 'Detroit Deep Dish',
+    min: 65,
+    max: 80,
+    default: 72,
     sweet: { low: 70, high: 75 },
     effects: {
-      low: "Denser crumb, less airy. Still gets a good frico edge but less open interior.",
-      mid: "Light, airy, focaccia-like crumb. Beautiful open holes. Great oven spring in the pan.",
-      high: "Very open crumb, almost ciabatta-like. Requires careful handling. Stunning when it works.",
+      low: 'Denser crumb, less airy. Still gets a good frico edge but less open interior.',
+      mid: 'Light, airy, focaccia-like crumb. Beautiful open holes. Great oven spring in the pan.',
+      high: 'Very open crumb, almost ciabatta-like. Requires careful handling. Stunning when it works.',
     },
-    notes: "Detroit dough loves water. The high hydration creates the signature airy texture. The pan does the shaping work — you just press and wait.",
+    notes:
+      'Detroit dough loves water. The high hydration creates the signature airy texture. The pan does the shaping work — you just press and wait.',
   },
   sicilian: {
-    name: "Sicilian",
-    min: 60, max: 75, default: 68,
+    name: 'Sicilian',
+    min: 60,
+    max: 75,
+    default: 68,
     sweet: { low: 65, high: 72 },
     effects: {
-      low: "Denser, more bread-like. Easier to handle but less of that airy focaccia quality.",
-      mid: "Thick, airy crumb with a crispy oiled bottom. Classic Sicilian texture.",
-      high: "Very open crumb, almost spongy. Spectacular but needs a long proof to develop structure.",
+      low: 'Denser, more bread-like. Easier to handle but less of that airy focaccia quality.',
+      mid: 'Thick, airy crumb with a crispy oiled bottom. Classic Sicilian texture.',
+      high: 'Very open crumb, almost spongy. Spectacular but needs a long proof to develop structure.',
     },
-    notes: "Sicilian is essentially a flavored focaccia. Higher hydration gives that trademark pillowy texture. The olive oil helps keep it manageable.",
+    notes:
+      'Sicilian is essentially a flavored focaccia. Higher hydration gives that trademark pillowy texture. The olive oil helps keep it manageable.',
   },
   grandma: {
-    name: "Grandma",
-    min: 58, max: 72, default: 65,
+    name: 'Grandma',
+    min: 58,
+    max: 72,
+    default: 65,
     sweet: { low: 62, high: 68 },
     effects: {
-      low: "Thinner, crispier result. Less puff, more crunch. Closer to a bar pizza.",
-      mid: "Thin but with some chew. Oiled bottom gets perfectly crispy. Classic Grandma texture.",
-      high: "Slightly more airy. Still presses thin but with more tenderness. Nice contrast with crispy bottom.",
+      low: 'Thinner, crispier result. Less puff, more crunch. Closer to a bar pizza.',
+      mid: 'Thin but with some chew. Oiled bottom gets perfectly crispy. Classic Grandma texture.',
+      high: 'Slightly more airy. Still presses thin but with more tenderness. Nice contrast with crispy bottom.',
     },
-    notes: "Grandma is thinner than Sicilian. The generous oil does more for the texture than the hydration does — focus on a well-oiled pan.",
+    notes:
+      'Grandma is thinner than Sicilian. The generous oil does more for the texture than the hydration does — focus on a well-oiled pan.',
   },
-  "thin-crust": {
-    name: "Thin & Crispy",
-    min: 45, max: 60, default: 55,
+  'thin-crust': {
+    name: 'Thin & Crispy',
+    min: 45,
+    max: 60,
+    default: 55,
     sweet: { low: 52, high: 57 },
     effects: {
-      low: "Very stiff, cracker-crisp. Easy to roll but can be tough. Snaps clean.",
-      mid: "Crispy but with slight chew. Rolls out easily. Holds toppings without sagging.",
-      high: "More tender, less snap. Harder to roll thin. Can get soggy with heavy toppings.",
+      low: 'Very stiff, cracker-crisp. Easy to roll but can be tough. Snaps clean.',
+      mid: 'Crispy but with slight chew. Rolls out easily. Holds toppings without sagging.',
+      high: 'More tender, less snap. Harder to roll thin. Can get soggy with heavy toppings.',
     },
-    notes: "This style is all about the crunch. Keep hydration moderate and roll it thin. Dock with a fork to prevent bubbles.",
+    notes:
+      'This style is all about the crunch. Keep hydration moderate and roll it thin. Dock with a fork to prevent bubbles.',
   },
   pan: {
-    name: "Pan Pizza",
-    min: 63, max: 78, default: 70,
+    name: 'Pan Pizza',
+    min: 63,
+    max: 78,
+    default: 70,
     sweet: { low: 68, high: 73 },
     effects: {
-      low: "Denser, chewier crumb. Easier to handle. Still gets crispy edges from the oiled pan.",
-      mid: "Buttery, tender crumb with great oven spring. Golden fried bottom. Classic pan pizza.",
-      high: "Very airy interior, almost brioche-like. Stunning open crumb. Needs careful pan handling.",
+      low: 'Denser, chewier crumb. Easier to handle. Still gets crispy edges from the oiled pan.',
+      mid: 'Buttery, tender crumb with great oven spring. Golden fried bottom. Classic pan pizza.',
+      high: 'Very airy interior, almost brioche-like. Stunning open crumb. Needs careful pan handling.',
     },
-    notes: "Pan pizza dough is forgiving — the pan does the work. Higher hydration gives a lighter result, but even 65% makes a great pie.",
+    notes:
+      'Pan pizza dough is forgiving — the pan does the work. Higher hydration gives a lighter result, but even 65% makes a great pie.',
   },
 
-  "st-louis": {
-    name: "St. Louis",
-    min: 40, max: 52, default: 47,
+  'st-louis': {
+    name: 'St. Louis',
+    min: 40,
+    max: 52,
+    default: 47,
     sweet: { low: 45, high: 49 },
     effects: {
-      low: "Extremely stiff and cracker-like. Rolls out paper-thin easily. Snaps like a crisp cracker.",
-      mid: "Classic cracker crust. Stiff but workable. Rolls thin without tearing. Perfect snap.",
-      high: "Still crispy but slightly more pliable. Easier to roll but less dramatic crunch.",
+      low: 'Extremely stiff and cracker-like. Rolls out paper-thin easily. Snaps like a crisp cracker.',
+      mid: 'Classic cracker crust. Stiff but workable. Rolls thin without tearing. Perfect snap.',
+      high: 'Still crispy but slightly more pliable. Easier to roll but less dramatic crunch.',
     },
-    notes: "St. Louis crust is intentionally dry — some versions use no yeast at all. The low hydration creates the signature cracker texture. Don't be surprised by how stiff this dough feels.",
+    notes:
+      "St. Louis crust is intentionally dry — some versions use no yeast at all. The low hydration creates the signature cracker texture. Don't be surprised by how stiff this dough feels.",
   },
 
-  "new-haven": {
-    name: "New Haven Apizza",
-    min: 58, max: 68, default: 61,
+  'new-haven': {
+    name: 'New Haven Apizza',
+    min: 58,
+    max: 68,
+    default: 61,
     sweet: { low: 59, high: 64 },
     effects: {
-      low: "Slightly denser, easier to stretch into the thin oblong shape. Good char development.",
-      mid: "Classic New Haven texture — thin, charred, with just enough airiness in the cornicione. Stretches well.",
-      high: "More open crumb, harder to keep thin. Beautiful leopard spotting but can puff more than traditional.",
+      low: 'Slightly denser, easier to stretch into the thin oblong shape. Good char development.',
+      mid: 'Classic New Haven texture — thin, charred, with just enough airiness in the cornicione. Stretches well.',
+      high: 'More open crumb, harder to keep thin. Beautiful leopard spotting but can puff more than traditional.',
     },
-    notes: "New Haven dough runs leaner than Neapolitan — no oil, no sugar. The high-gluten flour handles the moderate hydration well. The coal-fired oven does the rest.",
+    notes:
+      'New Haven dough runs leaner than Neapolitan — no oil, no sugar. The high-gluten flour handles the moderate hydration well. The coal-fired oven does the rest.',
   },
 
-  "ohio-valley": {
-    name: "Ohio Valley",
-    min: 54, max: 64, default: 58,
+  'ohio-valley': {
+    name: 'Ohio Valley',
+    min: 54,
+    max: 64,
+    default: 58,
     sweet: { low: 56, high: 61 },
     effects: {
-      low: "Sturdier crust, easier to hold when loaded with cold cheese. More bread-like texture.",
-      mid: "Medium-thickness crust with enough structure to support the pile of cold cheese on top.",
-      high: "Softer, more tender crumb. The cold cheese can weigh it down — handle carefully.",
+      low: 'Sturdier crust, easier to hold when loaded with cold cheese. More bread-like texture.',
+      mid: 'Medium-thickness crust with enough structure to support the pile of cold cheese on top.',
+      high: 'Softer, more tender crumb. The cold cheese can weigh it down — handle carefully.',
     },
-    notes: "Ohio Valley crust needs to be sturdy enough to support a pile of cold cheese on top without collapsing. Don't go too high on hydration or you'll have a soggy base.",
+    notes:
+      "Ohio Valley crust needs to be sturdy enough to support a pile of cold cheese on top without collapsing. Don't go too high on hydration or you'll have a soggy base.",
   },
 
-  "cast-iron": {
-    name: "Cast Iron",
-    min: 58, max: 68, default: 62,
+  'cast-iron': {
+    name: 'Cast Iron',
+    min: 58,
+    max: 68,
+    default: 62,
     sweet: { low: 60, high: 65 },
     effects: {
-      low: "Denser crumb, very easy to press into the skillet. Crispy butter-fried bottom.",
-      mid: "Nice balance — enough airiness for a tender crumb with a stellar butter-crisped bottom.",
-      high: "More open crumb, almost focaccia-like. The butter in the pan keeps it manageable.",
+      low: 'Denser crumb, very easy to press into the skillet. Crispy butter-fried bottom.',
+      mid: 'Nice balance — enough airiness for a tender crumb with a stellar butter-crisped bottom.',
+      high: 'More open crumb, almost focaccia-like. The butter in the pan keeps it manageable.',
     },
-    notes: "Cast-iron pizza is forgiving because the butter in the hot pan fries the bottom regardless. Focus more on the stovetop-to-oven technique than hydration precision.",
+    notes:
+      'Cast-iron pizza is forgiving because the butter in the hot pan fries the bottom regardless. Focus more on the stovetop-to-oven technique than hydration precision.',
   },
 
-  "school-night": {
-    name: "School Night (No Rise)",
-    min: 55, max: 65, default: 60,
+  'school-night': {
+    name: 'School Night (No Rise)',
+    min: 55,
+    max: 65,
+    default: 60,
     sweet: { low: 58, high: 62 },
     effects: {
       low: "Easier to handle and shape quickly. Slightly cracker-like texture since there's no rise.",
-      mid: "Workable dough that presses out easily. Tender enough to be enjoyable despite no fermentation.",
-      high: "Softer, slightly more bread-like. Harder to shape quickly. Can be sticky without rest time.",
+      mid: 'Workable dough that presses out easily. Tender enough to be enjoyable despite no fermentation.',
+      high: 'Softer, slightly more bread-like. Harder to shape quickly. Can be sticky without rest time.',
     },
-    notes: "Without fermentation, the hydration matters less for flavor and more for workability. Aim for a dough that's easy to press out quickly — you're not going for perfection, you're going for dinner.",
+    notes:
+      "Without fermentation, the hydration matters less for flavor and more for workability. Aim for a dough that's easy to press out quickly — you're not going for perfection, you're going for dinner.",
   },
 };
-
 
 // ══════════════════════════════════════════════════════
 // 3. OVEN TEMPERATURE GUIDE
 // ══════════════════════════════════════════════════════
 
-const OVEN_SETUPS = [
+export const OVEN_SETUPS = [
   {
-    id: "home",
-    name: "Home Oven",
-    icon: "\uD83C\uDF73",
-    tempRange: "400\u2013550\u00B0F (205\u2013290\u00B0C)",
-    preheatTime: "30\u201360 minutes",
-    heatTransfer: "Varies \u2014 a pizza steel conducts heat 18\u00D7 faster than stone. A stone radiates heat steadily. Rack-only relies on air convection and works best with pan styles.",
-    bestStyles: ["new-york", "chicago-tavern", "detroit", "sicilian", "grandma", "pan", "ohio-valley", "cast-iron", "thin-crust", "st-louis", "school-night"],
-    limitations: "Max temp usually 500\u2013550\u00B0F. Can't replicate true pizza-oven char. Steel or stone recommended for free-form styles; pan styles work fine on the rack alone.",
+    id: 'home',
+    name: 'Home Oven',
+    icon: '\uD83C\uDF73',
+    tempRange: '400\u2013550\u00B0F (205\u2013290\u00B0C)',
+    preheatTime: '30\u201360 minutes',
+    heatTransfer:
+      'Varies \u2014 a pizza steel conducts heat 18\u00D7 faster than stone. A stone radiates heat steadily. Rack-only relies on air convection and works best with pan styles.',
+    bestStyles: [
+      'new-york',
+      'chicago-tavern',
+      'detroit',
+      'sicilian',
+      'grandma',
+      'pan',
+      'ohio-valley',
+      'cast-iron',
+      'thin-crust',
+      'st-louis',
+      'school-night',
+    ],
+    limitations:
+      "Max temp usually 500\u2013550\u00B0F. Can't replicate true pizza-oven char. Steel or stone recommended for free-form styles; pan styles work fine on the rack alone.",
     styleBakeTimes: {
-      neapolitan: { time: "5\u201318 min", note: "Steel on top rack + broiler is best. Stone: 8\u201312 min. Rack only: 12\u201318 min (bottom will be pale)." },
-      "new-york": { time: "6\u201318 min", note: "Steel or stone on a low rack for crisp bottom. Rack only works on a sheet pan but won\u2019t match pizzeria quality." },
-      "chicago-tavern": { time: "8\u201316 min", note: "Directly on steel or stone for cracker-like bottom. Sheet pan on rack works too." },
-      detroit: { time: "12\u201320 min", note: "Bake in pan on lower rack. Steel or stone underneath helps but the pan does most of the work." },
-      sicilian: { time: "16\u201328 min", note: "Pan on lower rack. Steel or stone underneath for crispier bottom. Oil in the pan fries the base." },
-      grandma: { time: "14\u201325 min", note: "Dark metal pan on lower rack. The pan\u2019s oil fries the bottom. Steel or stone underneath is a bonus." },
-      "thin-crust": { time: "5\u201314 min", note: "Steel or stone centered for even heat. Rack only: use a preheated sheet pan." },
-      pan: { time: "12\u201322 min", note: "Cast iron on lower rack. Place on steel or stone for extra bottom heat." },
-      "st-louis": { time: "6\u201314 min", note: "Steel or stone for best cracker crust. Sheet pan on rack also works." },
-      "new-haven": { time: "5\u201315 min", note: "Steel + broiler gets closest to coal-fired char. Stone: 7\u201310 min. Rack only: not ideal." },
-      "ohio-valley": { time: "10\u201318 min", note: "Sheet pan on rack is the traditional method. Steel or stone gives crispier bottom." },
-      "cast-iron": { time: "10\u201318 min", note: "Stovetop start, then transfer to oven. Skillet on steel doubles bottom heat." },
-      "school-night": { time: "6\u201315 min", note: "Steel speeds it up. Rack with sheet pan works fine for a quick weeknight bake." },
+      neapolitan: {
+        time: '5\u201318 min',
+        note: 'Steel on top rack + broiler is best. Stone: 8\u201312 min. Rack only: 12\u201318 min (bottom will be pale).',
+      },
+      'new-york': {
+        time: '6\u201318 min',
+        note: 'Steel or stone on a low rack for crisp bottom. Rack only works on a sheet pan but won\u2019t match pizzeria quality.',
+      },
+      'chicago-tavern': {
+        time: '8\u201316 min',
+        note: 'Directly on steel or stone for cracker-like bottom. Sheet pan on rack works too.',
+      },
+      detroit: {
+        time: '12\u201320 min',
+        note: 'Bake in pan on lower rack. Steel or stone underneath helps but the pan does most of the work.',
+      },
+      sicilian: {
+        time: '16\u201328 min',
+        note: 'Pan on lower rack. Steel or stone underneath for crispier bottom. Oil in the pan fries the base.',
+      },
+      grandma: {
+        time: '14\u201325 min',
+        note: 'Dark metal pan on lower rack. The pan\u2019s oil fries the bottom. Steel or stone underneath is a bonus.',
+      },
+      'thin-crust': {
+        time: '5\u201314 min',
+        note: 'Steel or stone centered for even heat. Rack only: use a preheated sheet pan.',
+      },
+      pan: {
+        time: '12\u201322 min',
+        note: 'Cast iron on lower rack. Place on steel or stone for extra bottom heat.',
+      },
+      'st-louis': {
+        time: '6\u201314 min',
+        note: 'Steel or stone for best cracker crust. Sheet pan on rack also works.',
+      },
+      'new-haven': {
+        time: '5\u201315 min',
+        note: 'Steel + broiler gets closest to coal-fired char. Stone: 7\u201310 min. Rack only: not ideal.',
+      },
+      'ohio-valley': {
+        time: '10\u201318 min',
+        note: 'Sheet pan on rack is the traditional method. Steel or stone gives crispier bottom.',
+      },
+      'cast-iron': {
+        time: '10\u201318 min',
+        note: 'Stovetop start, then transfer to oven. Skillet on steel doubles bottom heat.',
+      },
+      'school-night': {
+        time: '6\u201315 min',
+        note: 'Steel speeds it up. Rack with sheet pan works fine for a quick weeknight bake.',
+      },
     },
     tips: [
-      "A pizza steel gives the fastest, crispiest bottom crust. A stone works great too but recovers heat slower between pizzas.",
-      "No steel or stone? An inverted heavy sheet pan preheated in the oven is a solid substitute.",
-      "For pan styles (Detroit, Sicilian, Grandma), rack-only is perfectly fine \u2014 the pan does the work.",
-      "The broiler method: steel on top rack + broiler = closest to a pizza oven at home.",
-      "Convection mode (if available) improves results by circulating hot air more evenly.",
+      'A pizza steel gives the fastest, crispiest bottom crust. A stone works great too but recovers heat slower between pizzas.',
+      'No steel or stone? An inverted heavy sheet pan preheated in the oven is a solid substitute.',
+      'For pan styles (Detroit, Sicilian, Grandma), rack-only is perfectly fine \u2014 the pan does the work.',
+      'The broiler method: steel on top rack + broiler = closest to a pizza oven at home.',
+      'Convection mode (if available) improves results by circulating hot air more evenly.',
     ],
   },
   {
-    id: "wood-fired",
-    name: "Pizza Oven \u2014 Wood-Fired",
-    icon: "\uD83E\uDEB5",
-    tempRange: "800\u20131,000\u00B0F (425\u2013540\u00B0C)",
-    preheatTime: "1\u20132 hours (fire management)",
-    heatTransfer: "Extreme \u2014 radiant heat from dome + conductive heat from floor. Unmatched char and flavor.",
-    bestStyles: ["neapolitan", "new-york", "thin-crust", "new-haven"],
-    limitations: "Expensive ($500\u2013$5,000+). Requires fire-building skill. Weather dependent. Space needed. Long preheat.",
+    id: 'wood-fired',
+    name: 'Pizza Oven \u2014 Wood-Fired',
+    icon: '\uD83E\uDEB5',
+    tempRange: '800\u20131,000\u00B0F (425\u2013540\u00B0C)',
+    preheatTime: '1\u20132 hours (fire management)',
+    heatTransfer:
+      'Extreme \u2014 radiant heat from dome + conductive heat from floor. Unmatched char and flavor.',
+    bestStyles: ['neapolitan', 'new-york', 'thin-crust', 'new-haven'],
+    limitations:
+      'Expensive ($500\u2013$5,000+). Requires fire-building skill. Weather dependent. Space needed. Long preheat.',
     styleBakeTimes: {
-      neapolitan: { time: "60\u201390 sec", note: "The gold standard. A well-built fire gives the authentic leopard-spotted cornicione." },
-      "new-york": { time: "3\u20135 min", note: "Let the fire die down slightly (~700\u00B0F). NY needs lower, slower heat." },
-      "chicago-tavern": { time: "4\u20136 min", note: "Moderate fire. The smokiness adds character to tavern-style." },
-      detroit: { time: "10\u201314 min", note: "Possible with a cooled-down oven. Pan goes on the floor." },
-      sicilian: { time: "12\u201318 min", note: "Works with moderate fire. Sheet pan on the floor. Beautiful smoky crust." },
-      grandma: { time: "10\u201315 min", note: "Moderate fire works well. The wood flavor elevates Grandma pizza." },
-      "thin-crust": { time: "90 sec\u20133 min", note: "Moderate fire. Thin crust chars fast \u2014 be ready with your peel." },
-      pan: { time: "10\u201315 min", note: "Cast iron on the oven floor with moderate fire. Smoky, crispy, incredible." },
-      "st-louis": { time: "3\u20135 min", note: "Moderate fire. The smokiness is a nice bonus for the cracker crust." },
-      "new-haven": { time: "90 sec\u20132 min", note: "Wood-fired is the closest substitute for coal. Get it ripping hot." },
-      "ohio-valley": { time: "6\u201310 min", note: "Moderate fire. Bake the base, pull, pile cold cheese. Smoky contrast." },
-      "cast-iron": { time: "8\u201312 min", note: "Skillet on the oven floor. Skip the stovetop step \u2014 the fire does the work." },
-      "school-night": { time: "3\u20135 min", note: "Moderate fire. Quick dough in a wood-fired oven is underrated." },
+      neapolitan: {
+        time: '60\u201390 sec',
+        note: 'The gold standard. A well-built fire gives the authentic leopard-spotted cornicione.',
+      },
+      'new-york': {
+        time: '3\u20135 min',
+        note: 'Let the fire die down slightly (~700\u00B0F). NY needs lower, slower heat.',
+      },
+      'chicago-tavern': {
+        time: '4\u20136 min',
+        note: 'Moderate fire. The smokiness adds character to tavern-style.',
+      },
+      detroit: {
+        time: '10\u201314 min',
+        note: 'Possible with a cooled-down oven. Pan goes on the floor.',
+      },
+      sicilian: {
+        time: '12\u201318 min',
+        note: 'Works with moderate fire. Sheet pan on the floor. Beautiful smoky crust.',
+      },
+      grandma: {
+        time: '10\u201315 min',
+        note: 'Moderate fire works well. The wood flavor elevates Grandma pizza.',
+      },
+      'thin-crust': {
+        time: '90 sec\u20133 min',
+        note: 'Moderate fire. Thin crust chars fast \u2014 be ready with your peel.',
+      },
+      pan: {
+        time: '10\u201315 min',
+        note: 'Cast iron on the oven floor with moderate fire. Smoky, crispy, incredible.',
+      },
+      'st-louis': {
+        time: '3\u20135 min',
+        note: 'Moderate fire. The smokiness is a nice bonus for the cracker crust.',
+      },
+      'new-haven': {
+        time: '90 sec\u20132 min',
+        note: 'Wood-fired is the closest substitute for coal. Get it ripping hot.',
+      },
+      'ohio-valley': {
+        time: '6\u201310 min',
+        note: 'Moderate fire. Bake the base, pull, pile cold cheese. Smoky contrast.',
+      },
+      'cast-iron': {
+        time: '8\u201312 min',
+        note: 'Skillet on the oven floor. Skip the stovetop step \u2014 the fire does the work.',
+      },
+      'school-night': {
+        time: '3\u20135 min',
+        note: 'Moderate fire. Quick dough in a wood-fired oven is underrated.',
+      },
     },
     tips: [
-      "Build the fire 1\u20132 hours ahead. Push coals to the side when ready.",
-      "The floor is ready when flour tossed on it browns in 2\u20133 seconds.",
-      "Rotate pizza 90\u00B0 every 15\u201320 seconds for even bake.",
-      "Hardwoods (oak, maple, cherry) burn hotter and longer than softwoods.",
+      'Build the fire 1\u20132 hours ahead. Push coals to the side when ready.',
+      'The floor is ready when flour tossed on it browns in 2\u20133 seconds.',
+      'Rotate pizza 90\u00B0 every 15\u201320 seconds for even bake.',
+      'Hardwoods (oak, maple, cherry) burn hotter and longer than softwoods.',
     ],
   },
   {
-    id: "gas",
-    name: "Pizza Oven \u2014 Gas",
-    icon: "\uD83D\uDD25",
-    tempRange: "750\u2013950\u00B0F (400\u2013510\u00B0C)",
-    preheatTime: "15\u201320 minutes",
-    heatTransfer: "Very high \u2014 direct flame + stone floor. Closest to wood-fired performance with precise temperature control.",
-    bestStyles: ["neapolitan", "new-york", "thin-crust", "new-haven"],
-    limitations: "Size limited \u2014 max 12\u201316\u2033 pizza depending on model. Learning curve for flame management. Not ideal for pan/sheet styles.",
+    id: 'gas',
+    name: 'Pizza Oven \u2014 Gas',
+    icon: '\uD83D\uDD25',
+    tempRange: '750\u2013950\u00B0F (400\u2013510\u00B0C)',
+    preheatTime: '15\u201320 minutes',
+    heatTransfer:
+      'Very high \u2014 direct flame + stone floor. Closest to wood-fired performance with precise temperature control.',
+    bestStyles: ['neapolitan', 'new-york', 'thin-crust', 'new-haven'],
+    limitations:
+      'Size limited \u2014 max 12\u201316\u2033 pizza depending on model. Learning curve for flame management. Not ideal for pan/sheet styles.',
     styleBakeTimes: {
-      neapolitan: { time: "60\u201390 sec", note: "This is what gas pizza ovens are built for. Rotate every 15\u201320 seconds." },
-      "new-york": { time: "3\u20135 min", note: "Back off the temp to ~650\u00B0F. NY dough needs a bit longer to crisp." },
-      "chicago-tavern": { time: "3\u20135 min", note: "Lower temp (~600\u00B0F). The thin crust chars fast \u2014 watch carefully." },
-      detroit: { time: "Not ideal", note: "Pan won\u2019t fit most gas pizza ovens. Use your home oven instead." },
-      sicilian: { time: "Not ideal", note: "Sheet pans don\u2019t fit. Use your home oven for Sicilian." },
-      grandma: { time: "Not ideal", note: "Sheet pans don\u2019t fit. Use your home oven for Grandma." },
-      "thin-crust": { time: "90 sec\u20133 min", note: "Lower temp (~600\u00B0F). Thin crust can scorch in seconds at full heat." },
-      pan: { time: "Not ideal", note: "Cast iron may fit larger models, but home oven gives better results for pan pizza." },
-      "st-louis": { time: "2\u20134 min", note: "Lower temp (~600\u00B0F). Paper-thin crust chars in seconds at full heat." },
-      "new-haven": { time: "90 sec\u20133 min", note: "Gas pizza ovens replicate coal-oven intensity well." },
-      "ohio-valley": { time: "3\u20135 min", note: "Bake the base in the pizza oven, then add cold cheese outside." },
-      "cast-iron": { time: "Not ideal", note: "Skillet may fit some models but the stovetop step is lost. Use home oven." },
-      "school-night": { time: "2\u20134 min", note: "Quick dough + quick oven = dinner in 20 minutes total." },
+      neapolitan: {
+        time: '60\u201390 sec',
+        note: 'This is what gas pizza ovens are built for. Rotate every 15\u201320 seconds.',
+      },
+      'new-york': {
+        time: '3\u20135 min',
+        note: 'Back off the temp to ~650\u00B0F. NY dough needs a bit longer to crisp.',
+      },
+      'chicago-tavern': {
+        time: '3\u20135 min',
+        note: 'Lower temp (~600\u00B0F). The thin crust chars fast \u2014 watch carefully.',
+      },
+      detroit: {
+        time: 'Not ideal',
+        note: 'Pan won\u2019t fit most gas pizza ovens. Use your home oven instead.',
+      },
+      sicilian: {
+        time: 'Not ideal',
+        note: 'Sheet pans don\u2019t fit. Use your home oven for Sicilian.',
+      },
+      grandma: {
+        time: 'Not ideal',
+        note: 'Sheet pans don\u2019t fit. Use your home oven for Grandma.',
+      },
+      'thin-crust': {
+        time: '90 sec\u20133 min',
+        note: 'Lower temp (~600\u00B0F). Thin crust can scorch in seconds at full heat.',
+      },
+      pan: {
+        time: 'Not ideal',
+        note: 'Cast iron may fit larger models, but home oven gives better results for pan pizza.',
+      },
+      'st-louis': {
+        time: '2\u20134 min',
+        note: 'Lower temp (~600\u00B0F). Paper-thin crust chars in seconds at full heat.',
+      },
+      'new-haven': {
+        time: '90 sec\u20133 min',
+        note: 'Gas pizza ovens replicate coal-oven intensity well.',
+      },
+      'ohio-valley': {
+        time: '3\u20135 min',
+        note: 'Bake the base in the pizza oven, then add cold cheese outside.',
+      },
+      'cast-iron': {
+        time: 'Not ideal',
+        note: 'Skillet may fit some models but the stovetop step is lost. Use home oven.',
+      },
+      'school-night': {
+        time: '2\u20134 min',
+        note: 'Quick dough + quick oven = dinner in 20 minutes total.',
+      },
     },
     tips: [
-      "Turn pizza every 15\u201320 seconds for even charring.",
-      "Use a small turning peel \u2014 essential for pizza oven cooking.",
-      "Let the stone floor fully heat \u2014 the top of the oven heats first.",
-      "Gas gives the most consistent, controllable heat output of any pizza oven.",
+      'Turn pizza every 15\u201320 seconds for even charring.',
+      'Use a small turning peel \u2014 essential for pizza oven cooking.',
+      'Let the stone floor fully heat \u2014 the top of the oven heats first.',
+      'Gas gives the most consistent, controllable heat output of any pizza oven.',
     ],
   },
   {
-    id: "portable",
-    name: "Countertop \u2014 Portable",
-    icon: "\uD83C\uDF55",
-    tempRange: "700\u2013900\u00B0F (370\u2013480\u00B0C)",
-    preheatTime: "10\u201315 minutes",
-    heatTransfer: "High \u2014 compact chamber heats quickly with stone floor. Great for small pizzas.",
-    bestStyles: ["neapolitan", "thin-crust", "school-night"],
-    limitations: "Very small \u2014 usually max 10\u201312\u2033 pizza. Limited to round styles. No room for pans or sheet pans.",
+    id: 'portable',
+    name: 'Countertop \u2014 Portable',
+    icon: '\uD83C\uDF55',
+    tempRange: '700\u2013900\u00B0F (370\u2013480\u00B0C)',
+    preheatTime: '10\u201315 minutes',
+    heatTransfer:
+      'High \u2014 compact chamber heats quickly with stone floor. Great for small pizzas.',
+    bestStyles: ['neapolitan', 'thin-crust', 'school-night'],
+    limitations:
+      'Very small \u2014 usually max 10\u201312\u2033 pizza. Limited to round styles. No room for pans or sheet pans.',
     styleBakeTimes: {
-      neapolitan: { time: "90 sec\u20133 min", note: "Great results for personal-sized Neapolitan. Rotate frequently." },
-      "new-york": { time: "3\u20135 min", note: "Back off the heat. Works well for 10\u201312\u2033 pies." },
-      "chicago-tavern": { time: "3\u20135 min", note: "Lower heat. Thin crust chars fast." },
-      detroit: { time: "Not ideal", note: "Pans don\u2019t fit. Use your home oven." },
-      sicilian: { time: "Not ideal", note: "Sheet pans don\u2019t fit." },
-      grandma: { time: "Not ideal", note: "Sheet pans don\u2019t fit." },
-      "thin-crust": { time: "90 sec\u20133 min", note: "Excellent for thin crust. Watch closely at high heat." },
-      pan: { time: "Not ideal", note: "Cast iron won\u2019t fit. Use your home oven." },
-      "st-louis": { time: "2\u20134 min", note: "Works for small rounds. Watch the thin crust carefully." },
-      "new-haven": { time: "2\u20134 min", note: "Can get decent char on small pies." },
-      "ohio-valley": { time: "3\u20135 min", note: "Bake the base, add cold cheese outside." },
-      "cast-iron": { time: "Not ideal", note: "Skillet won\u2019t fit." },
-      "school-night": { time: "2\u20134 min", note: "Perfect for a fast personal pizza." },
+      neapolitan: {
+        time: '90 sec\u20133 min',
+        note: 'Great results for personal-sized Neapolitan. Rotate frequently.',
+      },
+      'new-york': {
+        time: '3\u20135 min',
+        note: 'Back off the heat. Works well for 10\u201312\u2033 pies.',
+      },
+      'chicago-tavern': { time: '3\u20135 min', note: 'Lower heat. Thin crust chars fast.' },
+      detroit: { time: 'Not ideal', note: 'Pans don\u2019t fit. Use your home oven.' },
+      sicilian: { time: 'Not ideal', note: 'Sheet pans don\u2019t fit.' },
+      grandma: { time: 'Not ideal', note: 'Sheet pans don\u2019t fit.' },
+      'thin-crust': {
+        time: '90 sec\u20133 min',
+        note: 'Excellent for thin crust. Watch closely at high heat.',
+      },
+      pan: { time: 'Not ideal', note: 'Cast iron won\u2019t fit. Use your home oven.' },
+      'st-louis': {
+        time: '2\u20134 min',
+        note: 'Works for small rounds. Watch the thin crust carefully.',
+      },
+      'new-haven': { time: '2\u20134 min', note: 'Can get decent char on small pies.' },
+      'ohio-valley': { time: '3\u20135 min', note: 'Bake the base, add cold cheese outside.' },
+      'cast-iron': { time: 'Not ideal', note: 'Skillet won\u2019t fit.' },
+      'school-night': { time: '2\u20134 min', note: 'Perfect for a fast personal pizza.' },
     },
     tips: [
-      "These ovens are designed for 10\u201312\u2033 personal pizzas \u2014 don\u2019t try to go bigger.",
-      "Preheat with the stone floor fully heated before launching.",
-      "Rotate the pizza every 20\u201330 seconds for even cooking.",
-      "Great for beginners learning to work at high heat with small dough balls.",
+      'These ovens are designed for 10\u201312\u2033 personal pizzas \u2014 don\u2019t try to go bigger.',
+      'Preheat with the stone floor fully heated before launching.',
+      'Rotate the pizza every 20\u201330 seconds for even cooking.',
+      'Great for beginners learning to work at high heat with small dough balls.',
     ],
   },
   {
-    id: "electric",
-    name: "Countertop \u2014 Electric",
-    icon: "\u26A1",
-    tempRange: "500\u2013850\u00B0F (260\u2013455\u00B0C)",
-    preheatTime: "15\u201320 minutes",
-    heatTransfer: "Moderate to high \u2014 electric heating elements with stone floor. Consistent, set-and-forget temperature control.",
-    bestStyles: ["neapolitan", "new-york", "thin-crust", "new-haven", "school-night"],
-    limitations: "Size limited to 12\u201313\u2033 pizza typically. Electric elements heat differently than flame. Not ideal for pan/sheet styles.",
+    id: 'electric',
+    name: 'Countertop \u2014 Electric',
+    icon: '\u26A1',
+    tempRange: '500\u2013850\u00B0F (260\u2013455\u00B0C)',
+    preheatTime: '15\u201320 minutes',
+    heatTransfer:
+      'Moderate to high \u2014 electric heating elements with stone floor. Consistent, set-and-forget temperature control.',
+    bestStyles: ['neapolitan', 'new-york', 'thin-crust', 'new-haven', 'school-night'],
+    limitations:
+      'Size limited to 12\u201313\u2033 pizza typically. Electric elements heat differently than flame. Not ideal for pan/sheet styles.',
     styleBakeTimes: {
-      neapolitan: { time: "2\u20134 min", note: "Set to max temp. Won\u2019t match gas flame char but produces excellent results." },
-      "new-york": { time: "4\u20137 min", note: "~600\u2013700\u00B0F works well. Consistent heat is great for NY style." },
-      "chicago-tavern": { time: "4\u20136 min", note: "Lower temp (~550\u00B0F). Even heat crisps the cracker crust well." },
-      detroit: { time: "Not ideal", note: "Most pans don\u2019t fit. Use your home oven." },
-      sicilian: { time: "Not ideal", note: "Sheet pans don\u2019t fit." },
-      grandma: { time: "Not ideal", note: "Sheet pans don\u2019t fit." },
-      "thin-crust": { time: "2\u20134 min", note: "Great results. Even heat is perfect for thin crust." },
-      pan: { time: "Not ideal", note: "Cast iron usually too large. Home oven is better." },
-      "st-louis": { time: "3\u20135 min", note: "Even heat is ideal for the cracker crust." },
-      "new-haven": { time: "3\u20135 min", note: "Max heat. Won\u2019t get coal-fired char but close." },
-      "ohio-valley": { time: "4\u20136 min", note: "Bake the base, add cold cheese outside." },
-      "cast-iron": { time: "Not ideal", note: "Skillet won\u2019t fit most models." },
-      "school-night": { time: "3\u20135 min", note: "Set it and forget it. Quick, consistent results." },
+      neapolitan: {
+        time: '2\u20134 min',
+        note: 'Set to max temp. Won\u2019t match gas flame char but produces excellent results.',
+      },
+      'new-york': {
+        time: '4\u20137 min',
+        note: '~600\u2013700\u00B0F works well. Consistent heat is great for NY style.',
+      },
+      'chicago-tavern': {
+        time: '4\u20136 min',
+        note: 'Lower temp (~550\u00B0F). Even heat crisps the cracker crust well.',
+      },
+      detroit: { time: 'Not ideal', note: 'Most pans don\u2019t fit. Use your home oven.' },
+      sicilian: { time: 'Not ideal', note: 'Sheet pans don\u2019t fit.' },
+      grandma: { time: 'Not ideal', note: 'Sheet pans don\u2019t fit.' },
+      'thin-crust': {
+        time: '2\u20134 min',
+        note: 'Great results. Even heat is perfect for thin crust.',
+      },
+      pan: { time: 'Not ideal', note: 'Cast iron usually too large. Home oven is better.' },
+      'st-louis': { time: '3\u20135 min', note: 'Even heat is ideal for the cracker crust.' },
+      'new-haven': {
+        time: '3\u20135 min',
+        note: 'Max heat. Won\u2019t get coal-fired char but close.',
+      },
+      'ohio-valley': { time: '4\u20136 min', note: 'Bake the base, add cold cheese outside.' },
+      'cast-iron': { time: 'Not ideal', note: 'Skillet won\u2019t fit most models.' },
+      'school-night': {
+        time: '3\u20135 min',
+        note: 'Set it and forget it. Quick, consistent results.',
+      },
     },
     tips: [
-      "Electric ovens excel at consistent temperature \u2014 great for beginners.",
-      "No flame management needed. Set your temp and focus on the pizza.",
-      "Preheat fully \u2014 the stone floor needs to be hot for good bottom crust.",
-      "Rotate the pizza halfway through for even browning on all sides.",
+      'Electric ovens excel at consistent temperature \u2014 great for beginners.',
+      'No flame management needed. Set your temp and focus on the pizza.',
+      'Preheat fully \u2014 the stone floor needs to be hot for good bottom crust.',
+      'Rotate the pizza halfway through for even browning on all sides.',
     ],
   },
 ];
-
 
 // ══════════════════════════════════════════════════════
 // 4. DOUGH TROUBLESHOOTING TREE
@@ -522,92 +1007,92 @@ const OVEN_SETUPS = [
 // Each problem has a series of questions. Each question
 // has options that lead to a fix or another question.
 
-const TROUBLESHOOTING_TREE = {
+export const TROUBLESHOOTING_TREE = {
   // ── 1. DOUGH IS STICKY ───────────────────────────────
   sticky: {
-    symptom: "Dough is Sticky",
-    icon: "🫠",
-    initial: "q1",
+    symptom: 'Dough is Sticky',
+    icon: '🫠',
+    initial: 'q1',
     questions: {
       q1: {
-        text: "When is it sticky?",
+        text: 'When is it sticky?',
         options: [
-          { label: "During mixing / kneading", next: "q2" },
-          { label: "After fermentation", next: "q3" },
-          { label: "When stretching", next: "q4" },
+          { label: 'During mixing / kneading', next: 'q2' },
+          { label: 'After fermentation', next: 'q3' },
+          { label: 'When stretching', next: 'q4' },
         ],
       },
       q2: {
-        text: "How long have you been kneading?",
+        text: 'How long have you been kneading?',
         options: [
-          { label: "Less than 5 minutes", next: "fix-mixing" },
-          { label: "Over 10 minutes and still sticky", next: "fix-too-much-water" },
+          { label: 'Less than 5 minutes', next: 'fix-mixing' },
+          { label: 'Over 10 minutes and still sticky', next: 'fix-too-much-water' },
         ],
       },
       q3: {
-        text: "Did you measure the water accurately?",
+        text: 'Did you measure the water accurately?',
         options: [
-          { label: "I may have added too much", next: "fix-too-much-water" },
-          { label: "I measured carefully", next: "fix-flour-humidity" },
+          { label: 'I may have added too much', next: 'fix-too-much-water' },
+          { label: 'I measured carefully', next: 'fix-flour-humidity' },
         ],
       },
       q4: {
-        text: "Is the dough also very slack and hard to hold?",
+        text: 'Is the dough also very slack and hard to hold?',
         options: [
-          { label: "Yes, it's floppy and loose", next: "fix-overfermented-sticky" },
-          { label: "No, it just sticks to my hands", next: "fix-stretching-sticky" },
+          { label: "Yes, it's floppy and loose", next: 'fix-overfermented-sticky' },
+          { label: 'No, it just sticks to my hands', next: 'fix-stretching-sticky' },
         ],
       },
     },
     fixes: {
-      "fix-mixing": {
+      'fix-mixing': {
         title: "Normal — Gluten Hasn't Developed Yet",
         steps: [
-          "This is completely normal! Dough starts sticky and becomes smooth as gluten develops.",
-          "Continue kneading for 8–12 minutes. The dough will pull away from the counter.",
+          'This is completely normal! Dough starts sticky and becomes smooth as gluten develops.',
+          'Continue kneading for 8–12 minutes. The dough will pull away from the counter.',
           "If using a stand mixer, mix on speed 2 for 8–10 minutes. It'll wrap around the hook.",
           "Try the 'slap and fold' technique — pick up the dough, slap it on the counter, fold it over. Repeat.",
-          "Resist adding extra flour during mixing. It will come together.",
+          'Resist adding extra flour during mixing. It will come together.',
         ],
       },
-      "fix-too-much-water": {
-        title: "Too Much Water — Adjust the Dough",
+      'fix-too-much-water': {
+        title: 'Too Much Water — Adjust the Dough',
         steps: [
-          "Add flour 1 tablespoon at a time, kneading after each addition.",
-          "Stop when the dough feels tacky (sticks slightly) but not wet.",
-          "For next time: hold back 5–10% of the water and add gradually.",
-          "Use a kitchen scale — water measurement by volume can be off by 5–10%.",
-          "Some flour absorbs more than others. High-protein flour can handle more water.",
+          'Add flour 1 tablespoon at a time, kneading after each addition.',
+          'Stop when the dough feels tacky (sticks slightly) but not wet.',
+          'For next time: hold back 5–10% of the water and add gradually.',
+          'Use a kitchen scale — water measurement by volume can be off by 5–10%.',
+          'Some flour absorbs more than others. High-protein flour can handle more water.',
         ],
       },
-      "fix-flour-humidity": {
-        title: "Flour or Humidity Issue",
+      'fix-flour-humidity': {
+        title: 'Flour or Humidity Issue',
         steps: [
-          "Your flour may have absorbed ambient moisture, especially in humid climates (60%+ RH).",
-          "Add 1–2 tablespoons of flour and knead in. Wait 10 minutes to reassess.",
+          'Your flour may have absorbed ambient moisture, especially in humid climates (60%+ RH).',
+          'Add 1–2 tablespoons of flour and knead in. Wait 10 minutes to reassess.',
           "Try the 'autolyse' method: let the dough rest 20–30 minutes. Gluten develops and it becomes less sticky.",
-          "Lower-protein flour (like AP) absorbs less water — reduce hydration by 2–3% next time.",
+          'Lower-protein flour (like AP) absorbs less water — reduce hydration by 2–3% next time.',
           "In very humid weather, reduce your recipe's water by 2–3% preemptively.",
-          "Store flour in an airtight container to prevent moisture absorption.",
+          'Store flour in an airtight container to prevent moisture absorption.',
         ],
       },
-      "fix-overfermented-sticky": {
-        title: "Over-Fermented — Gluten Breaking Down",
+      'fix-overfermented-sticky': {
+        title: 'Over-Fermented — Gluten Breaking Down',
         steps: [
-          "Slack, sticky dough after a long rise usually means fermentation went too far.",
+          'Slack, sticky dough after a long rise usually means fermentation went too far.',
           "The gluten network has weakened — the dough can't hold its shape anymore.",
-          "You can try: fold it gently a few times, then shape and bake immediately.",
+          'You can try: fold it gently a few times, then shape and bake immediately.',
           "Don't add flour at this stage — it won't integrate properly and will create dry spots.",
-          "For next time: shorten your bulk fermentation or use less yeast. Cold-ferment in the fridge for more control.",
+          'For next time: shorten your bulk fermentation or use less yeast. Cold-ferment in the fridge for more control.',
         ],
       },
-      "fix-stretching-sticky": {
-        title: "Sticky When Stretching",
+      'fix-stretching-sticky': {
+        title: 'Sticky When Stretching',
         steps: [
-          "Generously flour your work surface and the top of the dough ball.",
-          "Use semolina or a 50/50 mix of semolina and flour — it prevents sticking better.",
-          "If the dough is warm and sticky, refrigerate it for 20–30 minutes to firm up.",
-          "Oil your hands instead of using flour for a different approach (especially for high-hydration doughs).",
+          'Generously flour your work surface and the top of the dough ball.',
+          'Use semolina or a 50/50 mix of semolina and flour — it prevents sticking better.',
+          'If the dough is warm and sticky, refrigerate it for 20–30 minutes to firm up.',
+          'Oil your hands instead of using flour for a different approach (especially for high-hydration doughs).',
           "The dough may be over-proofed — check if it's very slack and tears easily.",
         ],
       },
@@ -616,62 +1101,62 @@ const TROUBLESHOOTING_TREE = {
 
   // ── 2. DOUGH IS TOO TIGHT ────────────────────────────
   tight: {
-    symptom: "Dough is Too Tight",
-    icon: "💪",
-    initial: "q1",
+    symptom: 'Dough is Too Tight',
+    icon: '💪',
+    initial: 'q1',
     questions: {
       q1: {
-        text: "When is it resisting?",
+        text: 'When is it resisting?',
         options: [
-          { label: "Right after mixing", next: "q2" },
-          { label: "After refrigeration", next: "fix-cold-dough" },
-          { label: "After balling", next: "fix-post-ball" },
+          { label: 'Right after mixing', next: 'q2' },
+          { label: 'After refrigeration', next: 'fix-cold-dough' },
+          { label: 'After balling', next: 'fix-post-ball' },
         ],
       },
       q2: {
-        text: "What flour are you using?",
+        text: 'What flour are you using?',
         options: [
-          { label: "Bread flour / high-gluten", next: "fix-strong-flour" },
-          { label: "AP or 00 flour", next: "fix-fresh-mix" },
+          { label: 'Bread flour / high-gluten', next: 'fix-strong-flour' },
+          { label: 'AP or 00 flour', next: 'fix-fresh-mix' },
         ],
       },
     },
     fixes: {
-      "fix-fresh-mix": {
-        title: "Over-Developed Gluten from Mixing",
+      'fix-fresh-mix': {
+        title: 'Over-Developed Gluten from Mixing',
         steps: [
-          "The gluten is tight from kneading. This is normal — it just needs time to relax.",
-          "Cover the dough and let it rest 15–20 minutes. The gluten will relax significantly.",
-          "After resting, try shaping again. It should be noticeably more cooperative.",
+          'The gluten is tight from kneading. This is normal — it just needs time to relax.',
+          'Cover the dough and let it rest 15–20 minutes. The gluten will relax significantly.',
+          'After resting, try shaping again. It should be noticeably more cooperative.',
           "If it's still very tight, your hydration may be too low. Next time, add 2–3% more water.",
-          "For very stiff doughs (like tavern-style), a short rest is essential before rolling.",
+          'For very stiff doughs (like tavern-style), a short rest is essential before rolling.',
         ],
       },
-      "fix-strong-flour": {
-        title: "Strong Flour — Extra Rest Needed",
+      'fix-strong-flour': {
+        title: 'Strong Flour — Extra Rest Needed',
         steps: [
-          "High-protein flour (bread flour, high-gluten) develops very strong, tight gluten networks.",
-          "Give the dough at least 20–30 minutes of rest after mixing before attempting to shape.",
-          "Consider increasing hydration by 2–5% — strong flour absorbs more water.",
+          'High-protein flour (bread flour, high-gluten) develops very strong, tight gluten networks.',
+          'Give the dough at least 20–30 minutes of rest after mixing before attempting to shape.',
+          'Consider increasing hydration by 2–5% — strong flour absorbs more water.',
           "Use the 'stretch and fold' method instead of aggressive kneading to build structure more gently.",
-          "For styles like Neapolitan, switch to 00 flour (lower protein) for a more extensible dough.",
+          'For styles like Neapolitan, switch to 00 flour (lower protein) for a more extensible dough.',
         ],
       },
-      "fix-cold-dough": {
-        title: "Cold Dough — Needs to Warm Up",
+      'fix-cold-dough': {
+        title: 'Cold Dough — Needs to Warm Up',
         steps: [
-          "Cold gluten is tight gluten. This is physics, not a problem with your dough.",
-          "Let the dough sit at room temperature for 1.5–2 hours before stretching.",
-          "Place the container in a warm spot (near the oven, in sunlight) to speed warming.",
+          'Cold gluten is tight gluten. This is physics, not a problem with your dough.',
+          'Let the dough sit at room temperature for 1.5–2 hours before stretching.',
+          'Place the container in a warm spot (near the oven, in sunlight) to speed warming.',
           "Don't try to force cold dough — you'll tear it or fight it the whole time.",
-          "The dough is ready when it feels soft, pliable, and slightly puffy.",
+          'The dough is ready when it feels soft, pliable, and slightly puffy.',
         ],
       },
-      "fix-post-ball": {
-        title: "Freshly Balled — Needs to Relax",
+      'fix-post-ball': {
+        title: 'Freshly Balled — Needs to Relax',
         steps: [
-          "Balling creates tension in the dough. It needs 30–60 minutes to relax.",
-          "Cover the dough balls with a damp towel or plastic wrap to prevent drying.",
+          'Balling creates tension in the dough. It needs 30–60 minutes to relax.',
+          'Cover the dough balls with a damp towel or plastic wrap to prevent drying.',
           "The dough is ready to stretch when a gentle poke leaves an indentation that slowly springs back (but doesn't snap).",
           "If it's been over an hour and it's still tight, hydration may be too low.",
           "Tight dough can also mean the yeast is sluggish — check that it's active and the dough has risen.",
@@ -683,82 +1168,82 @@ const TROUBLESHOOTING_TREE = {
   // ── 3. WON'T STRETCH / SHRINKS BACK ──────────────────
   stretch: {
     symptom: "Won't Stretch / Shrinks Back",
-    icon: "🔄",
-    initial: "q1",
+    icon: '🔄',
+    initial: 'q1',
     questions: {
       q1: {
-        text: "What happens when you try to stretch?",
+        text: 'What happens when you try to stretch?',
         options: [
-          { label: "It springs back to a smaller size", next: "q2" },
-          { label: "It stretches but slowly returns", next: "q3" },
-          { label: "The center stretches but edges are thick", next: "fix-thick-edges" },
+          { label: 'It springs back to a smaller size', next: 'q2' },
+          { label: 'It stretches but slowly returns', next: 'q3' },
+          { label: 'The center stretches but edges are thick', next: 'fix-thick-edges' },
         ],
       },
       q2: {
-        text: "Is the dough cold?",
+        text: 'Is the dough cold?',
         options: [
-          { label: "Yes, from the fridge", next: "fix-cold-stretch" },
-          { label: "No, it's room temperature", next: "fix-underproofed" },
+          { label: 'Yes, from the fridge', next: 'fix-cold-stretch' },
+          { label: "No, it's room temperature", next: 'fix-underproofed' },
         ],
       },
       q3: {
-        text: "How long has the dough been resting since balling?",
+        text: 'How long has the dough been resting since balling?',
         options: [
-          { label: "Less than 30 minutes", next: "fix-gluten-tension" },
-          { label: "Over an hour", next: "fix-low-hydration-stretch" },
+          { label: 'Less than 30 minutes', next: 'fix-gluten-tension' },
+          { label: 'Over an hour', next: 'fix-low-hydration-stretch' },
         ],
       },
     },
     fixes: {
-      "fix-cold-stretch": {
+      'fix-cold-stretch': {
         title: "Cold Dough Won't Stretch",
         steps: [
-          "Let the dough warm to room temperature for 1.5–2 hours.",
-          "Cold gluten is elastic — it will fight you until it warms up.",
+          'Let the dough warm to room temperature for 1.5–2 hours.',
+          'Cold gluten is elastic — it will fight you until it warms up.',
           "Don't try to stretch cold dough by force. You'll create uneven thickness and potentially tear it.",
           "If you're in a rush, place the covered dough near a warm oven (not on it) for 30–45 minutes.",
-          "The dough is ready when it feels soft and a poke slowly fills back in.",
+          'The dough is ready when it feels soft and a poke slowly fills back in.',
         ],
       },
-      "fix-gluten-tension": {
-        title: "Gluten Tension — Rest More",
+      'fix-gluten-tension': {
+        title: 'Gluten Tension — Rest More',
         steps: [
-          "The gluten needs more time to relax. Put the dough down and wait 10–15 minutes.",
-          "Stretching in stages works: stretch a bit, rest 5 min, stretch more.",
-          "Very strong flour (high-gluten, bread flour) creates more tension and needs more rest.",
+          'The gluten needs more time to relax. Put the dough down and wait 10–15 minutes.',
+          'Stretching in stages works: stretch a bit, rest 5 min, stretch more.',
+          'Very strong flour (high-gluten, bread flour) creates more tension and needs more rest.',
           "If you over-handled the dough, it's fighting back. Walk away for 15 minutes.",
-          "Gently press from center outward rather than pulling the edges.",
+          'Gently press from center outward rather than pulling the edges.',
         ],
       },
-      "fix-low-hydration-stretch": {
-        title: "Hydration May Be Too Low",
+      'fix-low-hydration-stretch': {
+        title: 'Hydration May Be Too Low',
         steps: [
-          "If the dough has rested plenty and is still fighting you, the hydration is likely too low.",
-          "Drier doughs (under 58% hydration) are inherently stiffer and resist stretching.",
-          "For this bake: try lightly misting your hands and the dough surface with water.",
-          "Next time: increase hydration by 2–3%. Even a small bump makes dough more extensible.",
-          "Check your flour — bread flour and high-gluten flour absorb more water and need higher hydration.",
+          'If the dough has rested plenty and is still fighting you, the hydration is likely too low.',
+          'Drier doughs (under 58% hydration) are inherently stiffer and resist stretching.',
+          'For this bake: try lightly misting your hands and the dough surface with water.',
+          'Next time: increase hydration by 2–3%. Even a small bump makes dough more extensible.',
+          'Check your flour — bread flour and high-gluten flour absorb more water and need higher hydration.',
         ],
       },
-      "fix-thick-edges": {
-        title: "Thick Edges — Technique Adjustment",
+      'fix-thick-edges': {
+        title: 'Thick Edges — Technique Adjustment',
         steps: [
-          "This is a shaping technique issue, not a dough problem.",
-          "Press from the center outward, leaving the last ½ inch for the crust (cornicione).",
+          'This is a shaping technique issue, not a dough problem.',
+          'Press from the center outward, leaving the last ½ inch for the crust (cornicione).',
           "Try the 'steering wheel' method: hold the dough vertically and rotate, letting gravity stretch it.",
           "For Neapolitan, the cornicione should be puffy and thick — that's intentional.",
-          "For NY and thin-crust, use your fingertips to press the edges thinner.",
-          "Never use a rolling pin for Neapolitan or NY — it deflates the air bubbles.",
+          'For NY and thin-crust, use your fingertips to press the edges thinner.',
+          'Never use a rolling pin for Neapolitan or NY — it deflates the air bubbles.',
         ],
       },
-      "fix-underproofed": {
-        title: "Possibly Under-Proofed",
+      'fix-underproofed': {
+        title: 'Possibly Under-Proofed',
         steps: [
           "If the dough hasn't fermented enough, the gluten hasn't relaxed and gas hasn't developed.",
-          "Check: does the dough feel dense and heavy? It probably needs more time.",
-          "Give it another 30–60 minutes at room temperature, covered.",
+          'Check: does the dough feel dense and heavy? It probably needs more time.',
+          'Give it another 30–60 minutes at room temperature, covered.',
           "The 'poke test': press a floured finger into the dough. If it springs back quickly, it needs more time. If it fills back slowly, it's ready.",
-          "Temperature matters — in a cold kitchen (below 68°F), fermentation slows dramatically.",
+          'Temperature matters — in a cold kitchen (below 68°F), fermentation slows dramatically.',
         ],
       },
     },
@@ -766,68 +1251,68 @@ const TROUBLESHOOTING_TREE = {
 
   // ── 4. DOUGH IS TEARING ──────────────────────────────
   tearing: {
-    symptom: "Dough is Tearing",
-    icon: "😫",
-    initial: "q1",
+    symptom: 'Dough is Tearing',
+    icon: '😫',
+    initial: 'q1',
     questions: {
       q1: {
-        text: "When does it tear?",
+        text: 'When does it tear?',
         options: [
-          { label: "During initial stretch", next: "q2" },
-          { label: "At thin spots or edges", next: "fix-thin-spots" },
-          { label: "It rips apart immediately", next: "fix-overproofed" },
+          { label: 'During initial stretch', next: 'q2' },
+          { label: 'At thin spots or edges', next: 'fix-thin-spots' },
+          { label: 'It rips apart immediately', next: 'fix-overproofed' },
         ],
       },
       q2: {
-        text: "Does the dough pass the windowpane test?",
+        text: 'Does the dough pass the windowpane test?',
         options: [
-          { label: "What's the windowpane test?", next: "fix-weak-gluten" },
-          { label: "No — it breaks before going thin", next: "fix-weak-gluten" },
-          { label: "Yes — it stretches thin without tearing", next: "fix-cold-tear" },
+          { label: "What's the windowpane test?", next: 'fix-weak-gluten' },
+          { label: 'No — it breaks before going thin', next: 'fix-weak-gluten' },
+          { label: 'Yes — it stretches thin without tearing', next: 'fix-cold-tear' },
         ],
       },
     },
     fixes: {
-      "fix-weak-gluten": {
-        title: "Under-Developed Gluten",
+      'fix-weak-gluten': {
+        title: 'Under-Developed Gluten',
         steps: [
           "The dough wasn't kneaded enough to build gluten structure.",
           "The windowpane test: stretch a small piece thin between your fingers. If it tears before becoming translucent, the gluten isn't ready.",
-          "Fold the dough over itself a few times and let it rest 15–20 minutes, then try again.",
-          "Next time, knead for a full 10–12 minutes, or use the stretch-and-fold method over 2 hours.",
-          "High-hydration doughs benefit from the stretch-and-fold technique rather than traditional kneading.",
+          'Fold the dough over itself a few times and let it rest 15–20 minutes, then try again.',
+          'Next time, knead for a full 10–12 minutes, or use the stretch-and-fold method over 2 hours.',
+          'High-hydration doughs benefit from the stretch-and-fold technique rather than traditional kneading.',
         ],
       },
-      "fix-cold-tear": {
-        title: "Dough is Too Cold to Stretch",
+      'fix-cold-tear': {
+        title: 'Dough is Too Cold to Stretch',
         steps: [
-          "Good news — your gluten is developed! The dough is just too cold and brittle.",
-          "Let it warm at room temperature for 1–2 hours. Cold dough tears instead of stretching.",
+          'Good news — your gluten is developed! The dough is just too cold and brittle.',
+          'Let it warm at room temperature for 1–2 hours. Cold dough tears instead of stretching.',
           "Avoid stretching dough that's still fridge-cold — it needs to be soft and pliable first.",
           "The poke test: when a gentle poke fills back in slowly (not instantly), it's ready.",
         ],
       },
-      "fix-thin-spots": {
-        title: "Uneven Stretching",
+      'fix-thin-spots': {
+        title: 'Uneven Stretching',
         steps: [
           "You've stretched some spots too thin while others are still thick.",
-          "Work from the center outward with even, gentle pressure.",
-          "Rotate the dough 90° frequently while stretching.",
-          "If a thin spot develops, avoid that area and work the thicker parts.",
-          "Patch small tears by folding a tiny bit of dough from the edge over the hole and pressing to seal.",
+          'Work from the center outward with even, gentle pressure.',
+          'Rotate the dough 90° frequently while stretching.',
+          'If a thin spot develops, avoid that area and work the thicker parts.',
+          'Patch small tears by folding a tiny bit of dough from the edge over the hole and pressing to seal.',
           "A small hole in the center is fine — it won't matter once topped.",
         ],
       },
-      "fix-overproofed": {
-        title: "Over-Proofed Dough",
+      'fix-overproofed': {
+        title: 'Over-Proofed Dough',
         steps: [
-          "If the dough tears apart easily and feels extremely slack, the gluten has broken down from over-fermentation.",
-          "Signs: very flat dough ball, smells strongly of alcohol, large uneven bubbles on surface.",
+          'If the dough tears apart easily and feels extremely slack, the gluten has broken down from over-fermentation.',
+          'Signs: very flat dough ball, smells strongly of alcohol, large uneven bubbles on surface.',
           "Unfortunately, severely over-proofed dough can't be fully rescued.",
-          "You can try: gently reshape it and bake it as a flatbread or focaccia.",
-          "For next time: watch the clock and temperature. Warmer = faster fermentation.",
+          'You can try: gently reshape it and bake it as a flatbread or focaccia.',
+          'For next time: watch the clock and temperature. Warmer = faster fermentation.',
           "Use the poke test: if the dough doesn't spring back at all, it's over-proofed.",
-          "Cold-fermenting (in the fridge) gives you a much wider window and more flavor.",
+          'Cold-fermenting (in the fridge) gives you a much wider window and more flavor.',
         ],
       },
     },
@@ -836,92 +1321,92 @@ const TROUBLESHOOTING_TREE = {
   // ── 5. DOUGH DIDN'T RISE ─────────────────────────────
   norise: {
     symptom: "Dough Didn't Rise",
-    icon: "😐",
-    initial: "q1",
+    icon: '😐',
+    initial: 'q1',
     questions: {
       q1: {
-        text: "How long has the dough been fermenting?",
+        text: 'How long has the dough been fermenting?',
         options: [
-          { label: "Less than 2 hours at room temp", next: "fix-patience" },
-          { label: "Several hours and barely any rise", next: "q2" },
-          { label: "Overnight in the fridge, no change", next: "fix-cold-no-rise" },
+          { label: 'Less than 2 hours at room temp', next: 'fix-patience' },
+          { label: 'Several hours and barely any rise', next: 'q2' },
+          { label: 'Overnight in the fridge, no change', next: 'fix-cold-no-rise' },
         ],
       },
       q2: {
-        text: "What type of yeast did you use?",
+        text: 'What type of yeast did you use?',
         options: [
-          { label: "Instant dry yeast", next: "q3" },
-          { label: "Active dry yeast", next: "fix-ady-activation" },
-          { label: "Fresh yeast", next: "fix-fresh-yeast" },
+          { label: 'Instant dry yeast', next: 'q3' },
+          { label: 'Active dry yeast', next: 'fix-ady-activation' },
+          { label: 'Fresh yeast', next: 'fix-fresh-yeast' },
         ],
       },
       q3: {
-        text: "Did the water feel hot when you added it?",
+        text: 'Did the water feel hot when you added it?',
         options: [
-          { label: "Yes, it was quite warm/hot", next: "fix-killed-yeast" },
-          { label: "No, it was lukewarm or cool", next: "fix-expired-yeast" },
+          { label: 'Yes, it was quite warm/hot', next: 'fix-killed-yeast' },
+          { label: 'No, it was lukewarm or cool', next: 'fix-expired-yeast' },
         ],
       },
     },
     fixes: {
-      "fix-patience": {
-        title: "Give It More Time",
+      'fix-patience': {
+        title: 'Give It More Time',
         steps: [
-          "Most pizza doughs need 1.5–4 hours at room temperature to double in size.",
-          "Kitchen temperature matters enormously — at 65°F, expect 3–4 hours. At 78°F, expect 1.5–2 hours.",
-          "Check that the dough is in a warm, draft-free spot. Near a preheating oven works well.",
-          "Cover tightly with plastic wrap or a lid — dry air on the surface will inhibit rising.",
+          'Most pizza doughs need 1.5–4 hours at room temperature to double in size.',
+          'Kitchen temperature matters enormously — at 65°F, expect 3–4 hours. At 78°F, expect 1.5–2 hours.',
+          'Check that the dough is in a warm, draft-free spot. Near a preheating oven works well.',
+          'Cover tightly with plastic wrap or a lid — dry air on the surface will inhibit rising.',
           "Don't judge too early. Sometimes dough appears flat for the first hour, then takes off.",
         ],
       },
-      "fix-killed-yeast": {
-        title: "Water Was Too Hot — Yeast Is Dead",
+      'fix-killed-yeast': {
+        title: 'Water Was Too Hot — Yeast Is Dead',
         steps: [
-          "Water above 120°F (49°C) kills yeast. This is the most common cause of no rise.",
+          'Water above 120°F (49°C) kills yeast. This is the most common cause of no rise.',
           "The dough can't be rescued — you'll need to start over with new yeast.",
-          "For next time: use water between 95–105°F (35–40°C). It should feel warm, not hot.",
+          'For next time: use water between 95–105°F (35–40°C). It should feel warm, not hot.',
           "If you don't have a thermometer, test on your wrist — it should feel like a warm bath, not uncomfortable.",
-          "Instant yeast is more heat-tolerant than active dry, but both die above 120°F.",
+          'Instant yeast is more heat-tolerant than active dry, but both die above 120°F.',
         ],
       },
-      "fix-expired-yeast": {
-        title: "Yeast May Be Expired or Inactive",
+      'fix-expired-yeast': {
+        title: 'Yeast May Be Expired or Inactive',
         steps: [
-          "Test your yeast: dissolve 1 tsp in ½ cup warm water (105°F) with a pinch of sugar. Wait 10 minutes.",
-          "If it foams and bubbles, the yeast is alive — your issue is elsewhere (temperature, salt contact).",
-          "If nothing happens, the yeast is dead. Discard and buy fresh.",
-          "Yeast expires! Check the date on the package. Store opened yeast in the freezer for longest life.",
-          "Did you mix yeast directly with salt? Salt in direct contact can inhibit or kill yeast. Add them to different sides of the flour.",
+          'Test your yeast: dissolve 1 tsp in ½ cup warm water (105°F) with a pinch of sugar. Wait 10 minutes.',
+          'If it foams and bubbles, the yeast is alive — your issue is elsewhere (temperature, salt contact).',
+          'If nothing happens, the yeast is dead. Discard and buy fresh.',
+          'Yeast expires! Check the date on the package. Store opened yeast in the freezer for longest life.',
+          'Did you mix yeast directly with salt? Salt in direct contact can inhibit or kill yeast. Add them to different sides of the flour.',
         ],
       },
-      "fix-ady-activation": {
-        title: "Active Dry Yeast Needs Activation",
+      'fix-ady-activation': {
+        title: 'Active Dry Yeast Needs Activation',
         steps: [
-          "Active dry yeast (ADY) needs to be dissolved in warm water (105°F) for 5–10 minutes before use.",
-          "If you added ADY directly to flour without activating, it may not have hydrated properly.",
-          "Look for foam on the water surface after 10 minutes — that means the yeast is alive and active.",
+          'Active dry yeast (ADY) needs to be dissolved in warm water (105°F) for 5–10 minutes before use.',
+          'If you added ADY directly to flour without activating, it may not have hydrated properly.',
+          'Look for foam on the water surface after 10 minutes — that means the yeast is alive and active.',
           "If there's no foam, the yeast is dead. Start over with fresh yeast.",
           "Tip: instant dry yeast (IDY) doesn't require activation and can go straight into flour.",
         ],
       },
-      "fix-fresh-yeast": {
-        title: "Fresh Yeast — Check Freshness",
+      'fix-fresh-yeast': {
+        title: 'Fresh Yeast — Check Freshness',
         steps: [
-          "Fresh yeast has a short shelf life — only 2–3 weeks refrigerated.",
-          "Good fresh yeast is moist, crumbly, and has a pleasant yeasty smell.",
+          'Fresh yeast has a short shelf life — only 2–3 weeks refrigerated.',
+          'Good fresh yeast is moist, crumbly, and has a pleasant yeasty smell.',
           "If it's dry, dark, or smells sour, it's dead. Discard it.",
-          "Fresh yeast should be crumbled into lukewarm water or directly into flour.",
-          "Use roughly 3× the weight of fresh yeast compared to instant dry yeast (e.g., 3g IDY = 9g fresh).",
+          'Fresh yeast should be crumbled into lukewarm water or directly into flour.',
+          'Use roughly 3× the weight of fresh yeast compared to instant dry yeast (e.g., 3g IDY = 9g fresh).',
         ],
       },
-      "fix-cold-no-rise": {
-        title: "Cold Fermentation — Slow Is Normal",
+      'fix-cold-no-rise': {
+        title: 'Cold Fermentation — Slow Is Normal',
         steps: [
-          "In the fridge (38–40°F), dough rises very slowly. A visible rise may take 12–24 hours.",
-          "After 24 hours, you should see at least some expansion and small bubbles under the surface.",
+          'In the fridge (38–40°F), dough rises very slowly. A visible rise may take 12–24 hours.',
+          'After 24 hours, you should see at least some expansion and small bubbles under the surface.',
           "If there's zero change after 24+ hours, the yeast may be dead (see 'expired yeast' issues).",
-          "Make sure you used enough yeast for a cold ferment — some recipes reduce yeast too aggressively.",
-          "Take the dough out 2 hours before baking and let it warm up. It will puff noticeably at room temperature.",
+          'Make sure you used enough yeast for a cold ferment — some recipes reduce yeast too aggressively.',
+          'Take the dough out 2 hours before baking and let it warm up. It will puff noticeably at room temperature.',
         ],
       },
     },
@@ -929,67 +1414,67 @@ const TROUBLESHOOTING_TREE = {
 
   // ── 6. SMELLS LIKE ALCOHOL ────────────────────────────
   alcohol: {
-    symptom: "Smells Like Alcohol",
-    icon: "🍺",
-    initial: "q1",
+    symptom: 'Smells Like Alcohol',
+    icon: '🍺',
+    initial: 'q1',
     questions: {
       q1: {
-        text: "How strong is the smell?",
+        text: 'How strong is the smell?',
         options: [
-          { label: "Mild — slightly yeasty / beery", next: "fix-mild-alcohol" },
-          { label: "Strong — sharp, boozy, or sour", next: "q2" },
+          { label: 'Mild — slightly yeasty / beery', next: 'fix-mild-alcohol' },
+          { label: 'Strong — sharp, boozy, or sour', next: 'q2' },
         ],
       },
       q2: {
-        text: "How long has the dough been fermenting?",
+        text: 'How long has the dough been fermenting?',
         options: [
-          { label: "Long room temp rise (6+ hours)", next: "fix-over-room-temp" },
-          { label: "Multi-day cold ferment (48+ hours)", next: "fix-over-cold-ferment" },
-          { label: "Normal time, but I used a lot of yeast", next: "fix-too-much-yeast" },
+          { label: 'Long room temp rise (6+ hours)', next: 'fix-over-room-temp' },
+          { label: 'Multi-day cold ferment (48+ hours)', next: 'fix-over-cold-ferment' },
+          { label: 'Normal time, but I used a lot of yeast', next: 'fix-too-much-yeast' },
         ],
       },
     },
     fixes: {
-      "fix-mild-alcohol": {
-        title: "Normal — Fermentation Is Working",
+      'fix-mild-alcohol': {
+        title: 'Normal — Fermentation Is Working',
         steps: [
-          "A mild yeasty or beery aroma is completely normal and actually a good sign.",
-          "This means the yeast is active and producing CO₂ (for rise) and alcohol (for flavor).",
+          'A mild yeasty or beery aroma is completely normal and actually a good sign.',
+          'This means the yeast is active and producing CO₂ (for rise) and alcohol (for flavor).',
           "The alcohol smell bakes off entirely in the oven — it won't affect the final taste.",
-          "Your dough is likely ready or close to ready. Do the poke test and shape when it passes.",
-          "Cold-fermented dough often smells slightly beery after 24 hours — this is desirable.",
+          'Your dough is likely ready or close to ready. Do the poke test and shape when it passes.',
+          'Cold-fermented dough often smells slightly beery after 24 hours — this is desirable.',
         ],
       },
-      "fix-over-room-temp": {
-        title: "Over-Fermented at Room Temperature",
+      'fix-over-room-temp': {
+        title: 'Over-Fermented at Room Temperature',
         steps: [
-          "A long room-temperature rise (especially in a warm kitchen) can push dough past its peak.",
-          "The yeast has consumed most of the sugars and produced excess alcohol.",
-          "If the dough still has structure (can hold shape), bake it now — the flavor will be slightly tangy.",
+          'A long room-temperature rise (especially in a warm kitchen) can push dough past its peak.',
+          'The yeast has consumed most of the sugars and produced excess alcohol.',
+          'If the dough still has structure (can hold shape), bake it now — the flavor will be slightly tangy.',
           "If it's completely slack and won't hold shape, it's too far gone. Make focaccia or flatbread.",
-          "Next time: use less yeast for long room-temp rises, or move the dough to the fridge after 2 hours.",
+          'Next time: use less yeast for long room-temp rises, or move the dough to the fridge after 2 hours.',
           "Rule of thumb: if you can't tend to your dough, put it in the fridge. Cold slows everything down.",
         ],
       },
-      "fix-over-cold-ferment": {
-        title: "Cold Ferment Went Too Long",
+      'fix-over-cold-ferment': {
+        title: 'Cold Ferment Went Too Long',
         steps: [
-          "Cold-fermenting beyond 72 hours can push dough past peak, especially with higher yeast amounts.",
+          'Cold-fermenting beyond 72 hours can push dough past peak, especially with higher yeast amounts.',
           "Check the dough: if it still has bubbles and springs back when poked, it's probably still usable.",
           "If it smells strongly of acetone (nail polish remover), it's too far gone.",
-          "For usable dough: shape gently and bake soon. The flavor will be more sour and complex.",
-          "Next time: for 48–72 hour cold ferments, reduce yeast to 0.1–0.2% of flour weight.",
+          'For usable dough: shape gently and bake soon. The flavor will be more sour and complex.',
+          'Next time: for 48–72 hour cold ferments, reduce yeast to 0.1–0.2% of flour weight.',
         ],
       },
-      "fix-too-much-yeast": {
-        title: "Too Much Yeast — Fast Fermentation",
+      'fix-too-much-yeast': {
+        title: 'Too Much Yeast — Fast Fermentation',
         steps: [
-          "Excess yeast speeds up fermentation dramatically, producing more alcohol in less time.",
-          "The dough may look ready (doubled) but smell boozy because the yeast worked overtime.",
-          "If the dough is properly risen, bake it now — the alcohol bakes off in the oven.",
-          "Next time: reduce yeast. For a same-day dough, 0.5–1% of flour weight is plenty.",
-          "For overnight cold ferments, you need very little: 0.1–0.3% of flour weight.",
-          "More yeast ≠ better rise. It just means faster, less flavorful fermentation.",
+          'Excess yeast speeds up fermentation dramatically, producing more alcohol in less time.',
+          'The dough may look ready (doubled) but smell boozy because the yeast worked overtime.',
+          'If the dough is properly risen, bake it now — the alcohol bakes off in the oven.',
+          'Next time: reduce yeast. For a same-day dough, 0.5–1% of flour weight is plenty.',
+          'For overnight cold ferments, you need very little: 0.1–0.3% of flour weight.',
+          'More yeast ≠ better rise. It just means faster, less flavorful fermentation.',
         ],
       },
     },
@@ -997,84 +1482,84 @@ const TROUBLESHOOTING_TREE = {
 
   // ── 7. CRUST TOO HARD / TOUGH ────────────────────────
   hardcrust: {
-    symptom: "Crust Too Hard / Tough",
-    icon: "🪨",
-    initial: "q1",
+    symptom: 'Crust Too Hard / Tough',
+    icon: '🪨',
+    initial: 'q1',
     questions: {
       q1: {
-        text: "Which part is too hard?",
+        text: 'Which part is too hard?',
         options: [
-          { label: "The bottom is rock-hard", next: "q2" },
-          { label: "The crust rim (cornicione) is tough", next: "q3" },
-          { label: "The whole thing is like a cracker", next: "fix-overbaked" },
+          { label: 'The bottom is rock-hard', next: 'q2' },
+          { label: 'The crust rim (cornicione) is tough', next: 'q3' },
+          { label: 'The whole thing is like a cracker', next: 'fix-overbaked' },
         ],
       },
       q2: {
-        text: "What are you baking on?",
+        text: 'What are you baking on?',
         options: [
-          { label: "Baking steel or stone", next: "fix-hard-bottom-steel" },
-          { label: "Baking sheet or pan", next: "fix-hard-bottom-pan" },
+          { label: 'Baking steel or stone', next: 'fix-hard-bottom-steel' },
+          { label: 'Baking sheet or pan', next: 'fix-hard-bottom-pan' },
         ],
       },
       q3: {
-        text: "How would you describe the crust interior?",
+        text: 'How would you describe the crust interior?',
         options: [
-          { label: "Dense with no air pockets", next: "fix-dense-crust" },
-          { label: "Dry and crumbly", next: "fix-low-hydration-crust" },
+          { label: 'Dense with no air pockets', next: 'fix-dense-crust' },
+          { label: 'Dry and crumbly', next: 'fix-low-hydration-crust' },
         ],
       },
     },
     fixes: {
-      "fix-hard-bottom-steel": {
-        title: "Bottom Over-Baked on Steel / Stone",
+      'fix-hard-bottom-steel': {
+        title: 'Bottom Over-Baked on Steel / Stone',
         steps: [
-          "Steel and stone transfer heat very efficiently — the bottom can over-bake before the top finishes.",
-          "Move your oven rack up one position to put the pizza further from the bottom element.",
-          "Reduce bake time by 1–2 minutes. Check the bottom at the halfway mark by lifting with a peel.",
-          "If using a steel, try preheating at a lower temp (475°F instead of 550°F) and using the broiler for the top.",
-          "A thin dusting of semolina under the dough adds a slight buffer and a nice crunch.",
+          'Steel and stone transfer heat very efficiently — the bottom can over-bake before the top finishes.',
+          'Move your oven rack up one position to put the pizza further from the bottom element.',
+          'Reduce bake time by 1–2 minutes. Check the bottom at the halfway mark by lifting with a peel.',
+          'If using a steel, try preheating at a lower temp (475°F instead of 550°F) and using the broiler for the top.',
+          'A thin dusting of semolina under the dough adds a slight buffer and a nice crunch.',
         ],
       },
-      "fix-hard-bottom-pan": {
-        title: "Bottom Over-Baked in Pan",
+      'fix-hard-bottom-pan': {
+        title: 'Bottom Over-Baked in Pan',
         steps: [
-          "Dark-colored pans absorb more heat and can burn the bottom. Use a light-colored or aluminum pan.",
-          "Oil the pan well — the oil fries the bottom slightly and prevents it from getting hard and dry.",
-          "Place the pan on a higher oven rack, especially during the second half of baking.",
-          "If the top needs more time but the bottom is done, finish under the broiler for 1–2 minutes.",
-          "For pan and Detroit styles, the buttery/oily bottom should be golden, not dark brown.",
+          'Dark-colored pans absorb more heat and can burn the bottom. Use a light-colored or aluminum pan.',
+          'Oil the pan well — the oil fries the bottom slightly and prevents it from getting hard and dry.',
+          'Place the pan on a higher oven rack, especially during the second half of baking.',
+          'If the top needs more time but the bottom is done, finish under the broiler for 1–2 minutes.',
+          'For pan and Detroit styles, the buttery/oily bottom should be golden, not dark brown.',
         ],
       },
-      "fix-dense-crust": {
-        title: "Dense Crust — Under-Proofed or Over-Worked",
+      'fix-dense-crust': {
+        title: 'Dense Crust — Under-Proofed or Over-Worked',
         steps: [
           "A tough, dense crust rim usually means the dough wasn't proofed enough.",
-          "The cornicione gets its airy texture from gas bubbles. No gas = no air pockets = tough crust.",
-          "Make sure your dough has at least doubled before shaping.",
-          "When shaping, press gas from the center toward the edges — the rim should feel puffy.",
+          'The cornicione gets its airy texture from gas bubbles. No gas = no air pockets = tough crust.',
+          'Make sure your dough has at least doubled before shaping.',
+          'When shaping, press gas from the center toward the edges — the rim should feel puffy.',
           "Don't roll Neapolitan or NY dough with a rolling pin — it crushes the gas out of the rim.",
-          "Try a longer cold ferment (24–48 hours) for better oven spring and a lighter crust.",
+          'Try a longer cold ferment (24–48 hours) for better oven spring and a lighter crust.',
         ],
       },
-      "fix-low-hydration-crust": {
-        title: "Low Hydration — Crust is Too Dry",
+      'fix-low-hydration-crust': {
+        title: 'Low Hydration — Crust is Too Dry',
         steps: [
-          "Dry, crumbly crust usually means the hydration is too low for the style.",
-          "Most pizza styles need at least 60% hydration for a tender crumb.",
-          "Next time: increase water by 2–3% and see how the texture improves.",
-          "Adding a small amount of olive oil (2–3% of flour weight) also helps tenderize the crust.",
-          "Check your flour — very high-protein bread flour absorbs more water and can make dry doughs.",
+          'Dry, crumbly crust usually means the hydration is too low for the style.',
+          'Most pizza styles need at least 60% hydration for a tender crumb.',
+          'Next time: increase water by 2–3% and see how the texture improves.',
+          'Adding a small amount of olive oil (2–3% of flour weight) also helps tenderize the crust.',
+          'Check your flour — very high-protein bread flour absorbs more water and can make dry doughs.',
         ],
       },
-      "fix-overbaked": {
-        title: "Over-Baked — Too Long in the Oven",
+      'fix-overbaked': {
+        title: 'Over-Baked — Too Long in the Oven',
         steps: [
-          "If the whole pizza is hard and cracker-like, it simply baked too long.",
-          "Pizza bakes fast — most home oven pizzas are done in 6–10 minutes at 500–550°F.",
-          "Watch for the crust to be golden (not dark brown) and cheese fully melted with light spotting.",
-          "Set a timer! Even 2 extra minutes can turn a great pizza into a dry one.",
-          "Thinner pizzas (tavern, thin-crust) need less time than thick ones (Sicilian, Detroit).",
-          "Your oven may run hot — use an oven thermometer to verify the actual temperature.",
+          'If the whole pizza is hard and cracker-like, it simply baked too long.',
+          'Pizza bakes fast — most home oven pizzas are done in 6–10 minutes at 500–550°F.',
+          'Watch for the crust to be golden (not dark brown) and cheese fully melted with light spotting.',
+          'Set a timer! Even 2 extra minutes can turn a great pizza into a dry one.',
+          'Thinner pizzas (tavern, thin-crust) need less time than thick ones (Sicilian, Detroit).',
+          'Your oven may run hot — use an oven thermometer to verify the actual temperature.',
         ],
       },
     },
@@ -1082,94 +1567,94 @@ const TROUBLESHOOTING_TREE = {
 
   // ── 8. SOGGY / UNDERCOOKED BOTTOM ────────────────────
   soggy: {
-    symptom: "Soggy / Undercooked",
-    icon: "💧",
-    initial: "q1",
+    symptom: 'Soggy / Undercooked',
+    icon: '💧',
+    initial: 'q1',
     questions: {
       q1: {
-        text: "Where is it soggy?",
+        text: 'Where is it soggy?',
         options: [
-          { label: "The bottom is pale and soft", next: "q2" },
-          { label: "The center is wet and doughy", next: "q3" },
-          { label: "The whole pizza is undercooked", next: "fix-oven-temp" },
+          { label: 'The bottom is pale and soft', next: 'q2' },
+          { label: 'The center is wet and doughy', next: 'q3' },
+          { label: 'The whole pizza is undercooked', next: 'fix-oven-temp' },
         ],
       },
       q2: {
-        text: "What are you baking on?",
+        text: 'What are you baking on?',
         options: [
-          { label: "A baking sheet", next: "fix-no-thermal-mass" },
-          { label: "A stone or steel", next: "fix-preheat-surface" },
-          { label: "In a pan (Detroit, pan, Sicilian)", next: "fix-pan-soggy" },
+          { label: 'A baking sheet', next: 'fix-no-thermal-mass' },
+          { label: 'A stone or steel', next: 'fix-preheat-surface' },
+          { label: 'In a pan (Detroit, pan, Sicilian)', next: 'fix-pan-soggy' },
         ],
       },
       q3: {
-        text: "Did you use a lot of sauce or wet toppings?",
+        text: 'Did you use a lot of sauce or wet toppings?',
         options: [
-          { label: "Yes — heavy sauce or fresh veggies", next: "fix-wet-toppings" },
-          { label: "No — normal amount of toppings", next: "fix-center-raw" },
+          { label: 'Yes — heavy sauce or fresh veggies', next: 'fix-wet-toppings' },
+          { label: 'No — normal amount of toppings', next: 'fix-center-raw' },
         ],
       },
     },
     fixes: {
-      "fix-no-thermal-mass": {
-        title: "No Thermal Mass — Use a Stone or Steel",
+      'fix-no-thermal-mass': {
+        title: 'No Thermal Mass — Use a Stone or Steel',
         steps: [
           "A thin baking sheet doesn't store enough heat to crisp the bottom before the top finishes.",
-          "The single best upgrade: a baking steel or pizza stone. Preheat it for at least 45–60 minutes.",
+          'The single best upgrade: a baking steel or pizza stone. Preheat it for at least 45–60 minutes.',
           "If you don't have one, flip a heavy baking sheet upside down and preheat it — it helps.",
-          "Place the pizza directly on the hot surface (use parchment or semolina to prevent sticking).",
-          "A cast iron skillet preheated in the oven also works as a great pizza surface.",
+          'Place the pizza directly on the hot surface (use parchment or semolina to prevent sticking).',
+          'A cast iron skillet preheated in the oven also works as a great pizza surface.',
         ],
       },
-      "fix-preheat-surface": {
-        title: "Stone / Steel Not Hot Enough",
+      'fix-preheat-surface': {
+        title: 'Stone / Steel Not Hot Enough',
         steps: [
-          "A pizza stone needs at least 45 minutes at max oven temp to fully saturate with heat.",
-          "A baking steel needs 30–45 minutes. Steel transfers heat faster but still needs time.",
+          'A pizza stone needs at least 45 minutes at max oven temp to fully saturate with heat.',
+          'A baking steel needs 30–45 minutes. Steel transfers heat faster but still needs time.',
           "Don't open the oven door repeatedly while preheating — you lose a lot of heat each time.",
-          "After one pizza, let the stone/steel reheat for 5–10 minutes before launching the next one.",
-          "Consider using the broiler for the last 1–2 minutes to help the top catch up to the bottom.",
+          'After one pizza, let the stone/steel reheat for 5–10 minutes before launching the next one.',
+          'Consider using the broiler for the last 1–2 minutes to help the top catch up to the bottom.',
         ],
       },
-      "fix-pan-soggy": {
-        title: "Pan Pizza — Bottom Not Crisping",
+      'fix-pan-soggy': {
+        title: 'Pan Pizza — Bottom Not Crisping',
         steps: [
-          "Oil is essential — use a generous layer (2–3 tbsp) of olive oil or butter in the pan.",
-          "The oil fries the bottom of the dough, creating that crispy golden crust.",
-          "Place the pan on the lowest oven rack or directly on a preheated stone/steel.",
-          "For Detroit-style: the pan should be well-oiled and the cheese pressed to the edges to fry the sides.",
+          'Oil is essential — use a generous layer (2–3 tbsp) of olive oil or butter in the pan.',
+          'The oil fries the bottom of the dough, creating that crispy golden crust.',
+          'Place the pan on the lowest oven rack or directly on a preheated stone/steel.',
+          'For Detroit-style: the pan should be well-oiled and the cheese pressed to the edges to fry the sides.',
           "If the bottom is done but the top isn't, finish under the broiler for 1–2 minutes.",
         ],
       },
-      "fix-wet-toppings": {
-        title: "Too Much Moisture from Toppings",
+      'fix-wet-toppings': {
+        title: 'Too Much Moisture from Toppings',
         steps: [
-          "Excess sauce or wet toppings release steam that makes the center soggy — this is very common.",
-          "Sauce: use 2–3 tablespoons per pizza, spread thin. Thicker sauce = more moisture.",
-          "Fresh mozzarella: slice it and pat dry with paper towels 15 minutes before using.",
-          "Fresh vegetables (tomatoes, mushrooms, peppers, spinach): pre-cook or salt and drain first.",
-          "Tomato slices: salt them on a paper towel for 15–20 minutes to draw out moisture.",
-          "Consider putting wet toppings on after baking (like fresh tomatoes, arugula, basil).",
+          'Excess sauce or wet toppings release steam that makes the center soggy — this is very common.',
+          'Sauce: use 2–3 tablespoons per pizza, spread thin. Thicker sauce = more moisture.',
+          'Fresh mozzarella: slice it and pat dry with paper towels 15 minutes before using.',
+          'Fresh vegetables (tomatoes, mushrooms, peppers, spinach): pre-cook or salt and drain first.',
+          'Tomato slices: salt them on a paper towel for 15–20 minutes to draw out moisture.',
+          'Consider putting wet toppings on after baking (like fresh tomatoes, arugula, basil).',
         ],
       },
-      "fix-center-raw": {
-        title: "Center Undercooked — Dough Issue",
+      'fix-center-raw': {
+        title: 'Center Undercooked — Dough Issue',
         steps: [
-          "If the center is raw but the edges are done, the dough is thicker in the middle than you think.",
-          "Press the center thinner when shaping — it should be the thinnest part of the pizza.",
-          "Try stretching the dough a bit larger overall, which thins the center.",
-          "Oven temperature may be too high — the outside bakes before heat reaches the center.",
-          "For thick styles (Sicilian, Detroit): use a lower temperature (425–450°F) for a longer bake.",
+          'If the center is raw but the edges are done, the dough is thicker in the middle than you think.',
+          'Press the center thinner when shaping — it should be the thinnest part of the pizza.',
+          'Try stretching the dough a bit larger overall, which thins the center.',
+          'Oven temperature may be too high — the outside bakes before heat reaches the center.',
+          'For thick styles (Sicilian, Detroit): use a lower temperature (425–450°F) for a longer bake.',
         ],
       },
-      "fix-oven-temp": {
-        title: "Oven Temperature Too Low",
+      'fix-oven-temp': {
+        title: 'Oven Temperature Too Low',
         steps: [
-          "Pizza needs high heat. Most styles bake at 475–550°F (245–288°C).",
-          "Use an oven thermometer — most home ovens are off by 25–50°F.",
-          "Preheat for a full 30–45 minutes, longer if using a stone or steel.",
-          "Place the oven rack in the upper third for better top browning.",
-          "If your oven maxes at 500°F, you can still make great pizza — just adjust timing and expectations.",
+          'Pizza needs high heat. Most styles bake at 475–550°F (245–288°C).',
+          'Use an oven thermometer — most home ovens are off by 25–50°F.',
+          'Preheat for a full 30–45 minutes, longer if using a stone or steel.',
+          'Place the oven rack in the upper third for better top browning.',
+          'If your oven maxes at 500°F, you can still make great pizza — just adjust timing and expectations.',
         ],
       },
     },
@@ -1177,63 +1662,63 @@ const TROUBLESHOOTING_TREE = {
 
   // ── 9. NO FLAVOR IN CRUST ────────────────────────────
   bland: {
-    symptom: "No Flavor in Crust",
-    icon: "😶",
-    initial: "q1",
+    symptom: 'No Flavor in Crust',
+    icon: '😶',
+    initial: 'q1',
     questions: {
       q1: {
-        text: "How long did the dough ferment?",
+        text: 'How long did the dough ferment?',
         options: [
-          { label: "Same-day (under 6 hours)", next: "q2" },
-          { label: "Overnight or longer", next: "q3" },
+          { label: 'Same-day (under 6 hours)', next: 'q2' },
+          { label: 'Overnight or longer', next: 'q3' },
         ],
       },
       q2: {
-        text: "Did you use much yeast?",
+        text: 'Did you use much yeast?',
         options: [
-          { label: "Yes, to speed things up", next: "fix-fast-ferment" },
-          { label: "Normal recipe amount", next: "fix-needs-salt" },
+          { label: 'Yes, to speed things up', next: 'fix-fast-ferment' },
+          { label: 'Normal recipe amount', next: 'fix-needs-salt' },
         ],
       },
       q3: {
-        text: "Does the crust taste like anything at all?",
+        text: 'Does the crust taste like anything at all?',
         options: [
-          { label: "Flat — like plain bread", next: "fix-needs-salt" },
-          { label: "Slightly sour but otherwise bland", next: "fix-needs-fat-sugar" },
+          { label: 'Flat — like plain bread', next: 'fix-needs-salt' },
+          { label: 'Slightly sour but otherwise bland', next: 'fix-needs-fat-sugar' },
         ],
       },
     },
     fixes: {
-      "fix-fast-ferment": {
-        title: "Too Fast — Flavor Needs Time",
+      'fix-fast-ferment': {
+        title: 'Too Fast — Flavor Needs Time',
         steps: [
-          "Flavor in pizza dough comes from slow fermentation, not fast rising.",
-          "Using a lot of yeast makes dough rise quickly, but yeast consumes sugars faster than flavor compounds develop.",
-          "The fix: use less yeast and give it more time. Cut yeast by 50–75% and let it cold-ferment 24–72 hours.",
-          "A 24-hour cold ferment with 0.1–0.2% yeast produces dramatically more flavor than a 2-hour room temp rise.",
-          "Even a same-day dough benefits from 1–2 hours at room temp followed by 8+ hours in the fridge.",
-          "Patience is the most important pizza ingredient.",
+          'Flavor in pizza dough comes from slow fermentation, not fast rising.',
+          'Using a lot of yeast makes dough rise quickly, but yeast consumes sugars faster than flavor compounds develop.',
+          'The fix: use less yeast and give it more time. Cut yeast by 50–75% and let it cold-ferment 24–72 hours.',
+          'A 24-hour cold ferment with 0.1–0.2% yeast produces dramatically more flavor than a 2-hour room temp rise.',
+          'Even a same-day dough benefits from 1–2 hours at room temp followed by 8+ hours in the fridge.',
+          'Patience is the most important pizza ingredient.',
         ],
       },
-      "fix-needs-salt": {
-        title: "Needs More Salt",
+      'fix-needs-salt': {
+        title: 'Needs More Salt',
         steps: [
-          "Salt is the #1 flavor enhancer in dough. Without enough, everything tastes flat.",
+          'Salt is the #1 flavor enhancer in dough. Without enough, everything tastes flat.',
           "Most pizza dough needs 2.5–3% salt (by flour weight). That's about 7.5g per 250g flour.",
           "If you forgot the salt, there's no fix for this dough — but it'll still work structurally.",
-          "Sea salt and kosher salt have different densities — always measure salt by weight, not volume.",
+          'Sea salt and kosher salt have different densities — always measure salt by weight, not volume.',
           "Don't put salt directly on yeast before mixing. Add it to the flour first, then add yeast separately.",
         ],
       },
-      "fix-needs-fat-sugar": {
-        title: "Consider Adding Oil or Sugar",
+      'fix-needs-fat-sugar': {
+        title: 'Consider Adding Oil or Sugar',
         steps: [
-          "Some pizza styles benefit from a small amount of fat and/or sugar for flavor.",
-          "Olive oil (2–3% of flour weight) adds richness, improves browning, and tenderizes the crumb.",
-          "Sugar (1–2% of flour weight) feeds browning (Maillard reaction) and adds subtle sweetness.",
-          "Neapolitan purists use zero fat or sugar — but NY, Detroit, and pan styles all benefit from both.",
-          "For cold-fermented doughs, the long rise develops enough sugars naturally for good browning.",
-          "Try brushing the crust rim with olive oil or garlic butter after baking for an instant flavor boost.",
+          'Some pizza styles benefit from a small amount of fat and/or sugar for flavor.',
+          'Olive oil (2–3% of flour weight) adds richness, improves browning, and tenderizes the crumb.',
+          'Sugar (1–2% of flour weight) feeds browning (Maillard reaction) and adds subtle sweetness.',
+          'Neapolitan purists use zero fat or sugar — but NY, Detroit, and pan styles all benefit from both.',
+          'For cold-fermented doughs, the long rise develops enough sugars naturally for good browning.',
+          'Try brushing the crust rim with olive oil or garlic butter after baking for an instant flavor boost.',
         ],
       },
     },
@@ -1241,77 +1726,77 @@ const TROUBLESHOOTING_TREE = {
 
   // ── 10. UNEVEN BAKE / BURNT SPOTS ────────────────────
   uneven: {
-    symptom: "Uneven Bake / Burnt Spots",
-    icon: "🔥",
-    initial: "q1",
+    symptom: 'Uneven Bake / Burnt Spots',
+    icon: '🔥',
+    initial: 'q1',
     questions: {
       q1: {
         text: "What's happening?",
         options: [
-          { label: "One side is darker than the other", next: "fix-hotspots" },
-          { label: "Bottom burns before top is done", next: "fix-bottom-burns" },
-          { label: "Top burns before bottom crisps", next: "fix-top-burns" },
-          { label: "Charred spots on the crust", next: "q2" },
+          { label: 'One side is darker than the other', next: 'fix-hotspots' },
+          { label: 'Bottom burns before top is done', next: 'fix-bottom-burns' },
+          { label: 'Top burns before bottom crisps', next: 'fix-top-burns' },
+          { label: 'Charred spots on the crust', next: 'q2' },
         ],
       },
       q2: {
-        text: "Are the charred spots small leopard-like dots, or large black patches?",
+        text: 'Are the charred spots small leopard-like dots, or large black patches?',
         options: [
-          { label: "Small dots (leoparding)", next: "fix-leoparding" },
-          { label: "Large burnt patches", next: "fix-scorched" },
+          { label: 'Small dots (leoparding)', next: 'fix-leoparding' },
+          { label: 'Large burnt patches', next: 'fix-scorched' },
         ],
       },
     },
     fixes: {
-      "fix-hotspots": {
-        title: "Oven Hot Spots — Rotate the Pizza",
+      'fix-hotspots': {
+        title: 'Oven Hot Spots — Rotate the Pizza',
         steps: [
-          "Most home ovens have uneven heat distribution — one side runs hotter.",
-          "Rotate the pizza 180° halfway through baking. Set a timer for the halfway point.",
+          'Most home ovens have uneven heat distribution — one side runs hotter.',
+          'Rotate the pizza 180° halfway through baking. Set a timer for the halfway point.',
           "If using a stone or steel, make sure it's centered on the rack, not pushed to one side.",
-          "An oven thermometer in different positions can reveal where your hot spots are.",
-          "Convection (fan) mode helps distribute heat more evenly if your oven has it.",
+          'An oven thermometer in different positions can reveal where your hot spots are.',
+          'Convection (fan) mode helps distribute heat more evenly if your oven has it.',
         ],
       },
-      "fix-bottom-burns": {
-        title: "Bottom Burning Before Top Is Done",
+      'fix-bottom-burns': {
+        title: 'Bottom Burning Before Top Is Done',
         steps: [
           "Move the oven rack up — you're too close to the bottom heating element.",
-          "If using a stone or steel, it may be absorbing too much heat. Try a thinner surface or lower temp.",
-          "Use the broiler for the last 1–2 minutes to quickly finish the top while the bottom coasts.",
-          "Reduce oven temperature by 25°F and bake slightly longer.",
-          "A thin layer of semolina under the dough helps buffer heat slightly.",
+          'If using a stone or steel, it may be absorbing too much heat. Try a thinner surface or lower temp.',
+          'Use the broiler for the last 1–2 minutes to quickly finish the top while the bottom coasts.',
+          'Reduce oven temperature by 25°F and bake slightly longer.',
+          'A thin layer of semolina under the dough helps buffer heat slightly.',
         ],
       },
-      "fix-top-burns": {
-        title: "Top Burning Before Bottom Crisps",
+      'fix-top-burns': {
+        title: 'Top Burning Before Bottom Crisps',
         steps: [
-          "Move the oven rack down to put more distance between the pizza and the top element / broiler.",
-          "If using the broiler, watch carefully — it can go from perfect to burnt in 30 seconds.",
-          "Make sure your stone or steel is fully preheated (45–60 min) so it crisps the bottom quickly.",
-          "Consider starting the pizza on a lower rack and moving it up at the end for final browning.",
-          "Reduce the amount of sugar in the dough — sugar promotes browning and can cause burning.",
+          'Move the oven rack down to put more distance between the pizza and the top element / broiler.',
+          'If using the broiler, watch carefully — it can go from perfect to burnt in 30 seconds.',
+          'Make sure your stone or steel is fully preheated (45–60 min) so it crisps the bottom quickly.',
+          'Consider starting the pizza on a lower rack and moving it up at the end for final browning.',
+          'Reduce the amount of sugar in the dough — sugar promotes browning and can cause burning.',
         ],
       },
-      "fix-leoparding": {
-        title: "Leopard Spotting — This Is Desirable!",
+      'fix-leoparding': {
+        title: 'Leopard Spotting — This Is Desirable!',
         steps: [
           "Small charred spots ('leoparding') on the crust are a sign of excellent fermentation and high heat.",
           "This is the hallmark of great Neapolitan pizza — it's intentional, not a problem.",
-          "The spots come from gas bubbles in well-fermented dough meeting intense heat.",
-          "If you want more leoparding: longer cold fermentation, higher hydration, and hotter oven.",
-          "If you want less: reduce oven temp slightly or use a shorter fermentation time.",
+          'The spots come from gas bubbles in well-fermented dough meeting intense heat.',
+          'If you want more leoparding: longer cold fermentation, higher hydration, and hotter oven.',
+          'If you want less: reduce oven temp slightly or use a shorter fermentation time.',
         ],
       },
-      "fix-scorched": {
-        title: "Large Burnt Patches — Too Much Heat",
+      'fix-scorched': {
+        title: 'Large Burnt Patches — Too Much Heat',
         steps: [
-          "Large black patches (not small spots) mean the heat is too intense or the dough sat too long.",
-          "Reduce oven temperature by 25–50°F. Home ovens in the 500–525°F range work well for most styles.",
-          "Check for flour or semolina stuck to the stone — old flour burns and smokes at high temps.",
-          "If the dough had flour-heavy spots from shaping, those areas burn faster. Shake off excess.",
+          'Large black patches (not small spots) mean the heat is too intense or the dough sat too long.',
+          'Reduce oven temperature by 25–50°F. Home ovens in the 500–525°F range work well for most styles.',
+          'Check for flour or semolina stuck to the stone — old flour burns and smokes at high temps.',
+          'If the dough had flour-heavy spots from shaping, those areas burn faster. Shake off excess.',
           "Make sure the dough isn't sitting on the peel too long before launching — it can stick and tear, creating thin spots that burn.",
-          "Clean your baking stone or steel between pizzas — burnt bits from the last bake cause scorching.",
+          'Clean your baking stone or steel between pizzas — burnt bits from the last bake cause scorching.',
         ],
       },
     },
@@ -1319,99 +1804,99 @@ const TROUBLESHOOTING_TREE = {
 
   // ── 11. TOPPING PROBLEMS ─────────────────────────────
   toppings: {
-    symptom: "Topping Problems",
-    icon: "🍕",
-    initial: "q1",
+    symptom: 'Topping Problems',
+    icon: '🍕',
+    initial: 'q1',
     questions: {
       q1: {
         text: "What's the issue with your toppings?",
         options: [
-          { label: "Pizza is drowning in sauce / too wet", next: "q2" },
-          { label: "Fresh veggies made it soggy", next: "q3" },
-          { label: "Cheese isn't melting right", next: "fix-cheese-issues" },
-          { label: "Toppings are sliding off", next: "fix-sliding" },
+          { label: 'Pizza is drowning in sauce / too wet', next: 'q2' },
+          { label: 'Fresh veggies made it soggy', next: 'q3' },
+          { label: "Cheese isn't melting right", next: 'fix-cheese-issues' },
+          { label: 'Toppings are sliding off', next: 'fix-sliding' },
         ],
       },
       q2: {
-        text: "What kind of sauce are you using?",
+        text: 'What kind of sauce are you using?',
         options: [
-          { label: "Canned crushed / pureed tomatoes", next: "fix-thin-sauce" },
-          { label: "Homemade or thicker sauce", next: "fix-too-much-sauce" },
+          { label: 'Canned crushed / pureed tomatoes', next: 'fix-thin-sauce' },
+          { label: 'Homemade or thicker sauce', next: 'fix-too-much-sauce' },
         ],
       },
       q3: {
-        text: "Which vegetables are causing problems?",
+        text: 'Which vegetables are causing problems?',
         options: [
-          { label: "Mushrooms, spinach, or zucchini", next: "fix-high-moisture-veg" },
-          { label: "Fresh tomatoes, peppers, or onions", next: "fix-fresh-veg" },
+          { label: 'Mushrooms, spinach, or zucchini', next: 'fix-high-moisture-veg' },
+          { label: 'Fresh tomatoes, peppers, or onions', next: 'fix-fresh-veg' },
         ],
       },
     },
     fixes: {
-      "fix-thin-sauce": {
-        title: "Sauce is Too Thin and Watery",
+      'fix-thin-sauce': {
+        title: 'Sauce is Too Thin and Watery',
         steps: [
-          "Canned crushed tomatoes contain a lot of liquid. Strain them through a fine mesh sieve for 15–20 minutes.",
-          "Alternatively, simmer the sauce on the stove for 15–20 minutes to reduce and thicken it.",
-          "San Marzano tomatoes (hand-crushed) tend to be thicker than regular crushed tomatoes.",
-          "Use less sauce — 2–3 tablespoons per 12\" pizza is usually enough. Spread it thin.",
-          "A thick sauce creates a moisture barrier between dough and toppings, leading to a soggy center.",
-          "For Neapolitan: crush whole canned tomatoes by hand. The chunky texture holds less free liquid.",
+          'Canned crushed tomatoes contain a lot of liquid. Strain them through a fine mesh sieve for 15–20 minutes.',
+          'Alternatively, simmer the sauce on the stove for 15–20 minutes to reduce and thicken it.',
+          'San Marzano tomatoes (hand-crushed) tend to be thicker than regular crushed tomatoes.',
+          'Use less sauce — 2–3 tablespoons per 12" pizza is usually enough. Spread it thin.',
+          'A thick sauce creates a moisture barrier between dough and toppings, leading to a soggy center.',
+          'For Neapolitan: crush whole canned tomatoes by hand. The chunky texture holds less free liquid.',
         ],
       },
-      "fix-too-much-sauce": {
-        title: "Too Much Sauce — Scale It Back",
+      'fix-too-much-sauce': {
+        title: 'Too Much Sauce — Scale It Back',
         steps: [
-          "Over-saucing is one of the most common home pizza mistakes.",
-          "Use a 2–3 oz ladle (about ¼ cup) per 12\" pizza. Spread it in a thin, even layer.",
-          "Leave a ½\" border for the crust — sauce touching the edge makes it hard to get a crispy rim.",
-          "The sauce should barely cover the dough — you should still see the dough through it.",
-          "If you want saucy pizza, add a drizzle of sauce after baking instead of overloading before.",
-          "For styles like Grandma or Sicilian, sauce goes on top of the cheese to protect it from burning.",
+          'Over-saucing is one of the most common home pizza mistakes.',
+          'Use a 2–3 oz ladle (about ¼ cup) per 12" pizza. Spread it in a thin, even layer.',
+          'Leave a ½" border for the crust — sauce touching the edge makes it hard to get a crispy rim.',
+          'The sauce should barely cover the dough — you should still see the dough through it.',
+          'If you want saucy pizza, add a drizzle of sauce after baking instead of overloading before.',
+          'For styles like Grandma or Sicilian, sauce goes on top of the cheese to protect it from burning.',
         ],
       },
-      "fix-high-moisture-veg": {
-        title: "High-Moisture Vegetables — Pre-Cook Them",
+      'fix-high-moisture-veg': {
+        title: 'High-Moisture Vegetables — Pre-Cook Them',
         steps: [
-          "Mushrooms, spinach, and zucchini are full of water. Raw on a pizza, they steam and sog everything out.",
-          "Mushrooms: sauté in a dry pan on high heat until golden and all moisture has evaporated (5–7 min).",
-          "Spinach: wilt in a pan, then squeeze out all excess water in a clean towel. Squeeze hard.",
-          "Zucchini: salt slices heavily, let sit on paper towels for 20 minutes, then pat dry.",
-          "Eggplant: same as zucchini — salt, drain, pat dry. Or roast slices until lightly golden first.",
-          "Rule of thumb: if a vegetable releases water when you squeeze it raw, it needs pre-cooking for pizza.",
+          'Mushrooms, spinach, and zucchini are full of water. Raw on a pizza, they steam and sog everything out.',
+          'Mushrooms: sauté in a dry pan on high heat until golden and all moisture has evaporated (5–7 min).',
+          'Spinach: wilt in a pan, then squeeze out all excess water in a clean towel. Squeeze hard.',
+          'Zucchini: salt slices heavily, let sit on paper towels for 20 minutes, then pat dry.',
+          'Eggplant: same as zucchini — salt, drain, pat dry. Or roast slices until lightly golden first.',
+          'Rule of thumb: if a vegetable releases water when you squeeze it raw, it needs pre-cooking for pizza.',
         ],
       },
-      "fix-fresh-veg": {
-        title: "Fresh Vegetables — Prep to Remove Moisture",
+      'fix-fresh-veg': {
+        title: 'Fresh Vegetables — Prep to Remove Moisture',
         steps: [
-          "Fresh tomato slices are the #1 cause of soggy center pizza. They release a ton of water in the oven.",
-          "Slice tomatoes thin, salt them, and lay on paper towels for 15–20 minutes to draw out moisture.",
-          "Better yet: add fresh tomato slices after baking for bright flavor without the sogginess.",
-          "Raw onions release moisture and can steam the top. Slice very thin or sauté briefly first.",
-          "Bell peppers: slice thin and use sparingly. Thick slices release more water.",
-          "Fresh basil goes on after baking — it burns and turns black in the oven.",
+          'Fresh tomato slices are the #1 cause of soggy center pizza. They release a ton of water in the oven.',
+          'Slice tomatoes thin, salt them, and lay on paper towels for 15–20 minutes to draw out moisture.',
+          'Better yet: add fresh tomato slices after baking for bright flavor without the sogginess.',
+          'Raw onions release moisture and can steam the top. Slice very thin or sauté briefly first.',
+          'Bell peppers: slice thin and use sparingly. Thick slices release more water.',
+          'Fresh basil goes on after baking — it burns and turns black in the oven.',
         ],
       },
-      "fix-cheese-issues": {
-        title: "Cheese Not Melting or Browning Right",
+      'fix-cheese-issues': {
+        title: 'Cheese Not Melting or Browning Right',
         steps: [
           "Fresh mozzarella: slice and pat dry on paper towels for 15 minutes. Tear into pieces, don't shred.",
-          "Low-moisture mozzarella: shred it yourself — pre-shredded has anti-caking agents that affect melting.",
-          "Cheese burning before the bottom is done? Start the pizza lower in the oven, move up at the end.",
-          "For a blend, mix low-moisture mozz (melts well) with provolone (adds flavor) at a 70/30 ratio.",
+          'Low-moisture mozzarella: shred it yourself — pre-shredded has anti-caking agents that affect melting.',
+          'Cheese burning before the bottom is done? Start the pizza lower in the oven, move up at the end.',
+          'For a blend, mix low-moisture mozz (melts well) with provolone (adds flavor) at a 70/30 ratio.',
           "Don't overload cheese — too much insulates the dough below and prevents it from cooking.",
-          "For Detroit-style: press cheese cubes to the edges. They fry against the pan for crispy cheese walls.",
+          'For Detroit-style: press cheese cubes to the edges. They fry against the pan for crispy cheese walls.',
         ],
       },
-      "fix-sliding": {
-        title: "Toppings Sliding Off",
+      'fix-sliding': {
+        title: 'Toppings Sliding Off',
         steps: [
-          "Too much sauce acts as a slip layer. Reduce sauce and spread it thinner.",
-          "Put cheese directly on the dough first, then sauce on top (Grandma/Detroit style) to anchor everything.",
+          'Too much sauce acts as a slip layer. Reduce sauce and spread it thinner.',
+          'Put cheese directly on the dough first, then sauce on top (Grandma/Detroit style) to anchor everything.',
           "Don't sauce all the way to the edges — the bare crust rim acts as a wall.",
           "Make sure your dough surface isn't oily before topping — oil makes cheese slide.",
-          "Heavier toppings (sausage, thick veggie slices) should go under the cheese to stay anchored.",
-          "Let the pizza cool for 60–90 seconds before cutting — the cheese firms up and holds toppings in place.",
+          'Heavier toppings (sausage, thick veggie slices) should go under the cheese to stay anchored.',
+          'Let the pizza cool for 60–90 seconds before cutting — the cheese firms up and holds toppings in place.',
         ],
       },
     },
@@ -1424,98 +1909,140 @@ const TROUBLESHOOTING_TREE = {
 // Each entry lists essential tools for the style, grouped by category.
 // Designed to help novices know exactly what they need before starting.
 
-const STYLE_TOOLS = {
+export const STYLE_TOOLS = {
   _common: [
-    { name: "Kitchen Scale", desc: "Weigh ingredients in grams for accuracy" },
-    { name: "Large Mixing Bowl", desc: "For combining and resting dough" },
-    { name: "Bench Scraper", desc: "Dividing dough and cleaning your work surface" },
-    { name: "Plastic Wrap or Damp Towel", desc: "Cover dough during fermentation" },
-    { name: "Cutting Board", desc: "A stable surface for slicing and serving" },
-    { name: "Wire Cooling Rack", desc: "Prevents a soggy bottom by letting air circulate under the pie" },
-    { name: "Pizza Cutter", desc: "Wheel or rocker blade for clean, even slices" },
+    { name: 'Kitchen Scale', desc: 'Weigh ingredients in grams for accuracy' },
+    { name: 'Large Mixing Bowl', desc: 'For combining and resting dough' },
+    { name: 'Bench Scraper', desc: 'Dividing dough and cleaning your work surface' },
+    { name: 'Plastic Wrap or Damp Towel', desc: 'Cover dough during fermentation' },
+    { name: 'Cutting Board', desc: 'A stable surface for slicing and serving' },
+    {
+      name: 'Wire Cooling Rack',
+      desc: 'Prevents a soggy bottom by letting air circulate under the pie',
+    },
+    { name: 'Pizza Cutter', desc: 'Wheel or rocker blade for clean, even slices' },
   ],
   neapolitan: {
     tools: [
-      { name: "Baking Steel or Pizza Stone", desc: "Essential for high-heat baking and a charred bottom" },
-      { name: "Pizza Peel", desc: "Launch and retrieve pizza from the oven" },
-      { name: "Semolina or Flour for Dusting", desc: "Prevents dough from sticking to the peel" },
+      {
+        name: 'Baking Steel or Pizza Stone',
+        desc: 'Essential for high-heat baking and a charred bottom',
+      },
+      { name: 'Pizza Peel', desc: 'Launch and retrieve pizza from the oven' },
+      { name: 'Semolina or Flour for Dusting', desc: 'Prevents dough from sticking to the peel' },
     ],
   },
-  "new-york": {
+  'new-york': {
     tools: [
-      { name: "Baking Steel or Pizza Stone", desc: "Provides the thermal mass for a crispy, foldable crust" },
-      { name: "Pizza Peel", desc: "Launch and retrieve pizza from the oven" },
-      { name: "Pizza Screen or Parchment Paper", desc: "Helpful for beginners to transfer the pie" },
+      {
+        name: 'Baking Steel or Pizza Stone',
+        desc: 'Provides the thermal mass for a crispy, foldable crust',
+      },
+      { name: 'Pizza Peel', desc: 'Launch and retrieve pizza from the oven' },
+      {
+        name: 'Pizza Screen or Parchment Paper',
+        desc: 'Helpful for beginners to transfer the pie',
+      },
     ],
   },
-  "chicago-tavern": {
+  'chicago-tavern': {
     tools: [
-      { name: "Round Pizza Pan or Baking Sheet", desc: "14\u2033 thin-gauge pan for a cracker-thin crust" },
-      { name: "Rolling Pin", desc: "Roll dough thin and even \u2014 this style is not hand-stretched" },
-      { name: "Pizza Cutter or Rocker Blade", desc: "Tavern-cut into squares (party cut)" },
+      {
+        name: 'Round Pizza Pan or Baking Sheet',
+        desc: '14\u2033 thin-gauge pan for a cracker-thin crust',
+      },
+      {
+        name: 'Rolling Pin',
+        desc: 'Roll dough thin and even \u2014 this style is not hand-stretched',
+      },
+      { name: 'Pizza Cutter or Rocker Blade', desc: 'Tavern-cut into squares (party cut)' },
     ],
   },
   detroit: {
     tools: [
-      { name: "Detroit-Style Pan (10\u00D714 blue steel)", desc: "The signature rectangular pan with tall, straight sides" },
-      { name: "Offset Spatula or Bench Scraper", desc: "Spread dough into corners and layer cheese to the edges" },
+      {
+        name: 'Detroit-Style Pan (10\u00D714 blue steel)',
+        desc: 'The signature rectangular pan with tall, straight sides',
+      },
+      {
+        name: 'Offset Spatula or Bench Scraper',
+        desc: 'Spread dough into corners and layer cheese to the edges',
+      },
     ],
   },
   sicilian: {
     tools: [
-      { name: "Half-Sheet Pan (18\u00D713)", desc: "Standard rimmed baking sheet for thick, airy slices" },
-      { name: "Offset Spatula", desc: "Spread dough evenly across the oiled pan" },
+      {
+        name: 'Half-Sheet Pan (18\u00D713)',
+        desc: 'Standard rimmed baking sheet for thick, airy slices',
+      },
+      { name: 'Offset Spatula', desc: 'Spread dough evenly across the oiled pan' },
     ],
   },
   grandma: {
     tools: [
-      { name: "Half-Sheet Pan (18\u00D713)", desc: "Oiled sheet pan for a thin, crispy bottom" },
-      { name: "Offset Spatula", desc: "Spread dough thin and even in the pan" },
+      { name: 'Half-Sheet Pan (18\u00D713)', desc: 'Oiled sheet pan for a thin, crispy bottom' },
+      { name: 'Offset Spatula', desc: 'Spread dough thin and even in the pan' },
     ],
   },
-  "thin-crust": {
+  'thin-crust': {
     tools: [
-      { name: "Baking Steel or Pizza Stone", desc: "High heat transfer for a crispy thin base" },
-      { name: "Pizza Peel", desc: "Launch and retrieve pizza from the oven" },
-      { name: "Rolling Pin", desc: "Roll dough uniformly thin" },
+      { name: 'Baking Steel or Pizza Stone', desc: 'High heat transfer for a crispy thin base' },
+      { name: 'Pizza Peel', desc: 'Launch and retrieve pizza from the oven' },
+      { name: 'Rolling Pin', desc: 'Roll dough uniformly thin' },
     ],
   },
   pan: {
     tools: [
-      { name: "Cast Iron Skillet or Round Cake Pan", desc: "10\u201312\u2033 oven-safe pan, well-oiled" },
-      { name: "Offset Spatula", desc: "Press dough evenly into the pan" },
+      {
+        name: 'Cast Iron Skillet or Round Cake Pan',
+        desc: '10\u201312\u2033 oven-safe pan, well-oiled',
+      },
+      { name: 'Offset Spatula', desc: 'Press dough evenly into the pan' },
     ],
   },
-  "st-louis": {
+  'st-louis': {
     tools: [
-      { name: "Round Pizza Pan or Baking Sheet", desc: "Thin-gauge pan for a cracker-thin crust" },
-      { name: "Rolling Pin", desc: "Roll dough paper-thin and uniform" },
-      { name: "Pizza Cutter", desc: "Cut into squares (St. Louis party cut)" },
+      { name: 'Round Pizza Pan or Baking Sheet', desc: 'Thin-gauge pan for a cracker-thin crust' },
+      { name: 'Rolling Pin', desc: 'Roll dough paper-thin and uniform' },
+      { name: 'Pizza Cutter', desc: 'Cut into squares (St. Louis party cut)' },
     ],
   },
-  "new-haven": {
+  'new-haven': {
     tools: [
-      { name: "Baking Steel or Pizza Stone", desc: "Critical for the charred, blistered bottom" },
-      { name: "Pizza Peel", desc: "Launch and retrieve pizza from the oven" },
-      { name: "Semolina for Dusting", desc: "Prevents sticking \u2014 New Haven style uses a generous dusting" },
+      { name: 'Baking Steel or Pizza Stone', desc: 'Critical for the charred, blistered bottom' },
+      { name: 'Pizza Peel', desc: 'Launch and retrieve pizza from the oven' },
+      {
+        name: 'Semolina for Dusting',
+        desc: 'Prevents sticking \u2014 New Haven style uses a generous dusting',
+      },
     ],
   },
-  "ohio-valley": {
+  'ohio-valley': {
     tools: [
-      { name: "Half-Sheet Pan (18\u00D713)", desc: "Bake the crust and sauce first, then add cold toppings" },
-      { name: "Pizza Cutter", desc: "Cut into squares" },
+      {
+        name: 'Half-Sheet Pan (18\u00D713)',
+        desc: 'Bake the crust and sauce first, then add cold toppings',
+      },
+      { name: 'Pizza Cutter', desc: 'Cut into squares' },
     ],
   },
-  "cast-iron": {
+  'cast-iron': {
     tools: [
-      { name: "Cast Iron Skillet (10\u201312\u2033)", desc: "The pan IS the tool \u2014 preheat it for a crispy bottom" },
-      { name: "Oven Mitts (heavy-duty)", desc: "Cast iron gets extremely hot" },
+      {
+        name: 'Cast Iron Skillet (10\u201312\u2033)',
+        desc: 'The pan IS the tool \u2014 preheat it for a crispy bottom',
+      },
+      { name: 'Oven Mitts (heavy-duty)', desc: 'Cast iron gets extremely hot' },
     ],
   },
-  "school-night": {
+  'school-night': {
     tools: [
-      { name: "Baking Sheet or Cast Iron Skillet", desc: "Whatever you have \u2014 this style is forgiving" },
-      { name: "Rolling Pin or Your Hands", desc: "Shape however you like, no technique required" },
+      {
+        name: 'Baking Sheet or Cast Iron Skillet',
+        desc: 'Whatever you have \u2014 this style is forgiving',
+      },
+      { name: 'Rolling Pin or Your Hands', desc: 'Shape however you like, no technique required' },
     ],
   },
 };
@@ -1523,13 +2050,13 @@ const STYLE_TOOLS = {
 // ══════════════════════════════════════════════════════
 // 6. DDT (Desired Dough Temperature) PRESETS
 // ══════════════════════════════════════════════════════
-const DDT_PRESETS = {
-  "":            { ddt: 76, friction: 28, label: "General (default)" },
-  neapolitan:    { ddt: 75, friction: 25, label: "Neapolitan" },
-  "new-york":    { ddt: 78, friction: 28, label: "New York" },
-  "new-haven":   { ddt: 76, friction: 25, label: "New Haven" },
-  sicilian:      { ddt: 78, friction: 28, label: "Sicilian" },
-  detroit:       { ddt: 78, friction: 28, label: "Detroit" },
-  grandma:       { ddt: 76, friction: 25, label: "Grandma" },
-  pan:           { ddt: 78, friction: 28, label: "Pan" },
+export const DDT_PRESETS = {
+  '': { ddt: 76, friction: 28, label: 'General (default)' },
+  neapolitan: { ddt: 75, friction: 25, label: 'Neapolitan' },
+  'new-york': { ddt: 78, friction: 28, label: 'New York' },
+  'new-haven': { ddt: 76, friction: 25, label: 'New Haven' },
+  sicilian: { ddt: 78, friction: 28, label: 'Sicilian' },
+  detroit: { ddt: 78, friction: 28, label: 'Detroit' },
+  grandma: { ddt: 76, friction: 25, label: 'Grandma' },
+  pan: { ddt: 78, friction: 28, label: 'Pan' },
 };
