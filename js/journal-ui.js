@@ -706,6 +706,12 @@ form.addEventListener('submit', async (e) => {
   updateCompareButton();
   updateStorageDisplay();
 
+  // Update streak after saving
+  renderStreakBadge();
+
+  // Check total-bake and streak milestones (Phase I)
+  checkBakeMilestones();
+
   // Celebrate milestone tier achievements (1, 4, 9, 16, 26 bakes per style)
   const MILESTONE_COUNTS = [1, 4, 9, 16, 26];
   const hasMilestone = MILESTONE_COUNTS.includes(saved.skillCount);
@@ -1189,9 +1195,9 @@ async function openDetailModal(entry) {
     }
   });
 
-  // Share handler — generates share image with social caption
+  // Share handler — opens share bottom sheet
   const shareBtn = modalBody.querySelector('.btn-modal-share');
-  if (shareBtn) shareBtn.addEventListener('click', () => shareThisBake(entry, 'social'));
+  if (shareBtn) shareBtn.addEventListener('click', () => openShareSheet(entry));
 
   // Save to Photos handler — downloads watermarked images with social caption
   const saveBtn = modalBody.querySelector('.btn-modal-save-photo');
@@ -1640,7 +1646,7 @@ async function savePhotosToDevice(entry, destination = 'social') {
  * Build a ready-to-paste caption tailored to the share destination.
  * @param {object} entry   - journal entry
  * @param {object} profile - { name, location, skillLevel }
- * @param {"social"|"email"|"text"} destination
+ * @param {"social"|"reddit"|"email"|"text"} destination
  */
 function buildShareCaption(entry, profile, destination = 'social') {
   const styleName = entry.styleName || entry.styleKey || '';
@@ -1673,6 +1679,213 @@ function buildShareCaption(entry, profile, destination = 'social') {
     caption += ` ${tag}`;
   }
   return caption;
+}
+
+/**
+ * Generate a Reddit-style caption following r/pizza conventions.
+ * Deterministic opener based on entry ID hash.
+ */
+function generateRedditCaption(entry) {
+  const styleName = entry.styleName || entry.styleKey || 'pizza';
+  const rating = entry.rating || 0;
+
+  // Style-specific opener variants (picked deterministically by entry ID)
+  const openers = {
+    Neapolitan: [
+      'Finally happy with this Neapolitan.',
+      'Another attempt at Neapolitan.',
+      'Getting closer with this Neapolitan.',
+    ],
+    'New York Style': [
+      'Classic New York slice night.',
+      'Went for a proper NY-style tonight.',
+      'Friday night NY slices.',
+    ],
+    'Chicago Tavern': [
+      'Tavern-cut Chicago style.',
+      'Thin crust Chicago tonight.',
+      'Square-cut tavern pie.',
+    ],
+    'Detroit Deep Dish': [
+      'Detroit-style in a blue steel pan.',
+      'Crispy cheese edges on this Detroit.',
+      'Motor City style tonight.',
+    ],
+    Sicilian: ['Thick and fluffy Sicilian.', 'Sheet pan Sicilian tonight.', 'Going full Sicilian.'],
+    Grandma: [
+      'Grandma pie from the pan.',
+      'Sheet pan night \u2014 Grandma style.',
+      'Thin-crust Grandma pie.',
+    ],
+    'Thin & Crispy': [
+      'Thin and crispy tonight.',
+      'Cracker-thin crust.',
+      'Going for maximum crunch.',
+    ],
+    'Pan Pizza': ['Pan pizza night.', 'Buttery pan crust tonight.', 'Cast iron pan pizza.'],
+    'St. Louis': [
+      'Provel and Imo\u2019s-style tonight.',
+      'St. Louis cracker crust.',
+      'Square-cut STL style.',
+    ],
+    'New Haven Apizza': [
+      'New Haven apizza attempt.',
+      'Coal-fired style tonight.',
+      'Going for that charred crust.',
+    ],
+    'Ohio Valley': [
+      'Ohio Valley cold-cheese style.',
+      'Cold cheese on a hot pie.',
+      'Ohio Valley tonight.',
+    ],
+    'Cast Iron': [
+      'Cast iron skillet pizza.',
+      'Deep pan in the cast iron.',
+      'Skillet pizza tonight.',
+    ],
+    'School Night (No Rise)': [
+      'Quick no-rise pizza for a weeknight.',
+      'School night pizza \u2014 no time to wait.',
+      'Same-day dough, zero patience.',
+    ],
+  };
+
+  // Pick opener based on rating overrides or style variants
+  let opener;
+  if (rating === 5) {
+    opener = `Best ${styleName} I've made yet.`;
+  } else if (rating > 0 && rating <= 2) {
+    opener = `Still learning with this ${styleName}.`;
+  } else {
+    const variants = openers[styleName] || [
+      `Homemade ${styleName} tonight.`,
+      `Another ${styleName} bake.`,
+      `${styleName} from scratch.`,
+    ];
+    // Deterministic pick: hash entry ID to pick variant index
+    const hash = (entry.id || '').split('').reduce((s, c) => s + c.charCodeAt(0), 0);
+    opener = variants[hash % variants.length];
+  }
+
+  // Recipe line
+  const recipeParts = [];
+  const snap = entry.doughSnapshot;
+  if (snap) {
+    if (snap.hydration > 0) recipeParts.push(`${(snap.hydration * 100).toFixed(0)}% hydration`);
+    if (snap.saltPct > 0) recipeParts.push(`${(snap.saltPct * 100).toFixed(1)}% salt`);
+  }
+  if (snap && snap.fermentHours) {
+    const fermentType = snap.fermentTemp && snap.fermentTemp < 50 ? 'cold' : 'room temp';
+    recipeParts.push(`${snap.fermentHours}hr ${fermentType} ferment`);
+  }
+  if (snap && snap.flourType) recipeParts.push(snap.flourType);
+  const ovenLabel =
+    entry.ovenType && OVEN_TYPES[entry.ovenType]
+      ? OVEN_TYPES[entry.ovenType]
+      : entry.ovenType || '';
+  if (ovenLabel) {
+    const tempStr = entry.bakeTemp ? ` at ${formatTemp(entry.bakeTemp)}` : '';
+    recipeParts.push(ovenLabel + tempStr);
+  }
+
+  let caption = opener;
+  if (recipeParts.length) {
+    caption += '\n\nRecipe: ' + recipeParts.join(' \u2014 ') + '.';
+  }
+
+  // Notes excerpt (truncate to 120 chars)
+  if (entry.notes && entry.notes.trim()) {
+    const excerpt =
+      entry.notes.trim().length > 120
+        ? entry.notes.trim().slice(0, 117) + '...'
+        : entry.notes.trim();
+    caption += '\n\n' + excerpt;
+  }
+
+  caption += '\n\nMade with The Pie Lab app \uD83C\uDF55';
+  return caption;
+}
+
+// ── Share Bottom Sheet ─────────────────────────────
+let _activeShareFormat = 'square';
+
+function openShareSheet(entry) {
+  const profile = PieLabProfile.getProfile();
+  const name = (profile.displayName || '').trim();
+  if (!name) {
+    showToast('Set your name in My Kitchen to share bakes');
+    return;
+  }
+
+  const redditCaption = generateRedditCaption(entry);
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay share-sheet-overlay';
+  overlay.innerHTML = `
+    <div class="share-sheet">
+      <div class="share-sheet-header">
+        <h3>Share Bake Card</h3>
+        <button class="share-sheet-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="share-sheet-formats">
+        <button class="share-format-btn active" data-format="square">Square (Instagram)</button>
+        <button class="share-format-btn" data-format="portrait">Portrait (Stories)</button>
+      </div>
+      <div class="share-sheet-caption">
+        <label>Reddit / Social Caption</label>
+        <textarea class="share-caption-text" readonly rows="5">${escapeHtml(redditCaption)}</textarea>
+        <button class="btn-copy-caption">Copy Caption</button>
+      </div>
+      <div class="share-sheet-actions">
+        <button class="btn-primary share-sheet-share">Share Image</button>
+        <button class="btn-secondary share-sheet-save">Save to Photos</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  // Close handlers
+  const close = () => overlay.remove();
+  overlay.querySelector('.share-sheet-close').addEventListener('click', close);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+
+  // Format toggle
+  const formatBtns = overlay.querySelectorAll('.share-format-btn');
+  formatBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      formatBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      _activeShareFormat = btn.dataset.format;
+    });
+  });
+
+  // Copy caption
+  overlay.querySelector('.btn-copy-caption').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(redditCaption);
+      showToast('Caption copied');
+    } catch {
+      // Fallback: select textarea text
+      const textarea = overlay.querySelector('.share-caption-text');
+      textarea.select();
+      document.execCommand('copy');
+      showToast('Caption copied');
+    }
+  });
+
+  // Share Image
+  overlay.querySelector('.share-sheet-share').addEventListener('click', () => {
+    close();
+    shareThisBake(entry, 'social');
+  });
+
+  // Save to Photos
+  overlay.querySelector('.share-sheet-save').addEventListener('click', () => {
+    close();
+    savePhotosToDevice(entry, 'social');
+  });
 }
 
 function downloadBlob(blobOrFile, filename) {
@@ -2496,6 +2709,506 @@ function jtClose() {
   }
 }
 
+// ── Progress Grid Card (Pro) ────────────────────────
+const btnShareProgress = document.getElementById('btn-share-progress');
+if (btnShareProgress) {
+  btnShareProgress.addEventListener('click', () => {
+    PieLabPremium.gate(() => openProgressGridModal());
+  });
+}
+
+function openProgressGridModal() {
+  const entries = PieLabJournal.getAllEntries().sort((a, b) =>
+    (b.date || '').localeCompare(a.date || '')
+  );
+
+  // Only entries with photos (or use gradient fallbacks)
+  const photoEntries = entries.slice(0, 9);
+  if (photoEntries.length === 0) {
+    showToast('Log some bakes first');
+    return;
+  }
+
+  // Determine available grid sizes
+  const sizes = [];
+  if (photoEntries.length >= 4) sizes.push(4);
+  if (photoEntries.length >= 6) sizes.push(6);
+  if (photoEntries.length >= 9) sizes.push(9);
+  if (sizes.length === 0) sizes.push(photoEntries.length);
+  const defaultSize = sizes[sizes.length - 1];
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal-content progress-grid-modal">
+      <h3>Share Progress</h3>
+      <p>Select grid size:</p>
+      <div class="progress-grid-sizes">
+        ${sizes.map((s) => `<button class="progress-size-btn${s === defaultSize ? ' active' : ''}" data-size="${s}">${s === 4 ? '2\u00D72' : s === 6 ? '2\u00D73' : s === 9 ? '3\u00D73' : s} bakes</button>`).join('')}
+      </div>
+      <div class="progress-grid-actions">
+        <button class="btn-primary" id="btn-generate-grid">Generate & Share</button>
+        <button class="btn-secondary" id="btn-cancel-grid">Cancel</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  let selectedSize = defaultSize;
+  overlay.querySelectorAll('.progress-size-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      overlay.querySelectorAll('.progress-size-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedSize = parseInt(btn.dataset.size);
+    });
+  });
+
+  overlay.querySelector('#btn-cancel-grid').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.remove();
+  });
+
+  overlay.querySelector('#btn-generate-grid').addEventListener('click', async () => {
+    overlay.remove();
+    showToast('Generating progress grid\u2026');
+    try {
+      const blob = await generateProgressGrid(photoEntries.slice(0, selectedSize), selectedSize);
+      const file = new File([blob], 'my-progress.png', { type: 'image/png' });
+      let canShareFiles;
+      try {
+        canShareFiles =
+          navigator.share && navigator.canShare && navigator.canShare({ files: [file] });
+      } catch {
+        canShareFiles = false;
+      }
+      if (canShareFiles) {
+        await navigator.share({ files: [file], title: 'My pizza progress \u2014 The Pie Lab' });
+      } else {
+        downloadBlob(blob, 'my-progress.png');
+        showToast('Progress grid saved');
+      }
+    } catch {
+      showToast('Could not generate grid');
+    }
+  });
+}
+
+// Style-matched gradients for entries without photos
+const STYLE_GRADIENTS = {
+  neapolitan: ['#8B0000', '#c0392b'],
+  'new-york': ['#1a1a2e', '#e74c3c'],
+  'chicago-tavern': ['#2c3e50', '#c0392b'],
+  detroit: ['#1a1a2e', '#e67e22'],
+  sicilian: ['#2c3e50', '#f39c12'],
+  grandma: ['#2c3e50', '#e67e22'],
+  'thin-crispy': ['#4a1a2e', '#c0392b'],
+  pan: ['#1a2e1a', '#e74c3c'],
+  'st-louis': ['#2e1a2e', '#c0392b'],
+  'new-haven': ['#1a1a1a', '#c0392b'],
+  'ohio-valley': ['#2e2e1a', '#e74c3c'],
+  'cast-iron': ['#1a1a1a', '#e67e22'],
+  'school-night': ['#2c3e50', '#c0392b'],
+};
+
+async function generateProgressGrid(entries, gridSize) {
+  const SIZE = 1080;
+  const HEADER_H = 60;
+  const FOOTER_H = 50;
+  const cols = gridSize <= 4 ? 2 : 3;
+  const rows = Math.ceil(gridSize / cols);
+  const cellW = SIZE / cols;
+  const cellH = (SIZE - HEADER_H - FOOTER_H) / rows;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = SIZE;
+  canvas.height = SIZE;
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(0, 0, SIZE, SIZE);
+
+  // Header
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'italic 28px "Playfair Display", serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(`My Last ${entries.length} Bakes`, SIZE / 2, HEADER_H / 2);
+
+  // Load and draw cell images
+  for (let i = 0; i < gridSize; i++) {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const x = col * cellW;
+    const y = HEADER_H + row * cellH;
+    const entry = entries[i];
+
+    if (entry) {
+      // Try loading photo
+      let photoSrc = null;
+      if (entry.photos && entry.photos.length) {
+        photoSrc = entry.photos[0];
+      } else if (entry.photo) {
+        photoSrc = entry.photo;
+      } else if (entry.id) {
+        try {
+          const photos = await PieLabPhotos.getPhotos(entry.id);
+          if (photos && photos.length) photoSrc = photos[0];
+        } catch {
+          /* ignore */
+        }
+      }
+
+      if (photoSrc) {
+        try {
+          const img = await loadImage(photoSrc);
+          const scale = Math.max(cellW / img.width, cellH / img.height);
+          const drawW = img.width * scale,
+            drawH = img.height * scale;
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(x, y, cellW, cellH);
+          ctx.clip();
+          ctx.drawImage(img, x + (cellW - drawW) / 2, y + (cellH - drawH) / 2, drawW, drawH);
+          ctx.restore();
+        } catch {
+          drawGradientCell(ctx, x, y, cellW, cellH, entry.styleKey);
+        }
+      } else {
+        drawGradientCell(ctx, x, y, cellW, cellH, entry.styleKey);
+      }
+
+      // Bake number overlay
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(x + cellW - 50, y + cellH - 24, 50, 24);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '12px Inter, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(`#${i + 1}`, x + cellW - 8, y + cellH - 6);
+    } else {
+      drawGradientCell(ctx, x, y, cellW, cellH, 'neapolitan');
+    }
+  }
+
+  // Grid lines
+  ctx.strokeStyle = '#1a1a1a';
+  ctx.lineWidth = 2;
+  for (let c = 1; c < cols; c++) {
+    ctx.beginPath();
+    ctx.moveTo(c * cellW, HEADER_H);
+    ctx.lineTo(c * cellW, SIZE - FOOTER_H);
+    ctx.stroke();
+  }
+  for (let r = 1; r < rows; r++) {
+    ctx.beginPath();
+    ctx.moveTo(0, HEADER_H + r * cellH);
+    ctx.lineTo(SIZE, HEADER_H + r * cellH);
+    ctx.stroke();
+  }
+
+  // Footer
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '16px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('The Pie Lab \u2022 thepielab.app', SIZE / 2, SIZE - FOOTER_H / 2);
+
+  // Watermark
+  try {
+    const logo = await loadImage('assets/logos/logo-transparent.svg');
+    ctx.globalAlpha = 0.4;
+    ctx.drawImage(logo, SIZE - 80 - 10, SIZE - 40 - 10, 80, 40);
+    ctx.globalAlpha = 1;
+  } catch {
+    /* ignore */
+  }
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('toBlob null'))), 'image/png');
+  });
+}
+
+function drawGradientCell(ctx, x, y, w, h, styleKey) {
+  const colors = STYLE_GRADIENTS[styleKey] || ['#2c3e50', '#c0392b'];
+  const grad = ctx.createLinearGradient(x, y, x, y + h);
+  grad.addColorStop(0, colors[0]);
+  grad.addColorStop(1, colors[1]);
+  ctx.fillStyle = grad;
+  ctx.fillRect(x, y, w, h);
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('Image load failed'));
+    img.src = src;
+  });
+}
+
+// ── Streak and Milestone System ─────────────────────
+const STREAK_KEY = 'pielab-streak';
+const MILESTONES_TRIGGERED_KEY = 'pielab-milestones-triggered';
+
+const BAKE_MILESTONES = {
+  1: { title: 'First Bake \uD83C\uDF55', subtitle: 'Your pizza journey begins.' },
+  5: { title: 'Finding Your Style', subtitle: "Five bakes in. You're getting it." },
+  10: { title: 'Getting Serious \uD83D\uDD25', subtitle: 'Double digits. This is a habit.' },
+  25: { title: 'Dedicated Baker', subtitle: "25 bakes logged. You're the real deal." },
+  50: { title: 'Pizza Obsessed \uD83C\uDFC6', subtitle: '50 bakes. Officially obsessed.' },
+  100: {
+    title: 'Pizza Master \uD83D\uDC68\u200D\uD83C\uDF73',
+    subtitle: '100 bakes. Legend status.',
+  },
+};
+
+const STREAK_MILESTONES = {
+  4: { title: '4-Week Streak \uD83D\uDD25', subtitle: 'A month of consistent baking!' },
+  8: { title: '8-Week Streak', subtitle: 'Two months strong. Impressive.' },
+  12: { title: '12-Week Streak', subtitle: 'Quarter of a year. Dedicated.' },
+  26: { title: '26-Week Streak \uD83C\uDFC6', subtitle: 'Half a year! Unstoppable.' },
+  52: { title: '52-Week Streak \uD83C\uDF1F', subtitle: 'A full year of weekly baking. Legend.' },
+};
+
+function updateStreak() {
+  const entries = PieLabJournal.getAllEntries();
+  if (entries.length === 0) return { currentStreak: 0, longestStreak: 0, lastBakeDate: null };
+
+  // Sort entries by date
+  const sorted = entries.filter((e) => e.date).sort((a, b) => a.date.localeCompare(b.date));
+  const lastBakeDate = sorted[sorted.length - 1].date;
+
+  // Get the Monday of a given date's week
+  function getWeekMonday(dateStr) {
+    const d = new Date(dateStr + 'T12:00:00');
+    const day = d.getDay();
+    const diff = day === 0 ? 6 : day - 1; // Monday = 0
+    d.setDate(d.getDate() - diff);
+    return d.toISOString().split('T')[0];
+  }
+
+  // Build set of unique bake weeks (Mon dates)
+  const bakeWeeks = new Set(sorted.map((e) => getWeekMonday(e.date)));
+  const weekArray = [...bakeWeeks].sort();
+
+  // Count current streak going back from the most recent bake week
+  const now = new Date();
+  const currentWeekMonday = getWeekMonday(now.toISOString().split('T')[0]);
+
+  // Start from current week or last bake week (whichever is more recent)
+  let checkWeek = currentWeekMonday;
+  // If current week has no bake, check if last week did (grace: streak breaks after current week with no bake)
+  if (!bakeWeeks.has(checkWeek)) {
+    const lastWeek = new Date(checkWeek + 'T12:00:00');
+    lastWeek.setDate(lastWeek.getDate() - 7);
+    checkWeek = lastWeek.toISOString().split('T')[0];
+    if (!bakeWeeks.has(checkWeek)) {
+      // No recent bake — streak is 0
+      const streakData = { currentStreak: 0, longestStreak: 0, lastBakeDate };
+      PieLabStorage.set(STREAK_KEY, streakData);
+      return streakData;
+    }
+  }
+
+  let currentStreak = 0;
+  let weekDate = new Date(checkWeek + 'T12:00:00');
+  while (bakeWeeks.has(weekDate.toISOString().split('T')[0])) {
+    currentStreak++;
+    weekDate.setDate(weekDate.getDate() - 7);
+  }
+
+  // Calculate longest streak
+  let longestStreak = 0;
+  let tempStreak = 0;
+  for (let i = 0; i < weekArray.length; i++) {
+    if (i === 0) {
+      tempStreak = 1;
+    } else {
+      const prev = new Date(weekArray[i - 1] + 'T12:00:00');
+      const curr = new Date(weekArray[i] + 'T12:00:00');
+      const diffDays = (curr - prev) / (1000 * 60 * 60 * 24);
+      if (diffDays === 7) {
+        tempStreak++;
+      } else {
+        tempStreak = 1;
+      }
+    }
+    longestStreak = Math.max(longestStreak, tempStreak);
+  }
+
+  const streakData = { currentStreak, longestStreak, lastBakeDate };
+  PieLabStorage.set(STREAK_KEY, streakData);
+  return streakData;
+}
+
+function renderStreakBadge() {
+  const streakEl = document.getElementById('journal-streak');
+  if (!streakEl) return;
+  const streak = updateStreak();
+  if (streak.currentStreak >= 2) {
+    streakEl.textContent = `\uD83D\uDD25 ${streak.currentStreak}-week streak`;
+    streakEl.classList.remove('hidden');
+  } else {
+    streakEl.classList.add('hidden');
+  }
+}
+
+function checkBakeMilestones() {
+  const entries = PieLabJournal.getAllEntries();
+  const totalBakes = entries.length;
+  const streak = updateStreak();
+
+  // Load triggered milestones
+  let triggered = PieLabStorage.getJSON(MILESTONES_TRIGGERED_KEY) || [];
+
+  // Check bake count milestones
+  const bakeKey = 'bake-' + totalBakes;
+  if (BAKE_MILESTONES[totalBakes] && !triggered.includes(bakeKey)) {
+    triggered.push(bakeKey);
+    PieLabStorage.set(MILESTONES_TRIGGERED_KEY, triggered);
+    setTimeout(() => showBakeMilestone(BAKE_MILESTONES[totalBakes], totalBakes), 1000);
+    return;
+  }
+
+  // Check streak milestones
+  const streakKey = 'streak-' + streak.currentStreak;
+  if (STREAK_MILESTONES[streak.currentStreak] && !triggered.includes(streakKey)) {
+    triggered.push(streakKey);
+    PieLabStorage.set(MILESTONES_TRIGGERED_KEY, triggered);
+    setTimeout(
+      () => showBakeMilestone(STREAK_MILESTONES[streak.currentStreak], streak.currentStreak),
+      1000
+    );
+  }
+}
+
+function showBakeMilestone(milestone, number) {
+  if (window.PieLabHaptics) PieLabHaptics.success();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'milestone-overlay';
+  overlay.innerHTML = `
+    <div class="milestone-confetti"></div>
+    <div class="milestone-card">
+      <div class="milestone-number">${number}</div>
+      <h2 class="milestone-title">${milestone.title}</h2>
+      <p class="milestone-subtitle">${milestone.subtitle}</p>
+      <div class="milestone-actions">
+        <button class="btn-primary milestone-share">Share This Milestone</button>
+        <button class="btn-secondary milestone-dismiss">Keep Baking</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.classList.add('milestone--visible'));
+
+  const dismiss = () => {
+    overlay.classList.remove('milestone--visible');
+    setTimeout(() => overlay.remove(), 400);
+  };
+
+  overlay.querySelector('.milestone-dismiss').addEventListener('click', dismiss);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) dismiss();
+  });
+
+  overlay.querySelector('.milestone-share').addEventListener('click', async () => {
+    dismiss();
+    showToast('Generating milestone card\u2026');
+    try {
+      const blob = await generateMilestoneCard(milestone, number);
+      const file = new File([blob], 'milestone.png', { type: 'image/png' });
+      let canShareFiles;
+      try {
+        canShareFiles =
+          navigator.share && navigator.canShare && navigator.canShare({ files: [file] });
+      } catch {
+        canShareFiles = false;
+      }
+      if (canShareFiles) {
+        await navigator.share({ files: [file], title: milestone.title });
+      } else {
+        downloadBlob(blob, 'milestone.png');
+        showToast('Milestone card saved');
+      }
+    } catch {
+      showToast('Could not generate milestone card');
+    }
+  });
+}
+
+async function generateMilestoneCard(milestone, number) {
+  const SIZE = 1080;
+  const canvas = document.createElement('canvas');
+  canvas.width = SIZE;
+  canvas.height = SIZE;
+  const ctx = canvas.getContext('2d');
+
+  // Dark radial gradient background
+  const grad = ctx.createRadialGradient(SIZE / 2, SIZE / 2, 0, SIZE / 2, SIZE / 2, SIZE * 0.7);
+  grad.addColorStop(0, '#2c0000');
+  grad.addColorStop(1, '#1a1a1a');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, SIZE, SIZE);
+
+  // Large number
+  ctx.fillStyle = '#c0392b';
+  ctx.font = 'bold 200px "Playfair Display", serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(String(number), SIZE / 2, SIZE * 0.38);
+
+  // Title
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'italic 48px "Playfair Display", serif';
+  ctx.fillText(
+    milestone.title.replace(/[\uD83C-\uDBFF][\uDC00-\uDFFF]/g, '').trim(),
+    SIZE / 2,
+    SIZE * 0.55
+  );
+
+  // Subtitle
+  ctx.fillStyle = '#999999';
+  ctx.font = '24px Inter, sans-serif';
+  ctx.fillText(milestone.subtitle, SIZE / 2, SIZE * 0.63);
+
+  // Wordmark
+  ctx.fillStyle = '#666666';
+  ctx.font = 'italic 20px "Playfair Display", serif';
+  ctx.fillText('The Pie Lab', SIZE / 2, SIZE * 0.78);
+
+  // User name
+  const profile = PieLabProfile.getProfile();
+  const displayName = (profile.displayName || '').trim();
+  if (displayName) {
+    ctx.fillStyle = '#888888';
+    ctx.font = '18px Inter, sans-serif';
+    ctx.fillText(displayName, SIZE / 2, SIZE * 0.84);
+  }
+
+  // Watermark
+  try {
+    const logo = await loadImage('assets/logos/logo-transparent.svg');
+    ctx.globalAlpha = 0.3;
+    ctx.drawImage(logo, SIZE - 80 - 20, SIZE - 40 - 20, 80, 40);
+    ctx.globalAlpha = 1;
+  } catch {
+    /* ignore */
+  }
+
+  // thepielab.app bottom-left
+  ctx.fillStyle = '#666666';
+  ctx.font = '14px Inter, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('thepielab.app', 20, SIZE - 20);
+  ctx.textAlign = 'center';
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('toBlob null'))), 'image/png');
+  });
+}
+
 // ── Initialize ────────────────────────────────────
 populateDropdowns();
 populateOvenDropdown();
@@ -2507,6 +3220,7 @@ function initRender() {
   renderAnalytics();
   renderPassport();
   renderDoughLibrary();
+  renderStreakBadge();
   updateCompareButton();
   updateStorageDisplay();
 }
