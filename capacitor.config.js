@@ -2,7 +2,7 @@
 const config = {
   appId: 'app.pielab',
   appName: 'The Pie Lab',
-  webDir: '.',
+  webDir: 'www',
   server: {
     androidScheme: 'https',
   },

@@ -186,14 +186,16 @@ document.addEventListener('DOMContentLoaded', () => {
       sizeSelect.appendChild(opt);
     }
 
-    // Default to recipe-specified default, or middle option for round (12″), or half for sheet
+    // Default: recipe-specified, or middle option (3+ sizes), or larger (2 sizes)
     const keys = Object.keys(recipe.sizes);
     if (recipe.defaultSize && keys.includes(recipe.defaultSize)) {
       sizeSelect.value = recipe.defaultSize;
-    } else if (recipe.isSheet) {
-      sizeSelect.value = keys.includes('half') ? 'half' : keys[0];
+    } else if (keys.length >= 3) {
+      sizeSelect.value = keys[Math.floor(keys.length / 2)];
+    } else if (keys.length === 2) {
+      sizeSelect.value = keys[1];
     } else {
-      sizeSelect.value = keys.includes('12') ? '12' : keys[0];
+      sizeSelect.value = keys[0];
     }
 
     // Restore scaling memory for this style (skip if explicit load/style URL)
@@ -775,6 +777,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const planData = {
         styleKey: type,
+        sizeKey: sizeSelect.value,
         quantity: numPizzas,
         calcResult: { doughBallWeight },
       };

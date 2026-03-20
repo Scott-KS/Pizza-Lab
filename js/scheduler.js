@@ -170,7 +170,7 @@ function goToStep(step) {
 }
 
 function validateStep1() {
-  return styleSelect.value && countInput.value > 0 && datetimeInput.value;
+  return styleSelect.value && sizeSelect.value && countInput.value > 0 && datetimeInput.value;
 }
 
 // Enable/disable Next button
@@ -1165,6 +1165,10 @@ if (saved && saved.steps && saved.steps.length > 0) {
   if (!prefill.eatTime || !prefill.fermentMethodKey) {
     if (prefill.styleKey && styleSelect.querySelector(`option[value="${prefill.styleKey}"]`)) {
       styleSelect.value = prefill.styleKey;
+      updateSizeOptions();
+      if (prefill.sizeKey && sizeSelect.querySelector(`option[value="${prefill.sizeKey}"]`)) {
+        sizeSelect.value = prefill.sizeKey;
+      }
     }
     if (prefill.quantity) countInput.value = prefill.quantity;
     checkStep1Ready();
@@ -1182,6 +1186,10 @@ if (saved && saved.steps && saved.steps.length > 0) {
     // Pre-fill wizard step 1 fields
     if (prefill.styleKey && styleSelect.querySelector(`option[value="${prefill.styleKey}"]`)) {
       styleSelect.value = prefill.styleKey;
+      updateSizeOptions();
+      if (prefill.sizeKey && sizeSelect.querySelector(`option[value="${prefill.sizeKey}"]`)) {
+        sizeSelect.value = prefill.sizeKey;
+      }
     }
     if (prefill.quantity) countInput.value = prefill.quantity;
     checkStep1Ready();
@@ -1224,6 +1232,10 @@ if (saved && saved.steps && saved.steps.length > 0) {
   // Set scheduler state so timeline rendering works
   const recipe = PIZZA_RECIPES[prefill.styleKey];
   styleSelect.value = prefill.styleKey;
+  updateSizeOptions();
+  if (prefill.sizeKey && sizeSelect.querySelector(`option[value="${prefill.sizeKey}"]`)) {
+    sizeSelect.value = prefill.sizeKey;
+  }
   countInput.value = numPizzas;
   ovenSelect.value = ovenType;
   const off = eatTime.getTimezoneOffset() * 60000;
@@ -1245,6 +1257,7 @@ if (saved && saved.steps && saved.steps.length > 0) {
   saveActiveSchedule({
     createdAt: new Date().toISOString(),
     styleKey: prefill.styleKey,
+    sizeKey: prefill.sizeKey || sizeSelect.value,
     styleName: recipe ? recipe.name : prefill.styleKey,
     numPizzas,
     ovenType,
