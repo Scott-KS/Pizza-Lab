@@ -133,7 +133,7 @@ const PieLabFirstBake = (() => {
     {
       title: "Fermentation Tuning",
       body: "Want to dial in your ferment? Switch to Plan My Bake mode to unlock fermentation controls \u2014 set your yeast type, ferment time, and temperature, and we\u2019ll adjust yeast amounts automatically.",
-      target: ".settings-toggle-row",
+      target: "#yeast-scaling-controls",
     },
     {
       title: "Keep Exploring",
