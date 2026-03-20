@@ -1,207 +1,225 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Pie Lab — Dough Scheduler</title>
-  <link rel="icon" type="image/svg+xml" href="assets/logos/favicon-32.svg">
-  <link rel="apple-touch-icon" href="assets/logos/logo-monogram-512.svg">
-  <meta property="og:image" content="assets/logos/logo-stacked.svg">
-  <meta name="description" content="Pizza recipe calculator, dough scheduler, and baking journal.">
-  <meta name="theme-color" content="#c0392b">
-  <link rel="manifest" href="manifest.json">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=29" />
-</head>
-<body data-page="schedule">
-
-  <!-- Shared Navigation -->
-  <header class="site-header">
-    <nav class="site-nav">
-      <a href="index.html" class="nav-logo">
-        <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" />
-      </a>
-      <div class="nav-links">
-        <a href="calculator.html" class="nav-link" data-page="calculator">Make</a>
-        <a href="schedule.html" class="nav-link" data-page="schedule">
-          Schedule
-          <span class="schedule-badge hidden"></span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Pie Lab — Dough Scheduler</title>
+    <link rel="icon" type="image/svg+xml" href="assets/logos/favicon-32.svg" />
+    <link rel="apple-touch-icon" href="assets/logos/logo-monogram-512.svg" />
+    <meta property="og:image" content="assets/logos/logo-stacked.svg" />
+    <meta
+      name="description"
+      content="Pizza recipe calculator, dough scheduler, and baking journal."
+    />
+    <meta name="theme-color" content="#c0392b" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var t = localStorage.getItem('pielab-theme'),
+          d = t === 'dark' || (!t && matchMedia('(prefers-color-scheme:dark)').matches);
+        if (d) {
+          document.documentElement.dataset.theme = 'dark';
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.content = '#1a1a1a';
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="style.css?v=29" />
+  </head>
+  <body data-page="schedule">
+    <!-- Shared Navigation -->
+    <header class="site-header">
+      <nav class="site-nav">
+        <a href="index.html" class="nav-logo">
+          <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" />
         </a>
-        <a href="journal.html" class="nav-link" data-page="journal">Journal</a>
-        <a href="learn.html" class="nav-link" data-page="learn">Learn</a>
-        <a href="kitchen.html" class="nav-link" data-page="kitchen">My Kitchen</a>
-      </div>
+        <div class="nav-links">
+          <a href="calculator.html" class="nav-link" data-page="calculator">Make</a>
+          <a href="schedule.html" class="nav-link" data-page="schedule">
+            Schedule
+            <span class="schedule-badge hidden"></span>
+          </a>
+          <a href="journal.html" class="nav-link" data-page="journal">Journal</a>
+          <a href="learn.html" class="nav-link" data-page="learn">Learn</a>
+          <a href="kitchen.html" class="nav-link" data-page="kitchen">My Kitchen</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Dough Scheduler -->
+      <section class="dough-scheduler" id="dough-scheduler">
+        <h2>Dough Scheduler</h2>
+        <p class="scheduler-subtitle">
+          Plan backward from dinner time. We'll tell you exactly when to start each step.
+        </p>
+
+        <!-- Active Schedule Banner (shown when a saved schedule exists) -->
+        <div class="active-schedule-banner hidden" id="active-schedule-banner">
+          <div class="banner-info">
+            <span class="banner-icon">&#128339;</span>
+            <div>
+              <strong id="banner-style-name"></strong>
+              <span id="banner-next-step"></span>
+            </div>
+          </div>
+          <div class="banner-actions">
+            <button type="button" class="btn-banner-view" id="btn-banner-view">
+              View Schedule
+            </button>
+            <button type="button" class="btn-banner-clear" id="btn-banner-clear">Clear</button>
+          </div>
+        </div>
+
+        <!-- Wizard Progress Bar -->
+        <div class="scheduler-progress" id="scheduler-progress">
+          <div class="progress-step active" data-step="1">
+            <span class="progress-dot">1</span>
+            <span class="progress-label">The Basics</span>
+          </div>
+          <div class="progress-line"></div>
+          <div class="progress-step" data-step="2">
+            <span class="progress-dot">2</span>
+            <span class="progress-label">Method</span>
+          </div>
+          <div class="progress-line"></div>
+          <div class="progress-step" data-step="3">
+            <span class="progress-dot">3</span>
+            <span class="progress-label">Schedule</span>
+          </div>
+        </div>
+
+        <!-- Step 1: The Basics -->
+        <div class="scheduler-step active" id="sched-step-1">
+          <h3>The Basics</h3>
+          <div class="scheduler-form">
+            <div class="sched-field">
+              <label for="sched-style">Pizza Style</label>
+              <select id="sched-style" required>
+                <option value="" disabled selected>Select a style&hellip;</option>
+              </select>
+            </div>
+            <div class="sched-field">
+              <label for="sched-size">Pizza Size</label>
+              <select id="sched-size"></select>
+            </div>
+            <div class="sched-field">
+              <label for="sched-count">Number of Pizzas</label>
+              <input type="number" id="sched-count" min="1" max="50" value="1" />
+            </div>
+            <div class="sched-field">
+              <label for="sched-datetime">When do you want to eat?</label>
+              <input type="datetime-local" id="sched-datetime" step="900" />
+            </div>
+            <div class="sched-field">
+              <label for="sched-oven">Oven Type</label>
+              <select id="sched-oven">
+                <!-- Populated by populateOvenSelect() -->
+              </select>
+            </div>
+            <div class="sched-field">
+              <label for="sched-reminder">Reminders</label>
+              <select id="sched-reminder">
+                <option value="0">At step time</option>
+                <option value="15" selected>15 min before</option>
+                <option value="30">30 min before</option>
+                <option value="60">1 hour before</option>
+              </select>
+            </div>
+          </div>
+          <div class="scheduler-actions">
+            <button type="button" class="btn-sched-next" id="btn-sched-next-1" disabled>
+              Next &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Method Selection -->
+        <div class="scheduler-step" id="sched-step-2">
+          <h3>Your Fermentation Method</h3>
+          <div class="method-card" id="sched-method-card"></div>
+          <div class="sched-validation hidden" id="sched-validation"></div>
+          <div class="scheduler-actions">
+            <button type="button" class="btn-sched-back" id="btn-sched-back-2">&larr; Back</button>
+            <button type="button" class="btn-sched-next" id="btn-sched-next-2">
+              Build My Schedule &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3: Full Schedule Timeline -->
+        <div class="scheduler-step" id="sched-step-3">
+          <h3>Your Dough Schedule</h3>
+          <div class="sched-recipe-summary hidden" id="sched-recipe-summary">
+            <button type="button" class="sched-recipe-toggle" id="sched-recipe-toggle">
+              <span>Recipe</span>
+              <span class="sched-recipe-arrow">&#9660;</span>
+            </button>
+            <div class="sched-recipe-body" id="sched-recipe-body"></div>
+          </div>
+          <div class="sched-visual-bar" id="sched-visual-bar"></div>
+          <div class="schedule-timeline" id="sched-timeline"></div>
+          <div class="sched-log-bake hidden" id="sched-log-bake">
+            <p>Bake complete! Ready to log it?</p>
+            <a href="journal.html?prefill=1" class="btn-primary btn-sched-log">Log This Bake</a>
+          </div>
+          <div class="scheduler-actions">
+            <button type="button" class="btn-sched-back" id="btn-sched-back-3">&larr; Back</button>
+            <button type="button" class="btn-sched-save-img" id="btn-sched-save-img">
+              Save as Image
+            </button>
+            <button type="button" class="btn-sched-start-over" id="btn-sched-start-over">
+              Start Over
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Mobile Tab Bar -->
+    <nav class="mobile-tab-bar">
+      <a href="calculator.html" class="tab-item" data-page="calculator">
+        <span class="tab-icon">&#127829;</span>
+        <span class="tab-label">Make</span>
+      </a>
+      <a href="schedule.html" class="tab-item" data-page="schedule">
+        <span class="tab-icon">&#128197;</span>
+        <span class="tab-label">Schedule</span>
+        <span class="schedule-badge hidden"></span>
+      </a>
+      <a href="journal.html" class="tab-item" data-page="journal">
+        <span class="tab-icon">&#128211;</span>
+        <span class="tab-label">Journal</span>
+      </a>
+      <a href="learn.html" class="tab-item" data-page="learn">
+        <span class="tab-icon">&#128214;</span>
+        <span class="tab-label">Learn</span>
+      </a>
+      <a href="kitchen.html" class="tab-item" data-page="kitchen">
+        <span class="tab-icon">&#9881;&#65039;</span>
+        <span class="tab-label">My Kitchen</span>
+      </a>
     </nav>
-  </header>
 
-  <main>
-    <!-- Dough Scheduler -->
-    <section class="dough-scheduler" id="dough-scheduler">
-      <h2>Dough Scheduler</h2>
-      <p class="scheduler-subtitle">Plan backward from dinner time. We'll tell you exactly when to start each step.</p>
+    <footer>
+      <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" class="footer-logo" />
+      <p class="footer-legal-links">
+        <a href="legal.html#privacy">Privacy</a>
+        <span class="footer-sep">&middot;</span>
+        <a href="legal.html#terms">Terms</a>
+        <span class="footer-sep">&middot;</span>
+        <a href="legal.html#refund">Refunds</a>
+      </p>
+      <p>&copy; 2026 The Pie Lab. All rights reserved.</p>
+    </footer>
 
-      <!-- Active Schedule Banner (shown when a saved schedule exists) -->
-      <div class="active-schedule-banner hidden" id="active-schedule-banner">
-        <div class="banner-info">
-          <span class="banner-icon">&#128339;</span>
-          <div>
-            <strong id="banner-style-name"></strong>
-            <span id="banner-next-step"></span>
-          </div>
-        </div>
-        <div class="banner-actions">
-          <button type="button" class="btn-banner-view" id="btn-banner-view">View Schedule</button>
-          <button type="button" class="btn-banner-clear" id="btn-banner-clear">Clear</button>
-        </div>
-      </div>
-
-      <!-- Wizard Progress Bar -->
-      <div class="scheduler-progress" id="scheduler-progress">
-        <div class="progress-step active" data-step="1">
-          <span class="progress-dot">1</span>
-          <span class="progress-label">The Basics</span>
-        </div>
-        <div class="progress-line"></div>
-        <div class="progress-step" data-step="2">
-          <span class="progress-dot">2</span>
-          <span class="progress-label">Method</span>
-        </div>
-        <div class="progress-line"></div>
-        <div class="progress-step" data-step="3">
-          <span class="progress-dot">3</span>
-          <span class="progress-label">Schedule</span>
-        </div>
-      </div>
-
-      <!-- Step 1: The Basics -->
-      <div class="scheduler-step active" id="sched-step-1">
-        <h3>The Basics</h3>
-        <div class="scheduler-form">
-          <div class="sched-field">
-            <label for="sched-style">Pizza Style</label>
-            <select id="sched-style" required>
-              <option value="" disabled selected>Select a style&hellip;</option>
-            </select>
-          </div>
-          <div class="sched-field">
-            <label for="sched-size">Pizza Size</label>
-            <select id="sched-size"></select>
-          </div>
-          <div class="sched-field">
-            <label for="sched-count">Number of Pizzas</label>
-            <input type="number" id="sched-count" min="1" max="50" value="1" />
-          </div>
-          <div class="sched-field">
-            <label for="sched-datetime">When do you want to eat?</label>
-            <input type="datetime-local" id="sched-datetime" step="900" />
-          </div>
-          <div class="sched-field">
-            <label for="sched-oven">Oven Type</label>
-            <select id="sched-oven">
-              <!-- Populated by populateOvenSelect() -->
-            </select>
-          </div>
-          <div class="sched-field">
-            <label for="sched-reminder">Reminders</label>
-            <select id="sched-reminder">
-              <option value="0">At step time</option>
-              <option value="15" selected>15 min before</option>
-              <option value="30">30 min before</option>
-              <option value="60">1 hour before</option>
-            </select>
-          </div>
-        </div>
-        <div class="scheduler-actions">
-          <button type="button" class="btn-sched-next" id="btn-sched-next-1" disabled>Next &rarr;</button>
-        </div>
-      </div>
-
-      <!-- Step 2: Method Selection -->
-      <div class="scheduler-step" id="sched-step-2">
-        <h3>Your Fermentation Method</h3>
-        <div class="method-card" id="sched-method-card"></div>
-        <div class="sched-validation hidden" id="sched-validation"></div>
-        <div class="scheduler-actions">
-          <button type="button" class="btn-sched-back" id="btn-sched-back-2">&larr; Back</button>
-          <button type="button" class="btn-sched-next" id="btn-sched-next-2">Build My Schedule &rarr;</button>
-        </div>
-      </div>
-
-      <!-- Step 3: Full Schedule Timeline -->
-      <div class="scheduler-step" id="sched-step-3">
-        <h3>Your Dough Schedule</h3>
-        <div class="sched-recipe-summary hidden" id="sched-recipe-summary">
-          <button type="button" class="sched-recipe-toggle" id="sched-recipe-toggle">
-            <span>Recipe</span>
-            <span class="sched-recipe-arrow">&#9660;</span>
-          </button>
-          <div class="sched-recipe-body" id="sched-recipe-body"></div>
-        </div>
-        <div class="sched-visual-bar" id="sched-visual-bar"></div>
-        <div class="schedule-timeline" id="sched-timeline"></div>
-        <div class="sched-log-bake hidden" id="sched-log-bake">
-          <p>Bake complete! Ready to log it?</p>
-          <a href="journal.html?prefill=1" class="btn-primary btn-sched-log">Log This Bake</a>
-        </div>
-        <div class="scheduler-actions">
-          <button type="button" class="btn-sched-back" id="btn-sched-back-3">&larr; Back</button>
-          <button type="button" class="btn-sched-save-img" id="btn-sched-save-img">Save as Image</button>
-          <button type="button" class="btn-sched-start-over" id="btn-sched-start-over">Start Over</button>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Mobile Tab Bar -->
-  <nav class="mobile-tab-bar">
-    <a href="calculator.html" class="tab-item" data-page="calculator">
-      <span class="tab-icon">&#127829;</span>
-      <span class="tab-label">Make</span>
-    </a>
-    <a href="schedule.html" class="tab-item" data-page="schedule">
-      <span class="tab-icon">&#128197;</span>
-      <span class="tab-label">Schedule</span>
-      <span class="schedule-badge hidden"></span>
-    </a>
-    <a href="journal.html" class="tab-item" data-page="journal">
-      <span class="tab-icon">&#128211;</span>
-      <span class="tab-label">Journal</span>
-    </a>
-    <a href="learn.html" class="tab-item" data-page="learn">
-      <span class="tab-icon">&#128214;</span>
-      <span class="tab-label">Learn</span>
-    </a>
-    <a href="kitchen.html" class="tab-item" data-page="kitchen">
-      <span class="tab-icon">&#9881;&#65039;</span>
-      <span class="tab-label">My Kitchen</span>
-    </a>
-  </nav>
-
-  <footer>
-    <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" class="footer-logo" />
-    <p class="footer-legal-links">
-      <a href="legal.html#privacy">Privacy</a>
-      <span class="footer-sep">&middot;</span>
-      <a href="legal.html#terms">Terms</a>
-      <span class="footer-sep">&middot;</span>
-      <a href="legal.html#refund">Refunds</a>
-    </p>
-    <p>&copy; 2026 The Pie Lab. All rights reserved.</p>
-  </footer>
-
-  <!-- Scripts: Capacitor init first, then data files, then shared nav, then page features -->
-  <script src="js/capacitor-init.js?v=1"></script>
-  <script src="recipes.js?v=6"></script>
-  <script src="scheduler-data.js?v=5"></script>
-  <script src="js/nav.js?v=8"></script>
-  <script src="js/user-profile.js?v=6"></script>
-  <script src="js/premium.js?v=3"></script>
-  <script src="js/pie-notifications.js?v=1"></script>
-  <script src="js/scheduler.js?v=2"></script>
-  <script src="js/scheduler-guide.js?v=1"></script>
-  <script src="js/vendor/html2canvas.min.js" defer></script>
-</body>
+    <script type="module" src="js/pages/schedule-page.js?v=1"></script>
+    <script src="js/vendor/html2canvas.min.js" defer></script>
+  </body>
 </html>

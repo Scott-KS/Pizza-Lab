@@ -4,7 +4,7 @@
    Loaded on schedule.html before scheduler.js.
    ══════════════════════════════════════════════════════ */
 
-const PieNotifications = (() => {
+export const PieNotifications = (() => {
   // Track browser setTimeout IDs for cancellation
   let _browserTimeouts = [];
 
@@ -13,8 +13,8 @@ const PieNotifications = (() => {
    */
   function isNative() {
     return (
-      typeof window !== "undefined" &&
-      typeof window.Capacitor !== "undefined" &&
+      typeof window !== 'undefined' &&
+      typeof window.Capacitor !== 'undefined' &&
       window.Capacitor.isNativePlatform()
     );
   }
@@ -28,19 +28,19 @@ const PieNotifications = (() => {
       try {
         const { LocalNotifications } = Capacitor.Plugins;
         const result = await LocalNotifications.requestPermissions();
-        return result.display === "granted";
-      } catch (e) {
+        return result.display === 'granted';
+      } catch {
         /* native permission request failed — swallowed */
         return false;
       }
     }
 
     // Browser fallback
-    if ("Notification" in window) {
-      if (Notification.permission === "granted") return true;
-      if (Notification.permission === "default") {
+    if ('Notification' in window) {
+      if (Notification.permission === 'granted') return true;
+      if (Notification.permission === 'default') {
         const perm = await Notification.requestPermission();
-        return perm === "granted";
+        return perm === 'granted';
       }
     }
     return false;
@@ -65,13 +65,13 @@ const PieNotifications = (() => {
               title,
               body,
               schedule: { at },
-              sound: "default",
-              smallIcon: "ic_stat_notification",
-              iconColor: "#8c3524",
+              sound: 'default',
+              smallIcon: 'ic_stat_notification',
+              iconColor: '#8c3524',
             },
           ],
         });
-      } catch (e) {
+      } catch {
         /* native schedule failed — swallowed */
       }
       return;
@@ -82,10 +82,10 @@ const PieNotifications = (() => {
     if (delay <= 0) return;
 
     const tid = setTimeout(() => {
-      if ("Notification" in window && Notification.permission === "granted") {
+      if ('Notification' in window && Notification.permission === 'granted') {
         new Notification(title, {
           body,
-          icon: "assets/logos/logo-monogram-512.svg",
+          icon: 'assets/logos/logo-monogram-512.svg',
         });
       }
     }, delay);
@@ -104,7 +104,7 @@ const PieNotifications = (() => {
         if (pending.notifications.length > 0) {
           await LocalNotifications.cancel(pending);
         }
-      } catch (e) {
+      } catch {
         /* native cancelAll failed — swallowed */
       }
       return;

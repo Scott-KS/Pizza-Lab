@@ -1,217 +1,370 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Pie Lab — Legal</title>
-  <link rel="icon" type="image/svg+xml" href="assets/logos/favicon-32.svg">
-  <link rel="apple-touch-icon" href="assets/logos/logo-monogram-512.svg">
-  <meta property="og:image" content="assets/logos/logo-stacked.svg">
-  <meta name="description" content="Privacy Policy, Terms of Service, and Refund Policy for The Pie Lab.">
-  <meta name="theme-color" content="#c0392b">
-  <link rel="manifest" href="manifest.json">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=29" />
-</head>
-<body data-page="legal">
-
-  <!-- Shared Navigation -->
-  <header class="site-header">
-    <nav class="site-nav">
-      <a href="index.html" class="nav-logo">
-        <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" />
-      </a>
-      <div class="nav-links">
-        <a href="calculator.html" class="nav-link" data-page="calculator">Make</a>
-        <a href="schedule.html" class="nav-link" data-page="schedule">
-          Schedule
-          <span class="schedule-badge hidden"></span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Pie Lab — Legal</title>
+    <link rel="icon" type="image/svg+xml" href="assets/logos/favicon-32.svg" />
+    <link rel="apple-touch-icon" href="assets/logos/logo-monogram-512.svg" />
+    <meta property="og:image" content="assets/logos/logo-stacked.svg" />
+    <meta
+      name="description"
+      content="Privacy Policy, Terms of Service, and Refund Policy for The Pie Lab."
+    />
+    <meta name="theme-color" content="#c0392b" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var t = localStorage.getItem('pielab-theme'),
+          d = t === 'dark' || (!t && matchMedia('(prefers-color-scheme:dark)').matches);
+        if (d) {
+          document.documentElement.dataset.theme = 'dark';
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.content = '#1a1a1a';
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="style.css?v=29" />
+  </head>
+  <body data-page="legal">
+    <!-- Shared Navigation -->
+    <header class="site-header">
+      <nav class="site-nav">
+        <a href="index.html" class="nav-logo">
+          <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" />
         </a>
-        <a href="journal.html" class="nav-link" data-page="journal">Journal</a>
-        <a href="learn.html" class="nav-link" data-page="learn">Learn</a>
-        <a href="kitchen.html" class="nav-link" data-page="kitchen">My Kitchen</a>
-      </div>
-    </nav>
-  </header>
-
-  <main>
-    <article class="legal-page">
-      <h1>Legal & Privacy</h1>
-
-      <nav class="legal-toc">
-        <a href="#privacy">Privacy Policy</a>
-        <span class="legal-toc-sep">&middot;</span>
-        <a href="#terms">Terms of Service</a>
-        <span class="legal-toc-sep">&middot;</span>
-        <a href="#refund">Refund Policy</a>
+        <div class="nav-links">
+          <a href="calculator.html" class="nav-link" data-page="calculator">Make</a>
+          <a href="schedule.html" class="nav-link" data-page="schedule">
+            Schedule
+            <span class="schedule-badge hidden"></span>
+          </a>
+          <a href="journal.html" class="nav-link" data-page="journal">Journal</a>
+          <a href="learn.html" class="nav-link" data-page="learn">Learn</a>
+          <a href="kitchen.html" class="nav-link" data-page="kitchen">My Kitchen</a>
+        </div>
       </nav>
+    </header>
 
-      <!-- ── Privacy Policy ──────────────────────────── -->
-      <section id="privacy" class="legal-section">
-        <h2>Privacy Policy</h2>
-        <p class="legal-updated">Last updated: March 13, 2026</p>
+    <main>
+      <article class="legal-page">
+        <h1>Legal & Privacy</h1>
 
-        <h3>What We Collect</h3>
-        <p>The Pie Lab stores the following data to power your experience:</p>
-        <ul>
-          <li><strong>Profile information</strong> &mdash; display name, location, preferred oven, favorite style, measurement system, and humidity setting.</li>
-          <li><strong>Journal entries</strong> &mdash; bake logs including style, date, ratings, notes, and photos.</li>
-          <li><strong>Dough calculations</strong> &mdash; your most recent recipe configuration.</li>
-          <li><strong>Schedule data</strong> &mdash; active dough schedule steps and timing.</li>
-          <li><strong>App preferences</strong> &mdash; theme, unit system, and notification settings.</li>
-        </ul>
+        <nav class="legal-toc">
+          <a href="#privacy">Privacy Policy</a>
+          <span class="legal-toc-sep">&middot;</span>
+          <a href="#terms">Terms of Service</a>
+          <span class="legal-toc-sep">&middot;</span>
+          <a href="#refund">Refund Policy</a>
+        </nav>
 
-        <h3>Where Your Data Lives</h3>
-        <p>All of your data is stored <strong>locally on your device</strong> using your browser's localStorage and IndexedDB. It is never uploaded to our servers. We do not operate a backend database, and we have no ability to access, read, or recover your data remotely.</p>
-        <p>Photos attached to journal entries are compressed and stored in IndexedDB on your device. They are never uploaded anywhere.</p>
+        <!-- ── Privacy Policy ──────────────────────────── -->
+        <section id="privacy" class="legal-section">
+          <h2>Privacy Policy</h2>
+          <p class="legal-updated">Last updated: March 13, 2026</p>
 
-        <h3>Third-Party Services</h3>
-        <p>The Pie Lab uses a small number of external services:</p>
-        <ul>
-          <li><strong>Apple App Store / Google Play Store</strong> &mdash; processes Pro upgrade payments on mobile. All payment information is handled entirely by Apple or Google. The Pie Lab never sees, receives, or stores your credit card number or banking details.</li>
-          <li><strong>RevenueCat</strong> &mdash; manages purchase verification and entitlement delivery. RevenueCat receives only an anonymous user ID and purchase receipt to validate your Pro status. No personal information is shared. See <a href="https://www.revenuecat.com/privacy" target="_blank" rel="noopener">RevenueCat's Privacy Policy</a>.</li>
-          <li><strong>Open-Meteo API</strong> &mdash; used to look up elevation data when you set your city in My Kitchen. Only the city name is sent; no personal information is transmitted.</li>
-          <li><strong>Google Fonts</strong> &mdash; loads the Playfair Display and Inter typefaces. See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google's Privacy Policy</a>.</li>
-        </ul>
+          <h3>What We Collect</h3>
+          <p>The Pie Lab stores the following data to power your experience:</p>
+          <ul>
+            <li>
+              <strong>Profile information</strong> &mdash; display name, location, preferred oven,
+              favorite style, measurement system, and humidity setting.
+            </li>
+            <li>
+              <strong>Journal entries</strong> &mdash; bake logs including style, date, ratings,
+              notes, and photos.
+            </li>
+            <li>
+              <strong>Dough calculations</strong> &mdash; your most recent recipe configuration.
+            </li>
+            <li><strong>Schedule data</strong> &mdash; active dough schedule steps and timing.</li>
+            <li>
+              <strong>App preferences</strong> &mdash; theme, unit system, and notification
+              settings.
+            </li>
+          </ul>
 
-        <h3>What We Don't Do</h3>
-        <ul>
-          <li>We do not use analytics or tracking scripts.</li>
-          <li>We do not use advertising networks or retargeting pixels.</li>
-          <li>We do not sell, share, or transmit your data to any third party.</li>
-          <li>We do not use cookies for tracking. The only storage mechanism is localStorage for your app data.</li>
-        </ul>
+          <h3>Where Your Data Lives</h3>
+          <p>
+            All of your data is stored <strong>locally on your device</strong> using your browser's
+            localStorage and IndexedDB. It is never uploaded to our servers. We do not operate a
+            backend database, and we have no ability to access, read, or recover your data remotely.
+          </p>
+          <p>
+            Photos attached to journal entries are compressed and stored in IndexedDB on your
+            device. They are never uploaded anywhere.
+          </p>
 
-        <h3>GDPR & CCPA</h3>
-        <p>Because all data stays on your device and is never transmitted to us, you have complete control over your information at all times. You can export a full copy of your data or permanently delete everything from the <a href="kitchen.html">My Kitchen</a> page. No request to us is necessary &mdash; you are in full control.</p>
+          <h3>Third-Party Services</h3>
+          <p>The Pie Lab uses a small number of external services:</p>
+          <ul>
+            <li>
+              <strong>Apple App Store / Google Play Store</strong> &mdash; processes Pro upgrade
+              payments on mobile. All payment information is handled entirely by Apple or Google.
+              The Pie Lab never sees, receives, or stores your credit card number or banking
+              details.
+            </li>
+            <li>
+              <strong>RevenueCat</strong> &mdash; manages purchase verification and entitlement
+              delivery. RevenueCat receives only an anonymous user ID and purchase receipt to
+              validate your Pro status. No personal information is shared. See
+              <a href="https://www.revenuecat.com/privacy" target="_blank" rel="noopener"
+                >RevenueCat's Privacy Policy</a
+              >.
+            </li>
+            <li>
+              <strong>Open-Meteo API</strong> &mdash; used to look up elevation data when you set
+              your city in My Kitchen. Only the city name is sent; no personal information is
+              transmitted.
+            </li>
+            <li>
+              <strong>Google Fonts</strong> &mdash; loads the Playfair Display and Inter typefaces.
+              See
+              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener"
+                >Google's Privacy Policy</a
+              >.
+            </li>
+          </ul>
 
-        <h3>Data Deletion</h3>
-        <p>You can permanently erase all Pie Lab data from your device at any time using the <strong>Delete All My Data</strong> button on the <a href="kitchen.html">My Kitchen</a> page. This action is immediate and irreversible.</p>
+          <h3>What We Don't Do</h3>
+          <ul>
+            <li>We do not use analytics or tracking scripts.</li>
+            <li>We do not use advertising networks or retargeting pixels.</li>
+            <li>We do not sell, share, or transmit your data to any third party.</li>
+            <li>
+              We do not use cookies for tracking. The only storage mechanism is localStorage for
+              your app data.
+            </li>
+          </ul>
 
-        <h3>Children's Privacy</h3>
-        <p>The Pie Lab does not knowingly collect data from children under 13. Since all data is stored locally and never transmitted, no personal information is received by us from any user.</p>
+          <h3>GDPR & CCPA</h3>
+          <p>
+            Because all data stays on your device and is never transmitted to us, you have complete
+            control over your information at all times. You can export a full copy of your data or
+            permanently delete everything from the <a href="kitchen.html">My Kitchen</a> page. No
+            request to us is necessary &mdash; you are in full control.
+          </p>
 
-        <h3>Changes to This Policy</h3>
-        <p>We may update this Privacy Policy from time to time. Changes will be reflected on this page with an updated date. Continued use of the app after changes constitutes acceptance of the revised policy.</p>
+          <h3>Data Deletion</h3>
+          <p>
+            You can permanently erase all Pie Lab data from your device at any time using the
+            <strong>Delete All My Data</strong> button on the
+            <a href="kitchen.html">My Kitchen</a> page. This action is immediate and irreversible.
+          </p>
 
-        <h3>Contact</h3>
-        <p>Questions about privacy? Reach us at <a href="mailto:privacy@pielab.app">privacy@pielab.app</a>.</p>
-      </section>
+          <h3>Children's Privacy</h3>
+          <p>
+            The Pie Lab does not knowingly collect data from children under 13. Since all data is
+            stored locally and never transmitted, no personal information is received by us from any
+            user.
+          </p>
 
-      <hr class="legal-divider" />
+          <h3>Changes to This Policy</h3>
+          <p>
+            We may update this Privacy Policy from time to time. Changes will be reflected on this
+            page with an updated date. Continued use of the app after changes constitutes acceptance
+            of the revised policy.
+          </p>
 
-      <!-- ── Terms of Service ────────────────────────── -->
-      <section id="terms" class="legal-section">
-        <h2>Terms of Service</h2>
-        <p class="legal-updated">Last updated: March 13, 2026</p>
+          <h3>Contact</h3>
+          <p>
+            Questions about privacy? Reach us at
+            <a href="mailto:privacy@pielab.app">privacy@pielab.app</a>.
+          </p>
+        </section>
 
-        <h3>Acceptance of Terms</h3>
-        <p>By accessing or using The Pie Lab, you agree to be bound by these Terms of Service. If you do not agree, please do not use the app.</p>
+        <hr class="legal-divider" />
 
-        <h3>Description of Service</h3>
-        <p>The Pie Lab is a pizza-making companion app that provides dough recipe calculations, bake scheduling, a baking journal, and educational content about pizza styles, flours, and techniques. The app is available as a web application and may be available as a mobile app.</p>
+        <!-- ── Terms of Service ────────────────────────── -->
+        <section id="terms" class="legal-section">
+          <h2>Terms of Service</h2>
+          <p class="legal-updated">Last updated: March 13, 2026</p>
 
-        <h3>Free & Pro Tiers</h3>
-        <p>The Pie Lab offers a free tier with core features and a Pro tier with additional tools. New users receive a 14-day full-access trial of all Pro features starting when they save their Kitchen Profile. After the trial, Pro features require a one-time in-app purchase to unlock permanently.</p>
+          <h3>Acceptance of Terms</h3>
+          <p>
+            By accessing or using The Pie Lab, you agree to be bound by these Terms of Service. If
+            you do not agree, please do not use the app.
+          </p>
 
-        <h3>User Responsibilities</h3>
-        <ul>
-          <li>You are responsible for the accuracy of the data you enter.</li>
-          <li>You are responsible for maintaining backups of your data, which is stored locally on your device.</li>
-          <li>You agree not to misuse the service or attempt to access it through unauthorized means.</li>
-        </ul>
+          <h3>Description of Service</h3>
+          <p>
+            The Pie Lab is a pizza-making companion app that provides dough recipe calculations,
+            bake scheduling, a baking journal, and educational content about pizza styles, flours,
+            and techniques. The app is available as a web application and may be available as a
+            mobile app.
+          </p>
 
-        <h3>Recipes & Guidance</h3>
-        <p>All recipes, calculations, schedules, and baking guidance provided by The Pie Lab are for informational purposes only. Results may vary based on your ingredients, equipment, environment, and technique. The Pie Lab does not guarantee specific outcomes.</p>
+          <h3>Free & Pro Tiers</h3>
+          <p>
+            The Pie Lab offers a free tier with core features and a Pro tier with additional tools.
+            New users receive a 14-day full-access trial of all Pro features starting when they save
+            their Kitchen Profile. After the trial, Pro features require a one-time in-app purchase
+            to unlock permanently.
+          </p>
 
-        <h3>Intellectual Property</h3>
-        <p>All content, design, code, and branding of The Pie Lab are the property of The Pie Lab and are protected by copyright. You may not reproduce, distribute, or create derivative works from the app without written permission.</p>
+          <h3>User Responsibilities</h3>
+          <ul>
+            <li>You are responsible for the accuracy of the data you enter.</li>
+            <li>
+              You are responsible for maintaining backups of your data, which is stored locally on
+              your device.
+            </li>
+            <li>
+              You agree not to misuse the service or attempt to access it through unauthorized
+              means.
+            </li>
+          </ul>
 
-        <h3>Limitation of Liability</h3>
-        <p>The Pie Lab is provided "as is" without warranties of any kind, express or implied. We are not liable for any damages arising from your use of the app, including but not limited to data loss, equipment damage, or unsatisfactory baking results.</p>
+          <h3>Recipes & Guidance</h3>
+          <p>
+            All recipes, calculations, schedules, and baking guidance provided by The Pie Lab are
+            for informational purposes only. Results may vary based on your ingredients, equipment,
+            environment, and technique. The Pie Lab does not guarantee specific outcomes.
+          </p>
 
-        <h3>Termination</h3>
-        <p>You may stop using The Pie Lab at any time. You can delete all your data using the Delete All My Data option in My Kitchen. We reserve the right to suspend or terminate access to the service for violations of these terms.</p>
+          <h3>Intellectual Property</h3>
+          <p>
+            All content, design, code, and branding of The Pie Lab are the property of The Pie Lab
+            and are protected by copyright. You may not reproduce, distribute, or create derivative
+            works from the app without written permission.
+          </p>
 
-        <h3>Age Requirement</h3>
-        <p>You must be at least 13 years old to use The Pie Lab. By using the app, you represent that you meet this age requirement.</p>
+          <h3>Limitation of Liability</h3>
+          <p>
+            The Pie Lab is provided "as is" without warranties of any kind, express or implied. We
+            are not liable for any damages arising from your use of the app, including but not
+            limited to data loss, equipment damage, or unsatisfactory baking results.
+          </p>
 
-        <h3>Governing Law</h3>
-        <p>These Terms shall be governed by and construed in accordance with the laws of the United States. Any disputes arising from these terms or your use of the app shall be resolved in the courts of the state in which The Pie Lab is operated.</p>
+          <h3>Termination</h3>
+          <p>
+            You may stop using The Pie Lab at any time. You can delete all your data using the
+            Delete All My Data option in My Kitchen. We reserve the right to suspend or terminate
+            access to the service for violations of these terms.
+          </p>
 
-        <h3>Modifications</h3>
-        <p>We may update these Terms of Service from time to time. Changes will be posted on this page. Continued use of the app after changes constitutes acceptance of the revised terms.</p>
+          <h3>Age Requirement</h3>
+          <p>
+            You must be at least 13 years old to use The Pie Lab. By using the app, you represent
+            that you meet this age requirement.
+          </p>
 
-        <h3>Contact</h3>
-        <p>Questions about these terms? Reach us at <a href="mailto:legal@pielab.app">legal@pielab.app</a>.</p>
-      </section>
+          <h3>Governing Law</h3>
+          <p>
+            These Terms shall be governed by and construed in accordance with the laws of the United
+            States. Any disputes arising from these terms or your use of the app shall be resolved
+            in the courts of the state in which The Pie Lab is operated.
+          </p>
 
-      <hr class="legal-divider" />
+          <h3>Modifications</h3>
+          <p>
+            We may update these Terms of Service from time to time. Changes will be posted on this
+            page. Continued use of the app after changes constitutes acceptance of the revised
+            terms.
+          </p>
 
-      <!-- ── Refund Policy ───────────────────────────── -->
-      <section id="refund" class="legal-section">
-        <h2>Refund Policy</h2>
-        <p class="legal-updated">Last updated: March 13, 2026</p>
+          <h3>Contact</h3>
+          <p>
+            Questions about these terms? Reach us at
+            <a href="mailto:legal@pielab.app">legal@pielab.app</a>.
+          </p>
+        </section>
 
-        <h3>Apple App Store Purchases</h3>
-        <p>If you purchased Pro through the Apple App Store, refunds are handled by Apple in accordance with their refund policy. To request a refund, visit <a href="https://support.apple.com/en-us/HT204084" target="_blank" rel="noopener">Apple's support page</a> or contact Apple directly through your purchase history.</p>
+        <hr class="legal-divider" />
 
-        <h3>Google Play Store Purchases</h3>
-        <p>If you purchased Pro through Google Play, refunds are handled by Google in accordance with their refund policy. To request a refund, visit the <a href="https://support.google.com/googleplay/answer/2479637" target="_blank" rel="noopener">Google Play support page</a> or contact Google through your order history.</p>
+        <!-- ── Refund Policy ───────────────────────────── -->
+        <section id="refund" class="legal-section">
+          <h2>Refund Policy</h2>
+          <p class="legal-updated">Last updated: March 13, 2026</p>
 
-        <h3>How to Request a Refund</h3>
-        <p>Email <a href="mailto:support@pielab.app">support@pielab.app</a> with the email address associated with your purchase and a brief description of the issue. We will process your refund within 5&ndash;7 business days.</p>
+          <h3>Apple App Store Purchases</h3>
+          <p>
+            If you purchased Pro through the Apple App Store, refunds are handled by Apple in
+            accordance with their refund policy. To request a refund, visit
+            <a href="https://support.apple.com/en-us/HT204084" target="_blank" rel="noopener"
+              >Apple's support page</a
+            >
+            or contact Apple directly through your purchase history.
+          </p>
 
-        <h3>After a Refund</h3>
-        <p>Once a refund is processed, your Pro access will be reverted to the free tier. You will retain access to all free-tier features and any data stored locally on your device. No data is deleted as a result of a refund.</p>
+          <h3>Google Play Store Purchases</h3>
+          <p>
+            If you purchased Pro through Google Play, refunds are handled by Google in accordance
+            with their refund policy. To request a refund, visit the
+            <a
+              href="https://support.google.com/googleplay/answer/2479637"
+              target="_blank"
+              rel="noopener"
+              >Google Play support page</a
+            >
+            or contact Google through your order history.
+          </p>
 
-        <h3>Contact</h3>
-        <p>Refund questions? Reach us at <a href="mailto:support@pielab.app">support@pielab.app</a>.</p>
-      </section>
-    </article>
-  </main>
+          <h3>How to Request a Refund</h3>
+          <p>
+            Email <a href="mailto:support@pielab.app">support@pielab.app</a> with the email address
+            associated with your purchase and a brief description of the issue. We will process your
+            refund within 5&ndash;7 business days.
+          </p>
 
-  <nav class="mobile-tab-bar">
-    <a href="calculator.html" class="tab-item" data-page="calculator">
-      <span class="tab-icon">&#127829;</span>
-      <span class="tab-label">Make</span>
-    </a>
-    <a href="schedule.html" class="tab-item" data-page="schedule">
-      <span class="tab-icon">&#128197;</span>
-      <span class="tab-label">Schedule</span>
-      <span class="schedule-badge hidden"></span>
-    </a>
-    <a href="journal.html" class="tab-item" data-page="journal">
-      <span class="tab-icon">&#128211;</span>
-      <span class="tab-label">Journal</span>
-    </a>
-    <a href="learn.html" class="tab-item" data-page="learn">
-      <span class="tab-icon">&#128214;</span>
-      <span class="tab-label">Learn</span>
-    </a>
-    <a href="kitchen.html" class="tab-item" data-page="kitchen">
-      <span class="tab-icon">&#9881;&#65039;</span>
-      <span class="tab-label">My Kitchen</span>
-    </a>
-  </nav>
+          <h3>After a Refund</h3>
+          <p>
+            Once a refund is processed, your Pro access will be reverted to the free tier. You will
+            retain access to all free-tier features and any data stored locally on your device. No
+            data is deleted as a result of a refund.
+          </p>
 
-  <footer>
-    <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" class="footer-logo" />
-    <p class="footer-legal-links">
-      <a href="legal.html#privacy">Privacy</a>
-      <span class="footer-sep">&middot;</span>
-      <a href="legal.html#terms">Terms</a>
-      <span class="footer-sep">&middot;</span>
-      <a href="legal.html#refund">Refunds</a>
-    </p>
-    <p>&copy; 2026 The Pie Lab. All rights reserved.</p>
-  </footer>
+          <h3>Contact</h3>
+          <p>
+            Refund questions? Reach us at
+            <a href="mailto:support@pielab.app">support@pielab.app</a>.
+          </p>
+        </section>
+      </article>
+    </main>
 
-  <script src="js/capacitor-init.js?v=1"></script>
-  <script src="recipes.js?v=6"></script>
-  <script src="js/nav.js?v=8"></script>
-</body>
+    <nav class="mobile-tab-bar">
+      <a href="calculator.html" class="tab-item" data-page="calculator">
+        <span class="tab-icon">&#127829;</span>
+        <span class="tab-label">Make</span>
+      </a>
+      <a href="schedule.html" class="tab-item" data-page="schedule">
+        <span class="tab-icon">&#128197;</span>
+        <span class="tab-label">Schedule</span>
+        <span class="schedule-badge hidden"></span>
+      </a>
+      <a href="journal.html" class="tab-item" data-page="journal">
+        <span class="tab-icon">&#128211;</span>
+        <span class="tab-label">Journal</span>
+      </a>
+      <a href="learn.html" class="tab-item" data-page="learn">
+        <span class="tab-icon">&#128214;</span>
+        <span class="tab-label">Learn</span>
+      </a>
+      <a href="kitchen.html" class="tab-item" data-page="kitchen">
+        <span class="tab-icon">&#9881;&#65039;</span>
+        <span class="tab-label">My Kitchen</span>
+      </a>
+    </nav>
+
+    <footer>
+      <img src="assets/logos/logo-horizontal.svg" alt="The Pie Lab" class="footer-logo" />
+      <p class="footer-legal-links">
+        <a href="legal.html#privacy">Privacy</a>
+        <span class="footer-sep">&middot;</span>
+        <a href="legal.html#terms">Terms</a>
+        <span class="footer-sep">&middot;</span>
+        <a href="legal.html#refund">Refunds</a>
+      </p>
+      <p>&copy; 2026 The Pie Lab. All rights reserved.</p>
+    </footer>
+
+    <script type="module" src="js/pages/legal-page.js?v=1"></script>
+  </body>
 </html>

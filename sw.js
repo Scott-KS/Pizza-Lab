@@ -1,5 +1,5 @@
 /*  The Pie Lab — Service Worker  */
-const CACHE_NAME = "pielab-v51";
+const CACHE_NAME = 'pielab-v55';
 
 /* ── Derive base path so caching works on both localhost and /Pizza-Lab/ ── */
 const BASE = self.registration.scope;
@@ -7,74 +7,86 @@ const BASE = self.registration.scope;
 /* ── Shell assets (app skeleton — always cached) ── */
 /* Version query strings MUST match the <script>/<link> tags in HTML pages */
 const APP_SHELL_PATHS = [
-  "",
-  "index.html",
-  "calculator.html",
-  "schedule.html",
-  "journal.html",
-  "kitchen.html",
-  "learn.html",
-  "legal.html",
-  "style.css?v=29",
-  "js/premium.js?v=3",
-  "js/toolkit.js?v=5",
-  "js/calculator.js?v=17",
-  "js/scheduler.js?v=2",
-  "js/scheduler-guide.js?v=1",
-  "js/photo-store.js?v=1",
-  "js/journal-ui.js?v=17",
-  "js/kitchen.js?v=11",
-  "js/knowledge.js?v=3",
-  "js/nav.js?v=8",
-  "js/carousel.js?v=1",
-  "js/onboarding.js?v=1",
-  "js/first-bake.js?v=3",
-  "js/user-profile.js?v=6",
-  "js/pie-notifications.js?v=1",
-  "js/capacitor-init.js?v=1",
-  "js/vendor/html2canvas.min.js",
-  "recipes.js?v=6",
-  "knowledge-data.js?v=2",
-  "tools-data.js?v=4",
-  "scheduler-data.js?v=5",
-  "journal.js?v=4",
-  "assets/logos/favicon-32.svg",
-  "assets/logos/logo-monogram-512.svg",
-  "assets/logos/logo-horizontal.svg",
-  "assets/logos/logo-transparent.svg",
-  "manifest.json",
+  '',
+  'index.html',
+  'calculator.html',
+  'schedule.html',
+  'journal.html',
+  'kitchen.html',
+  'learn.html',
+  'legal.html',
+  'style.css?v=29',
+  'js/pages/index.js?v=1',
+  'js/pages/calculator-page.js?v=1',
+  'js/pages/schedule-page.js?v=1',
+  'js/pages/journal-page.js?v=1',
+  'js/pages/kitchen-page.js?v=1',
+  'js/pages/learn-page.js?v=1',
+  'js/pages/legal-page.js?v=1',
+  'js/premium.js?v=5',
+  'js/toolkit.js?v=7',
+  'js/calculator.js?v=19',
+  'js/scheduler.js?v=4',
+  'js/scheduler-guide.js?v=3',
+  'js/photo-store.js?v=3',
+  'js/journal-ui.js?v=19',
+  'js/kitchen.js?v=13',
+  'js/knowledge.js?v=5',
+  'js/nav.js?v=10',
+  'js/carousel.js?v=1',
+  'js/onboarding.js?v=3',
+  'js/first-bake.js?v=4',
+  'js/user-profile.js?v=8',
+  'js/pie-notifications.js?v=2',
+  'js/storage.js?v=2',
+  'js/capacitor-init.js?v=3',
+  'js/vendor/html2canvas.min.js',
+  'recipes.js?v=7',
+  'knowledge-data.js?v=3',
+  'tools-data.js?v=5',
+  'scheduler-data.js?v=6',
+  'journal.js?v=6',
+  'assets/logos/favicon-32.svg',
+  'assets/logos/logo-monogram-512.svg',
+  'assets/logos/logo-horizontal.svg',
+  'assets/logos/logo-transparent.svg',
+  'manifest.json',
 ];
 
 /* ── External fonts (cached on first successful load) ── */
 const FONT_URLS = [
-  "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap",
+  'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap',
 ];
 
 /* ── Images (cached on first load, not blocking install) ── */
 const IMAGE_PATHS = [
-  "Images/Neapolitan.webp",
-  "Images/New-York.webp",
-  "Images/Grandma.webp",
-  "Images/Chicago-Tavern.webp",
-  "Images/Sicilian.webp",
-  "Images/Ohio-Valley.webp",
-  "assets/logos/logo-stacked.svg",
-  "assets/logos/logo-stacked-light.svg",
-  "assets/logos/logo-horizontal-light.svg",
-  "assets/logos/logo-watermark.png",
+  'Images/Neapolitan.webp',
+  'Images/New-York.webp',
+  'Images/Grandma.webp',
+  'Images/Chicago-Tavern.webp',
+  'Images/Sicilian.webp',
+  'Images/Ohio-Valley.webp',
+  'assets/logos/logo-stacked.svg',
+  'assets/logos/logo-stacked-light.svg',
+  'assets/logos/logo-horizontal-light.svg',
+  'assets/logos/logo-watermark.png',
 ];
 
 /* ── Install: pre-cache the app shell ── */
-self.addEventListener("install", (e) => {
+self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       // Cache images in background (don't block install)
       IMAGE_PATHS.forEach((p) =>
-        cache.add(BASE + p).catch(() => {/* non-critical */})
+        cache.add(BASE + p).catch(() => {
+          /* non-critical */
+        })
       );
       // Cache Google Fonts in background (for offline use)
       FONT_URLS.forEach((url) =>
-        cache.add(url).catch(() => {/* non-critical */})
+        cache.add(url).catch(() => {
+          /* non-critical */
+        })
       );
       // App shell must succeed
       return cache.addAll(APP_SHELL_PATHS.map((p) => BASE + p));
@@ -84,31 +96,26 @@ self.addEventListener("install", (e) => {
 });
 
 /* ── Activate: clean old caches ── */
-self.addEventListener("activate", (e) => {
+self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((k) => k !== CACHE_NAME)
-          .map((k) => caches.delete(k))
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
       )
-    )
   );
   self.clients.claim();
 });
 
 /* ── Fetch: cache-first for app shell, network-first for fonts ── */
-self.addEventListener("fetch", (e) => {
+self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
 
   // Skip non-GET and cross-origin API calls
-  if (e.request.method !== "GET") return;
+  if (e.request.method !== 'GET') return;
 
   // Google Fonts: network-first (cache for offline)
-  if (
-    url.hostname === "fonts.googleapis.com" ||
-    url.hostname === "fonts.gstatic.com"
-  ) {
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
     e.respondWith(
       fetch(e.request)
         .then((res) => {

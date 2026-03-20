@@ -1,36 +1,59 @@
+import { PieLabStorage } from './storage.js';
+import { PIZZA_RECIPES } from '../recipes.js';
+import {
+  STYLE_LIBRARY,
+  TOPPING_COMBOS,
+  FLOUR_GUIDE,
+  YEAST_GUIDE,
+  CHEESE_SAUCE_GUIDE,
+} from '../knowledge-data.js';
+import { FERMENTATION_SCHEDULES } from '../tools-data.js';
+import { PieLabPremium } from './premium.js';
+
 /* ══════════════════════════════════════════════════════
    The Pie Lab — Knowledge Hub UI
    Page: learn.html
    ══════════════════════════════════════════════════════ */
 
 // ── Tab Navigation ───────────────────────────────────
-function activateTab(tabId) {
-  document.querySelectorAll(".toolkit-tab").forEach((t) => {
+export function activateTab(tabId) {
+  document.querySelectorAll('.toolkit-tab').forEach((t) => {
     const isTarget = t.dataset.tool === tabId;
-    t.classList.toggle("active", isTarget);
-    t.setAttribute("aria-selected", isTarget);
+    t.classList.toggle('active', isTarget);
+    t.setAttribute('aria-selected', isTarget);
   });
-  document.querySelectorAll(".toolkit-panel").forEach((p) => {
-    p.classList.toggle("active", p.id === `tool-${tabId}`);
+  document.querySelectorAll('.toolkit-panel').forEach((p) => {
+    p.classList.toggle('active', p.id === `tool-${tabId}`);
   });
-  history.replaceState(null, "", `#${tabId}`);
+  history.replaceState(null, '', `#${tabId}`);
 }
 
 (function initKnowledgeHub() {
   // Tab click handlers — now uses unified toolkit selectors
   // (toolkit.js also binds these same buttons, but activateTab is idempotent)
-  document.querySelectorAll(".toolkit-tab").forEach((tab) => {
-    tab.addEventListener("click", () => activateTab(tab.dataset.tool));
+  document.querySelectorAll('.toolkit-tab').forEach((tab) => {
+    tab.addEventListener('click', () => activateTab(tab.dataset.tool));
   });
 
   // Hash-based routing on load
-  const knowledgeTabs = ["styles", "cheese", "flour", "fermentation", "compare", "hydration", "oven", "troubleshoot", "ddt", "volume"];
-  const hash = location.hash.replace("#", "");
+  const knowledgeTabs = [
+    'styles',
+    'cheese',
+    'flour',
+    'fermentation',
+    'compare',
+    'hydration',
+    'oven',
+    'troubleshoot',
+    'ddt',
+    'volume',
+  ];
+  const hash = location.hash.replace('#', '');
   if (knowledgeTabs.includes(hash)) {
     activateTab(hash);
   }
-  window.addEventListener("hashchange", () => {
-    const h = location.hash.replace("#", "");
+  window.addEventListener('hashchange', () => {
+    const h = location.hash.replace('#', '');
     if (knowledgeTabs.includes(h)) {
       activateTab(h);
     }
@@ -46,51 +69,52 @@ function activateTab(tabId) {
   // ── Auto-open style accordion from URL param ──
   // Supports: learn.html?style=new-york#styles
   const urlParams = new URLSearchParams(window.location.search);
-  const styleParam = urlParams.get("style");
+  const styleParam = urlParams.get('style');
   if (styleParam) {
     // Make sure the styles tab is active
-    activateTab("styles");
+    activateTab('styles');
     // Find and open the matching accordion
     setTimeout(() => {
-      const panel = document.getElementById("tool-styles");
+      const panel = document.getElementById('tool-styles');
       if (!panel) return;
       const item = panel.querySelector(`.accordion-item[data-style-key="${styleParam}"]`);
       if (item) {
         openAccordion(item);
-        item.scrollIntoView({ behavior: "smooth", block: "start" });
+        item.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }, 100);
   }
-
 })();
 
 // ── Accordion Factory ────────────────────────────────
-function createAccordion(parentEl, items, renderContent) {
+export function createAccordion(parentEl, items, renderContent) {
   items.forEach((item) => {
-    const wrapper = document.createElement("div");
-    wrapper.className = "accordion-item";
+    const wrapper = document.createElement('div');
+    wrapper.className = 'accordion-item';
     if (item.key) wrapper.dataset.styleKey = item.key;
 
-    const header = document.createElement("button");
-    header.className = "accordion-header";
-    header.type = "button";
-    const subtitleHtml = item.subtitle ? `<span class="accordion-subtitle">${item.subtitle}</span>` : "";
+    const header = document.createElement('button');
+    header.className = 'accordion-header';
+    header.type = 'button';
+    const subtitleHtml = item.subtitle
+      ? `<span class="accordion-subtitle">${item.subtitle}</span>`
+      : '';
     header.innerHTML = `<span class="accordion-title">${item.title}${subtitleHtml}</span><span class="accordion-arrow">\u25BC</span>`;
 
-    const body = document.createElement("div");
-    body.className = "accordion-body";
+    const body = document.createElement('div');
+    body.className = 'accordion-body';
 
-    const inner = document.createElement("div");
-    inner.className = "accordion-inner";
+    const inner = document.createElement('div');
+    inner.className = 'accordion-inner';
     inner.innerHTML = renderContent(item.data);
     body.appendChild(inner);
 
-    header.addEventListener("click", () => {
-      const isOpen = wrapper.classList.contains("open");
+    header.addEventListener('click', () => {
+      const isOpen = wrapper.classList.contains('open');
       // Close all siblings
-      parentEl.querySelectorAll(".accordion-item.open").forEach((a) => {
-        a.classList.remove("open");
-        a.querySelector(".accordion-body").style.maxHeight = null;
+      parentEl.querySelectorAll('.accordion-item.open').forEach((a) => {
+        a.classList.remove('open');
+        a.querySelector('.accordion-body').style.maxHeight = null;
       });
       if (!isOpen) {
         openAccordion(wrapper);
@@ -103,39 +127,39 @@ function createAccordion(parentEl, items, renderContent) {
   });
 }
 
-function openAccordion(wrapper) {
+export function openAccordion(wrapper) {
   // Close siblings first
   const parent = wrapper.parentElement;
   if (parent) {
-    parent.querySelectorAll(".accordion-item.open").forEach((a) => {
-      a.classList.remove("open");
-      a.querySelector(".accordion-body").style.maxHeight = null;
+    parent.querySelectorAll('.accordion-item.open').forEach((a) => {
+      a.classList.remove('open');
+      a.querySelector('.accordion-body').style.maxHeight = null;
     });
   }
-  wrapper.classList.add("open");
-  const body = wrapper.querySelector(".accordion-body");
-  body.style.maxHeight = body.scrollHeight + "px";
+  wrapper.classList.add('open');
+  const body = wrapper.querySelector('.accordion-body');
+  body.style.maxHeight = body.scrollHeight + 'px';
 }
 
 // ── Style Library (includes Topping Combos) ─────────
 function populateStyleLibrary() {
-  const panel = document.getElementById("tool-styles");
+  const panel = document.getElementById('tool-styles');
   if (!panel) return;
   const items = Object.entries(STYLE_LIBRARY).map(([key, style]) => ({
     key,
     title: style.name,
-    subtitle: style.origin || "",
+    subtitle: style.origin || '',
     data: { ...style, _key: key },
   }));
 
   createAccordion(panel, items, (style) => {
     const factsHtml = style.keyFacts
       .map((f) => `<span class="key-fact"><strong>${f.label}:</strong> ${f.value}</span>`)
-      .join("");
+      .join('');
 
     // Topping combos for this style (merged from former Toppings tab)
-    let combosSection = "";
-    const combos = typeof TOPPING_COMBOS !== "undefined" ? TOPPING_COMBOS[style._key] : null;
+    let combosSection = '';
+    const combos = TOPPING_COMBOS[style._key] || null;
     if (combos && combos.combos && combos.combos.length) {
       const combosHtml = combos.combos
         .map((combo) => {
@@ -147,13 +171,13 @@ function populateStyleLibrary() {
                 <strong class="combo-name">${combo.name}</strong>
               </div>
               <ul class="combo-ingredients">
-                ${combo.ingredients.map((i) => `<li>${i}</li>`).join("")}
+                ${combo.ingredients.map((i) => `<li>${i}</li>`).join('')}
               </ul>
               <p class="combo-why">${combo.why}</p>
             </div>
           `;
         })
-        .join("");
+        .join('');
 
       combosSection = `
         <div class="style-combos">
@@ -181,17 +205,17 @@ function populateStyleLibrary() {
 
 // ── Flour & Yeast Guide ──────────────────────────────
 function populateFlourGuide() {
-  const panel = document.getElementById("tool-flour");
+  const panel = document.getElementById('tool-flour');
   if (!panel) return;
 
   // ── Flour sub-section ──────────────────────────────
-  const flourHeader = document.createElement("h3");
-  flourHeader.className = "panel-subheader";
-  flourHeader.textContent = "Flour";
+  const flourHeader = document.createElement('h3');
+  flourHeader.className = 'panel-subheader';
+  flourHeader.textContent = 'Flour';
   panel.appendChild(flourHeader);
 
-  const flourContainer = document.createElement("div");
-  flourContainer.className = "flour-accordions";
+  const flourContainer = document.createElement('div');
+  flourContainer.className = 'flour-accordions';
   panel.appendChild(flourContainer);
 
   createAccordion(
@@ -202,9 +226,7 @@ function populateFlourGuide() {
       data: flour,
     })),
     (flour) => {
-      const usesHtml = flour.bestUses
-        .map((u) => `<span class="use-tag">${u}</span>`)
-        .join("");
+      const usesHtml = flour.bestUses.map((u) => `<span class="use-tag">${u}</span>`).join('');
 
       const linksHtml = flour.buyLinks
         .map(
@@ -215,7 +237,7 @@ function populateFlourGuide() {
               <span class="buy-arrow">\u2192</span>
             </a>`
         )
-        .join("");
+        .join('');
 
       return `
         <span class="protein-badge">${flour.proteinContent} protein</span>
@@ -235,15 +257,15 @@ function populateFlourGuide() {
   );
 
   // ── Yeast sub-section ──────────────────────────────
-  if (typeof YEAST_GUIDE === "undefined") return;
+  if (typeof YEAST_GUIDE === 'undefined') return;
 
-  const yeastHeader = document.createElement("h3");
-  yeastHeader.className = "panel-subheader";
-  yeastHeader.textContent = "Yeast";
+  const yeastHeader = document.createElement('h3');
+  yeastHeader.className = 'panel-subheader';
+  yeastHeader.textContent = 'Yeast';
   panel.appendChild(yeastHeader);
 
-  const yeastContainer = document.createElement("div");
-  yeastContainer.className = "yeast-accordions";
+  const yeastContainer = document.createElement('div');
+  yeastContainer.className = 'yeast-accordions';
   panel.appendChild(yeastContainer);
 
   createAccordion(
@@ -254,9 +276,7 @@ function populateFlourGuide() {
       data: yeast,
     })),
     (yeast) => {
-      const usesHtml = yeast.bestUses
-        .map((u) => `<span class="use-tag">${u}</span>`)
-        .join("");
+      const usesHtml = yeast.bestUses.map((u) => `<span class="use-tag">${u}</span>`).join('');
 
       const linksHtml = yeast.buyLinks
         .map(
@@ -267,11 +287,9 @@ function populateFlourGuide() {
               <span class="buy-arrow">\u2192</span>
             </a>`
         )
-        .join("");
+        .join('');
 
-      const noteHtml = yeast.note
-        ? `<p class="yeast-note">${yeast.note}</p>`
-        : "";
+      const noteHtml = yeast.note ? `<p class="yeast-note">${yeast.note}</p>` : '';
 
       return `
         <span class="protein-badge">${yeast.badge}</span>
@@ -293,8 +311,8 @@ function populateFlourGuide() {
 
   // ── Yeast Converter Widget ─────────────────────────
   // Ratios: 1g IDY = 1.25g ADY = 3g Fresh
-  const converter = document.createElement("div");
-  converter.className = "yeast-converter";
+  const converter = document.createElement('div');
+  converter.className = 'yeast-converter';
   converter.innerHTML = `
     <h4>Yeast Converter</h4>
     <p class="converter-desc">Enter an amount in any type and see the equivalent for the other two.</p>
@@ -315,19 +333,19 @@ function populateFlourGuide() {
   `;
   panel.appendChild(converter);
 
-  const idyInput   = converter.querySelector("#yc-idy");
-  const adyInput   = converter.querySelector("#yc-ady");
-  const freshInput = converter.querySelector("#yc-fresh");
+  const idyInput = converter.querySelector('#yc-idy');
+  const adyInput = converter.querySelector('#yc-ady');
+  const freshInput = converter.querySelector('#yc-fresh');
 
   function updateFrom(source) {
     const val = parseFloat(source.value);
     if (isNaN(val) || val < 0) return;
     const round = (n) => Math.round(n * 100) / 100;
     if (source === idyInput) {
-      adyInput.value   = round(val * 1.25);
+      adyInput.value = round(val * 1.25);
       freshInput.value = round(val * 3);
     } else if (source === adyInput) {
-      idyInput.value   = round(val / 1.25);
+      idyInput.value = round(val / 1.25);
       freshInput.value = round(val * 2.4);
     } else {
       idyInput.value = round(val / 3);
@@ -335,24 +353,24 @@ function populateFlourGuide() {
     }
   }
 
-  idyInput.addEventListener("input",   () => updateFrom(idyInput));
-  adyInput.addEventListener("input",   () => updateFrom(adyInput));
-  freshInput.addEventListener("input", () => updateFrom(freshInput));
+  idyInput.addEventListener('input', () => updateFrom(idyInput));
+  adyInput.addEventListener('input', () => updateFrom(adyInput));
+  freshInput.addEventListener('input', () => updateFrom(freshInput));
 }
 
 // ── Cheese & Sauce Guide ─────────────────────────────
 function populateCheeseSauceGuide() {
-  const panel = document.getElementById("tool-cheese");
+  const panel = document.getElementById('tool-cheese');
   if (!panel) return;
 
   // Cheese accordion
-  const cheeseHeader = document.createElement("h3");
-  cheeseHeader.className = "panel-subheader";
-  cheeseHeader.textContent = "Cheeses";
+  const cheeseHeader = document.createElement('h3');
+  cheeseHeader.className = 'panel-subheader';
+  cheeseHeader.textContent = 'Cheeses';
   panel.appendChild(cheeseHeader);
 
-  const cheeseContainer = document.createElement("div");
-  cheeseContainer.className = "cheese-accordions";
+  const cheeseContainer = document.createElement('div');
+  cheeseContainer.className = 'cheese-accordions';
   panel.appendChild(cheeseContainer);
 
   createAccordion(
@@ -365,9 +383,9 @@ function populateCheeseSauceGuide() {
       const stylesHtml = cheese.bestStyles
         .map((s) => {
           const recipe = PIZZA_RECIPES[s];
-          return recipe ? `<span class="use-tag">${recipe.name}</span>` : "";
+          return recipe ? `<span class="use-tag">${recipe.name}</span>` : '';
         })
-        .join("");
+        .join('');
 
       return `
         <p>${cheese.description}</p>
@@ -382,13 +400,13 @@ function populateCheeseSauceGuide() {
   );
 
   // Sauce accordion
-  const sauceHeader = document.createElement("h3");
-  sauceHeader.className = "panel-subheader";
-  sauceHeader.textContent = "Sauces";
+  const sauceHeader = document.createElement('h3');
+  sauceHeader.className = 'panel-subheader';
+  sauceHeader.textContent = 'Sauces';
   panel.appendChild(sauceHeader);
 
-  const sauceContainer = document.createElement("div");
-  sauceContainer.className = "sauce-accordions";
+  const sauceContainer = document.createElement('div');
+  sauceContainer.className = 'sauce-accordions';
   panel.appendChild(sauceContainer);
 
   createAccordion(
@@ -401,9 +419,9 @@ function populateCheeseSauceGuide() {
       const stylesHtml = sauce.bestStyles
         .map((s) => {
           const recipe = PIZZA_RECIPES[s];
-          return recipe ? `<span class="use-tag">${recipe.name}</span>` : "";
+          return recipe ? `<span class="use-tag">${recipe.name}</span>` : '';
         })
-        .join("");
+        .join('');
 
       return `
         <p>${sauce.description}</p>
@@ -420,30 +438,29 @@ function populateCheeseSauceGuide() {
 
 // ── Fermentation Reference Chart (replaces Timer) ────
 function populateFermentationChart() {
-  const panel = document.getElementById("tool-fermentation");
+  const panel = document.getElementById('tool-fermentation');
   if (!panel) return;
 
-  let rows = "";
+  let rows = '';
   for (const [key, sched] of Object.entries(FERMENTATION_SCHEDULES)) {
     const recipe = PIZZA_RECIPES[key];
     if (!recipe) continue;
 
     // Extract room-temp and fridge info from steps
-    const COLD_METHOD_NAMES = ["Cold Ferment", "Cold Cure", "Tavern Cure"];
-    let hasFridge = COLD_METHOD_NAMES.some(m => sched.method.includes(m)) ||
-                    sched.steps.some((s) =>
-                      s.label.toLowerCase().includes("fridge") ||
-                      s.label.toLowerCase().includes("refrigerat")
-                    );
+    const COLD_METHOD_NAMES = ['Cold Ferment', 'Cold Cure', 'Tavern Cure'];
+    let hasFridge =
+      COLD_METHOD_NAMES.some((m) => sched.method.includes(m)) ||
+      sched.steps.some(
+        (s) =>
+          s.label.toLowerCase().includes('fridge') || s.label.toLowerCase().includes('refrigerat')
+      );
 
     const bakeTemp = recipe.idealTemp
       ? `${recipe.idealTemp.min}\u2013${recipe.idealTemp.max}\u00B0F`
-      : "\u2014";
+      : '\u2014';
 
-    const roomTemp = hasFridge ? "1\u20132 hrs" : sched.totalTime;
-    const fridgeTemp = hasFridge
-      ? sched.totalTime
-      : "\u2014";
+    const roomTemp = hasFridge ? '1\u20132 hrs' : sched.totalTime;
+    const fridgeTemp = hasFridge ? sched.totalTime : '\u2014';
 
     rows += `
       <tr>
@@ -479,7 +496,7 @@ function populateFermentationChart() {
 
 // ── Side-by-Side Recipe Compare ──────────────────────
 function populateCompareTab() {
-  const panel = document.getElementById("tool-compare");
+  const panel = document.getElementById('tool-compare');
   if (!panel) return;
 
   const styleKeys = Object.keys(PIZZA_RECIPES);
@@ -487,7 +504,7 @@ function populateCompareTab() {
   // Build option markup shared across selects
   const optionsHtml = styleKeys
     .map((k) => `<option value="${k}">${PIZZA_RECIPES[k].name}</option>`)
-    .join("");
+    .join('');
 
   panel.innerHTML = `
     <p class="compare-intro">Pick 2\u20133 pizza styles to see their dough formulas, bake temps, and techniques side by side.</p>
@@ -511,11 +528,11 @@ function populateCompareTab() {
     <div id="compare-result"></div>
   `;
 
-  const selA = panel.querySelector("#compare-a");
-  const selB = panel.querySelector("#compare-b");
-  const selC = panel.querySelector("#compare-c");
-  const btn  = panel.querySelector("#btn-compare-go");
-  const resultEl = panel.querySelector("#compare-result");
+  const selA = panel.querySelector('#compare-a');
+  const selB = panel.querySelector('#compare-b');
+  const selC = panel.querySelector('#compare-c');
+  const btn = panel.querySelector('#btn-compare-go');
+  const resultEl = panel.querySelector('#compare-result');
 
   function getSelectedKeys() {
     return [selA.value, selB.value, selC.value].filter(Boolean);
@@ -527,16 +544,12 @@ function populateCompareTab() {
     btn.disabled = unique.size < 2;
   }
 
-  [selA, selB, selC].forEach((sel) => sel.addEventListener("change", updateButtonState));
+  [selA, selB, selC].forEach((sel) => sel.addEventListener('change', updateButtonState));
 
-  btn.addEventListener("click", () => {
+  btn.addEventListener('click', () => {
     const keys = [...new Set(getSelectedKeys())];
     if (keys.length < 2) return;
-    if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
-      PieLabPremium.gate(() => renderComparison(keys, resultEl));
-      return;
-    }
-    renderComparison(keys, resultEl);
+    PieLabPremium.verifyAndGate(() => renderComparison(keys, resultEl));
   });
 }
 
@@ -547,54 +560,54 @@ function renderComparison(keys, container) {
   // Data rows definition
   const rows = [
     {
-      label: "Flour Type",
+      label: 'Flour Type',
       values: recipes.map((r) => r.flour),
     },
     {
-      label: "Hydration",
-      values: recipes.map((r) => (r.hydration * 100).toFixed(0) + "%"),
+      label: 'Hydration',
+      values: recipes.map((r) => (r.hydration * 100).toFixed(0) + '%'),
       raw: recipes.map((r) => r.hydration * 100),
       diffThreshold: 5,
     },
     {
-      label: "Salt %",
-      values: recipes.map((r) => (r.saltPct * 100).toFixed(1) + "%"),
+      label: 'Salt %',
+      values: recipes.map((r) => (r.saltPct * 100).toFixed(1) + '%'),
       raw: recipes.map((r) => r.saltPct * 100),
       diffThreshold: 1,
     },
     {
-      label: "Oil %",
-      values: recipes.map((r) => (r.oilPct * 100).toFixed(1) + "%"),
+      label: 'Oil %',
+      values: recipes.map((r) => (r.oilPct * 100).toFixed(1) + '%'),
       raw: recipes.map((r) => r.oilPct * 100),
       diffThreshold: 1,
     },
     {
-      label: "Sugar %",
-      values: recipes.map((r) => (r.sugarPct * 100).toFixed(1) + "%"),
+      label: 'Sugar %',
+      values: recipes.map((r) => (r.sugarPct * 100).toFixed(1) + '%'),
       raw: recipes.map((r) => r.sugarPct * 100),
       diffThreshold: 1,
     },
     {
-      label: "Yeast %",
-      values: recipes.map((r) => (r.yeastPct * 100).toFixed(2) + "%"),
+      label: 'Yeast %',
+      values: recipes.map((r) => (r.yeastPct * 100).toFixed(2) + '%'),
       raw: recipes.map((r) => r.yeastPct * 100),
       diffThreshold: 0.5,
     },
     {
-      label: "Ideal Temp",
+      label: 'Ideal Temp',
       values: recipes.map((r) =>
-        r.idealTemp ? `${r.idealTemp.min}\u2013${r.idealTemp.max}\u00B0F` : "\u2014"
+        r.idealTemp ? `${r.idealTemp.min}\u2013${r.idealTemp.max}\u00B0F` : '\u2014'
       ),
     },
     {
-      label: "Bake Time",
-      values: recipes.map((r) => (r.bakeTime ? r.bakeTime.medium : "\u2014")),
+      label: 'Bake Time',
+      values: recipes.map((r) => (r.bakeTime ? r.bakeTime.medium : '\u2014')),
     },
     {
       label: '12\u2033 Dough',
       values: recipes.map((r) => {
-        const s = r.sizes["12"];
-        return s ? s.doughWeight + "g" : "\u2014";
+        const s = r.sizes['12'];
+        return s ? s.doughWeight + 'g' : '\u2014';
       }),
     },
   ];
@@ -622,7 +635,7 @@ function renderComparison(keys, container) {
 
   // Data rows
   rows.forEach((row) => {
-    const diffClass = hasDiff(row) ? " compare-diff-highlight" : "";
+    const diffClass = hasDiff(row) ? ' compare-diff-highlight' : '';
     html += `<div class="compare-row${diffClass}"><div class="compare-label-cell">${row.label}</div>`;
     row.values.forEach((val) => {
       html += `<div class="compare-value-cell">${val}</div>`;
@@ -636,64 +649,64 @@ function renderComparison(keys, container) {
 
 // ── Toolkit Tour (3rd app session) ──────────────────
 (function initToolkitTour() {
-  const TOUR_DONE_KEY = "pielab-toolkit-tour-done";
-  if (localStorage.getItem(TOUR_DONE_KEY) === "1") return;
-  const sessions = parseInt(localStorage.getItem("pielab-session-count") || "0", 10);
+  const TOUR_DONE_KEY = 'pielab-toolkit-tour-done';
+  if (localStorage.getItem(TOUR_DONE_KEY) === '1') return;
+  const sessions = parseInt(PieLabStorage.get('pielab-session-count') || '0', 10);
   if (sessions < 3) return;
 
   const steps = [
     {
-      tab: "styles",
-      title: "Style Library",
-      body: "Explore 13 regional pizza styles — from Neapolitan to Detroit. Each entry covers the history, key characteristics, and authentic techniques to get it right.",
+      tab: 'styles',
+      title: 'Style Library',
+      body: 'Explore 13 regional pizza styles — from Neapolitan to Detroit. Each entry covers the history, key characteristics, and authentic techniques to get it right.',
     },
     {
-      tab: "cheese",
-      title: "Cheese & Sauce Guide",
-      body: "Learn which cheeses and sauces pair best with each style. Covers everything from fresh mozzarella to brick cheese, and classic marinara to white sauce.",
+      tab: 'cheese',
+      title: 'Cheese & Sauce Guide',
+      body: 'Learn which cheeses and sauces pair best with each style. Covers everything from fresh mozzarella to brick cheese, and classic marinara to white sauce.',
     },
     {
-      tab: "flour",
-      title: "Flour & Yeast Guide",
-      body: "Understand the difference between Tipo 00, bread flour, and all-purpose. Plus a yeast converter to switch between instant, active dry, and fresh yeast.",
+      tab: 'flour',
+      title: 'Flour & Yeast Guide',
+      body: 'Understand the difference between Tipo 00, bread flour, and all-purpose. Plus a yeast converter to switch between instant, active dry, and fresh yeast.',
     },
     {
-      tab: "fermentation",
-      title: "Fermentation Chart",
+      tab: 'fermentation',
+      title: 'Fermentation Chart',
       body: "A quick reference for every style's fermentation schedule — cold vs. room temp, total time, and optimal bake temperatures all in one place.",
     },
     {
-      tab: "hydration",
-      title: "Hydration Guide",
-      body: "A Pro tool that shows the ideal hydration range for each style with an interactive slider. See exactly how much water to use for your flour amount.",
+      tab: 'hydration',
+      title: 'Hydration Guide',
+      body: 'A Pro tool that shows the ideal hydration range for each style with an interactive slider. See exactly how much water to use for your flour amount.',
       isPro: true,
     },
     {
-      tab: "oven",
-      title: "Oven Guide",
-      body: "Detailed guides for 6 oven types — home, wood-fired, gas, portable, and electric. Learn preheat times, heat transfer methods, and style-specific tips.",
+      tab: 'oven',
+      title: 'Oven Guide',
+      body: 'Detailed guides for 6 oven types — home, wood-fired, gas, portable, and electric. Learn preheat times, heat transfer methods, and style-specific tips.',
     },
     {
-      tab: "troubleshoot",
-      title: "Troubleshooting",
-      body: "Having issues with your dough or bake? This Pro tool walks you through common symptoms with a diagnostic flow to pinpoint the problem and fix it.",
+      tab: 'troubleshoot',
+      title: 'Troubleshooting',
+      body: 'Having issues with your dough or bake? This Pro tool walks you through common symptoms with a diagnostic flow to pinpoint the problem and fix it.',
       isPro: true,
     },
     {
-      tab: "compare",
-      title: "Style Compare",
-      body: "Pick 2–3 styles and compare their recipes side by side — hydration, salt, oil, sugar, yeast, bake temp, and more. A Pro feature for dialing in your dough.",
+      tab: 'compare',
+      title: 'Style Compare',
+      body: 'Pick 2–3 styles and compare their recipes side by side — hydration, salt, oil, sugar, yeast, bake temp, and more. A Pro feature for dialing in your dough.',
       isPro: true,
     },
     {
-      tab: "ddt",
-      title: "DDT Calculator",
-      body: "Calculate the ideal water temperature for your dough using the Desired Dough Temperature method. Accounts for room temp, flour temp, and friction factor.",
+      tab: 'ddt',
+      title: 'DDT Calculator',
+      body: 'Calculate the ideal water temperature for your dough using the Desired Dough Temperature method. Accounts for room temp, flour temp, and friction factor.',
       isPro: true,
     },
     {
-      tab: "volume",
-      title: "Volume Conversion",
+      tab: 'volume',
+      title: 'Volume Conversion',
       body: "Convert grams to cups, tablespoons, and teaspoons for any pizza ingredient. Handy when you don't have a scale.",
     },
   ];
@@ -704,8 +717,8 @@ function renderComparison(keys, container) {
 
   function start() {
     currentStep = 0;
-    overlay = document.createElement("div");
-    overlay.className = "firstbake-overlay";
+    overlay = document.createElement('div');
+    overlay.className = 'firstbake-overlay';
     overlay.innerHTML = `
       <div class="firstbake-card">
         <button class="firstbake-skip" id="tt-skip" aria-label="Close tour">Skip</button>
@@ -718,15 +731,15 @@ function renderComparison(keys, container) {
       </div>
     `;
 
-    highlight = document.createElement("div");
-    highlight.className = "firstbake-highlight hidden";
+    highlight = document.createElement('div');
+    highlight.className = 'firstbake-highlight hidden';
     document.body.appendChild(highlight);
     document.body.appendChild(overlay);
 
-    document.getElementById("tt-next").addEventListener("click", next);
-    document.getElementById("tt-skip").addEventListener("click", close);
+    document.getElementById('tt-next').addEventListener('click', next);
+    document.getElementById('tt-skip').addEventListener('click', close);
 
-    requestAnimationFrame(() => overlay.classList.add("firstbake-overlay--visible"));
+    requestAnimationFrame(() => overlay.classList.add('firstbake-overlay--visible'));
     render();
   }
 
@@ -734,30 +747,30 @@ function renderComparison(keys, container) {
     const step = steps[currentStep];
     const total = steps.length;
 
-    document.getElementById("tt-step-count").textContent = `${currentStep + 1} of ${total}`;
-    document.getElementById("tt-title").textContent = step.title + (step.isPro ? " (Pro)" : "");
-    document.getElementById("tt-body").textContent = step.body;
+    document.getElementById('tt-step-count').textContent = `${currentStep + 1} of ${total}`;
+    document.getElementById('tt-title').textContent = step.title + (step.isPro ? ' (Pro)' : '');
+    document.getElementById('tt-body').textContent = step.body;
 
-    const nextBtn = document.getElementById("tt-next");
-    nextBtn.textContent = currentStep === total - 1 ? "Got It!" : "Next";
+    const nextBtn = document.getElementById('tt-next');
+    nextBtn.textContent = currentStep === total - 1 ? 'Got It!' : 'Next';
 
     // Switch to this tab
-    if (typeof activateTab === "function") activateTab(step.tab);
+    if (typeof activateTab === 'function') activateTab(step.tab);
 
     // Highlight the tab button
-    if (highlight) highlight.classList.add("hidden");
+    if (highlight) highlight.classList.add('hidden');
     const tabBtn = document.querySelector(`.toolkit-tab[data-tool="${step.tab}"]`);
     if (tabBtn) {
-      tabBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      tabBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       setTimeout(() => {
         if (!highlight) return;
         const rect = tabBtn.getBoundingClientRect();
         const pad = 4;
-        highlight.style.top = (rect.top + window.scrollY - pad) + "px";
-        highlight.style.left = (rect.left - pad) + "px";
-        highlight.style.width = (rect.width + pad * 2) + "px";
-        highlight.style.height = (rect.height + pad * 2) + "px";
-        highlight.classList.remove("hidden");
+        highlight.style.top = rect.top + window.scrollY - pad + 'px';
+        highlight.style.left = rect.left - pad + 'px';
+        highlight.style.width = rect.width + pad * 2 + 'px';
+        highlight.style.height = rect.height + pad * 2 + 'px';
+        highlight.classList.remove('hidden');
       }, 200);
     }
   }
@@ -772,13 +785,19 @@ function renderComparison(keys, container) {
   }
 
   function close() {
-    localStorage.setItem(TOUR_DONE_KEY, "1");
-    if (highlight) { highlight.remove(); highlight = null; }
+    localStorage.setItem(TOUR_DONE_KEY, '1');
+    if (highlight) {
+      highlight.remove();
+      highlight = null;
+    }
     if (overlay) {
-      overlay.classList.remove("firstbake-overlay--visible");
+      overlay.classList.remove('firstbake-overlay--visible');
       setTimeout(() => {
-        if (overlay) { overlay.remove(); overlay = null; }
-        if (typeof activateTab === "function") activateTab("styles");
+        if (overlay) {
+          overlay.remove();
+          overlay = null;
+        }
+        if (typeof activateTab === 'function') activateTab('styles');
       }, 300);
     }
   }

@@ -3,10 +3,12 @@
    Moves photo blobs out of localStorage to avoid the ~5 MB limit.
    ══════════════════════════════════════════════════════ */
 
+import { PieLabStorage } from './storage.js';
+
 const PieLabPhotos = (() => {
-  const DB_NAME = "pielab-photos";
+  const DB_NAME = 'pielab-photos';
   const DB_VERSION = 1;
-  const STORE_NAME = "photos";
+  const STORE_NAME = 'photos';
 
   let dbPromise = null;
 
@@ -35,7 +37,7 @@ const PieLabPhotos = (() => {
     if (!photoDataUrls || !photoDataUrls.length) return;
     const db = await openDB();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, "readwrite");
+      const tx = db.transaction(STORE_NAME, 'readwrite');
       tx.objectStore(STORE_NAME).put(photoDataUrls, entryId);
       tx.oncomplete = () => resolve();
       tx.onerror = () => reject(tx.error);
@@ -50,7 +52,7 @@ const PieLabPhotos = (() => {
   async function getPhotos(entryId) {
     const db = await openDB();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, "readonly");
+      const tx = db.transaction(STORE_NAME, 'readonly');
       const request = tx.objectStore(STORE_NAME).get(entryId);
       request.onsuccess = () => resolve(request.result || []);
       request.onerror = () => reject(request.error);
@@ -64,7 +66,7 @@ const PieLabPhotos = (() => {
   async function deletePhotos(entryId) {
     const db = await openDB();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, "readwrite");
+      const tx = db.transaction(STORE_NAME, 'readwrite');
       tx.objectStore(STORE_NAME).delete(entryId);
       tx.oncomplete = () => resolve();
       tx.onerror = () => reject(tx.error);
@@ -77,7 +79,7 @@ const PieLabPhotos = (() => {
   async function deleteAll() {
     const db = await openDB();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, "readwrite");
+      const tx = db.transaction(STORE_NAME, 'readwrite');
       tx.objectStore(STORE_NAME).clear();
       tx.oncomplete = () => resolve();
       tx.onerror = () => reject(tx.error);
@@ -91,7 +93,7 @@ const PieLabPhotos = (() => {
   async function getAllPhotos() {
     const db = await openDB();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, "readonly");
+      const tx = db.transaction(STORE_NAME, 'readonly');
       const store = tx.objectStore(STORE_NAME);
       const result = {};
       const cursor = store.openCursor();
@@ -113,10 +115,10 @@ const PieLabPhotos = (() => {
    * @param {Object} photosMap - { entryId: [dataUrls], ... }
    */
   async function importPhotos(photosMap) {
-    if (!photosMap || typeof photosMap !== "object") return;
+    if (!photosMap || typeof photosMap !== 'object') return;
     const db = await openDB();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, "readwrite");
+      const tx = db.transaction(STORE_NAME, 'readwrite');
       const store = tx.objectStore(STORE_NAME);
       for (const [entryId, dataUrls] of Object.entries(photosMap)) {
         if (Array.isArray(dataUrls) && dataUrls.length) {
@@ -147,24 +149,27 @@ const PieLabPhotos = (() => {
    * Strips photo data from localStorage entries after migration.
    */
   async function migrateFromLocalStorage() {
-    const MIGRATE_KEY = "pielab-photos-migrated";
+    const MIGRATE_KEY = 'pielab-photos-migrated';
     if (localStorage.getItem(MIGRATE_KEY)) return;
 
-    const raw = localStorage.getItem("pielab-journal");
+    const raw = PieLabStorage.get('pielab-journal');
     if (!raw) {
-      localStorage.setItem(MIGRATE_KEY, "1");
+      localStorage.setItem(MIGRATE_KEY, '1');
       return;
     }
 
     let entries;
-    try { entries = JSON.parse(raw); } catch { return; }
+    try {
+      entries = JSON.parse(raw);
+    } catch {
+      return;
+    }
     if (!Array.isArray(entries)) return;
 
     let migrated = false;
     for (const entry of entries) {
-      const photos = (entry.photos && entry.photos.length)
-        ? entry.photos
-        : (entry.photo ? [entry.photo] : []);
+      const photos =
+        entry.photos && entry.photos.length ? entry.photos : entry.photo ? [entry.photo] : [];
       if (photos.length && entry.id) {
         await savePhotos(entry.id, photos);
         // Mark how many photos this entry has (for display without loading)
@@ -177,13 +182,13 @@ const PieLabPhotos = (() => {
 
     if (migrated) {
       try {
-        localStorage.setItem("pielab-journal", JSON.stringify(entries));
+        await PieLabStorage.set('pielab-journal', entries);
       } catch {
         // If save fails, photos are still in IndexedDB — safe to continue
       }
     }
 
-    localStorage.setItem(MIGRATE_KEY, "1");
+    localStorage.setItem(MIGRATE_KEY, '1');
   }
 
   return {
@@ -197,3 +202,5 @@ const PieLabPhotos = (() => {
     migrateFromLocalStorage,
   };
 })();
+
+export { PieLabPhotos };

@@ -3,29 +3,26 @@
    localStorage-backed personal settings + journal CRUD
    ══════════════════════════════════════════════════════ */
 
-const PieLabJournal = (() => {
-  const SETTINGS_KEY = "pielab-personal-settings";
-  const JOURNAL_KEY = "pielab-journal";
+import { PieLabStorage } from './js/storage.js';
+import { PIZZA_RECIPES } from './recipes.js';
+import { PieLabPhotos } from './js/photo-store.js';
 
-  // ── localStorage helpers ──────────────────────────
+const PieLabJournal = (() => {
+  const SETTINGS_KEY = 'pielab-personal-settings';
+  const JOURNAL_KEY = 'pielab-journal';
+
+  // ── Storage helpers ──────────────────────────────
   function loadJSON(key) {
-    try {
-      const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
+    return PieLabStorage.getJSON(key);
   }
 
-  function saveJSON(key, data) {
+  async function saveJSON(key, data) {
     try {
-      localStorage.setItem(key, JSON.stringify(data));
+      await PieLabStorage.set(key, data);
       return true;
     } catch (e) {
-      if (e.name === "QuotaExceededError") {
-        alert(
-          "Storage is full. Try deleting some journal entries or photos to free up space."
-        );
+      if (e.name === 'QuotaExceededError') {
+        alert('Storage is full. Try deleting some journal entries or photos to free up space.');
       }
       return false;
     }
@@ -41,16 +38,16 @@ const PieLabJournal = (() => {
     return all[styleKey] || null;
   }
 
-  function savePersonalSettings(styleKey, settings) {
+  async function savePersonalSettings(styleKey, settings) {
     const all = getAllPersonalSettings();
     all[styleKey] = settings;
-    saveJSON(SETTINGS_KEY, all);
+    await saveJSON(SETTINGS_KEY, all);
   }
 
-  function deletePersonalSettings(styleKey) {
+  async function deletePersonalSettings(styleKey) {
     const all = getAllPersonalSettings();
     delete all[styleKey];
-    saveJSON(SETTINGS_KEY, all);
+    await saveJSON(SETTINGS_KEY, all);
   }
 
   /**
@@ -59,7 +56,7 @@ const PieLabJournal = (() => {
    * style, overlays those values on top of the base recipe.
    */
   function getEffectiveRecipe(styleKey, usePersonal) {
-    if (typeof PIZZA_RECIPES === "undefined") return null;
+    if (!PIZZA_RECIPES) return null;
     const base = PIZZA_RECIPES[styleKey];
     if (!base) return null;
     if (!usePersonal) return base;
@@ -94,11 +91,11 @@ const PieLabJournal = (() => {
     return loadJSON(JOURNAL_KEY) || [];
   }
 
-  function saveAllEntries(entries) {
-    return saveJSON(JOURNAL_KEY, entries);
+  async function saveAllEntries(entries) {
+    return await saveJSON(JOURNAL_KEY, entries);
   }
 
-  function addEntry(entry) {
+  async function addEntry(entry) {
     const entries = getAllEntries();
     entry.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     entry.createdAt = new Date().toISOString();
@@ -110,7 +107,7 @@ const PieLabJournal = (() => {
 
     // Store photos in IndexedDB, keep only count in localStorage
     const photos = entry.photos || [];
-    if (photos.length && typeof PieLabPhotos !== "undefined") {
+    if (photos.length && PieLabPhotos) {
       entry.photoCount = photos.length;
       PieLabPhotos.savePhotos(entry.id, photos).catch(() => {});
     }
@@ -118,26 +115,26 @@ const PieLabJournal = (() => {
     entry.photo = null;
 
     entries.unshift(entry); // newest first
-    saveAllEntries(entries);
+    await saveAllEntries(entries);
     return { ...entry, photos }; // return with photos for immediate UI use
   }
 
-  function updateEntry(id, updates) {
+  async function updateEntry(id, updates) {
     const entries = getAllEntries();
     const idx = entries.findIndex((e) => e.id === id);
     if (idx === -1) return null;
     entries[idx] = { ...entries[idx], ...updates };
-    saveAllEntries(entries);
+    await saveAllEntries(entries);
     return entries[idx];
   }
 
-  function deleteEntry(id) {
+  async function deleteEntry(id) {
     // Clean up photos from IndexedDB
-    if (typeof PieLabPhotos !== "undefined") {
+    if (PieLabPhotos) {
       PieLabPhotos.deletePhotos(id).catch(() => {});
     }
     const entries = getAllEntries().filter((e) => e.id !== id);
-    return saveAllEntries(entries);
+    return await saveAllEntries(entries);
   }
 
   function getEntriesByStyle(styleKey) {
@@ -154,11 +151,11 @@ const PieLabJournal = (() => {
 
   // ── Skill Badge System ─────────────────────────────
   const SKILL_TIERS = [
-    { min: 26, badge: "\uD83C\uDFC6 Master of the Oven" },
-    { min: 16, badge: "\uD83D\uDC68\u200D\uD83C\uDF73 Style Specialist" },
-    { min:  9, badge: "\u2B50 Dialed In" },
-    { min:  4, badge: "\uD83D\uDD25 Getting Comfortable" },
-    { min:  1, badge: "\uD83C\uDF55 First Stretch" },
+    { min: 26, badge: '\uD83C\uDFC6 Master of the Oven' },
+    { min: 16, badge: '\uD83D\uDC68\u200D\uD83C\uDF73 Style Specialist' },
+    { min: 9, badge: '\u2B50 Dialed In' },
+    { min: 4, badge: '\uD83D\uDD25 Getting Comfortable' },
+    { min: 1, badge: '\uD83C\uDF55 First Stretch' },
   ];
 
   function getStyleBakeCount(styleKey) {
@@ -192,12 +189,12 @@ const PieLabJournal = (() => {
               h = MAX;
             }
           }
-          const canvas = document.createElement("canvas");
+          const canvas = document.createElement('canvas');
           canvas.width = w;
           canvas.height = h;
-          const ctx = canvas.getContext("2d");
+          const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL("image/jpeg", 0.65));
+          resolve(canvas.toDataURL('image/jpeg', 0.65));
         };
         img.onerror = reject;
         img.src = e.target.result;
@@ -208,27 +205,27 @@ const PieLabJournal = (() => {
   }
 
   // ── Custom Dough Profiles ────────────────────────
-  const PROFILES_KEY = "pielab-dough-profiles";
+  const PROFILES_KEY = 'pielab-dough-profiles';
 
   function getAllProfiles() {
     return loadJSON(PROFILES_KEY) || [];
   }
 
-  function saveProfile(profile) {
+  async function saveProfile(profile) {
     const profiles = getAllProfiles();
     profile.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     profile.createdAt = new Date().toISOString();
     profiles.unshift(profile);
-    return saveJSON(PROFILES_KEY, profiles) ? profile : null;
+    return (await saveJSON(PROFILES_KEY, profiles)) ? profile : null;
   }
 
-  function deleteProfile(id) {
-    const profiles = getAllProfiles().filter(p => p.id !== id);
-    return saveJSON(PROFILES_KEY, profiles);
+  async function deleteProfile(id) {
+    const profiles = getAllProfiles().filter((p) => p.id !== id);
+    return await saveJSON(PROFILES_KEY, profiles);
   }
 
   function getProfilesByStyle(styleKey) {
-    return getAllProfiles().filter(p => p.styleKey === styleKey);
+    return getAllProfiles().filter((p) => p.styleKey === styleKey);
   }
 
   // ── Comparison Analysis ───────────────────────────
@@ -264,11 +261,7 @@ const PieLabJournal = (() => {
       let best = null;
       for (const [key, g] of Object.entries(groups)) {
         const avg = g.sum / g.count;
-        if (
-          !best ||
-          avg > best.avg ||
-          (avg === best.avg && g.count > best.count)
-        ) {
+        if (!best || avg > best.avg || (avg === best.avg && g.count > best.count)) {
           best = { value: Number(key), avg: Math.round(avg * 10) / 10, count: g.count };
         }
       }
@@ -308,3 +301,5 @@ const PieLabJournal = (() => {
     getProfilesByStyle,
   };
 })();
+
+export { PieLabJournal };
