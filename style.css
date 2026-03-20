@@ -10,8 +10,8 @@
 :root {
   --clr-bg: #f3ebe2;
   --clr-card: #faf6f1;
-  --clr-primary: #8c3524;
-  --clr-primary-dark: #6e2a1b;
+  --clr-primary: #922b21;
+  --clr-primary-dark: #7b241c;
   --clr-accent: #c9954a;
   --clr-text: #1a1410;
   --clr-display: #1a1410;
@@ -5392,7 +5392,8 @@ body[data-page='journal'] main {
   border: 2px solid var(--clr-border);
   border-radius: 10px;
   padding: 1.5rem 1.25rem 1rem;
-  margin-bottom: 1.75rem;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
   overflow: visible;
 }
 
@@ -5410,7 +5411,7 @@ body[data-page='journal'] main {
   border-radius: 8px;
   font-size: 1rem;
   color: var(--clr-text);
-  background: #fff;
+  background: var(--clr-card);
   transition: border-color 0.2s;
 }
 
@@ -7026,7 +7027,7 @@ body[data-page='kitchen'] main {
 }
 .sched-recipe-table td {
   padding: 0.35rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--clr-border);
 }
 .sched-recipe-table td:nth-child(2) {
   text-align: right;
