@@ -564,7 +564,9 @@
         if (isNaN(idx) || !computedSchedule) return;
         computedSchedule[idx].checked = !computedSchedule[idx].checked;
         updateStoredChecks();
-        if (window.PieLabHaptics) PieLabHaptics.light();
+        if (window.PieLabHaptics) {
+          computedSchedule[idx].checked ? PieLabHaptics.success() : PieLabHaptics.light();
+        }
         renderScheduleTimeline(computedSchedule);
         renderVisualBar(computedSchedule);
       });
@@ -1044,13 +1046,15 @@
       return;
     }
     const target = timelineEl;
-    // Temporarily add a background for the capture
+    // Temporarily add a background matching the current theme
+    const isDark = document.documentElement.dataset.theme === "dark";
+    const bgColor = isDark ? "#1c1614" : "#faf6f1";
     const origBg = target.style.background;
-    target.style.background = "#faf6f1";
+    target.style.background = bgColor;
     target.style.padding = "1.5rem";
 
     html2canvas(target, {
-      backgroundColor: "#faf6f1",
+      backgroundColor: bgColor,
       scale: 2,
       useCORS: true,
       logging: false,
