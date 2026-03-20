@@ -711,6 +711,47 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "schedule.html?prefill=1";
   });
 
+  // ── "Copy Shopping List" — formats ingredients and copies to clipboard ──
+  document.getElementById("btn-copy-list").addEventListener("click", () => {
+    if (!lastDough) { showToast("Calculate a recipe first"); return; }
+
+    const CATEGORIES = {
+      "Flour & Dry": /flour|salt|sugar|yeast|semolina|cornmeal|tipo/i,
+      "Dairy": /mozzarella|parmesan|pecorino|ricotta|cheese|butter|cream/i,
+      "Produce": /tomato|basil|garlic|onion|pepper|olive|mushroom|arugula|oregano|herb/i,
+    };
+
+    const all = [
+      ...(lastDough || []).map(d => ({ name: d.ingredient, amount: d.amount })),
+      ...(lastSauce || []).map(d => ({ name: d.ingredient, amount: d.amount })),
+      ...(lastToppings || []).map(d => ({ name: d.ingredient, amount: d.amount })),
+    ];
+
+    const grouped = { "Flour & Dry": [], "Dairy": [], "Produce": [], "Other": [] };
+    all.forEach(item => {
+      let placed = false;
+      for (const [cat, regex] of Object.entries(CATEGORIES)) {
+        if (regex.test(item.name)) { grouped[cat].push(item); placed = true; break; }
+      }
+      if (!placed) grouped["Other"].push(item);
+    });
+
+    const title = document.getElementById("result-title")?.textContent || "Recipe";
+    let text = `Shopping List \u2014 ${title}\n`;
+    for (const [cat, items] of Object.entries(grouped)) {
+      if (!items.length) continue;
+      text += `\n${cat.toUpperCase()}\n`;
+      items.forEach(item => {
+        text += `- ${item.name}: ${formatAmount(item.amount, item.name)}\n`;
+      });
+    }
+
+    navigator.clipboard.writeText(text.trim()).then(
+      () => showToast("Shopping list copied!"),
+      () => showToast("Could not copy — try again")
+    );
+  });
+
   // ── "Log This Bake" navigates to journal page ────────
   document.getElementById("btn-log-bake").addEventListener("click", () => {
     window.location.href = "journal.html?prefill=1";

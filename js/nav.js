@@ -15,6 +15,25 @@ function escapeHtml(str) {
 }
 
 /**
+ * Shared toast notification. Shows a brief message at bottom of screen.
+ * @param {string} message — text to display
+ * @param {number} duration — ms before auto-dismiss (default 2500)
+ */
+function showToast(message, duration = 2500) {
+  const existing = document.querySelector(".pielab-toast");
+  if (existing) existing.remove();
+  const toast = document.createElement("div");
+  toast.className = "pielab-toast";
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add("pielab-toast--visible"));
+  setTimeout(() => {
+    toast.classList.remove("pielab-toast--visible");
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+}
+
+/**
  * Shared alarm beep utility. Each caller can customise freq, gain, offsets, and interval.
  * Returns { stop() } handle.
  */

@@ -630,6 +630,29 @@ main {
   color: var(--clr-text-light);
 }
 
+/* ── Shared Toast Notification ─────────────────────── */
+.pielab-toast {
+  position: fixed;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: var(--clr-text);
+  color: var(--clr-bg);
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 200ms ease, transform 200ms ease;
+  pointer-events: none;
+}
+.pielab-toast--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -976,6 +999,7 @@ main {
   margin-top: 2rem;
 }
 
+.btn-copy-list,
 .btn-print,
 .btn-reset {
   flex: 1;
@@ -988,11 +1012,13 @@ main {
   transition: all 0.2s;
 }
 
+.btn-copy-list,
 .btn-print {
   background: var(--clr-border);
   color: var(--clr-text);
 }
 
+.btn-copy-list:hover,
 .btn-print:hover {
   background: #d5ccc4;
 }
