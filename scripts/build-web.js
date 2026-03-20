@@ -6,31 +6,31 @@
  * Usage: npm run build   (or:  node scripts/build-web.js)
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
-const ROOT = path.resolve(__dirname, "..");
-const DEST = path.join(ROOT, "www");
+const ROOT = path.resolve(__dirname, '..');
+const DEST = path.join(ROOT, 'www');
 
 // Top-level names to EXCLUDE from the copy
 const EXCLUDE = new Set([
-  "node_modules",
-  "www",
-  "android",
-  "ios",
-  ".git",
-  ".claude",
-  "scripts",
-  "resources",
-  "Logos",
-  "plan_raw.txt",
-  "capacitor.config.ts",
-  "package.json",
-  "package-lock.json",
-  "tsconfig.json",
-  ".gitignore",
-  ".DS_Store",
-  "Thumbs.db",
+  'node_modules',
+  'www',
+  'android',
+  'ios',
+  '.git',
+  '.claude',
+  'scripts',
+  'resources',
+  'Logos',
+  'plan_raw.txt',
+  'capacitor.config.ts',
+  'package.json',
+  'package-lock.json',
+  'tsconfig.json',
+  '.gitignore',
+  '.DS_Store',
+  'Thumbs.db',
 ]);
 
 // 1. Clean www/ directory
