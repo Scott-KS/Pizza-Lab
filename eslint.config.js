@@ -72,7 +72,7 @@ export default [
   },
   // CommonJS files (Node scripts, Capacitor config)
   {
-    files: ['capacitor.config.js', 'scripts/**/*.js'],
+    files: ['capacitor.config.js', 'scripts/**/*.cjs'],
     languageOptions: {
       sourceType: 'commonjs',
       globals: {
@@ -85,6 +85,6 @@ export default [
     },
   },
   {
-    ignores: ['js/vendor/**', 'node_modules/**', 'android/**', 'ios/**'],
+    ignores: ['js/vendor/**', 'node_modules/**', 'android/**', 'ios/**', 'www/**'],
   },
 ];

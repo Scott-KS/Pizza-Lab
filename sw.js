@@ -1,11 +1,15 @@
 /*  The Pie Lab — Service Worker  */
-const CACHE_NAME = 'pielab-v55';
+/*  CACHE_NAME is replaced by the build script with a content hash.   */
+/*  In dev (no build), 'pielab-dev' is used as a static fallback.     */
+const CACHE_NAME = 'pielab-dev';
 
 /* ── Derive base path so caching works on both localhost and /Pizza-Lab/ ── */
 const BASE = self.registration.scope;
 
 /* ── Shell assets (app skeleton — always cached) ── */
-/* Version query strings MUST match the <script>/<link> tags in HTML pages */
+/* Cache busting is handled by CACHE_NAME (content-hashed at build). */
+/* No ?v=N query strings needed — the build script hashes file       */
+/* contents and derives a unique cache name automatically.            */
 const APP_SHELL_PATHS = [
   '',
   'index.html',
@@ -15,37 +19,37 @@ const APP_SHELL_PATHS = [
   'kitchen.html',
   'learn.html',
   'legal.html',
-  'style.css?v=29',
-  'js/pages/index.js?v=1',
-  'js/pages/calculator-page.js?v=1',
-  'js/pages/schedule-page.js?v=1',
-  'js/pages/journal-page.js?v=1',
-  'js/pages/kitchen-page.js?v=1',
-  'js/pages/learn-page.js?v=1',
-  'js/pages/legal-page.js?v=1',
-  'js/premium.js?v=5',
-  'js/toolkit.js?v=7',
-  'js/calculator.js?v=19',
-  'js/scheduler.js?v=4',
-  'js/scheduler-guide.js?v=3',
-  'js/photo-store.js?v=3',
-  'js/journal-ui.js?v=19',
-  'js/kitchen.js?v=13',
-  'js/knowledge.js?v=5',
-  'js/nav.js?v=10',
-  'js/carousel.js?v=1',
-  'js/onboarding.js?v=3',
-  'js/first-bake.js?v=4',
-  'js/user-profile.js?v=8',
-  'js/pie-notifications.js?v=2',
-  'js/storage.js?v=2',
-  'js/capacitor-init.js?v=3',
+  'style.css',
+  'js/pages/index.js',
+  'js/pages/calculator-page.js',
+  'js/pages/schedule-page.js',
+  'js/pages/journal-page.js',
+  'js/pages/kitchen-page.js',
+  'js/pages/learn-page.js',
+  'js/pages/legal-page.js',
+  'js/premium.js',
+  'js/toolkit.js',
+  'js/calculator.js',
+  'js/scheduler.js',
+  'js/scheduler-guide.js',
+  'js/photo-store.js',
+  'js/journal-ui.js',
+  'js/kitchen.js',
+  'js/knowledge.js',
+  'js/nav.js',
+  'js/carousel.js',
+  'js/onboarding.js',
+  'js/first-bake.js',
+  'js/user-profile.js',
+  'js/pie-notifications.js',
+  'js/storage.js',
+  'js/capacitor-init.js',
   'js/vendor/html2canvas.min.js',
-  'recipes.js?v=7',
-  'knowledge-data.js?v=3',
-  'tools-data.js?v=5',
-  'scheduler-data.js?v=6',
-  'journal.js?v=6',
+  'recipes.js',
+  'knowledge-data.js',
+  'tools-data.js',
+  'scheduler-data.js',
+  'journal.js',
   'assets/logos/favicon-32.svg',
   'assets/logos/logo-monogram-512.svg',
   'assets/logos/logo-horizontal.svg',
