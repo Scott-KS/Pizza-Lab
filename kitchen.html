@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem("pielab-theme"),d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.dataset.theme="dark";var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#1a1a1a";}})()</script>
-  <link rel="stylesheet" href="style.css?v=28" />
+  <link rel="stylesheet" href="style.css?v=29" />
 </head>
 <body data-page="kitchen">
 
@@ -74,6 +74,20 @@
         <div class="form-group">
           <label for="k-oven">Preferred Oven</label>
           <select id="k-oven" required></select>
+        </div>
+
+        <div class="form-group">
+          <label for="k-oven-offset">Oven Calibration</label>
+          <div class="oven-offset-row">
+            <span>My oven runs</span>
+            <input type="number" id="k-oven-offset" min="0" max="100" value="0" class="input-small">
+            <span>&deg;F</span>
+            <div class="toggle-group toggle-group--two" id="k-oven-direction" role="group">
+              <button type="button" class="toggle-btn" data-value="hot">Hot</button>
+              <button type="button" class="toggle-btn selected" data-value="cold">Cold</button>
+            </div>
+          </div>
+          <p class="field-hint">We'll adjust displayed bake temps to compensate.</p>
         </div>
 
         <div class="form-group">
@@ -235,9 +249,9 @@
   <script src="knowledge-data.js?v=2"></script>
   <script src="js/photo-store.js?v=1"></script>
   <script src="journal.js?v=4"></script>
-  <script src="js/nav.js?v=7"></script>
-  <script src="js/user-profile.js?v=5"></script>
+  <script src="js/nav.js?v=8"></script>
+  <script src="js/user-profile.js?v=6"></script>
   <script src="js/premium.js?v=3"></script>
-  <script src="js/kitchen.js?v=10"></script>
+  <script src="js/kitchen.js?v=11"></script>
 </body>
 </html>

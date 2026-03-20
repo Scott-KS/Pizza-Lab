@@ -12,6 +12,7 @@ const PieLabProfile = (() => {
     humidity: "normal",
     favoriteStyle: "",
     preferredOven: "",
+    ovenTempOffset: 0,        // signed °F: positive = runs hot, negative = runs cold
     unitSystem: "standard",   // "standard" (oz/°F), "metric" (g/°C), or "hybrid" (g/°F)
     createdAt: null,
     updatedAt: null,

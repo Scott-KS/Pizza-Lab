@@ -60,6 +60,26 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedHumidity = btn.dataset.value;
   });
 
+  // ── Oven Calibration offset ─────────────────────────
+  const ovenOffsetInput = document.getElementById("k-oven-offset");
+  const ovenDirGrp = document.getElementById("k-oven-direction");
+  let ovenDirection = (profile.ovenTempOffset || 0) >= 0 ? "hot" : "cold";
+
+  if (ovenOffsetInput) {
+    ovenOffsetInput.value = Math.abs(profile.ovenTempOffset || 0);
+    ovenDirGrp.querySelectorAll(".toggle-btn").forEach(btn => {
+      const isActive = btn.dataset.value === (profile.ovenTempOffset > 0 ? "hot" : "cold");
+      btn.classList.toggle("selected", isActive);
+    });
+    ovenDirGrp.addEventListener("click", (e) => {
+      const btn = e.target.closest(".toggle-btn");
+      if (!btn) return;
+      ovenDirGrp.querySelectorAll(".toggle-btn").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      ovenDirection = btn.dataset.value;
+    });
+  }
+
   // ── Measurement System toggle ──────────────────────
   const unitsGrp = document.getElementById("k-units");
   let selectedUnits = profile.unitSystem || "standard";
@@ -290,12 +310,16 @@ document.addEventListener("DOMContentLoaded", () => {
       elevation = null;
     }
 
+    const rawOffset = parseInt(ovenOffsetInput?.value, 10) || 0;
+    const ovenTempOffset = ovenDirection === "hot" ? rawOffset : -rawOffset;
+
     const updates = {
       displayName:   nameInput.value.trim(),
       city:          currentCity,
       elevation:     elevation,
       humidity:      selectedHumidity,
       preferredOven: ovenSelect.value,
+      ovenTempOffset,
       favoriteStyle: styleSelect.value,
       unitSystem:    selectedUnits,
     };

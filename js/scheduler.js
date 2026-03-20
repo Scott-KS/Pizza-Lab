@@ -447,7 +447,45 @@
 
     const styleName = PIZZA_RECIPES[styleSelect.value]?.name || "";
 
+    // ── Bake Day Checklist (shows when bake step is within 4 hours) ──
+    let checklistHtml = "";
+    const saved = loadActiveSchedule();
+    const bakeStep = steps.find(s => isBakeStep(s) && !s.checked && s.dateTime > now);
+    const bakeWithin4h = bakeStep && (bakeStep.dateTime.getTime() - now.getTime()) < 4 * 60 * 60 * 1000;
+
+    if (bakeWithin4h && saved) {
+      const recipe = PIZZA_RECIPES[saved.styleKey];
+      const ovenLabel = (typeof OVEN_TYPES !== "undefined" && saved.ovenType) ? OVEN_TYPES[saved.ovenType] : "oven";
+      const tempF = recipe?.idealTemp?.max || 500;
+      const hasFridge = steps.some(s => s.id === "into-fridge" || s.id === "cold-proof");
+
+      const items = [];
+      if (hasFridge) items.push("Pull dough from fridge (let warm 1\u20132 hours)");
+      items.push(`Preheat ${ovenLabel} to ${tempF}\u00B0F`);
+      items.push("Prep toppings and sauce");
+      items.push("Set up workspace (flour, peel, cutting board)");
+
+      let stored = {};
+      try { stored = JSON.parse(localStorage.getItem("pielab-bakeday-checklist") || "{}"); } catch {}
+
+      const allChecked = items.every((_, i) => stored[i]);
+      checklistHtml = `
+        <details class="bakeday-checklist" ${allChecked ? "" : "open"}>
+          <summary>Bake Day Prep</summary>
+          <div class="bakeday-items">
+            ${items.map((item, i) => `
+              <label class="bakeday-item">
+                <input type="checkbox" data-bakeday-idx="${i}" ${stored[i] ? "checked" : ""}>
+                <span>${item}</span>
+              </label>
+            `).join("")}
+          </div>
+        </details>
+      `;
+    }
+
     let html = `
+      ${checklistHtml}
       <div class="schedule-header">
         <h4>${styleName} Schedule</h4>
         <span class="schedule-method-pill">${methodDisplayLabel || (selectedMethod ? selectedMethod.label : "")}</span>
@@ -498,6 +536,16 @@
     timelineEl.innerHTML = html;
 
     // ── Attach event listeners ──
+
+    // Bake day checklist checkbox persistence
+    timelineEl.querySelectorAll("[data-bakeday-idx]").forEach(cb => {
+      cb.addEventListener("change", () => {
+        let stored = {};
+        try { stored = JSON.parse(localStorage.getItem("pielab-bakeday-checklist") || "{}"); } catch {}
+        stored[cb.dataset.bakedayIdx] = cb.checked;
+        localStorage.setItem("pielab-bakeday-checklist", JSON.stringify(stored));
+      });
+    });
 
     // Checkoff buttons
     timelineEl.querySelectorAll(".sched-step-dot").forEach((btn) => {
@@ -808,6 +856,7 @@
   // ── localStorage Persistence ──
 
   function saveActiveSchedule(data) {
+    localStorage.removeItem("pielab-bakeday-checklist"); // reset checklist for new schedule
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch (e) {

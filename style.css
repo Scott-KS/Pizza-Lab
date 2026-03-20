@@ -630,6 +630,29 @@ main {
   color: var(--clr-text-light);
 }
 
+/* ── Shared Toast Notification ─────────────────────── */
+.pielab-toast {
+  position: fixed;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: var(--clr-text);
+  color: var(--clr-bg);
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 200ms ease, transform 200ms ease;
+  pointer-events: none;
+}
+.pielab-toast--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -919,6 +942,11 @@ main {
   color: var(--clr-text-light);
   font-size: 0.85rem !important;
 }
+.oven-offset-note {
+  color: var(--clr-accent);
+  font-size: 0.82rem;
+  font-weight: 400;
+}
 
 .bake-time-note {
   color: var(--clr-text-light);
@@ -976,6 +1004,7 @@ main {
   margin-top: 2rem;
 }
 
+.btn-copy-list,
 .btn-print,
 .btn-reset {
   flex: 1;
@@ -988,11 +1017,13 @@ main {
   transition: all 0.2s;
 }
 
+.btn-copy-list,
 .btn-print {
   background: var(--clr-border);
   color: var(--clr-text);
 }
 
+.btn-copy-list:hover,
 .btn-print:hover {
   background: #d5ccc4;
 }
@@ -2939,6 +2970,17 @@ main {
   color: var(--clr-text-light);
   font-weight: 400;
 }
+.oven-offset-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.92rem;
+}
+.input-small {
+  width: 4rem;
+  text-align: center;
+}
 
 .photo-grid {
   display: grid;
@@ -3492,6 +3534,7 @@ main {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
+.btn-modal-edit,
 .btn-modal-iterate,
 .btn-modal-share,
 .btn-modal-save-photo {
@@ -3507,6 +3550,7 @@ main {
   transition: all 0.2s;
 }
 
+.btn-modal-edit:hover,
 .btn-modal-iterate:hover,
 .btn-modal-share:hover,
 .btn-modal-save-photo:hover {
@@ -4510,6 +4554,50 @@ footer {
   font-size: 0.7rem;
   font-weight: 600;
   text-decoration: none !important;
+}
+
+/* ── Bake Day Checklist ────────────────────────────── */
+.bakeday-checklist {
+  background: var(--clr-card);
+  border: 1px solid var(--clr-accent);
+  border-radius: var(--radius);
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+}
+.bakeday-checklist summary {
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  color: var(--clr-accent);
+  cursor: pointer;
+  list-style: none;
+}
+.bakeday-checklist summary::before {
+  content: "\25B6\00A0";
+  font-size: 0.7rem;
+  transition: transform 200ms ease;
+  display: inline-block;
+}
+.bakeday-checklist[open] summary::before {
+  transform: rotate(90deg);
+}
+.bakeday-items {
+  padding: 0 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.bakeday-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+.bakeday-item input:checked + span {
+  text-decoration: line-through;
+  color: var(--clr-text-light);
 }
 
 .sched-step-instruction {

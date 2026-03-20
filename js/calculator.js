@@ -480,10 +480,16 @@ document.addEventListener("DOMContentLoaded", () => {
       ? OVEN_PREHEAT_MINUTES[ovenType]
       : 45;
 
+    // ── Oven Calibration offset (from Kitchen profile) ──
+    const ovenOffset = (typeof PieLabProfile !== "undefined") ? (PieLabProfile.getProfile().ovenTempOffset || 0) : 0;
+    const adjTempF = recTempF - ovenOffset;
+    const adjTempC = fToC(adjTempF);
     const metricTempBake = typeof PieLabProfile !== "undefined" && PieLabProfile.isMetricTemp();
-    const tempDisplay = metricTempBake
-      ? `${recTempC}°C`
-      : `${recTempF}°F`;
+    const baseTempDisplay = metricTempBake ? `${adjTempC}\u00B0C` : `${adjTempF}\u00B0F`;
+    const offsetNote = ovenOffset !== 0
+      ? ` <span class="oven-offset-note">(adjusted ${ovenOffset > 0 ? "\u2212" : "+"}${Math.abs(ovenOffset)}\u00B0F for your oven)</span>`
+      : "";
+    const tempDisplay = baseTempDisplay + offsetNote;
 
     const preferredLabel = (typeof OVEN_TYPES !== "undefined" && recipe.preferredOven) ? OVEN_TYPES[recipe.preferredOven] : "";
     const secondaryLabel = (typeof OVEN_TYPES !== "undefined" && recipe.secondaryOven) ? OVEN_TYPES[recipe.secondaryOven] : "";
@@ -709,6 +715,47 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("pielab-plan-prefill", JSON.stringify(planData));
     } catch { /* ignore */ }
     window.location.href = "schedule.html?prefill=1";
+  });
+
+  // ── "Copy Shopping List" — formats ingredients and copies to clipboard ──
+  document.getElementById("btn-copy-list").addEventListener("click", () => {
+    if (!lastDough) { showToast("Calculate a recipe first"); return; }
+
+    const CATEGORIES = {
+      "Flour & Dry": /flour|salt|sugar|yeast|semolina|cornmeal|tipo/i,
+      "Dairy": /mozzarella|parmesan|pecorino|ricotta|cheese|butter|cream/i,
+      "Produce": /tomato|basil|garlic|onion|pepper|olive|mushroom|arugula|oregano|herb/i,
+    };
+
+    const all = [
+      ...(lastDough || []).map(d => ({ name: d.ingredient, amount: d.amount })),
+      ...(lastSauce || []).map(d => ({ name: d.ingredient, amount: d.amount })),
+      ...(lastToppings || []).map(d => ({ name: d.ingredient, amount: d.amount })),
+    ];
+
+    const grouped = { "Flour & Dry": [], "Dairy": [], "Produce": [], "Other": [] };
+    all.forEach(item => {
+      let placed = false;
+      for (const [cat, regex] of Object.entries(CATEGORIES)) {
+        if (regex.test(item.name)) { grouped[cat].push(item); placed = true; break; }
+      }
+      if (!placed) grouped["Other"].push(item);
+    });
+
+    const title = document.getElementById("result-title")?.textContent || "Recipe";
+    let text = `Shopping List \u2014 ${title}\n`;
+    for (const [cat, items] of Object.entries(grouped)) {
+      if (!items.length) continue;
+      text += `\n${cat.toUpperCase()}\n`;
+      items.forEach(item => {
+        text += `- ${item.name}: ${formatAmount(item.amount, item.name)}\n`;
+      });
+    }
+
+    navigator.clipboard.writeText(text.trim()).then(
+      () => showToast("Shopping list copied!"),
+      () => showToast("Could not copy — try again")
+    );
   });
 
   // ── "Log This Bake" navigates to journal page ────────

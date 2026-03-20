@@ -41,6 +41,9 @@
   // Iteration / derivedFrom state
   let pendingDerivedFromId = null;
 
+  // Edit mode state (null = creating new, string = editing existing entry ID)
+  let editingEntryId = null;
+
   // Dough snapshot state
   let currentSnapshot = null;
   const snapshotEl = document.getElementById("j-dough-snapshot");
@@ -348,7 +351,7 @@
   });
 
   // ── Show/hide form ────────────────────────────────
-  function showForm(prefill, derivedFrom) {
+  function showForm(prefill, derivedFrom, editEntry) {
     // Expand the Log a Bake accordion
     const logAccordion = document.getElementById("accordion-log");
     if (logAccordion && !logAccordion.classList.contains("open")) {
@@ -371,8 +374,32 @@
     document.getElementById("j-bake-time").value = "";
     document.getElementById("j-oven-type").selectedIndex = 0;
     pendingDerivedFromId = null;
+    editingEntryId = null;
 
-    if (derivedFrom) {
+    if (editEntry) {
+      // ── Edit mode — populate form with existing entry data ──
+      editingEntryId = editEntry.id;
+      formHeading.textContent = "Edit Bake";
+      document.getElementById("j-style").value = editEntry.styleKey || "";
+      document.getElementById("j-date").value = editEntry.date || "";
+      document.getElementById("j-bake-name").value = editEntry.bakeName || "";
+      if (editEntry.bakeTemp) document.getElementById("j-bake-temp").value = editEntry.bakeTemp;
+      if (editEntry.bakeTime) document.getElementById("j-bake-time").value = editEntry.bakeTime;
+      if (editEntry.ovenType) document.getElementById("j-oven-type").value = editEntry.ovenType;
+      if (editEntry.notes) document.getElementById("j-notes").value = editEntry.notes;
+      currentRating = editEntry.rating || 0;
+      updateStars();
+      currentPhotos = editEntry.photos ? [...editEntry.photos] : [];
+      renderPhotoGrid();
+      pendingDerivedFromId = editEntry.derivedFromId || null;
+      if (editEntry.doughSnapshot) {
+        currentSnapshot = editEntry.doughSnapshot;
+        renderSnapshot(editEntry.doughSnapshot);
+      } else {
+        currentSnapshot = null;
+        snapshotEl.innerHTML = '<span class="snapshot-label">Dough Snapshot:</span><span class="snapshot-empty">No dough data for this entry</span>';
+      }
+    } else if (derivedFrom) {
       // Iteration mode — new entry based on an existing one
       pendingDerivedFromId = derivedFrom.id;
       formHeading.textContent = `New Bake \u2014 Based on ${derivedFrom.styleName}`;
@@ -465,6 +492,7 @@
       if (body) body.style.maxHeight = null;
     }
     pendingDerivedFromId = null;
+    editingEntryId = null;
     formHeading.textContent = "Log a Bake";
     localStorage.removeItem("pielab-pending-bake");
   }
@@ -573,7 +601,15 @@
       derivedFromId: pendingDerivedFromId || null,
     };
 
-    const saved = PieLabJournal.addEntry(entry);
+    let saved;
+    if (editingEntryId) {
+      // ── Edit mode — update existing entry ──
+      PieLabJournal.updateEntry(editingEntryId, entry);
+      saved = { ...entry, id: editingEntryId, skillCount: 0 };
+      editingEntryId = null;
+    } else {
+      saved = PieLabJournal.addEntry(entry);
+    }
     localStorage.removeItem("pielab-pending-bake");
     localStorage.removeItem("pielab-last-calc");
     if (window.PieLabHaptics) PieLabHaptics.success();
@@ -980,8 +1016,11 @@
     html += `
       <div class="modal-actions">
         ${shareButtons}
+        <button class="btn-modal-edit" data-id="${entry.id}">
+          Edit
+        </button>
         <button class="btn-modal-iterate" data-id="${entry.id}">
-          Bake Again ↻
+          Bake Again \u21BB
         </button>
         <button class="btn-modal-delete" data-id="${entry.id}">
           Delete
@@ -1004,6 +1043,12 @@
         });
       });
     }
+
+    // Edit handler — close modal, open form in edit mode
+    modalBody.querySelector(".btn-modal-edit").addEventListener("click", () => {
+      modalOverlay.classList.add("hidden");
+      showForm(false, null, entry);
+    });
 
     // Iterate handler — "Use as Starting Point" → load into calculator
     modalBody.querySelector(".btn-modal-iterate").addEventListener("click", () => {
