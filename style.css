@@ -6468,6 +6468,16 @@ body[data-page='kitchen'] main {
   color: var(--clr-text-light);
   margin-bottom: 0.75rem;
 }
+.hydration-chart {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+}
+.analytics-hint {
+  color: var(--clr-text-light);
+  font-size: 0.85rem;
+  font-style: italic;
+}
 .analytics-card-small {
   display: flex;
   flex-direction: column;

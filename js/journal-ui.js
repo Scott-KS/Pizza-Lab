@@ -266,6 +266,40 @@ function renderAnalytics() {
     }
   }
 
+  // ── Hydration trend (last 10 bakes with hydration data) ──
+  const hydrationEntries = entries
+    .filter((e) => e.doughSnapshot && e.doughSnapshot.hydration > 0)
+    .sort((a, b) => (a.date || '').localeCompare(b.date || ''))
+    .slice(-10);
+  let hydrationHtml = '';
+  if (hydrationEntries.length >= 3) {
+    const values = hydrationEntries.map((e) => e.doughSnapshot.hydration);
+    const minH = Math.min(...values) - 2;
+    const maxH = Math.max(...values) + 2;
+    const range = maxH - minH || 1;
+    const w = 300;
+    const h = 120;
+    const stepX = w / (values.length - 1);
+    const points = values
+      .map((v, i) => `${Math.round(i * stepX)},${Math.round(h - ((v - minH) / range) * h)}`)
+      .join(' ');
+    const labels = values
+      .map(
+        (v, i) =>
+          `<text x="${Math.round(i * stepX)}" y="${Math.round(h - ((v - minH) / range) * h) - 6}" text-anchor="middle" fill="var(--clr-text)" font-size="10">${v}%</text>`
+      )
+      .join('');
+    hydrationHtml = `<div class="analytics-card"><h4>Hydration Trend</h4>
+      <svg viewBox="-10 -16 ${w + 20} ${h + 24}" class="hydration-chart" aria-label="Hydration trend line chart">
+        <polyline points="${points}" fill="none" stroke="var(--clr-primary)" stroke-width="2.5" stroke-linejoin="round"/>
+        ${values.map((v, i) => `<circle cx="${Math.round(i * stepX)}" cy="${Math.round(h - ((v - minH) / range) * h)}" r="4" fill="var(--clr-primary)"/>`).join('')}
+        ${labels}
+      </svg></div>`;
+  } else if (hydrationEntries.length > 0) {
+    hydrationHtml =
+      '<div class="analytics-card analytics-card-small"><p class="analytics-hint">Log more bakes to see your hydration trend</p></div>';
+  }
+
   // ── Unique styles tried ──
   const uniqueStyles = Object.keys(styleMap).length;
   const totalStyles = Object.keys(PIZZA_RECIPES).length;
@@ -278,6 +312,7 @@ function renderAnalytics() {
         <table class="analytics-table"><thead><tr><th>Style</th><th>Bakes</th><th>Avg \u2605</th></tr></thead><tbody>${styleRows}</tbody></table>
       </div>
       ${sweetHtml ? `<div class="analytics-card"><h4>Your Sweet Spots</h4><div class="sweet-grid">${sweetHtml}</div></div>` : ''}
+      ${hydrationHtml}
       <div class="analytics-card analytics-card-small">
         <div class="sweet-value">${uniqueStyles} / ${totalStyles}</div>
         <div class="sweet-label">Styles Explored</div>
