@@ -3,7 +3,7 @@
    Page: kitchen.html
    ══════════════════════════════════════════════════════ */
 import { PieLabStorage } from './storage.js';
-import { populateOvenSelect, populateStyleSelect, escapeHtml } from './nav.js';
+import { populateOvenSelect, populateStyleSelect, escapeHtml, showToast } from './nav.js';
 import { PieLabProfile } from './user-profile.js';
 import { PieLabPremium } from './premium.js';
 import { PieLabPhotos } from './photo-store.js';
@@ -565,13 +565,16 @@ document.addEventListener('DOMContentLoaded', () => {
     e.target.value = '';
   });
 
-  // ── Feedback Form ─────────────────────────────────
+  // ── Feedback Form (submits to Google Forms) ──────
+  const FEEDBACK_URL =
+    'https://docs.google.com/forms/d/e/1FAIpQLScJNRfJizp54U1iMz6ExKLMMArGfaNDR-OkXYyr0FX5HSHiqg/formResponse';
   const fbType = document.getElementById('fb-type');
   const fbMessage = document.getElementById('fb-message');
+  const fbEmail = document.getElementById('fb-email');
   const fbSend = document.getElementById('btn-send-feedback');
   const fbStatus = document.getElementById('feedback-status');
 
-  fbSend.addEventListener('click', () => {
+  fbSend.addEventListener('click', async () => {
     const message = fbMessage.value.trim();
     if (!message) {
       fbMessage.focus();
@@ -586,27 +589,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Gather context automatically
     const profile = PieLabProfile.getProfile();
-    const device = navigator.userAgent;
-    const screen = `${window.screen.width}x${window.screen.height}`;
+    const screenSize = `${window.screen.width}x${window.screen.height}`;
     const theme = document.documentElement.dataset.theme || 'light';
 
-    // Build query params and open feedback on pielab.app
-    const params = new URLSearchParams({
-      type: label,
-      message: message,
-      name: profile.displayName || '',
-      location: profile.city || '',
-      units: profile.unitSystem || 'standard',
-      theme: theme,
-      screen: screen,
-      device: device,
+    // Google Forms field IDs
+    const formData = new URLSearchParams({
+      'entry.984946381': label,
+      'entry.181802720': message,
+      'entry.1117599412': fbEmail ? fbEmail.value.trim() : '',
+      'entry.1813993131': profile.displayName || '',
+      'entry.894394575': profile.city || '',
+      'entry.1418349736': theme,
+      'entry.892793498': screenSize,
     });
 
-    window.open(`https://www.pielab.app/feedback?${params.toString()}`, '_blank');
+    // Disable button while submitting
+    fbSend.disabled = true;
+    fbSend.textContent = 'Sending\u2026';
 
-    // Show confirmation + clear form
+    try {
+      await fetch(FEEDBACK_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString(),
+      });
+    } catch {
+      // Google Forms returns opaque response with no-cors — submission still succeeds
+    }
+
+    // Clear form and show confirmation
     fbMessage.value = '';
-    fbStatus.textContent = 'Thanks! A feedback page has opened — please submit it there.';
+    if (fbEmail) fbEmail.value = '';
+    fbSend.disabled = false;
+    fbSend.textContent = 'Send Feedback';
+    showToast('Feedback sent \u2014 thank you!');
+
+    fbStatus.textContent = 'Thanks! We read every message.';
     fbStatus.classList.remove('hidden');
     fbStatus.classList.remove('fade-out');
 

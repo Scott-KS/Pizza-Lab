@@ -14,7 +14,7 @@
     <meta name="theme-color" content="#c0392b" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'nonce-PIELAB_NONCE'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.revenuecat.com;"
+      content="default-src 'self'; script-src 'self' 'nonce-PIELAB_NONCE'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.revenuecat.com https://docs.google.com;"
     />
     <link rel="manifest" href="manifest.json" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -209,6 +209,15 @@
               rows="4"
               placeholder="Tell us what happened or what you'd like to see…"
             ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="fb-email">Email <span class="field-hint">(optional)</span></label>
+            <input
+              type="email"
+              id="fb-email"
+              placeholder="Only if you'd like a reply"
+            />
           </div>
 
           <div class="feedback-actions">
