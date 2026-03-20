@@ -419,6 +419,7 @@ btnNext2.addEventListener('click', () => {
   renderVisualBar(computedSchedule);
   renderRecipeSummary(styleKey, numPizzas, doughBallWeight, sizeKey);
   goToStep(3);
+  showRemindersButton();
 
   // Show "Log This Bake" immediately
   const logEl = document.getElementById('sched-log-bake');
@@ -801,11 +802,108 @@ function formatScheduleTime(date) {
   return `${weekday} \u2014 ${monthDay} \u2014 ${time}`;
 }
 
+// ── Reminders Button (native only) ──
+
+let remindersActive = false;
+
+function showRemindersButton() {
+  const container = document.getElementById('sched-reminders');
+  if (!container) return;
+
+  // Only show on native
+  if (!PieNotifications.isNative()) return;
+
+  container.classList.remove('hidden');
+  updateRemindersButton();
+}
+
+function updateRemindersButton() {
+  const btn = document.getElementById('btn-sched-reminders');
+  if (!btn) return;
+
+  const stored = PieLabStorage.get('pielab-scheduled-notifications');
+  remindersActive = !!stored;
+
+  btn.textContent = remindersActive ? 'Cancel Reminders' : 'Set Reminders';
+}
+
+async function handleRemindersClick() {
+  if (remindersActive) {
+    // Cancel reminders
+    await PieNotifications.cancelAll();
+    PieLabStorage.remove('pielab-scheduled-notifications');
+    remindersActive = false;
+    updateRemindersButton();
+    showToast('Reminders cancelled');
+    return;
+  }
+
+  // Request permission
+  const granted = await PieNotifications.requestPermission();
+  if (!granted) {
+    showPermissionDeniedModal();
+    return;
+  }
+
+  // Schedule notifications for each future step
+  if (!computedSchedule) return;
+  const saved = loadActiveSchedule();
+  const reminderMs = ((saved && saved.reminderMinutes) || 0) * 60000;
+  const now = Date.now();
+  const ids = [];
+
+  for (let i = 0; i < computedSchedule.length; i++) {
+    const step = computedSchedule[i];
+    if (step.checked) continue;
+    const fireAt = step.dateTime.getTime() - reminderMs;
+    if (fireAt <= now) continue;
+
+    const id = (Date.now() + i) & 0x7fffffff || 1;
+    const title =
+      reminderMs > 0
+        ? `The Pie Lab \u2014 In ${Math.round(reminderMs / 60000)} min:`
+        : 'The Pie Lab \u2014 Time\u2019s Up!';
+    const body =
+      reminderMs > 0 ? `Get ready to: ${step.label}` : `It\u2019s time to: ${step.label}`;
+
+    await PieNotifications.schedule({ id, title, body, at: new Date(fireAt) });
+    ids.push(id);
+  }
+
+  PieLabStorage.set('pielab-scheduled-notifications', ids);
+  remindersActive = true;
+  updateRemindersButton();
+  showToast(`Reminders set for ${ids.length} step${ids.length !== 1 ? 's' : ''}`);
+}
+
+function showPermissionDeniedModal() {
+  // Remove existing modal if any
+  const existing = document.getElementById('notif-permission-modal');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'notif-permission-modal';
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML =
+    '<div class="modal-content">' +
+    '<h3>Notifications Disabled</h3>' +
+    '<p>Enable notifications so Pie Lab can remind you at each dough step. You can enable this in your device Settings.</p>' +
+    '<button type="button" class="btn-primary" id="btn-notif-modal-close">Got It</button>' +
+    '</div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay || e.target.id === 'btn-notif-modal-close') overlay.remove();
+  });
+}
+
+document.getElementById('btn-sched-reminders')?.addEventListener('click', handleRemindersClick);
+
 // ── Countdown Timer ──
 
 function startCountdown() {
   stopCountdown();
-  scheduleAllNotifications();
+  // On native, notifications are controlled by the Reminders button
+  if (!PieNotifications.isNative()) scheduleAllNotifications();
   countdownInterval = setInterval(() => {
     const el = timelineEl.querySelector('.sched-step-countdown');
     if (!el) {
@@ -1068,6 +1166,7 @@ function restoreSchedule(data) {
   renderVisualBar(computedSchedule);
   renderRecipeSummary(data.styleKey, data.numPizzas, data.doughBallWeight, data.sizeKey);
   goToStep(3);
+  showRemindersButton();
 
   // Show "Log This Bake" immediately
   const logEl = document.getElementById('sched-log-bake');
@@ -1293,6 +1392,7 @@ if (saved && saved.steps && saved.steps.length > 0) {
   renderScheduleTimeline(computedSchedule);
   renderVisualBar(computedSchedule);
   goToStep(3);
+  showRemindersButton();
   showToast('Recipe loaded from Calculator');
 })();
 

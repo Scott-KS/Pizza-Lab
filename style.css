@@ -7091,6 +7091,26 @@ body[data-page='kitchen'] main {
   text-decoration: none;
 }
 
+.sched-reminders {
+  text-align: center;
+  margin: 1rem 0;
+}
+.btn-sched-reminders {
+  display: inline-block;
+  padding: 0.6rem 1.5rem;
+  font-size: 0.95rem;
+  background: var(--clr-card);
+  color: var(--clr-text);
+  border: 2px solid var(--clr-primary);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 600;
+}
+.btn-sched-reminders:hover {
+  background: var(--clr-primary);
+  color: #fff;
+}
+
 .bar-block.step-upcoming {
   background: var(--clr-card-bg);
   color: var(--clr-text-light);
