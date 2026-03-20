@@ -59,8 +59,8 @@ const PieLabOnboarding = (() => {
     },
     {
       icon: '📚',
-      title: 'The Learning Hub',
-      page: 'Learn',
+      title: 'The Tools Hub',
+      page: 'Tools',
       body: 'Explore our style library, flour guide, cheese & sauce reference, fermentation charts, and troubleshooting tools.',
       detail: 'Everything you need to understand the science and craft behind great pizza.',
     },

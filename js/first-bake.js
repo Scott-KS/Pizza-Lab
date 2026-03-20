@@ -117,12 +117,12 @@ const PieLabFirstBake = (() => {
         const name = getBakerName();
         return name ? `Welcome Back, ${name}!` : 'Welcome Back, Baker!';
       },
-      body: 'Nice work on your first bake! This time, let\u2019s explore a powerful feature \u2014 My Style \u2014 that lets you customize your dough recipe.',
+      body: 'Nice work on your first bake! This time, let\u2019s explore the Custom mode \u2014 it lets you customize your dough recipe.',
       target: null,
     },
     {
-      title: 'The My Style Toggle',
-      body: 'See the Recommended / My Style toggle above the form? Flip it to My Style to unlock custom dough settings for any pizza style.',
+      title: 'The Custom Toggle',
+      body: 'See the Recommended / Custom toggle above the form? Flip it to Custom to unlock custom dough settings for any pizza style.',
       target: '.settings-toggle-row',
       waitFor: { selector: '#settings-mode-toggle', event: 'change' },
     },
@@ -139,7 +139,7 @@ const PieLabFirstBake = (() => {
     },
     {
       title: 'Make It Yours',
-      body: 'Every time you calculate with My Style active, your custom percentages are used instead of the defaults. Hit Reset to go back to the original recipe anytime.',
+      body: 'Every time you calculate with Custom active, your custom percentages are used instead of the defaults. Hit Reset to go back to the original recipe anytime.',
       target: '#btn-reset-custom',
     },
     {
