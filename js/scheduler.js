@@ -458,6 +458,7 @@
     steps.forEach((step, i) => {
       const isPast = now >= step.dateTime;
       const isNext = i === nextIdx && !step.checked;
+      const isMissed = isPast && !step.checked && !isNext;
       let statusClass;
       if (step.checked) statusClass = "step-checked";
       else if (isNext) statusClass = "step-next";
@@ -481,6 +482,7 @@
             <div class="sched-step-label">
               ${step.label}
               ${step.duration ? `<span class="step-duration-badge">${step.duration}</span>` : ""}
+              ${isMissed ? `<span class="step-missed-badge">Missed</span>` : ""}
             </div>
             <div class="sched-step-instruction">${step.instruction}</div>
             <button class="step-why-toggle" type="button">Why it matters</button>
