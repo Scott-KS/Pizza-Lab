@@ -224,14 +224,7 @@ function preValidateSchedule() {
 }
 
 // ── Step 1 → Step 2 ──
-btnNext1.addEventListener('click', () => {
-  if (!validateStep1()) return;
-
-  // Dough Scheduler is a Pro feature
-  PieLabPremium.verifyAndGate(() => btnNext1.click());
-  return;
-
-  // eslint-disable-next-line no-unreachable
+function advanceToStep2() {
   const eatTime = new Date(datetimeInput.value);
   const now = new Date();
   const availableHours = (eatTime - now) / 3600000;
@@ -298,7 +291,6 @@ btnNext1.addEventListener('click', () => {
         </button>
       `;
     });
-    // eslint-disable-next-line no-unreachable
     cardsHtml += '</div>';
     cardsHtml += `<span class="method-time-badge">\u2248 ${availHoursRounded} hours available</span>`;
     methodCard.innerHTML = cardsHtml;
@@ -316,9 +308,15 @@ btnNext1.addEventListener('click', () => {
     });
   }
 
-  // eslint-disable-next-line no-unreachable
   preValidateSchedule();
   goToStep(2);
+}
+
+btnNext1.addEventListener('click', () => {
+  if (!validateStep1()) return;
+
+  // Dough Scheduler is a Pro feature
+  PieLabPremium.verifyAndGate(() => advanceToStep2());
 });
 
 // ── Step 2 → Back to Step 1 ──

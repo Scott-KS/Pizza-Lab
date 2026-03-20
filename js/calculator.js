@@ -1059,6 +1059,14 @@ document.addEventListener('DOMContentLoaded', () => {
         <span class="dough-process-step-title">Shape</span>
         <p>${shapingNote}</p>
       </li>
+      ${
+        styleKey === 'chicago-tavern'
+          ? `<li class="dough-process-step">
+        <span class="dough-process-step-title">Cure</span>
+        <p>Lay each rolled, docked dough skin uncovered on parchment-lined sheet pans. Refrigerate uncovered for 8\u201324 hours. The surface will dry out \u2014 this is intentional. When ready to bake, invert the cured skin so the dried side faces down for a cracker-like snap.</p>
+      </li>`
+          : ''
+      }
     `;
   }
 
@@ -1193,7 +1201,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const type = document.getElementById('pizza-type').value;
-    if (!type) return;
+    if (!type) {
+      showToast('Select a pizza style first');
+      return;
+    }
 
     const styleTools = STYLE_TOOLS[type];
     const commonTools = STYLE_TOOLS._common || [];
