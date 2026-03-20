@@ -3492,6 +3492,7 @@ main {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
+.btn-modal-edit,
 .btn-modal-iterate,
 .btn-modal-share,
 .btn-modal-save-photo {
@@ -3507,6 +3508,7 @@ main {
   transition: all 0.2s;
 }
 
+.btn-modal-edit:hover,
 .btn-modal-iterate:hover,
 .btn-modal-share:hover,
 .btn-modal-save-photo:hover {
