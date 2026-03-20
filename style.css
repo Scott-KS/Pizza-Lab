@@ -942,6 +942,11 @@ main {
   color: var(--clr-text-light);
   font-size: 0.85rem !important;
 }
+.oven-offset-note {
+  color: var(--clr-accent);
+  font-size: 0.82rem;
+  font-weight: 400;
+}
 
 .bake-time-note {
   color: var(--clr-text-light);
@@ -2964,6 +2969,17 @@ main {
   font-size: 0.78rem;
   color: var(--clr-text-light);
   font-weight: 400;
+}
+.oven-offset-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.92rem;
+}
+.input-small {
+  width: 4rem;
+  text-align: center;
 }
 
 .photo-grid {

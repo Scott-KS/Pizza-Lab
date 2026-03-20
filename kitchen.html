@@ -77,6 +77,20 @@
         </div>
 
         <div class="form-group">
+          <label for="k-oven-offset">Oven Calibration</label>
+          <div class="oven-offset-row">
+            <span>My oven runs</span>
+            <input type="number" id="k-oven-offset" min="0" max="100" value="0" class="input-small">
+            <span>&deg;F</span>
+            <div class="toggle-group toggle-group--two" id="k-oven-direction" role="group">
+              <button type="button" class="toggle-btn" data-value="hot">Hot</button>
+              <button type="button" class="toggle-btn selected" data-value="cold">Cold</button>
+            </div>
+          </div>
+          <p class="field-hint">We'll adjust displayed bake temps to compensate.</p>
+        </div>
+
+        <div class="form-group">
           <label id="humidity-label">Humidity</label>
           <div class="toggle-group" id="k-humidity" role="group" aria-labelledby="humidity-label">
             <button type="button" class="toggle-btn" data-value="dry">Dry</button>

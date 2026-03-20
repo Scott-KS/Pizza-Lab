@@ -480,10 +480,16 @@ document.addEventListener("DOMContentLoaded", () => {
       ? OVEN_PREHEAT_MINUTES[ovenType]
       : 45;
 
+    // ── Oven Calibration offset (from Kitchen profile) ──
+    const ovenOffset = (typeof PieLabProfile !== "undefined") ? (PieLabProfile.getProfile().ovenTempOffset || 0) : 0;
+    const adjTempF = recTempF - ovenOffset;
+    const adjTempC = fToC(adjTempF);
     const metricTempBake = typeof PieLabProfile !== "undefined" && PieLabProfile.isMetricTemp();
-    const tempDisplay = metricTempBake
-      ? `${recTempC}°C`
-      : `${recTempF}°F`;
+    const baseTempDisplay = metricTempBake ? `${adjTempC}\u00B0C` : `${adjTempF}\u00B0F`;
+    const offsetNote = ovenOffset !== 0
+      ? ` <span class="oven-offset-note">(adjusted ${ovenOffset > 0 ? "\u2212" : "+"}${Math.abs(ovenOffset)}\u00B0F for your oven)</span>`
+      : "";
+    const tempDisplay = baseTempDisplay + offsetNote;
 
     const preferredLabel = (typeof OVEN_TYPES !== "undefined" && recipe.preferredOven) ? OVEN_TYPES[recipe.preferredOven] : "";
     const secondaryLabel = (typeof OVEN_TYPES !== "undefined" && recipe.secondaryOven) ? OVEN_TYPES[recipe.secondaryOven] : "";
