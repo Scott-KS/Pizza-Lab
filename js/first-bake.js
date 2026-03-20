@@ -123,12 +123,12 @@ const PieLabFirstBake = (() => {
     {
       title: "Fermentation Tuning",
       body: "Want to dial in your ferment? Switch to Plan My Bake mode to unlock fermentation controls \u2014 set your yeast type, ferment time, and temperature, and we\u2019ll adjust yeast amounts automatically.",
-      target: null,
+      target: ".settings-toggle-row",
     },
     {
       title: "Keep Exploring",
       body: "Try different styles, dial in your preferences, and log each bake. Over time you\u2019ll build a journal of your pizza journey. Happy baking!",
-      target: null,
+      target: ".calculator-card h2",
       nextLabel: "Let\u2019s Go!",
     },
   ];
@@ -173,7 +173,10 @@ const PieLabFirstBake = (() => {
     document.getElementById("firstbake-skip").addEventListener("click", close);
     document.addEventListener("keydown", handleKey);
 
-    requestAnimationFrame(() => overlay.classList.add("firstbake-overlay--visible"));
+    requestAnimationFrame(() => {
+      overlay.classList.add("firstbake-overlay--visible");
+      cardEl.classList.add("firstbake-card--visible");
+    });
     renderStep();
   }
 
