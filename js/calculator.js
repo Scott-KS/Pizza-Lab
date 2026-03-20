@@ -767,19 +767,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── "Schedule This Bake" prefills scheduler ──────────
   document.getElementById('btn-schedule-bake').addEventListener('click', () => {
-    PieLabPremium.verifyAndGate(() => document.getElementById('btn-schedule-bake').click());
-    return;
-    // eslint-disable-next-line no-unreachable
     if (!lastCalcContext) return;
-    const { adjustedRecipe, numPizzas, sizeKey } = lastCalcContext;
+    const { numPizzas, sizeKey } = lastCalcContext;
     const type = document.getElementById('pizza-type').value;
-    const doughBallWeight = adjustedRecipe.sizes[sizeKey].doughWeight;
     try {
       const planData = {
         styleKey: type,
         sizeKey: sizeSelect.value,
         quantity: numPizzas,
-        calcResult: { doughBallWeight },
+        calcResult: { doughBallWeight: lastCalcContext.adjustedRecipe.sizes[sizeKey].doughWeight },
       };
       PieLabStorage.set('pielab-plan-prefill', planData);
     } catch {

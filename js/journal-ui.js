@@ -476,6 +476,7 @@ function showForm(prefill, derivedFrom, editEntry) {
         } else {
           formHeading.textContent = 'Log a Bake';
         }
+        showToast('Bake loaded from Scheduler');
       } else {
         formHeading.textContent = 'Log a Bake';
         currentSnapshot = null;

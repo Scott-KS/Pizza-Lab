@@ -16,6 +16,7 @@ import {
   OVEN_TYPES,
   createAlarmBeep,
   updateScheduleBadge,
+  showToast,
 } from './nav.js';
 import { PieLabProfile } from './user-profile.js';
 import { PieLabPremium } from './premium.js';
@@ -1173,6 +1174,7 @@ if (saved && saved.steps && saved.steps.length > 0) {
     if (prefill.quantity) countInput.value = prefill.quantity;
     checkStep1Ready();
     goToStep(1);
+    showToast('Recipe loaded from Calculator');
     return;
   }
 
@@ -1291,6 +1293,7 @@ if (saved && saved.steps && saved.steps.length > 0) {
   renderScheduleTimeline(computedSchedule);
   renderVisualBar(computedSchedule);
   goToStep(3);
+  showToast('Recipe loaded from Calculator');
 })();
 
 // ── Prefill Banner Helper ──
