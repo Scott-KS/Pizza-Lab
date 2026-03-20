@@ -92,9 +92,19 @@ const PieLabFirstBake = (() => {
 
   // ── Second Bake Guide Steps ─────────────────────────
 
+  function getBakerName() {
+    try {
+      const profile = PieLabProfile.getProfile();
+      return profile.name || null;
+    } catch { return null; }
+  }
+
   const secondBakeSteps = [
     {
-      title: "Welcome Back, Baker!",
+      get title() {
+        const name = getBakerName();
+        return name ? `Welcome Back, ${name}!` : "Welcome Back, Baker!";
+      },
       body: "Nice work on your first bake! This time, let\u2019s explore a powerful feature \u2014 My Style \u2014 that lets you customize your dough recipe.",
       target: null,
     },
