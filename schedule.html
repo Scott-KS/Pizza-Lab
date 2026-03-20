@@ -64,6 +64,15 @@
           Plan backward from dinner time. We'll tell you exactly when to start each step.
         </p>
 
+        <!-- Empty State (no active schedule) -->
+        <div class="sched-empty-state hidden" id="sched-empty-state">
+          <p>Ready to plan your next bake?</p>
+          <div class="sched-empty-actions">
+            <button type="button" class="btn-primary" id="btn-empty-start">Start Fresh</button>
+            <a href="calculator.html" class="btn-secondary">Load from Calculator</a>
+          </div>
+        </div>
+
         <!-- Active Schedule Banner (shown when a saved schedule exists) -->
         <div class="active-schedule-banner hidden" id="active-schedule-banner">
           <div class="banner-info">

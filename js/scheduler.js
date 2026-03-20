@@ -1240,7 +1240,18 @@ btnSaveImg.addEventListener('click', () => {
 const saved = loadActiveSchedule();
 if (saved && saved.steps && saved.steps.length > 0) {
   showBanner(saved);
+} else {
+  // Show empty state prompt when no active schedule
+  const emptyState = document.getElementById('sched-empty-state');
+  if (emptyState) emptyState.classList.remove('hidden');
 }
+
+// "Start Fresh" button scrolls to wizard step 1
+document.getElementById('btn-empty-start')?.addEventListener('click', () => {
+  const emptyState = document.getElementById('sched-empty-state');
+  if (emptyState) emptyState.classList.add('hidden');
+  document.getElementById('sched-step-1')?.scrollIntoView({ behavior: 'smooth' });
+});
 
 // ── On-Load: Plan My Bake Prefill ──
 

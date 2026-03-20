@@ -38,6 +38,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const profile = PieLabProfile.getProfile();
 
+  // ── Profile-incomplete prompt ──────────────────────
+  if (!urlParams.has('welcome') && (!profile.displayName || !profile.displayName.trim())) {
+    const promptEl = document.createElement('div');
+    promptEl.className = 'profile-prompt';
+    promptEl.innerHTML =
+      '<p>Finish your Kitchen Profile to get personalized recommendations \u2192</p>' +
+      '<button type="button" class="profile-prompt-close" aria-label="Dismiss">&times;</button>';
+    const section = document.querySelector('.kitchen-fieldset');
+    if (section) section.parentNode.insertBefore(promptEl, section);
+    promptEl
+      .querySelector('.profile-prompt-close')
+      ?.addEventListener('click', () => promptEl.remove());
+  }
+
   nameInput.value = profile.displayName || '';
   cityInput.value = profile.city || '';
   ovenSelect.value = profile.preferredOven || ovenSelect.options[0]?.value || '';
@@ -380,6 +394,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update stored city so subsequent edits compare to latest save
     storedCity = currentCity;
+
+    // "You're All Set" modal — show once on first profile completion
+    const onboardingDone = PieLabStorage.get('pielab-onboarding-complete');
+    if (!onboardingDone && updates.displayName) {
+      PieLabStorage.set('pielab-onboarding-complete', true);
+      showAllSetModal();
+      return;
+    }
 
     // If this is part of onboarding, redirect to first bake guide
     const params = new URLSearchParams(window.location.search);
@@ -801,5 +823,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (shouldShowKitchenGuide()) {
     setTimeout(() => startKitchenGuide(), 600);
+  }
+
+  // ── "You're All Set" Modal ─────────────────────────
+  function showAllSetModal() {
+    const days = PieLabPremium.daysLeft();
+    const trialLine =
+      days > 0
+        ? `<p class="allset-trial">Your 14-day Pro trial is active \u2014 ${days} day${days !== 1 ? 's' : ''} remaining</p>`
+        : '';
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.id = 'allset-modal';
+    overlay.innerHTML = `<div class="modal-content allset-modal">
+      <h2>Your kitchen is ready</h2>
+      <div class="allset-features">
+        <div class="allset-feature"><span class="allset-icon">\uD83E\uDDEE</span><span>Calculate recipes \u2014 exact weights for any style</span></div>
+        <div class="allset-feature"><span class="allset-icon">\uD83D\uDCC5</span><span>Schedule your ferment \u2014 step-by-step timing</span></div>
+        <div class="allset-feature"><span class="allset-icon">\uD83D\uDCD3</span><span>Log your bakes \u2014 track your progress</span></div>
+      </div>
+      ${trialLine}
+      <a href="calculator.html" class="btn-primary allset-cta">Calculate My First Recipe</a>
+    </div>`;
+    document.body.appendChild(overlay);
   }
 });

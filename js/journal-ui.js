@@ -750,10 +750,10 @@ form.addEventListener('submit', async (e) => {
 // ── Empty state builder ──────────────────────────
 function buildEmptyState() {
   return `<div class="journal-empty-state">
-    <div class="empty-state-icon">\uD83C\uDF55</div>
-    <h3>Your Pizza Journal</h3>
-    <p>Every great pizzaiolo keeps a journal. Calculate your first recipe, bake it, then come back and log how it turned out — photos, ratings, and all.</p>
-    <a href="calculator.html" class="btn-primary">Make Your First Pizza \u2192</a>
+    <img src="assets/logos/logo-monogram-512.svg" alt="" class="empty-state-logo" />
+    <h3>Your bake history starts here</h3>
+    <p>Every great pizza begins with one bake. Log yours.</p>
+    <button type="button" class="btn-primary" id="btn-empty-log">Log Your First Bake</button>
   </div>`;
 }
 
@@ -770,6 +770,8 @@ function renderEntries() {
 
   if (!allEntries || allEntries.length === 0) {
     entriesContainer.innerHTML = buildEmptyState();
+    const emptyBtn = document.getElementById('btn-empty-log');
+    if (emptyBtn) emptyBtn.addEventListener('click', () => showForm(false));
     return;
   }
 

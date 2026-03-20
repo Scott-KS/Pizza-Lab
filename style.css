@@ -3355,6 +3355,11 @@ main {
   color: var(--clr-primary);
   opacity: 0.4;
 }
+.empty-state-logo {
+  width: 80px;
+  height: 80px;
+  opacity: 0.6;
+}
 .comparison-empty {
   text-align: center;
   padding: 2rem 1rem;
@@ -4139,6 +4144,41 @@ footer {
   color: var(--clr-text-light);
   margin-bottom: 1.5rem;
   font-size: 0.95rem;
+}
+.sched-empty-state {
+  text-align: center;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background: var(--clr-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+}
+.sched-empty-state p {
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--clr-text);
+}
+.sched-empty-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.btn-secondary {
+  display: inline-block;
+  padding: 0.6rem 1.5rem;
+  background: var(--clr-card);
+  color: var(--clr-text);
+  border: 2px solid var(--clr-primary);
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.btn-secondary:hover {
+  background: var(--clr-primary);
+  color: #fff;
 }
 
 /* ── Progress Bar ────────────────────────────────── */
@@ -5386,6 +5426,64 @@ body[data-page='journal'] main {
   font-size: 0.95rem;
   margin-bottom: 2rem;
   line-height: 1.5;
+}
+
+.profile-prompt {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  background: var(--clr-primary);
+  color: #fff;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+}
+.profile-prompt p {
+  flex: 1;
+  margin: 0;
+}
+.profile-prompt-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  opacity: 0.8;
+}
+.allset-modal {
+  text-align: center;
+  max-width: 400px;
+}
+.allset-modal h2 {
+  font-family: var(--font-heading);
+  margin-bottom: 1.5rem;
+}
+.allset-features {
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+.allset-feature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+}
+.allset-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.allset-trial {
+  font-size: 0.85rem;
+  color: var(--clr-text-light);
+  margin-bottom: 1rem;
+}
+.allset-cta {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  text-decoration: none;
 }
 
 .kitchen-fieldset {
