@@ -95,14 +95,24 @@
     const recipe = styleKey ? PIZZA_RECIPES[styleKey] : null;
     if (!recipe) return;
     const sizes = recipe.sizes || {};
-    const defaultSize = recipe.defaultSize || Object.keys(sizes)[0];
-    Object.keys(sizes).forEach(key => {
+    const keys = Object.keys(sizes);
+    keys.forEach(key => {
       const opt = document.createElement("option");
       opt.value = key;
       opt.textContent = sizes[key].label;
-      if (key === defaultSize) opt.selected = true;
       sizeSelect.appendChild(opt);
     });
+
+    // Default: recipe-specified, or middle option (3+ sizes), or larger (2 sizes)
+    if (recipe.defaultSize && keys.includes(recipe.defaultSize)) {
+      sizeSelect.value = recipe.defaultSize;
+    } else if (keys.length >= 3) {
+      sizeSelect.value = keys[Math.floor(keys.length / 2)];
+    } else if (keys.length === 2) {
+      sizeSelect.value = keys[1];
+    } else if (keys.length > 0) {
+      sizeSelect.value = keys[0];
+    }
   }
   styleSelect.addEventListener("change", updateSizeOptions);
   updateSizeOptions();
@@ -1090,6 +1100,10 @@
     if (!prefill.eatTime || !prefill.fermentMethodKey) {
       if (prefill.styleKey && styleSelect.querySelector(`option[value="${prefill.styleKey}"]`)) {
         styleSelect.value = prefill.styleKey;
+        updateSizeOptions();
+        if (prefill.sizeKey && sizeSelect && sizeSelect.querySelector(`option[value="${prefill.sizeKey}"]`)) {
+          sizeSelect.value = prefill.sizeKey;
+        }
       }
       if (prefill.quantity) countInput.value = prefill.quantity;
       checkStep1Ready();
@@ -1110,6 +1124,10 @@
       // Pre-fill wizard step 1 fields
       if (prefill.styleKey && styleSelect.querySelector(`option[value="${prefill.styleKey}"]`)) {
         styleSelect.value = prefill.styleKey;
+        updateSizeOptions();
+        if (prefill.sizeKey && sizeSelect && sizeSelect.querySelector(`option[value="${prefill.sizeKey}"]`)) {
+          sizeSelect.value = prefill.sizeKey;
+        }
       }
       if (prefill.quantity) countInput.value = prefill.quantity;
       checkStep1Ready();
@@ -1142,6 +1160,10 @@
       );
       if (prefill.styleKey && styleSelect.querySelector(`option[value="${prefill.styleKey}"]`)) {
         styleSelect.value = prefill.styleKey;
+        updateSizeOptions();
+        if (prefill.sizeKey && sizeSelect && sizeSelect.querySelector(`option[value="${prefill.sizeKey}"]`)) {
+          sizeSelect.value = prefill.sizeKey;
+        }
       }
       if (prefill.quantity) countInput.value = prefill.quantity;
       checkStep1Ready();
@@ -1152,6 +1174,10 @@
     // Set scheduler state so timeline rendering works
     const recipe = PIZZA_RECIPES[prefill.styleKey];
     styleSelect.value = prefill.styleKey;
+    updateSizeOptions();
+    if (prefill.sizeKey && sizeSelect && sizeSelect.querySelector(`option[value="${prefill.sizeKey}"]`)) {
+      sizeSelect.value = prefill.sizeKey;
+    }
     countInput.value = numPizzas;
     ovenSelect.value = ovenType;
     const off = eatTime.getTimezoneOffset() * 60000;
@@ -1171,6 +1197,7 @@
     saveActiveSchedule({
       createdAt: new Date().toISOString(),
       styleKey: prefill.styleKey,
+      sizeKey: prefill.sizeKey || (sizeSelect ? sizeSelect.value : ""),
       styleName: recipe ? recipe.name : prefill.styleKey,
       numPizzas,
       ovenType,
