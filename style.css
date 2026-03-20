@@ -4556,6 +4556,50 @@ footer {
   text-decoration: none !important;
 }
 
+/* ── Bake Day Checklist ────────────────────────────── */
+.bakeday-checklist {
+  background: var(--clr-card);
+  border: 1px solid var(--clr-accent);
+  border-radius: var(--radius);
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+}
+.bakeday-checklist summary {
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  color: var(--clr-accent);
+  cursor: pointer;
+  list-style: none;
+}
+.bakeday-checklist summary::before {
+  content: "\25B6\00A0";
+  font-size: 0.7rem;
+  transition: transform 200ms ease;
+  display: inline-block;
+}
+.bakeday-checklist[open] summary::before {
+  transform: rotate(90deg);
+}
+.bakeday-items {
+  padding: 0 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.bakeday-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+.bakeday-item input:checked + span {
+  text-decoration: line-through;
+  color: var(--clr-text-light);
+}
+
 .sched-step-instruction {
   font-size: 0.9rem;
   color: var(--clr-text);
