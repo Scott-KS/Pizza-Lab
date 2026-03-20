@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (prefermentToggle) {
     prefermentToggle.addEventListener("change", () => {
       if (prefermentToggle.checked) {
-        PieLabPremium.gate(() => {
+        PieLabPremium.verifyAndGate(() => {
           prefermentOptions.classList.remove("hidden");
         });
         // If gate denied, uncheck
@@ -257,7 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
       fermentHoursLabel.textContent = fermentHoursSlider.value + " hours";
       if (!yeastScalingGated) {
         yeastScalingGated = true;
-        PieLabPremium.gate(() => { /* access granted */ });
+        PieLabPremium.verifyAndGate(() => { /* access granted */ });
       }
     });
   }
@@ -701,7 +701,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ── "Schedule This Bake" prefills scheduler ──────────
   document.getElementById("btn-schedule-bake").addEventListener("click", () => {
     if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
-      PieLabPremium.gate(() => document.getElementById("btn-schedule-bake").click());
+      PieLabPremium.verifyAndGate(() => document.getElementById("btn-schedule-bake").click());
       return;
     }
     if (!lastCalcContext) return;
@@ -772,7 +772,7 @@ document.addEventListener("DOMContentLoaded", () => {
     bowlResidueToggle.addEventListener("change", () => {
       if (bowlResidueToggle.checked && typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
         bowlResidueToggle.checked = false;
-        PieLabPremium.gate(() => { bowlResidueToggle.checked = true; });
+        PieLabPremium.verifyAndGate(() => { bowlResidueToggle.checked = true; });
       }
     });
   }
@@ -1357,7 +1357,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Save profile
     saveBtn.addEventListener("click", () => {
-      PieLabPremium.gate(() => {
+      PieLabPremium.verifyAndGate(() => {
         const styleKey = styleSelect.value;
         if (!styleKey) return;
         const name = prompt("Name this dough:");
@@ -1394,7 +1394,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Load profile
     profileSelect.addEventListener("change", () => {
-      PieLabPremium.gate(() => {
+      PieLabPremium.verifyAndGate(() => {
         const id = profileSelect.value;
         if (!id) return;
         const profiles = PieLabJournal.getAllProfiles();

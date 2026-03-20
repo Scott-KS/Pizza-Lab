@@ -210,7 +210,7 @@
 
     // Dough Scheduler is a Pro feature
     if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
-      PieLabPremium.gate(() => btnNext1.click());
+      PieLabPremium.verifyAndGate(() => btnNext1.click());
       return;
     }
 

@@ -375,6 +375,18 @@ window.PieLabPremium = (function () {
     showModal();
   }
 
+  // ── Verify-then-gate ──────────────────────────────────
+  // Re-checks entitlement with RevenueCat before gating.
+  // On native: calls getCustomerInfo() to refresh the local
+  // cache, then gates. On web: RevenueCat is unavailable, so
+  // we skip the sync and gate using the localStorage cache.
+  async function verifyAndGate(callback) {
+    if (isNative()) {
+      await syncEntitlements();
+    }
+    gate(callback);
+  }
+
   // ── Header Badge ─────────────────────────────────────
 
   function renderBadge() {
@@ -418,6 +430,7 @@ window.PieLabPremium = (function () {
     isExpired,
     isPro,
     gate,
+    verifyAndGate,
     renderBadge,
     purchasePro,
     restorePurchases,

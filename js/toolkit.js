@@ -45,7 +45,7 @@ function populateHydrationGuide() {
     const range = HYDRATION_RANGES[select.value];
     if (!range) return;
     if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
-      PieLabPremium.gate(() => {
+      PieLabPremium.verifyAndGate(() => {
         renderHydrationGuide(range, select.value, content);
         content.classList.remove("hidden");
       });
@@ -289,7 +289,7 @@ function populateTroubleshooting() {
   panel.querySelectorAll(".symptom-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       if (typeof PieLabPremium !== "undefined" && !PieLabPremium.canUse()) {
-        PieLabPremium.gate(() => btn.click());
+        PieLabPremium.verifyAndGate(() => btn.click());
         return;
       }
       // Highlight selected
@@ -432,7 +432,7 @@ function populateDDTCalculator() {
   // Wire calculate button
   panel.querySelector("#btn-ddt-calc").addEventListener("click", () => {
     if (typeof PieLabPremium !== "undefined") {
-      PieLabPremium.gate(() => computeDDT());
+      PieLabPremium.verifyAndGate(() => computeDDT());
     } else {
       computeDDT();
     }
