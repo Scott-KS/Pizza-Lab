@@ -1045,8 +1045,10 @@ async function openDetailModal(entry) {
       (s.sugarPct || 0) +
       (s.yeastPct || 0);
     const flourG = s.doughBallWeight / totalPct;
-    const flourName = s.flourType || 'Flour';
-    const yeastName = s.yeastType ? (YEAST_LABELS[s.yeastType] || s.yeastType) + ' Yeast' : 'Yeast';
+    const flourName = escapeHtml(s.flourType || 'Flour');
+    const yeastName = escapeHtml(
+      s.yeastType ? (YEAST_LABELS[s.yeastType] || s.yeastType) + ' Yeast' : 'Yeast'
+    );
     const ingredients = [
       { name: flourName, grams: flourG, pct: 100 },
       { name: 'Water', grams: flourG * (s.hydration || 0), pct: (s.hydration || 0) * 100 },
@@ -1260,13 +1262,14 @@ function showMilestoneCelebration(entry) {
   const badgeName = badge.split(' ').slice(1).join(' ');
   const isFirst = entry.skillCount === 1;
 
-  const title = isFirst ? 'Your First Bake!' : `${badgeName}!`;
+  const safeName = escapeHtml(entry.styleName);
+  const title = isFirst ? 'Your First Bake!' : `${escapeHtml(badgeName)}!`;
   const msg = isFirst
-    ? `You just logged <strong>${entry.styleName}</strong>. Your pizza journey starts now.`
-    : `<strong>${entry.styleName}</strong> \u2014 bake #${entry.skillCount}. You\u2019ve earned a new badge.`;
+    ? `You just logged <strong>${safeName}</strong>. Your pizza journey starts now.`
+    : `<strong>${safeName}</strong> \u2014 bake #${entry.skillCount}. You\u2019ve earned a new badge.`;
   const hint = isFirst
     ? 'Fill your Style Passport by baking all 13 styles.'
-    : `Keep going \u2014 your ${entry.styleName} game is leveling up.`;
+    : `Keep going \u2014 your ${safeName} game is leveling up.`;
 
   const overlay = document.createElement('div');
   overlay.className = 'first-bake-overlay';

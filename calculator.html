@@ -12,6 +12,10 @@
       content="Pizza recipe calculator, dough scheduler, and baking journal."
     />
     <meta name="theme-color" content="#c0392b" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'nonce-PIELAB_NONCE'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.revenuecat.com;"
+    />
     <link rel="manifest" href="manifest.json" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,7 +23,7 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <script>
+    <script nonce="PIELAB_NONCE">
       (function () {
         var t = localStorage.getItem('pielab-theme'),
           d = t === 'dark' || (!t && matchMedia('(prefers-color-scheme:dark)').matches);
