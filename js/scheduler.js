@@ -355,7 +355,7 @@
 
     renderScheduleTimeline(computedSchedule);
     renderVisualBar(computedSchedule);
-    renderRecipeSummary(styleKey, numPizzas, doughBallWeight);
+    renderRecipeSummary(styleKey, numPizzas, doughBallWeight, sizeKey);
     goToStep(3);
 
     // Hide banner when viewing full schedule
@@ -519,7 +519,7 @@
 
   // ── Visual Overview Bar ────────────────────────────
   // ── Recipe Summary for Step 3 ──────────────────────
-  function renderRecipeSummary(styleKey, numPizzas, doughBallWeight) {
+  function renderRecipeSummary(styleKey, numPizzas, doughBallWeight, selectedSizeKey) {
     const summaryEl = document.getElementById("sched-recipe-summary");
     const bodyEl = document.getElementById("sched-recipe-body");
     const toggleEl = document.getElementById("sched-recipe-toggle");
@@ -528,8 +528,9 @@
     const recipe = PIZZA_RECIPES[styleKey];
     if (!recipe) { summaryEl.classList.add("hidden"); return; }
 
+    // Use the actual size the user selected, not a fallback
     const sizeKeys = Object.keys(recipe.sizes);
-    const sizeKey = recipe.defaultSize || (sizeKeys.includes("12") ? "12" : sizeKeys[0]);
+    const sizeKey = selectedSizeKey || recipe.defaultSize || (sizeKeys.includes("12") ? "12" : sizeKeys[0]);
     const dough = calculateDough(recipe, numPizzas, sizeKey);
 
     const rows = dough.map(d =>
@@ -918,7 +919,7 @@
     bannerEl.classList.add("hidden");
     renderScheduleTimeline(computedSchedule);
     renderVisualBar(computedSchedule);
-    renderRecipeSummary(data.styleKey, data.numPizzas, data.doughBallWeight);
+    renderRecipeSummary(data.styleKey, data.numPizzas, data.doughBallWeight, data.sizeKey);
     goToStep(3);
   }
 
