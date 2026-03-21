@@ -7,6 +7,7 @@
 
 import { PieLabProfile } from './user-profile.js';
 import { PieLabJournal } from '../journal.js';
+import { PieLabStorage } from './storage.js';
 
 const PieLabFirstBake = (() => {
   const STORAGE_KEY = 'pielab-first-bake-shown';
@@ -387,8 +388,9 @@ const PieLabFirstBake = (() => {
 
 export { PieLabFirstBake };
 
-// Auto-start the appropriate guide
-document.addEventListener('DOMContentLoaded', () => {
+// Auto-start the appropriate guide (await storage so profile name is available)
+document.addEventListener('DOMContentLoaded', async () => {
+  await PieLabStorage.init();
   if (PieLabFirstBake.shouldShowFirstBake()) {
     setTimeout(() => PieLabFirstBake.startFirstBake(), 600);
   } else if (PieLabFirstBake.shouldShowSecondBake()) {

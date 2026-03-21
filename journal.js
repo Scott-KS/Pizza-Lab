@@ -109,7 +109,11 @@ const PieLabJournal = (() => {
     const photos = entry.photos || [];
     if (photos.length && PieLabPhotos) {
       entry.photoCount = photos.length;
-      PieLabPhotos.savePhotos(entry.id, photos).catch(() => {});
+      try {
+        await PieLabPhotos.savePhotos(entry.id, photos);
+      } catch (err) {
+        console.warn('Photo save to IndexedDB failed:', err);
+      }
     }
     entry.photos = [];
     entry.photo = null;
@@ -128,7 +132,11 @@ const PieLabJournal = (() => {
     const photos = updates.photos || [];
     if (photos.length && PieLabPhotos) {
       updates.photoCount = photos.length;
-      PieLabPhotos.savePhotos(id, photos).catch(() => {});
+      try {
+        await PieLabPhotos.savePhotos(id, photos);
+      } catch (err) {
+        console.warn('Photo update to IndexedDB failed:', err);
+      }
     }
     updates.photos = [];
     updates.photo = null;

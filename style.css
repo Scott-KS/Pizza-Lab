@@ -170,6 +170,19 @@ body {
   min-height: 100vh;
 }
 
+/* ── Suppress mobile tap highlight ──────────────── */
+button,
+a,
+[role='button'],
+.card,
+.style-card,
+.passport-card,
+.method-option-card,
+.insight-card,
+.journal-entry-card {
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* ── Focus-visible ring for keyboard navigation ─── */
 *:focus-visible {
   outline: 2px solid var(--clr-primary);

@@ -309,6 +309,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
     });
+    // Auto-recalculate when slider is released
+    fermentHoursSlider.addEventListener('change', () => {
+      const form = document.getElementById('pizza-form');
+      if (form) form.requestSubmit();
+    });
   }
   function updateFermentTempLabel() {
     if (!fermentTempSlider || !fermentTempLabel) return;
@@ -319,6 +324,20 @@ document.addEventListener('DOMContentLoaded', () => {
   if (fermentTempSlider && fermentTempLabel) {
     fermentTempSlider.addEventListener('input', updateFermentTempLabel);
     updateFermentTempLabel(); // set initial label
+    // Auto-recalculate when slider is released
+    fermentTempSlider.addEventListener('change', () => {
+      const form = document.getElementById('pizza-form');
+      if (form) form.requestSubmit();
+    });
+  }
+
+  // ── Auto-recalculate when yeast type changes ──────────
+  const yeastTypeSelect = document.getElementById('yeast-type');
+  if (yeastTypeSelect) {
+    yeastTypeSelect.addEventListener('change', () => {
+      const form = document.getElementById('pizza-form');
+      if (form) form.requestSubmit();
+    });
   }
 
   // ── Form Submit ──────────────────────────────────────
@@ -1248,8 +1267,10 @@ document.addEventListener('DOMContentLoaded', () => {
       popover.remove();
     });
 
+    const triggerBtn = document.getElementById('tools-info-btn');
+    const triggerLabel = document.getElementById('tools-info-label');
     document.addEventListener('click', function closeOnOutside(ev) {
-      if (!popover.contains(ev.target) && ev.target !== e.target) {
+      if (!popover.contains(ev.target) && ev.target !== triggerBtn && ev.target !== triggerLabel) {
         popover.remove();
         document.removeEventListener('click', closeOnOutside);
       }
