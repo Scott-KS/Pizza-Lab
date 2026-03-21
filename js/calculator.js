@@ -1190,7 +1190,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ── Tools & Equipment Popover ──────────────────────
-  document.getElementById('tools-info-btn').addEventListener('click', (e) => {
+  function openToolsPopover(e) {
     e.stopPropagation();
 
     // Close any existing popover
@@ -1254,7 +1254,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.removeEventListener('click', closeOnOutside);
       }
     });
-  });
+  }
+
+  document.getElementById('tools-info-btn').addEventListener('click', openToolsPopover);
+  document.getElementById('tools-info-label').addEventListener('click', openToolsPopover);
 
   // ── Yeast Substitution Handler ────────────────────
   document.getElementById('yeast-sub-select').addEventListener('change', () => {

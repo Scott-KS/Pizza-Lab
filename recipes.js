@@ -770,7 +770,10 @@ export const PIZZA_RECIPES = {
         ingredient: 'Provolone (shredded, added COLD after bake)',
         base: { quarter: 150, half: 285, full: 525 },
       },
-      { ingredient: 'Pepperoni (baked on the pizza)', base: { quarter: 50, half: 95, full: 175 } },
+      {
+        ingredient: 'Pepperoni (added raw after the cheese)',
+        base: { quarter: 50, half: 95, full: 175 },
+      },
     ],
     idealTemp: { min: 475, max: 525 },
     bakeTime: { hot: '8–10 minutes', medium: '12–15 minutes', low: '16–20 minutes' },

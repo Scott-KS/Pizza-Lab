@@ -123,9 +123,19 @@ const PieLabJournal = (() => {
     const entries = getAllEntries();
     const idx = entries.findIndex((e) => e.id === id);
     if (idx === -1) return null;
+
+    // Store photos in IndexedDB, keep only count in localStorage
+    const photos = updates.photos || [];
+    if (photos.length && PieLabPhotos) {
+      updates.photoCount = photos.length;
+      PieLabPhotos.savePhotos(id, photos).catch(() => {});
+    }
+    updates.photos = [];
+    updates.photo = null;
+
     entries[idx] = { ...entries[idx], ...updates };
     await saveAllEntries(entries);
-    return entries[idx];
+    return { ...entries[idx], photos }; // return with photos for immediate UI use
   }
 
   async function deleteEntry(id) {

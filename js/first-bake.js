@@ -105,7 +105,7 @@ const PieLabFirstBake = (() => {
   function getBakerName() {
     try {
       const profile = PieLabProfile.getProfile();
-      return profile.name || null;
+      return profile.displayName || null;
     } catch {
       return null;
     }
@@ -131,6 +131,14 @@ const PieLabFirstBake = (() => {
       body: 'Now you can tweak hydration, salt, oil, sugar, yeast, and dough ball weight. These settings are saved per style \u2014 experiment and find what you love.',
       target: '#custom-settings-editor',
       delay: 300,
+      beforeShow: () => {
+        // Ensure Custom mode is active so the editor is visible
+        const toggle = document.getElementById('settings-mode-toggle');
+        if (toggle && !toggle.checked) {
+          toggle.checked = true;
+          toggle.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      },
     },
     {
       title: 'Save Your Dough Recipe',
@@ -238,7 +246,7 @@ const PieLabFirstBake = (() => {
         const el = document.querySelector(step.target);
         if (el) {
           el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          setTimeout(() => positionHighlight(el), 350);
+          setTimeout(() => positionHighlight(el), 600);
         }
       }, step.delay || 50);
     }

@@ -620,13 +620,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Google Forms field IDs
     const formData = new URLSearchParams({
-      'entry.984946381': label,
-      'entry.181802720': message,
-      'entry.1117599412': fbEmail ? fbEmail.value.trim() : '',
-      'entry.1813993131': profile.displayName || '',
-      'entry.894394575': profile.city || '',
-      'entry.1418349736': theme,
-      'entry.892793498': screenSize,
+      'entry.1415359353': label,
+      'entry.575932940': message,
+      'entry.456796556': fbEmail ? fbEmail.value.trim() : '',
+      'entry.452605385': profile.displayName || '',
+      'entry.630348213': profile.city || '',
+      'entry.804412391': profile.units || 'imperial',
+      'entry.1854651755': theme,
+      'entry.1921840507': screenSize,
+      'entry.1311401632': /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
     });
 
     // Disable button while submitting
