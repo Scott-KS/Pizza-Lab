@@ -147,6 +147,53 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ── Notifications toggle ────────────────────────────
+  if (profile.notifications) {
+    document.querySelectorAll('#k-notifications .toggle-btn').forEach((btn) => {
+      btn.classList.toggle('selected', btn.dataset.value === profile.notifications);
+    });
+  }
+
+  document.querySelectorAll('#k-notifications .toggle-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      document
+        .querySelectorAll('#k-notifications .toggle-btn')
+        .forEach((b) => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      const val = btn.dataset.value;
+      if (val === 'on') {
+        // Request permission if not already granted
+        try {
+          const { PieLabNotifications } = await import('./pie-notifications.js');
+          await PieLabNotifications.requestPermission();
+        } catch {
+          /* ignore on web */
+        }
+        document.getElementById('notif-permission-hint').classList.add('hidden');
+      }
+    });
+  });
+
+  // Check current notification permission status
+  (async () => {
+    try {
+      const { PieLabNotifications } = await import('./pie-notifications.js');
+      const status = await PieLabNotifications.checkPermission?.();
+      if (status === 'denied') {
+        // Notifications blocked — force toggle to off and disable it
+        document
+          .querySelectorAll('#k-notifications .toggle-btn')
+          .forEach((b) => b.classList.remove('selected'));
+        document.querySelector('#k-notifications [data-value="off"]')?.classList.add('selected');
+        document.getElementById('notif-permission-hint').textContent =
+          'Notifications are blocked. Enable them in your device settings.';
+        document.getElementById('notif-permission-hint').classList.remove('hidden');
+      }
+    } catch {
+      /* web — ignore */
+    }
+  })();
+
   // ── Onboarding flow: Enter key advances to next field ──
   nameInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
@@ -408,6 +455,8 @@ document.addEventListener('DOMContentLoaded', () => {
       favoriteStyle: styleSelect.value,
       unitSystem: selectedUnits,
       skillLevel: selectedSkillLevel,
+      notifications:
+        document.querySelector('#k-notifications .toggle-btn.selected')?.dataset.value ?? 'on',
     };
 
     PieLabProfile.saveProfile(updates);
@@ -493,10 +542,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ── Clear any saved theme override — always use system preference ──
-  localStorage.removeItem('pielab-theme');
-  const prefersDark = matchMedia('(prefers-color-scheme:dark)').matches;
-  document.documentElement.dataset.theme = prefersDark ? 'dark' : 'light';
+  // ── Apply saved theme preference ──────────────────────
+  function applyTheme(val) {
+    if (val === 'dark') {
+      document.documentElement.dataset.theme = 'dark';
+    } else if (val === 'light') {
+      document.documentElement.dataset.theme = 'light';
+    } else {
+      // system
+      const prefersDark = matchMedia('(prefers-color-scheme:dark)').matches;
+      document.documentElement.dataset.theme = prefersDark ? 'dark' : 'light';
+    }
+  }
+  const savedTheme = localStorage.getItem('pielab-theme') || 'system';
+  applyTheme(savedTheme);
+  // Reflect saved theme in toggle UI
+  document.querySelectorAll('#k-theme .toggle-btn').forEach((btn) => {
+    btn.classList.toggle('selected', btn.dataset.value === savedTheme);
+  });
+  // Toggle handler
+  document.querySelectorAll('#k-theme .toggle-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document
+        .querySelectorAll('#k-theme .toggle-btn')
+        .forEach((b) => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      const val = btn.dataset.value;
+      if (val === 'system') {
+        localStorage.removeItem('pielab-theme');
+      } else {
+        localStorage.setItem('pielab-theme', val);
+      }
+      applyTheme(val);
+    });
+  });
 
   // ── Data Export / Import ──────────────────────────
   const BACKUP_KEYS = [
@@ -870,6 +949,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (shouldShowKitchenGuide()) {
     setTimeout(() => startKitchenGuide(), 600);
+  }
+
+  // Display app version
+  const versionEl = document.getElementById('app-version');
+  if (versionEl) {
+    // On native (Capacitor), App plugin can return the real build version.
+    // On web, fall back to the hardcoded string.
+    (async () => {
+      try {
+        const { App } = await import('@capacitor/app');
+        const info = await App.getInfo();
+        versionEl.textContent = `v${info.version} (${info.build})`;
+      } catch {
+        versionEl.textContent = 'v1.0.0';
+      }
+    })();
   }
 
   // ── "You're All Set" Modal ─────────────────────────

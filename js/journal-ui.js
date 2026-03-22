@@ -758,9 +758,9 @@ form.addEventListener('submit', async (e) => {
 // ── Empty state builder ──────────────────────────
 function buildEmptyState() {
   return `<div class="journal-empty-state">
-    <img src="assets/logos/logo-monogram-512.svg" alt="" class="empty-state-logo" />
-    <h3>Your bake history starts here</h3>
-    <p>Every great pizza begins with one bake. Log yours.</p>
+    <div class="journal-empty-icon">🍕</div>
+    <h3 class="journal-empty-title">No bakes yet</h3>
+    <p class="journal-empty-body">Tap <strong>+ Log a Bake</strong> to record your first pizza. Your progress, photos, and skill badges will appear here.</p>
     <button type="button" class="btn-primary" id="btn-empty-log">Log Your First Bake</button>
   </div>`;
 }
@@ -1623,27 +1623,13 @@ async function savePhotosToDevice(entry, destination = 'social') {
 
   showToast('Saving to photos\u2026');
   try {
-    // First photo → polaroid with stats
-    const polaroidBlob = await generatePolaroidCard(
-      { ...entry, photos: [photos[0]] },
-      { name, location, skillLevel }
-    );
-    downloadBlob(polaroidBlob, 'my-bake-1.png');
-
-    // Additional photos → watermark only
-    for (let i = 1; i < photos.length; i++) {
+    // All photos → watermark only (card is for social sharing only)
+    for (let i = 0; i < photos.length; i++) {
       const wmBlob = await generateWatermarkedPhoto(photos[i]);
       downloadBlob(wmBlob, `my-bake-${i + 1}.png`);
     }
 
-    // Copy destination-aware caption for easy paste
-    const caption = buildShareCaption(entry, { name, location, skillLevel }, destination);
-    try {
-      await navigator.clipboard.writeText(caption);
-    } catch {
-      /* ignore */
-    }
-    showToast('Saved! Caption copied — paste into your post');
+    showToast('Photos saved to your device');
   } catch {
     showToast('Could not save photos');
   }

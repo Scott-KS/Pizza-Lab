@@ -6,11 +6,18 @@
     <title>The Pie Lab — My Kitchen</title>
     <link rel="icon" type="image/svg+xml" href="assets/logos/favicon-32.svg" />
     <link rel="apple-touch-icon" href="assets/logos/logo-monogram-512.svg" />
-    <meta property="og:image" content="assets/logos/logo-stacked.svg" />
     <meta
       name="description"
       content="Pizza recipe calculator, dough scheduler, and baking journal."
     />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="The Pie Lab — My Kitchen" />
+    <meta property="og:description" content="Pizza recipe calculator, dough scheduler, and baking journal for home bakers." />
+    <meta property="og:image" content="assets/logos/logo-stacked.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="The Pie Lab" />
+    <meta name="twitter:description" content="Pizza recipe calculator, dough scheduler, and baking journal." />
+    <meta name="twitter:image" content="assets/logos/logo-stacked.svg" />
     <meta name="theme-color" content="#c0392b" />
     <meta
       http-equiv="Content-Security-Policy"
@@ -93,6 +100,15 @@
             >
             <div id="k-city-status" class="city-status"></div>
           </div>
+
+          <div class="form-group">
+            <label id="theme-label">Appearance</label>
+            <div class="toggle-group toggle-group--three" id="k-theme" role="group" aria-labelledby="theme-label">
+              <button type="button" class="toggle-btn" data-value="light">Light</button>
+              <button type="button" class="toggle-btn selected" data-value="system">System</button>
+              <button type="button" class="toggle-btn" data-value="dark">Dark</button>
+            </div>
+          </div>
         </fieldset>
 
         <!-- Section 2 — Your Setup -->
@@ -166,6 +182,22 @@
               <button type="button" class="toggle-btn selected" data-value="1">Intermediate</button>
               <button type="button" class="toggle-btn" data-value="2">Pro</button>
             </div>
+          </div>
+        </fieldset>
+
+        <!-- Section 3 — Notifications -->
+        <fieldset class="kitchen-fieldset" id="notifications-fieldset">
+          <legend>Reminders</legend>
+          <div class="form-group">
+            <label id="notif-label">Dough Schedule Reminders</label>
+            <p class="field-hint">Get a notification when each step of your dough schedule is due — bulk ferment, ball, preheat, and bake.</p>
+            <div class="toggle-group toggle-group--two" id="k-notifications" role="group" aria-labelledby="notif-label">
+              <button type="button" class="toggle-btn" data-value="off">Off</button>
+              <button type="button" class="toggle-btn selected" data-value="on">On</button>
+            </div>
+            <p class="field-hint hidden" id="notif-permission-hint">
+              Tap "On" to allow notifications when prompted by your device.
+            </p>
           </div>
         </fieldset>
 
@@ -259,6 +291,9 @@
               cannot be undone.
             </p>
           </div>
+        </div>
+        <div class="app-version-row">
+          <span id="app-version">v1.0.0</span>
         </div>
       </section>
     </main>
