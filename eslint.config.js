@@ -61,6 +61,9 @@ export default [
         // Browser globals not in eslint's default browser set
         prompt: 'readonly',
         File: 'readonly',
+        crypto: 'readonly',
+        TextEncoder: 'readonly',
+        Uint8Array: 'readonly',
       },
     },
     rules: {

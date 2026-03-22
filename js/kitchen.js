@@ -793,7 +793,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (deleteConfirm)
       deleteConfirm.addEventListener('click', () => {
         if (window.PieLabHaptics) PieLabHaptics.warning();
-        const keys = Object.keys(localStorage).filter((k) => k.startsWith('pielab'));
+        // Preserve device fingerprint and trial anchor (anti-tamper)
+        const KEEP_KEYS = ['pielab-dfp', 'pielab-ta'];
+        const keys = Object.keys(localStorage).filter(
+          (k) => k.startsWith('pielab') && !KEEP_KEYS.includes(k)
+        );
         keys.forEach((k) => localStorage.removeItem(k));
         // Also clear Preferences (native persistent storage)
         PieLabStorage.removeAll().catch(() => {});

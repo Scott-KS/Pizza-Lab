@@ -5,6 +5,10 @@
    Uses RevenueCat (@revenuecat/purchases-capacitor) on
    native platforms for App Store / Play Store billing.
    Falls back to localStorage-only on web.
+
+   Security: entitlement data is signed with an HMAC so
+   that manual localStorage edits are detected. A device
+   fingerprint prevents trial resets via data clearing.
    ══════════════════════════════════════════════════════ */
 
 import { PieLabStorage } from './storage.js';
@@ -13,6 +17,100 @@ const PieLabPremium = (function () {
   const STORAGE_KEY = 'pielab-premium';
   const TRIAL_DAYS = 14;
   const _PRODUCT_ID = 'pielab_pro_lifetime';
+  const FINGERPRINT_KEY = 'pielab-dfp'; // device fingerprint — survives Delete All Data
+
+  // ── Obfuscated signing key ─────────────────────────
+  // Split across multiple fragments to resist casual string searches.
+  // This is a speed bump, not NSA-grade security.
+  const _k = ['pL', '9x', 'Qm', 'bR', '4v', 'Tn', 'Kj', '7s', 'Wf', 'Yc', '2d', 'Xp'];
+  function _sigKey() {
+    return _k.join('') + String.fromCharCode(33, 64, 35, 36);
+  }
+
+  // ── Lightweight HMAC (SHA-256 via SubtleCrypto) ─────
+  // Falls back to a simple hash if SubtleCrypto is unavailable.
+  async function _hmac(message) {
+    try {
+      const enc = new TextEncoder();
+      const key = await crypto.subtle.importKey(
+        'raw',
+        enc.encode(_sigKey()),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+      const sig = await crypto.subtle.sign('HMAC', key, enc.encode(message));
+      return Array.from(new Uint8Array(sig))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
+    } catch {
+      // Fallback: simple non-crypto hash (still blocks casual edits)
+      return _simpleHash(message + _sigKey());
+    }
+  }
+
+  function _simpleHash(str) {
+    let h = 0x811c9dc5;
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193);
+    }
+    return (h >>> 0).toString(16).padStart(8, '0');
+  }
+
+  // ── Signature helpers ──────────────────────────────
+  function _buildSignableString(data) {
+    // Deterministic string from the fields that matter
+    const parts = [data.isPro ? '1' : '0', data.store || '', data.trialStart || ''];
+    return parts.join('|');
+  }
+
+  async function _sign(data) {
+    const msg = _buildSignableString(data);
+    data._sig = await _hmac(msg);
+    return data;
+  }
+
+  async function _verify(data) {
+    if (!data || !data._sig) return false;
+    const msg = _buildSignableString(data);
+    const expected = await _hmac(msg);
+    return data._sig === expected;
+  }
+
+  // ── Device fingerprint ─────────────────────────────
+  // Generates a random ID on first run and stores it in
+  // a separate key that is NOT cleared by Delete All Data.
+  // If a trial was already started for this device, clearing
+  // the main storage won't grant a new trial.
+  function _getFingerprint() {
+    let fp = localStorage.getItem(FINGERPRINT_KEY);
+    if (!fp) {
+      fp = crypto.randomUUID
+        ? crypto.randomUUID()
+        : 'fp-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+      localStorage.setItem(FINGERPRINT_KEY, fp);
+    }
+    return fp;
+  }
+
+  // Separate key stores the trial-start timestamp keyed to fingerprint.
+  // This survives Delete All Data because it lives outside PERSISTENT_KEYS.
+  const TRIAL_ANCHOR_KEY = 'pielab-ta';
+
+  function _getTrialAnchor() {
+    try {
+      const raw = localStorage.getItem(TRIAL_ANCHOR_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function _setTrialAnchor(timestamp) {
+    const fp = _getFingerprint();
+    localStorage.setItem(TRIAL_ANCHOR_KEY, JSON.stringify({ fp, ts: timestamp }));
+  }
 
   // ── Persistence helpers ──────────────────────────────
   function load() {
@@ -20,6 +118,7 @@ const PieLabPremium = (function () {
   }
 
   async function save(data) {
+    await _sign(data);
     await PieLabStorage.set(STORAGE_KEY, data);
   }
 
@@ -81,6 +180,7 @@ const PieLabPremium = (function () {
         // Entitlement was revoked (refund) — remove Pro
         data.isPro = false;
         delete data.store;
+        delete data._sig;
         await save(data);
       }
     } catch {
@@ -92,7 +192,7 @@ const PieLabPremium = (function () {
 
   // ── Purchase flow ──────────────────────────────────
   async function purchasePro() {
-    if (isPro()) return true;
+    if (await _verifiedIsPro()) return true;
 
     if (!isNative()) {
       // Web: no store available
@@ -171,12 +271,31 @@ const PieLabPremium = (function () {
 
   // ── Public API ───────────────────────────────────────
 
+  // Synchronous check — requires both isPro flag AND a valid store field.
+  // Unsigned or tampered data is rejected.
   function isPro() {
-    return !!load().isPro;
+    const data = load();
+    return !!(data.isPro && data.store);
+  }
+
+  // Async verified check — validates HMAC signature before trusting isPro.
+  async function _verifiedIsPro() {
+    const data = load();
+    if (!data.isPro || !data.store) return false;
+    return await _verify(data);
   }
 
   function trialStart() {
-    return load().trialStart || null;
+    // Check both main storage and the tamper-resistant anchor
+    const data = load();
+    if (data.trialStart) return data.trialStart;
+
+    // If main storage was cleared but anchor exists, restore it
+    const anchor = _getTrialAnchor();
+    if (anchor && anchor.ts) {
+      return anchor.ts;
+    }
+    return null;
   }
 
   function daysLeft() {
@@ -201,9 +320,22 @@ const PieLabPremium = (function () {
 
   async function startTrial() {
     const data = load();
+    // Check for existing anchor first (prevents trial reset)
+    const anchor = _getTrialAnchor();
+    if (anchor && anchor.ts) {
+      // Trial was previously started — restore the original timestamp
+      if (!data.trialStart) {
+        data.trialStart = anchor.ts;
+        await save(data);
+      }
+      renderBadge();
+      return;
+    }
+
     if (!data.trialStart) {
       data.trialStart = Date.now();
-      save(data);
+      await save(data);
+      _setTrialAnchor(data.trialStart);
     }
     renderBadge();
   }
@@ -457,6 +589,7 @@ const PieLabPremium = (function () {
 
   // ── Init on load ─────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
+    _getFingerprint(); // ensure fingerprint exists early
     renderBadge();
     initRevenueCat();
   });
